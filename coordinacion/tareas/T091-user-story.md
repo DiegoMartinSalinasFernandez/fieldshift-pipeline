@@ -1,14 +1,14 @@
 ---
 id: T091
 titulo: User story in English with real county examples for the demo
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T06:44
-actualizada: 2026-11-15 06:48
+actualizada: 2026-11-15 06:52
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ La historia y el script en un PR.
 
 ## Notas
 - 2026-11-15 06:48 · pro-3: tomada
+- 2026-11-15 06:52 · pro-3: terminada por el trabajador: PR #86, falta la revisión de max-1
