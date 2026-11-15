@@ -78,3 +78,4 @@
 - 06:40 T087: tomada por el trabajador
 - 06:46 T087: terminada, PR #82
 - 06:46 T089: tomada por el trabajador
+- 06:51 T089: terminada, PR #85
