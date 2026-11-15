@@ -75,3 +75,4 @@
 - 06:39 T085: tomada por el trabajador
 - 06:40 T085: no pude publicar (push falló: To github.com:DiegoMartinSalinasFernandez/fieldshift-pipeline.git
  ! [rejected]        tarea/T085-auto -> ta)
+- 06:40 T087: tomada por el trabajador
