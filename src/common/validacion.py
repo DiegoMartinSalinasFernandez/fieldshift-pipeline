@@ -19,8 +19,15 @@ RANGOS_PREFIJO = [  # (regex, (min, max))
     (r"^prec_.*_mm$", (0, None)), (r"^dias_", (0, 366)), (r"^pct_", (0, 100)),
     (r"^sup_", (0, None)), (r"^produccion_", (0, None)), (r"^area_", (0, None)),
 ]
-# Rendimientos por cultivo en bu/ac (formato largo, columna `cultivo`)
-RENDIMIENTO_BU_AC = {"maiz": (20, 300), "soja": (5, 100)}
+# Rendimientos por cultivo en bu/ac (formato largo, columna `cultivo`). Rangos de los 10 estados
+# (para_decidir #24, docs/research/rangos_estados_nuevos.md y T145): encuesta NASS por condado
+# 2000-2025, todas las prácticas, riego y secano. Mínimos reales: maíz 4,5 (Pennington SD 2002),
+# soja 2,9 (Pennington SD 2003), trigo de invierno 7,2 (secano, Morton KS 2013), avena 5,0
+# (Dundy NE 2000). Máximos: maíz 253,6, soja 80,4, trigo 117,8, avena 133,6.
+RENDIMIENTO_BU_AC = {"maiz": (2, 300), "soja": (2, 100), "trigo_invierno": (5, 130), "avena": (2, 200)}
+# NASS publica rendimiento 0 en condados sin cosecha de grano (maíz y avena de SD 2000-2006: todo a
+# silo o a forraje). Un 0 se acepta solo si la fila no tiene superficie cosechada ni producción.
+SIN_COSECHA = ("sup_cosechada_ac", "produccion_bu")
 RELLENOS = {-9999, -999, -99.99, -999.9, -9999.9, -99999}
 TEXTO = {"estado", "condado", "cultivo", "flag_nass", "ventana"}
 
@@ -139,8 +146,14 @@ def validar_csv(ruta) -> list[str]:
     if "rend_bu_ac" in cols and "cultivo" in cols:
         rend = pd.to_numeric(df["rend_bu_ac"], errors="coerce")
         for cult, (lo, hi) in RENDIMIENTO_BU_AC.items():
-            r = rend[(df["cultivo"] == cult) & rend.notna()]
-            n = int(((r < lo) | (r > hi)).sum())
+            fila = (df["cultivo"] == cult) & rend.notna()
+            fuera = fila & ((rend < lo) | (rend > hi))
+            # sin columnas de cosecha no hay cómo saberlo: el 0 se rechaza
+            sin_cosecha = (rend == 0) & any(c in cols for c in SIN_COSECHA)
+            for c in SIN_COSECHA:
+                if c in cols:
+                    sin_cosecha &= pd.to_numeric(df[c], errors="coerce").fillna(0) == 0
+            n = int((fuera & ~sin_cosecha).sum())
             if n:
                 errores.append(f"rend_bu_ac de {cult}: {n} valores fuera de {lo}-{hi} bu/ac")
     return errores
