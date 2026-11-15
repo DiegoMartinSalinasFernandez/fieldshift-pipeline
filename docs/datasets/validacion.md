@@ -3,6 +3,14 @@
 Datos de superficie (no NASA) para validar la lluvia y la temperatura de NASA POWER y GPM IMERG
 del paquete `clima`: PRISM (Oregon State University) y CoCoRaHS (red de pluviómetros voluntarios).
 
+<!-- ATRIBUCION:INICIO -->
+## Atribución
+
+Texto obligatorio al distribuir o mostrar estos datos (copiar tal cual; ver `docs/research/licencias_fuentes.md`):
+
+> Community Collaborative Rain, Hail and Snow Network (CoCoRaHS), Colorado Climate Center, https://www.cocorahs.org. Licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Data aggregated to county-month by the team.
+<!-- ATRIBUCION:FIN -->
+
 ## Archivos
 
 - `data/processed/validacion/validacion_mensual.csv` → `fips, anio, mes, prec_prism_mm, tmax_prism_c, tmin_prism_c, tmed_prism_c, prec_cocorahs_mm, n_estaciones_cocorahs`.

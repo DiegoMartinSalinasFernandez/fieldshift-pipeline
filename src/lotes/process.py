@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import math
 import re
+import sys
 import time
 from pathlib import Path
 
@@ -23,6 +24,10 @@ from rasterio.windows import from_bounds
 import terreno
 
 RAIZ = Path(__file__).resolve().parents[2]
+if str(RAIZ) not in sys.path:
+    sys.path.insert(0, str(RAIZ))
+from src.common.atribuciones import poner_en_card  # noqa: E402
+
 RAW = RAIZ / "data" / "raw"
 REF = RAIZ / "data" / "reference"
 OUT = RAIZ / "data" / "processed" / "lotes"
@@ -487,6 +492,7 @@ def escribir_card(tablas: dict[str, tuple[pd.DataFrame, str]], resumen: list[str
             texto = patron.sub(lambda _: nuevo, texto)
         else:
             texto += "\n" + nuevo + "\n"
+    texto = poner_en_card(texto, "lotes")
     CARD.write_text(texto, encoding="utf-8")
 
 
