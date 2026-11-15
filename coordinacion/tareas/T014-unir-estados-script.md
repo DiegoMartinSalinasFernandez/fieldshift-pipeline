@@ -1,9 +1,9 @@
 ---
 id: T014
 titulo: Script para juntar los releases de cada estado (scripts/unir_estados.py)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:40
-actualizada: 2026-11-15 01:40
+actualizada: 2026-11-15 02:19
 ---
 
 ## Qué hacer
@@ -42,3 +42,4 @@ Mirá `scripts/entregar.py` para saber cómo vienen los zips.
 El script y su prueba en un PR, con el uso en el docstring.
 
 ## Notas
+- 2026-11-15 02:19 · pro-2: tomada
