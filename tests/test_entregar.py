@@ -107,6 +107,18 @@ class TestEntregarSoloZip(unittest.TestCase):
         # solo el paquete pedido
         self.assertFalse(self.zip_de("cultivos").exists())
 
+    def test_sha256_sale_con_lf(self):
+        # bytes, no read_text: read_text convierte CRLF a LF y la prueba no vería el CR.
+        # sha256sum -c de Linux rechaza el .sha256 con CR (pasó en el release datos-oh-ne-mn).
+        self.correr("clima")
+        z = self.zip_de("clima")
+        crudo = z.with_name(z.name + ".sha256").read_bytes()
+        self.assertNotIn(b"\r", crudo)
+        self.assertTrue(crudo.endswith(b"\n"))
+        self.assertEqual(crudo.count(b"\n"), 1)
+        esperado = hashlib.sha256(z.read_bytes()).hexdigest()
+        self.assertEqual(crudo, f"{esperado}  {z.name}\n".encode("utf-8"))
+
     def test_contenido_del_zip(self):
         self.correr("clima")
         with zipfile.ZipFile(self.zip_de("clima")) as zf:
