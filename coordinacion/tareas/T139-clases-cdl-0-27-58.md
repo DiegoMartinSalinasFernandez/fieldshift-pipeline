@@ -8,7 +8,7 @@ estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:51
-actualizada: 2026-11-15 10:00
+actualizada: 2026-11-15 10:01
 ---
 
 ## Qué hacer
@@ -30,3 +30,4 @@ El código, las pruebas sin red y la documentación en un PR con CI en verde, re
 
 ## Notas
 - 2026-11-15 10:00 · pro-5: tomada
+- 2026-11-15 10:01 · pro-5: corte por el límite de uso de Claude; 0 commits guardados en tarea/T139-auto. El trabajador sigue cuando se renueve.
