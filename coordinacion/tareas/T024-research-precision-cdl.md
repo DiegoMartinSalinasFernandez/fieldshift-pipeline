@@ -1,7 +1,7 @@
 ---
 id: T024
 titulo: 'Research: precisión del CDL por estado y año (2008–2025)'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 02:50
-actualizada: 2026-11-15 02:41
+actualizada: 2026-11-15 02:50
 ---
 
 ## Qué hacer
@@ -41,3 +41,4 @@ El research en un PR.
 
 ## Notas
 - 2026-11-15 02:41 · pro-1: tomada
+- 2026-11-15 02:50 · pro-1: terminada por el trabajador: PR #20, falta la revisión de max-1
