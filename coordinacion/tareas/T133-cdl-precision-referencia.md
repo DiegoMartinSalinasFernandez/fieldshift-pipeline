@@ -1,14 +1,14 @@
 ---
 id: T133
 titulo: '`cdl_precision.csv` como tabla de referencia para ML (código listo, espera OK)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:33
-actualizada: 2026-11-15T09:33
+actualizada: 2026-11-15 09:48
 ---
 
 ## Qué hacer
@@ -32,3 +32,4 @@ sección al final del data card, para que los conflictos sean fáciles.
 El código, las pruebas sin red y el data card en un PR con CI en verde, retenido como dice arriba.
 
 ## Notas
+- 2026-11-15 09:48 · pro-4: tomada
