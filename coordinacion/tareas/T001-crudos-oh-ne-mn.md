@@ -1,7 +1,7 @@
 ---
 id: T001
 titulo: Bajar los crudos de OH, NE y MN
-estado: tomada
+estado: hecha
 plan_minimo: max
 maquina: max-1
 estados:
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-14 23:59
-actualizada: 2026-11-14 23:59
+actualizada: 2026-11-15 03:03
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ Todos los `download.py` terminaron sin errores pendientes, y lo que falló está
 
 ## Notas
 - 2026-11-14 23:59 · max-1: tomada (en curso en esta máquina)
+- 2026-11-15 03:03 · max-1: terminada: Crudos de OH, NE y MN en ResearchAgent-6estados (21 GB, 35 486 archivos, todos en manifest). Falta completar el CDL de 2008 y 2021-2025 (bug de T023): va en T003.
