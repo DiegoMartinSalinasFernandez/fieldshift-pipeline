@@ -1,16 +1,16 @@
 ---
 id: T068
 titulo: 'Research: precisión del CDL en Michigan y Dakota del Norte'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados:
 - MI
 - ND
 depende_de: []
 rama: null
 creada: 2026-11-15 05:42
-actualizada: 2026-11-15 05:42
+actualizada: 2026-11-15 05:56
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ Escribí `docs/research/cdl_precision_mi_nd.md`.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 05:56 · pro-3: tomada
