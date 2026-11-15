@@ -221,7 +221,7 @@ def tabla_md(df: pd.DataFrame) -> str:
 
 
 def escribir_card(out: pd.DataFrame, conv: pd.DataFrame, sin: pd.DataFrame, info: list[dict],
-                  fallas: list[str]) -> None:
+                  fallas: list[str], validos: set[str] = frozenset()) -> None:
     faltantes = pd.DataFrame({
         "columna": COLUMNAS[3:],
         "pct_faltante": [round(100 * out[c].isna().mean(), 1) if len(out) else None for c in COLUMNAS[3:]],
@@ -273,6 +273,11 @@ def escribir_card(out: pd.DataFrame, conv: pd.DataFrame, sin: pd.DataFrame, info
         tabla_md(conv.groupby(["codigo", "fips", "cultivo"], as_index=False)[["sembrada", "prevenida"]].sum()
                  .assign(anios=conv.groupby(["codigo", "fips", "cultivo"])["anio"].nunique().values))
         if len(conv) else "(ninguno)",
+        "",
+        "### Condados sin ninguna fila",
+        "",
+        ("Condados de condados.csv sin maíz, soja, trigo de invierno ni avena en ningún año de FSA: "
+         + (", ".join(sorted(set(validos) - set(out["fips"]))) or "ninguno") + "."),
         "",
         "### Códigos sin FIPS (quedan afuera del CSV)",
         "",
@@ -341,7 +346,7 @@ def main() -> None:
     out.to_csv(SALIDA, index=False, encoding="utf-8")
     conv = pd.concat(convs, ignore_index=True) if convs else pd.DataFrame()
     sin = pd.concat(sins, ignore_index=True) if sins else pd.DataFrame()
-    escribir_card(out, conv, sin, info, fallas)
+    escribir_card(out, conv, sin, info, fallas, validos)
     errores = validar_csv(SALIDA)
     print(f"{SALIDA.relative_to(REPO)}: {len(out)} filas; validar_csv: {errores or 'ok'}")
     if errores:
