@@ -1,7 +1,7 @@
 ---
 id: T079
 titulo: 'Research: eventos extremos conocidos en Kentucky (2000–2025)'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-3
 estados:
@@ -9,7 +9,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T06:18
-actualizada: 2026-11-15 06:31
+actualizada: 2026-11-15 06:37
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ El research en un PR.
 
 ## Notas
 - 2026-11-15 06:31 · pro-3: tomada
+- 2026-11-15 06:37 · pro-3: terminada por el trabajador: PR #79, falta la revisión de max-1
