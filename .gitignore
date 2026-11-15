@@ -29,6 +29,7 @@ data/processed/*
 !data/processed/.gitkeep
 data/reference/*
 !data/reference/clases_cdl.csv
+!data/reference/fsa_condados_admin.csv
 !data/reference/.gitkeep
 data/entregas/
 data/unido/
