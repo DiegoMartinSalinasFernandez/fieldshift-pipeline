@@ -2,7 +2,7 @@
 
 Pregunta: Para Kentucky (FIPS 21), ¿qué cultivos y años tiene NASS por condado (rendimiento, superficie, producción de maíz, soja, trigo de invierno y heno; superficie de tabaco), si están 2024 y 2025, cómo vienen los condados combinados y qué publica Crop Progress? ¿Cuántos condados tiene, cuánta superficie de maíz y soja suma, y cuántos de sus 120 condados casi no tienen agricultura (este de KY)?
 
-Respuesta corta: KY tiene **120 condados** (Census 2020). Hay rendimiento, superficie y producción de condado de **maíz grano y soja de 2000 a 2025, 2024 incluido**, y de **trigo de invierno de 2000 a 2025 salvo 2024** (igual que en los demás estados). El **heno (alfalfa y otros) y el tabaco solo tienen condado hasta 2018**; desde 2019 son solo dato de estado. Cobertura de maíz grano en 2025: **60 de 120 condados (50 %)**, que suman el 81–82 % de la superficie del estado; soja 2025: 58 condados, 82 % de la superficie. Superficie sembrada del estado (2020–2025): **maíz 1,37–1,6 M acres y soja 1,8–2,05 M**, más 0,49–0,61 M de trigo de invierno, ~2 M de heno no alfalfa y 29–46 mil de tabaco. Desde 2020 hay **una sola fila "OTHER COUNTIES"** por cultivo y año (distrito `99`); antes, una por distrito agrícola. En maíz, soja y trigo **no aparece ningún `(D)`**; en heno sí, solo en 2013 (142 filas). **32 de los 120 condados** sembraban menos de 1.000 acres de maíz + soja en 2000–2006 (26 de ellos en el distrito EASTERN OR MOUNTAIN), y **15 no tienen ni un año de rendimiento de maíz o soja en 2020–2025**. Crop Progress: ver la sección propia más abajo.
+Respuesta corta: KY tiene **120 condados** (Census 2020). Hay rendimiento, superficie y producción de condado de **maíz grano y soja de 2000 a 2025, 2024 incluido**, y de **trigo de invierno de 2000 a 2025 salvo 2024** (igual que en los demás estados). El **heno (alfalfa y otros) y el tabaco solo tienen condado hasta 2018**; desde 2019 son solo dato de estado. Cobertura de maíz grano en 2025: **60 de 120 condados (50 %)**, que suman el 81–82 % de la superficie del estado; soja 2025: 58 condados, 82 % de la superficie. Superficie sembrada del estado (2020–2025): **maíz 1,37–1,6 M acres y soja 1,8–2,05 M**, más 0,49–0,61 M de trigo de invierno, ~2 M de heno no alfalfa y 29–46 mil de tabaco. Desde 2020 hay **una sola fila "OTHER COUNTIES"** por cultivo y año (distrito `99`); antes, una por distrito agrícola. En maíz, soja y trigo **no aparece ningún `(D)`**; en heno sí, solo en 2013 (142 filas). **32 de los 120 condados** sembraban menos de 1.000 acres de maíz + soja en 2000–2006 (26 de ellos en el distrito EASTERN OR MOUNTAIN), y **15 no tienen ni un año de rendimiento de maíz o soja en 2020–2025**. En Crop Progress nacional **KY solo está en maíz y soja** (todas las etapas, 1998–2026) y en las tablas de condición, humedad y días aptos; **no está en trigo de invierno** ni hay tablas de tabaco o heno. Mediana 2000–2018 del 50 % sembrado: maíz día 117, soja 151; cosechado: 269 y 295. El hueco de octubre–noviembre de 2025 también afecta a KY.
 
 Detalle:
 
@@ -102,7 +102,29 @@ Superficie sembrada media de maíz + soja por condado (acres por año) y por dis
 
 ## Crop Progress (reportes semanales, nivel estado)
 
-PENDIENTE
+Se leyeron los 1.120 reportes de texto del archivo ESMIS (1995–2026), los mismos que en T067. Los que no traen la fecha "Released" no se leen (ver `nass_mi_nd.md`).
+
+| Cultivo | Etapas | Años con valor |
+|---|---|---|
+| Maíz | PLANTED, EMERGED, SILKING, DOUGH, DENTED, MATURE, HARVESTED | 1998–2026, todos los años (EMERGED desde 1999) |
+| Soja | PLANTED, EMERGED, BLOOMING, SETTING PODS, DROPPING LEAVES, HARVESTED | 1998–2026, todos los años (EMERGED desde 1999) |
+| Trigo de invierno | — | **KY no está** en las tablas de trigo de invierno (sembrado, espigado, cosechado): son 18 estados, entre ellos IL, IN, OH, MI y NC, pero no KY. Tampoco en las de condición del trigo. |
+| Tabaco, heno, sorgo | — | No hay tablas de tabaco ni de heno en los reportes leídos; KY no está en las de sorgo. |
+
+KY sí aparece en las tablas de **condición** de maíz, soja y pasturas, de **humedad del suelo** (superficial y subsuelo) y de **días aptos para trabajo de campo** (verificado en un reporte de 2020). El parser no extrae las tablas de condición.
+
+**Día del año típico del 50 %** (mediana 2000–2018, interpolación lineal entre semanas; 19 años salvo maíz emergido, 18):
+
+| Cultivo | Sembrado | Emergido | Floración (silking / blooming) | Cosechado |
+|---|---|---|---|---|
+| Maíz | 117 | 133 | 186 | 269 |
+| Soja | 151 | 162 | 204 | 295 |
+
+El maíz de KY se siembra ~2 semanas antes que en Iowa y se cosecha ~1 mes antes; la soja se siembra tarde porque buena parte va después del trigo (doble cultivo).
+
+**Hueco de 2025.** No hay reportes entre la semana al 28-09-2025 y la semana al 16-11-2025 (igual que en los otros estados). Cosecha: maíz 53 → 95 % y soja 28 → 81 %. El 50 % del maíz cae antes del hueco (entre el 21 y el 28-09); el de la soja cae dentro.
+
+No miré los reportes estatales (*Kentucky Crop Progress & Condition*, NASS Eastern Mountain Region). Es posible que traigan trigo de invierno, tabaco y heno, pero no lo verifiqué.
 
 ## Particularidades de KY frente al Corn Belt
 
@@ -118,7 +140,7 @@ No se contaron las prácticas `IRRIGATED` / `NON-IRRIGATED`, el Censo ni el CDL.
 Fuentes:
 - [USDA NASS Quick Stats, interfaz web](https://quickstats.nass.usda.gov/), consultas del 2026-11-15 con `nass_ky_conteo.py` (72 CSV).
 - [Census Bureau, códigos de condado 2020 de Kentucky](https://www2.census.gov/geo/docs/reference/codes2020/cou/st21_ky_cou2020.txt), consultado 2026-11-15.
-- [Crop Progress, publicación semanal (USDA NASS, archivo ESMIS)](https://esmis.nal.usda.gov/publication/crop-progress), consultado 2026-11-15.
+- [Crop Progress, publicación semanal (USDA NASS, archivo ESMIS)](https://esmis.nal.usda.gov/publication/crop-progress), consultado 2026-11-15: 1.120 reportes de texto 1995–2026.
 
 Confianza: alta para los conteos de Quick Stats (salen de los CSV); media para la lista de condados con poca agricultura (depende del umbral y de usar maíz + soja como indicador).
 
