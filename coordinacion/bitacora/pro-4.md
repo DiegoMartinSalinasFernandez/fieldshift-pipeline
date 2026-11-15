@@ -29,3 +29,4 @@
 - 07:27 T102: tomada por el trabajador
 - 07:34 T102: terminada, PR #97
 - 07:34 T103: tomada por el trabajador
+- 08:12 T103: terminada, PR #104
