@@ -8,6 +8,7 @@ existen), los lee sin descomprimir a disco y guarda PNG en `docs/demo/fig/`:
   fig3_smap_may_vs_planting.png      humedad SMAP de mayo (media de condados del estado) vs 50 % sembrado
   fig4_corn_after_soy_vs_corn.png    % del maíz tras soja vs % tras maíz, por condado
   fig5_corn_yield_by_year.png        rendimiento de maíz por condado y año (cajas), 2012 resaltado
+  fig6_lluvia.png                    lluvia mensual IMERG vs POWER por condado-mes, un panel por estado
 
 No hay modelos, tendencias ni ajustes: cada punto es una fila de un CSV publicado. Si falta un zip, un
 archivo o una columna, esa figura se saltea con un aviso.
@@ -51,6 +52,7 @@ SRC_MODIS = "NASA MODIS MOD13Q1 NDVI 250 m (CDL corn/soy pixel masks)"
 SRC_SMAP = "NASA SMAP L4 SPL4SMGP (Crop-CASMA daily layers)"
 SRC_PROG = "USDA NASS Crop Progress (state, weekly)"
 SRC_CDL = "USDA NASS Cropland Data Layer 30 m"
+SRC_IMERG = "NASA GPM IMERG Final V07 daily (county mean)"
 ORIGEN = "published release CSVs"             # con --entrega se cambia por el nombre del zip
 NOTA = ""                                     # p. ej. "Only OH, NE and MN"; va en el pie de cada figura
 SUFIJO = ""                                   # se agrega al nombre de cada PNG
@@ -199,7 +201,7 @@ def leer_entrega(zip_entrega: Path) -> dict[str, pd.DataFrame | None]:
             return pd.read_csv(io.BytesIO(zf.read(n[0])), dtype={"fips": str})
         anual, mensual = una("condado/tabla_anual.csv"), una("condado/tabla_mensual.csv")
     out: dict[str, pd.DataFrame | None] = {"prod": anual, "agua": mensual,
-                                          "clima": None, "fen": None, "rot": None, "fenest": None}
+                                          "clima": None, "clima_m": mensual, "fen": None, "rot": None, "fenest": None}
     if anual is not None:
         por_condado = anual.drop_duplicates(subset=["fips", "anio"])
         out["clima"] = out["rot"] = por_condado
@@ -400,6 +402,47 @@ def fig_rotacion(rot, salida: Path) -> None:
     guardar(fig, salida, nombre)
 
 
+def fig_lluvia_imerg_power(clima_m, salida: Path) -> None:
+    """Lluvia mensual IMERG vs POWER por condado-mes, un panel por estado, recta 1:1 y razón media.
+
+    La razón es la de los totales (suma de IMERG / suma de POWER) sobre los condado-mes del panel; no hay ajuste.
+    """
+    nombre = "fig6_lluvia.png"
+    if faltan(clima_m, ["fips", "mes", "prec_imerg_mm", "prec_power_mm"], nombre):
+        return
+    m = clima_m[["fips", "mes", "prec_imerg_mm", "prec_power_mm"]].dropna().copy()
+    if m.empty:
+        aviso(f"{nombre}: se saltea (no hay condado-mes con las dos lluvias)")
+        return
+    m["estado"] = estado(m["fips"])
+    ests = sorted(m["estado"].unique())
+    tope = float(max(m["prec_imerg_mm"].max(), m["prec_power_mm"].max())) * 1.03
+    fig, axs = plt.subplots(1, len(ests), figsize=(4.6 * len(ests), 5), squeeze=False, sharex=True, sharey=True)
+    for ax, est in zip(axs[0], ests):
+        g = m[m["estado"] == est]
+        razon = g["prec_imerg_mm"].sum() / g["prec_power_mm"].sum()
+        r = g["prec_imerg_mm"].corr(g["prec_power_mm"])
+        ax.scatter(g["prec_power_mm"], g["prec_imerg_mm"], s=3, alpha=0.12, color=COLORES.get(est, "#777777"),
+                   edgecolors="none", rasterized=True)
+        ax.plot([0, tope], [0, tope], color="#222222", lw=1, label="1:1")
+        ax.set_xlim(0, tope)
+        ax.set_ylim(0, tope)
+        ax.set_aspect("equal")
+        ax.set_title(f"{est}: IMERG/POWER = {razon:.2f}, r = {r:.2f}", fontsize=10)
+        ax.text(0.03, 0.97, f"n = {len(g):,} county-months\n{g['mes'].min()} to {g['mes'].max()}",
+                transform=ax.transAxes, fontsize=7, va="top", color="#444444")
+        ax.set_xlabel("NASA POWER monthly precipitation (mm)")
+        ax.grid(alpha=0.3)
+        ax.legend(loc="lower right", fontsize=7)
+    axs[0][0].set_ylabel("GPM IMERG monthly precipitation (mm)")
+    fig.suptitle("Two NASA rainfall products, county by month (no ground gauges)", fontsize=11)
+    fig.subplots_adjust(bottom=0.2, top=0.86, wspace=0.12)
+    pie(fig, [SRC_IMERG, SRC_POWER], "One point per county-month (clima_mensual.csv). Ratio = total IMERG / "
+        "total POWER over all points of the panel; r = Pearson correlation. This is not a validation against "
+        "gauges (PRISM).")
+    guardar(fig, salida, nombre)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--zips", type=Path, default=ZIPS, help="carpeta para los zips bajados")
@@ -420,7 +463,8 @@ def main() -> None:
         global ORIGEN
         ORIGEN = f"data release {a.entrega.stem}"
         d = leer_entrega(a.entrega)
-        prod, clima, fen, agua, fenest, rot = (d[k] for k in ("prod", "clima", "fen", "agua", "fenest", "rot"))
+        prod, clima, fen, agua, fenest, rot, clima_m = (d[k] for k in ("prod", "clima", "fen", "agua", "fenest",
+                                                                       "rot", "clima_m"))
     else:
         if not a.sin_bajar:
             bajar(a.etiquetas, a.zips, https=a.https)
@@ -434,12 +478,14 @@ def main() -> None:
         agua = leer(fuente, "agua_mensual.csv")
         fenest = leer(fuente, "fenologia_estado.csv")
         rot = leer(fuente, "rotacion_anual.csv")
+        clima_m = leer(fuente, "clima_mensual.csv")
 
     fig_lluvia_julio(prod, clima, a.salida)
     fig_ndvi_rend(prod, fen, a.salida)
     fig_smap_siembra(agua, fenest, a.salida)
     fig_rotacion(rot, a.salida)
     fig_rend_por_anio(prod, a.salida)
+    fig_lluvia_imerg_power(clima_m, a.salida)
 
 
 if __name__ == "__main__":

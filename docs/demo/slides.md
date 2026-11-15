@@ -176,14 +176,25 @@ SSURGO · USDA NASS CSB and CDL.
   county-months); against CoCoRaHS volunteer gauges, r = **0.907** (POWER) and **0.890** (IMERG) (42,798
   county-months). `[src: docs/datasets/validacion.md, validation table — repo data card only; the validacion
   package is not in a published release]`
+- Right, published data (OH, NE, MN): the two NASA rainfall products we use, against each other, monthly by
+  county, 2000-01 to 2025-12. Ratio of totals IMERG / POWER: Ohio **1.19** (r = **0.94**, 27,456
+  county-months), Nebraska **1.08** (r = **0.96**, 29,016), Minnesota **1.09** (r = **0.95**, 27,144). IMERG
+  runs wetter than POWER everywhere, most in Ohio (the QA note gives 1.18 for Ohio as the median of annual
+  county ratios, `docs/qa/oh_ne_mn.md`). This compares two satellite/reanalysis products; **it is not a
+  check against gauges.** `[src: release datos-oh-ne-mn, clima_mensual.csv, columns prec_imerg_mm and
+  prec_power_mm; figure fig6_lluvia_oh_ne_mn.png]`
 - Satellites see every county every day; gauges are points. We show both, and their difference.
 
 **Figure:**
 - Left: `fig3_smap_may_vs_planting_oh_ne_mn.png` (real). Optional alternative, not made yet: a monthly time
   series for one published county (`sm_rootzone_m3m3`, `prec_imerg_mm`), July shaded. **[TBD]**
-- Right: scatter of monthly `prec_power_mm` / `prec_imerg_mm` (`clima_mensual.csv`) vs `prec_prism_mm`
-  (`validacion_mensual.csv`), 1:1 line, r and bias printed. **[TBD: not made; needs the IA/IL/IN validacion
-  data, which is not in a published release. Without it, show the r values as text only.]**
+- Right: `docs/demo/fig/fig6_lluvia_oh_ne_mn.png` (real, T095): monthly `prec_imerg_mm` vs `prec_power_mm`,
+  one point per county-month, one panel per state (OH, NE, MN), 1:1 line, ratio of totals and r in each
+  title. Caption: "GPM IMERG vs NASA POWER monthly rainfall by county, Ohio, Nebraska and Minnesota,
+  2000–2025. Two NASA products compared with each other, not with rain gauges."
+- Still to make: the same scatter against `prec_prism_mm` (`validacion_mensual.csv`). **[TBD: needs the
+  IA/IL/IN validacion data, which is not in a published release. Until then, give the PRISM r values above as
+  text only, and say they are IA/IL/IN.]**
 
 **Data credit:** NASA SMAP L4 V8 (doi:10.5067/T5RUATAQREF8), via USDA NASS Crop-CASMA · NASA ECOSTRESS L4T_ESI
 V002 (doi:10.5067/ECOSTRESS/ECO_L4T_ESI.002) · NASA POWER · NASA GPM IMERG V07 · PRISM Group, Oregon State
