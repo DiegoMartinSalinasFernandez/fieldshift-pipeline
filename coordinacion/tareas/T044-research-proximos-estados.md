@@ -1,9 +1,9 @@
 ---
 id: T044
 titulo: 'Research: candidatos para sumar estados (SD, WI, MO, MI)'
-estado: tomada
+estado: libre
 plan_minimo: pro
-maquina: pro-3
+maquina: null
 estados:
 - SD
 - WI
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 03:45
-actualizada: 2026-11-15 04:27
+actualizada: 2026-11-15 04:34
 ---
 
 ## Qué hacer
@@ -46,3 +46,4 @@ El research en un PR, con un orden recomendado.
 - 2026-11-15 04:04 · pro-3: tomada
 - 2026-11-15 04:27 · pro-3: soltada al arrancar: quedó tomada de una corrida anterior de esta máquina
 - 2026-11-15 04:27 · pro-3: tomada
+- 2026-11-15 04:34 · pro-3: soltada: quedó a medias, PR #50. INCOMPLETA: el agente no dejó resultado.
