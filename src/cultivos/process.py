@@ -555,7 +555,13 @@ def main() -> None:
     crops_raw = sorted(RAW.glob("qs.crops_*.txt.gz"))
     if crops_raw:
         crops = filtrar(crops_raw[-1])
-        produccion(crops).to_csv(OUT / "produccion_anual.csv", index=False, encoding="utf-8")
+        prod = produccion(crops)
+        from src.cultivos.riego_nass import agregar_riego, chequear_coherencia  # T134
+        prod = agregar_riego(prod, crops)
+        incoherentes = chequear_coherencia(prod)
+        if len(incoherentes):
+            print(f"aviso: {len(incoherentes)} filas con riego + secano != sembrada total (> 1 %)")
+        prod.to_csv(OUT / "produccion_anual.csv", index=False, encoding="utf-8")
         fenologia(crops).to_csv(OUT / "fenologia_estado.csv", index=False, encoding="utf-8")
         print("produccion_anual.csv y fenologia_estado.csv listos")
     censos = []
