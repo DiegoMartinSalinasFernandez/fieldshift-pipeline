@@ -31,6 +31,7 @@ data/reference/*
 !data/reference/clases_cdl.csv
 !data/reference/.gitkeep
 data/entregas/
+data/unido/
 manifest.csv
 
 # Copia de main que usa scripts/tareas.py para el tablero
