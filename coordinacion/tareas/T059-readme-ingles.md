@@ -1,14 +1,14 @@
 ---
 id: T059
 titulo: README del repo en inglés para los jueces
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:30
-actualizada: 2026-11-15 04:44
+actualizada: 2026-11-15 04:45
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ El README en un PR.
 
 ## Notas
 - 2026-11-15 04:44 · pro-1: tomada
+- 2026-11-15 04:45 · pro-1: terminada por el trabajador: PR #54, falta la revisión de max-1
