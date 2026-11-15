@@ -1,16 +1,17 @@
 ---
 id: T134
-titulo: Rendimiento y superficie con riego y en secano de NASS en `produccion_anual.csv` (NE y KS, código listo, espera OK)
-estado: libre
+titulo: Rendimiento y superficie con riego y en secano de NASS en `produccion_anual.csv` (NE y KS, código listo,
+  espera OK)
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-5
 estados:
 - NE
 - KS
 depende_de: []
 rama: null
 creada: 2026-11-15T09:33
-actualizada: 2026-11-15T09:33
+actualizada: 2026-11-15 09:34
 ---
 
 ## Qué hacer
@@ -33,3 +34,4 @@ sección al final del data card, para que los conflictos sean fáciles.
 El código, las pruebas sin red y el data card en un PR con CI en verde, retenido como dice arriba.
 
 ## Notas
+- 2026-11-15 09:34 · pro-5: tomada
