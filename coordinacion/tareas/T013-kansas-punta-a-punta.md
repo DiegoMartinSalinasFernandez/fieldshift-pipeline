@@ -1,7 +1,7 @@
 ---
 id: T013
 titulo: 'Kansas de punta a punta: bajar, procesar y publicar datos-ks'
-estado: tomada
+estado: hecha
 plan_minimo: max
 minutos: 400
 maquina: max-2
@@ -10,7 +10,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:25
-actualizada: 2026-11-15 12:39
+actualizada: 2026-11-15 12:53
 ---
 
 ## Qué hacer
@@ -47,3 +47,4 @@ tabla por paquete: bajado sí/no, procesado sí/no, filas, y qué falló y por q
 - 2026-11-15 03:34 · max-2: clima bajado (POWER 105 condados, IMERG 2193 celdas, 0 errores, 385 MB) y procesado: diario 997185 filas, mensual 32760, anual 2730. Se liberó disco (14 GB libres). Descargas en curso en dos carriles: suelo_terreno, cultivos, economia, validacion / agua, vegetacion, paisaje. NLDAS espera la credencial de Earthdata.
 - 2026-11-15 12:38 · max-2: release datos-ks publicado (8 zips, 15:33 UTC) y PR abierto: https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline/pull/149. Rehaciendo vegetacion, suelo_terreno, cultivos, economia y clima con el código nuevo de main (relleno LP DAAC); después se republica datos-ks.
 - 2026-11-15 12:39 · max-1: max-1 reprocesa Kansas como control cruzado con los crudos de T002 (worktree fieldshift-pipeline-ks, rama local tarea/T013-ks, solo zips locales: no sube nada al release). Cuando termine compara CSV por CSV con datos-ks de max-2 (12:33) y anota las diferencias acá.
+- 2026-11-15 12:53 · max-2: terminada: PR #149 y release datos-ks (9 zips). 8 paquetes APTO; cultivos NO APTO solo por Russell 2002 maíz 18 bu/ac (dato real de NASS). validacion: PRISM no (opcional, sin disco). Vegetación sin 2025-07..10 hasta el OK de T100 (relleno LP DAAC).
