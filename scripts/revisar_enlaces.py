@@ -23,6 +23,7 @@ URL externas no cambian el código de salida.
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import subprocess
 import sys
@@ -138,7 +139,7 @@ def revisar_relativo(destino: str) -> tuple[bool, str]:
 
 def revisar_url(url: str, timeout: int) -> tuple[bool, str]:
     """HEAD con `curl -I -L`: ok si el código final es 200 (no baja el cuerpo)."""
-    cmd = ["curl", "-sS", "-I", "-L", "-o", "/dev/null", "-w", "%{http_code}",
+    cmd = ["curl", "-sS", "-I", "-L", "-o", os.devnull, "-w", "%{http_code}",
            "--max-time", str(timeout), "-A", "fieldshift-revisar-enlaces", url]
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout + 5)
@@ -161,7 +162,7 @@ def revisar(archivos: list[Path], repo: Path = REPO, con_red: bool = True, timeo
     resultados: list[Resultado] = []
     cache: dict[str, tuple[bool, str]] = {}
     for f in archivos:
-        rel = str(f.resolve().relative_to(repo.resolve()))
+        rel = f.resolve().relative_to(repo.resolve()).as_posix()  # mismo informe en Windows y Linux
         for e in extraer_enlaces(f.read_text(encoding="utf-8"), rel):
             tipo, destino = clasificar(e, repo, base_github)
             if tipo in ("ancla", "otro"):
@@ -169,7 +170,7 @@ def revisar(archivos: list[Path], repo: Path = REPO, con_red: bool = True, timeo
             if tipo == "relativo":
                 ok, det = revisar_relativo(destino)
                 if not ok:
-                    det += f": {Path(destino).relative_to(repo.resolve()) if destino.startswith(str(repo.resolve())) else destino}"
+                    det += f": {Path(destino).relative_to(repo.resolve()).as_posix() if destino.startswith(str(repo.resolve())) else destino}"
                 resultados.append(Resultado(e, tipo, ok, det))
                 continue
             if not con_red:
