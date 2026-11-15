@@ -17,7 +17,7 @@ Respuesta corta: Encontré y abrí mediciones de la zona para **maíz, soja, tri
 | Maíz | 1,03 ± 0,07 | 0,84 ± 0,20 | 1,20 |
 | Soja | 0,98 ± 0,02 | 0,90 ± 0,13 | 1,15 |
 
-Es decir, Kc × ET₀ con los valores de FAO-56 **sobreestima** la ET de la temporada media entre ~15 % y ~40 %, según el cultivo y si hay riego.
+Es decir, Kc × ET₀ con los valores de FAO-56 **sobreestima** la ET de la temporada media entre ~15 % (soja y maíz con riego) y ~45 % (maíz de secano: 1,20/0,84), según el cultivo y si hay riego.
 
 **Variación entre años.** Lo que pude abrir solo da rangos parciales:
 - el Kc del maíz de secano tiene un desvío de ±0,20;
