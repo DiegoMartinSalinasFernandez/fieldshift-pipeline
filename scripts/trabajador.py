@@ -469,6 +469,10 @@ def correr(a) -> None:
     DIR.mkdir(parents=True, exist_ok=True)
     STOP.unlink(missing_ok=True)
     HASH_INICIO.update(hash_codigo(None))
+    # una tarea tomada por esta máquina al arrancar quedó de una corrida cortada (parar ya, corte de luz): vuelve a la cola
+    for _, m, _ in tareas.todas():
+        if m.get("estado") == "tomada" and m.get("maquina") == maquina:
+            anotar(str(m.get("id")), maquina, "libre", "soltada al arrancar: quedó tomada de una corrida anterior de esta máquina")
     fin = ahora() + dt.timedelta(hours=a.horas)
     log(f"arranca {maquina} (plan {plan}, estados {','.join(estados) or '-'}) hasta las {fin:%H:%M}; "
         f"{a.modelo}/{a.effort}, {a.minutos_tarea} min por tarea")

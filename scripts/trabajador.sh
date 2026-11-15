@@ -32,7 +32,7 @@ case "$accion" in
     mkdir -p "$dir"; echo "parado a mano" > "$dir/STOP"
     if [ "${2:-}" = "ya" ] && corriendo; then
       kill -TERM -- "-$(cat "$pidf")" 2>/dev/null || kill -TERM "$(cat "$pidf")"
-      echo "Trabajador cortado ya. La tarea en curso queda tomada: soltala con scripts/tareas.py soltar."
+      echo "Trabajador cortado ya. La tarea en curso vuelve a la cola cuando el trabajador arranque de nuevo."
     else
       echo "Listo: el trabajador termina la tarea en curso y se detiene."
     fi
