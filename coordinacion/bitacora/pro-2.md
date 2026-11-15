@@ -17,3 +17,4 @@
 - 02:45 T027: tomada por el trabajador
 - 02:50 T027: terminada, PR #19
 - 02:50 T029: tomada por el trabajador
+- 02:59 T029: terminada, PR #25
