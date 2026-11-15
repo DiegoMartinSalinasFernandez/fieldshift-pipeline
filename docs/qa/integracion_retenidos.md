@@ -73,3 +73,26 @@ for b in T128 T129 T124 T130 T127 T125 T132 T133 T134 T135 T137 T136 T138 T142 T
 done
 python -X utf8 -m pytest -q tests
 ```
+
+## Rama real y PR retenidos nuevos (2026-11-15, tercera sesión de pro-2)
+
+max-1 ya armó la rama real `integracion/retenidos` (PR en borrador 135) con los PR 117–132. Desde entonces
+apareció un PR retenido nuevo:
+
+| PR | Rama | Fila de `para_decidir.md` | Archivos | Choques | Pruebas |
+|---|---|---|---|---|---|
+| 134 | `tarea/T141-auto` | #21 (costos del ERS por condado, cambia el esquema de `economia_anual.csv`) | `docs/datasets/economia.md`, `docs/datasets/glosario_en.csv`, `docs/datasets/glosario_en.py`, `src/economia/process.py`, `tests/test_economia_condado.py` | ninguno: `git merge-tree` sobre `origin/integracion/retenidos` (d92f9cd) da el árbol `2a4377d2b5` sin conflictos | **430 passed, 3 skipped, 1 xfailed** |
+
+Todas las demás ramas `tarea/T1xx-auto` retenidas ya están contenidas en `origin/integracion/retenidos`
+(comprobado con `git merge-base --is-ancestor`). Las tareas T143–T147 todavía no tienen rama.
+
+Para sumarlo (necesita permiso para cambiar de rama y hacer push; en esta sesión no lo hubo):
+
+```bash
+git switch integracion/retenidos && git pull --ff-only
+git merge --no-ff --no-edit origin/tarea/T141-auto
+python -X utf8 -m pytest -q tests     # esperado: 430 passed, 3 skipped, 1 xfailed
+git push
+```
+
+Y agregar al cuerpo del PR 135 la fila de la tabla de arriba.
