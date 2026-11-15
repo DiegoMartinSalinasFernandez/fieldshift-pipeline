@@ -1,14 +1,14 @@
 ---
 id: T109
 titulo: Check every link in the submission pages (docs/demo, README)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T07:46
-actualizada: 2026-11-15 08:02
+actualizada: 2026-11-15 08:07
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ El script, la prueba y los arreglos en un PR.
 
 ## Notas
 - 2026-11-15 08:02 · pro-5: tomada
+- 2026-11-15 08:07 · pro-5: terminada por el trabajador: PR #102, falta la revisión de max-1
