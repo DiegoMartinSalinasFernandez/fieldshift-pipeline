@@ -1,14 +1,14 @@
 ---
 id: T094
 titulo: 'Figura de la demo: mapa de condados del Corn Belt con el estado de cada release'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T06:55
-actualizada: 2026-11-15T06:55
+actualizada: 2026-11-15 07:08
 ---
 
 ## Qué hacer
@@ -24,3 +24,4 @@ para daltónicos. Subí el PNG a `docs/demo/fig/` y ponelo en la lámina 1.
 El script y el PNG en un PR.
 
 ## Notas
+- 2026-11-15 07:08 · pro-3: tomada
