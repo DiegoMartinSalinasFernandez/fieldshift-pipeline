@@ -1,15 +1,15 @@
 ---
 id: T071
 titulo: 'Arreglo: Oglala Lakota (SD) en las regiones del ERS de economia'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - SD
 depende_de: []
 rama: null
 creada: 2026-11-15 05:42
-actualizada: 2026-11-15 05:42
+actualizada: 2026-11-15 06:07
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ de "substantial changes to counties") y aplicá lo mismo solo si afectan a esos 
 El arreglo y la prueba en un PR, que pasen en Windows y en Linux.
 
 ## Notas
+- 2026-11-15 06:07 · pro-2: tomada
