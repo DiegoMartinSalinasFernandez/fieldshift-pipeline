@@ -1,7 +1,7 @@
 ---
 id: T116
 titulo: Revisar los scripts de Crop Progress por el error de lectura que corrigió T113
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-5
 estados:
@@ -14,7 +14,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T08:23
-actualizada: 2026-11-15 08:24
+actualizada: 2026-11-15 08:40
 ---
 
 ## Qué hacer
@@ -39,3 +39,4 @@ Los arreglos (o la constancia de que no hacían falta) en un PR.
 
 ## Notas
 - 2026-11-15 08:24 · pro-5: tomada
+- 2026-11-15 08:40 · pro-5: terminada por el trabajador: PR #107, falta la revisión de max-1
