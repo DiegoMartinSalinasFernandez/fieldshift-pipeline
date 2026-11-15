@@ -5,3 +5,4 @@
 - 02:07 T009: tomada por el trabajador
 - 02:10 T009: terminada, PR #3
 - 02:10 T010: tomada por el trabajador
+- 02:16 T010: terminada, PR #5
