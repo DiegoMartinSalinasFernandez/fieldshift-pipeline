@@ -31,7 +31,7 @@ tiene el error, corregilo sin cambiar lo que hace en los casos buenos, volvé a 
 Aprovechá para corregir en `fechas_nd.md` la fracción de julio de la floración de ND (0,75 → 0,82 con la
 convención de días continuos que usa la ventana de la soja; lo señaló T113).
 
-No toques `src/`: `src/cultivos` usa la API de Quick Stats, no los reportes.
+No toques `src/`: `src/cultivos` lee la base completa de Quick Stats (`qs.crops_<fecha>.txt.gz`), no los reportes.
 
 ## Terminada cuando
 
