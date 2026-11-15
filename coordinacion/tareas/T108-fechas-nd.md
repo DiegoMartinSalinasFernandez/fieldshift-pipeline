@@ -1,15 +1,15 @@
 ---
 id: T108
 titulo: 'Research: calendario de siembra y cosecha de Dakota del Norte (para cultivos_estado.csv)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados:
 - ND
 depende_de: []
 rama: null
 creada: 2026-11-15T07:32
-actualizada: 2026-11-15T07:32
+actualizada: 2026-11-15 07:54
 ---
 
 ## Qué hacer
@@ -25,3 +25,4 @@ sección 8 del CLAUDE.md. Escribí `docs/research/fechas_nd.md`.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 07:54 · pro-3: tomada
