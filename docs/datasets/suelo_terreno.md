@@ -75,7 +75,7 @@ Paquete `suelo_terreno` de Field Shift (CLAUDE.md §6.5): suelo (SSURGO) y terre
   dentro de cada condado, en lugar de `muacres`; un condado partido entre dos áreas (Barren, Edmonson,
   Hart, Whitley en KY) junta las unidades de ambas. Se supone que la superficie tabular de SDA
   representa bien la del raster (no se contó en píxeles). Las áreas `XX` + código de condado y las de
-  MN siguen igual que antes: en MN y KS se comparó contra SDA el reparto viejo y el nuevo (2026-11-15)
+  MN siguen igual que antes: en OH, NE, MN y KS se comparó contra SDA el reparto viejo y el nuevo (2026-11-15)
   y dan idéntico. Un área sin condado ni solape queda afuera con un aviso.
 - Horizontes 0–30 cm: media ponderada por el espesor de cada horizonte dentro de la capa. La textura
   usa solo horizontes con arena, limo y arcilla que suman 100 ± 3 (quedan fuera los horizontes
