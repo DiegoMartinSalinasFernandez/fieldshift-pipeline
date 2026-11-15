@@ -17,6 +17,12 @@ GeoPackage y la tabla de abajo desde `data/raw` y `data/reference`, sin bajar na
 - **NASA NASADEM** 1": las teselas ya bajadas por `suelo_terreno` (`data/raw/suelo_terreno/nasadem/`).
 - **USGS 3DEP** (bare earth, ImageServer `3DEPElevation`): recortes de 10 m por lote en `data/raw/lotes/3dep/`.
 - **AgTile-US** (Valayamkunnath et al. 2020): `data/raw/lotes/agtile/AgTile-US-TIFF.zip` (figshare, CC BY 4.0).
+- **SEETileDrain** (Wan, Kendall, Rapp y Hyndman 2024, *Sci. Total Environ.*, DOI 10.1016/j.scitotenv.2024.175283;
+  T131, pendiente del OK de `para_decidir.md` #5): `SEETileDrain_maps.zip` de HydroShare (DOI
+  10.4211/hs.4c8af0c89d2b4686808bcf9c6f7c0da3, 3.119.442.255 bytes, MD5 `0200fe57a8540d89118dbfc935a65bc9`),
+  **CC BY 4.0** (citar a los autores y el DOI de HydroShare). Recortes por lote en
+  `data/raw/lotes/seetiledrain/{prob,clase}_<id_lote>.tif` con `src/lotes/drenaje.py` (o
+  `python src/lotes/download.py seetiledrain`; `seetiledrain_zip` baja antes el zip entero).
 - **HLS S30 v2.0 2015-2019**: NASA LP DAAC (CMR-STAC `LPCLOUD`, Earthdata), mismos recortes que los de Planetary Computer.
 - **Censo Agropecuario (riego)**: `data/processed/cultivos/practicas_censo.csv`, censo 2022.
 
@@ -119,6 +125,24 @@ GeoPackage y la tabla de abajo desde `data/raw` y `data/reference`, sin bajar na
   está corrida ~11 m en x y ~8 m en y respecto de la nuestra: `drenado_canos` es el valor de la celda AgTile que
   contiene el centro del píxel (vecino más cercano, sin fracción). Es un mapa modelado a partir de suelo, pendiente
   y uso agrícola (no una observación del lote): sirve como indicio, no como verdad de campo.
+- **SEETileDrain** (T131): el zip trae `probability_tile_mosaic.tif` (probabilidad, float, 0-1) y
+  `SEETileDrain.tif` (clase publicada, int32, 0/1), los dos en **EPSG:4326** con celda de 0,000269495° (la "30 m" de Google
+  Earth Engine: ~30 m norte-sur y ~22 m este-oeste a 42° N), 93.431 × 41.466
+  celdas, en tiras de una fila sin compresión interna (~15,5 GB cada uno al descomprimir). Como el zip usa deflate y
+  no admite acceso aleatorio, `drenaje.py` infla cada miembro **en flujo** y guarda solo las filas del recuadro de
+  cada lote (más ~5 celdas de margen) en la grilla original, **sin remuestrear**: nunca se escribe el TIFF entero.
+  Sin el zip local, lo infla pidiendo rangos HTTP a HydroShare y corta en la última fila necesaria (para lotes en
+  IA, ~60 % de cada miembro: ~35 MB de la clase y ~1,8 GB de la probabilidad). **Remuestreo**: cada píxel de 30 m
+  (centro en EPSG:5070) toma la celda SEETileDrain que contiene su centro (vecino más cercano), igual que
+  `drenado_canos` con AgTile-US; no se promedian celdas ni se reproyecta el raster. Como las dos grillas no
+  coinciden, una celda SEETileDrain puede repetirse en dos píxeles vecinos o quedar sin usar.
+  `tile_prob_seetiledrain` es la probabilidad del random forest (redondeada a 4 decimales; vacía fuera de 0-1 o en
+  nodata). `tile_seetiledrain` es la **capa binaria publicada** por los autores, no un umbral nuestro sobre la
+  probabilidad; el paper usa 0,5 como corte y los controles de calidad muestran cuánto coincide con
+  `prob >= 0,5`. Es una **estimación de modelo de 2017** (una sola fecha), no una observación: los puntos "sin tile"
+  del entrenamiento salen de AgTile-US, y a nivel condado sobreestima en los condados muy drenados (Des Moines Lobe,
+  donde están 3 lotes) (`docs/research/drenaje_tile.md`). Con la clase, la celda vale 0 también fuera de las zonas
+  agrícolas: 0 no prueba "sin caños".
 - **HLS S30 2015-2019 desde LP DAAC**: Planetary Computer no tiene `hls2-s30` antes de 2020 en la zona; esos años se
   buscan en CMR-STAC (`LPCLOUD`, colección `HLSS30_2.0`, filtro de nubes < 80 % del lado del cliente) y se leen los
   COG de `data.lpdaac.earthdatacloud.nasa.gov` con Earthdata. Mismo recorte, mismas bandas y mismo Fmask que en PC
@@ -138,6 +162,8 @@ GeoPackage y la tabla de abajo desde `data/raw` y `data/reference`, sin bajar na
 - HLS v2 S30 en Planetary Computer (`hls2-s30`) solo tiene escenas desde 2020 en la zona; 2015-2019 sale de LP
   DAAC (Supuestos) y la descarga de esos años es parcial (primero la escena más despejada de cada lote-año). CMR-STAC
   no tiene escenas S30 de marzo a noviembre de 2015 en el recuadro.
+- **SEETileDrain** (T131): columnas nuevas de `drenaje_px.csv` pendientes del OK de `para_decidir.md` #5; hasta que se
+  bajen los recortes de los 10 lotes quedan vacías. Una sola fecha (2017) para toda la serie 2000-2025.
 - `napa_min_cm` vacío en las unidades sin napa dentro de los 200 cm (`wtdepannmin` nulo en SSURGO).
 
 ## Diccionario de columnas
@@ -291,6 +317,8 @@ GeoPackage y la tabla de abajo desde `data/raw` y `data/reference`, sin bajar na
 | clima_lote_anual.csv | dias_lluvia_gt50_abr_may_imerg | días de abril-mayo con IMERG > 50 mm | días | GPM IMERG Final vía POWER (IMERG_PRECTOT) |  | 2001 | 2025 | 3.85 |
 | clima_lote_anual.csv | sm_rootzone_temporada_m3m3 | SMAP zona radicular media abril-septiembre, celda de 9 km del centroide | m³/m³ | NASA SMAP L4 vía USDA Crop-CASMA (paquete agua) |  | 2015 | 2025 | 57.69 |
 | drenaje_px.csv | drenado_canos | 1 si la celda AgTile-US que contiene el centro del píxel está drenada con caños | adimensional | Valayamkunnath et al. 2020 (AgTile-US) |  |  |  | 0.00 |
+| drenaje_px.csv | tile_prob_seetiledrain | probabilidad de drenaje con caños de la celda SEETileDrain (2017, ~30 m, EPSG:4326) que contiene el centro del píxel | adimensional | Wan et al. 2024 (SEETileDrain) |  |  |  |  |
+| drenaje_px.csv | tile_seetiledrain | clase publicada de SEETileDrain (1 = drenado con caños) de la celda que contiene el centro del píxel | adimensional | Wan et al. 2024 (SEETileDrain) |  |  |  |  |
 <!-- TABLA:FIN -->
 
 ## Controles de calidad
