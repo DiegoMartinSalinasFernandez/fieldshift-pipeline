@@ -1,14 +1,14 @@
 ---
 id: T105
 titulo: 'Research: ¿MOD11A2 (LST) también tiene huecos en Planetary Computer?'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T07:32
-actualizada: 2026-11-15T07:32
+actualizada: 2026-11-15 07:39
 ---
 
 ## Qué hacer
@@ -25,3 +25,4 @@ Formato de research de la sección 8 del CLAUDE.md. Escribí `docs/research/lst_
 El research en un PR.
 
 ## Notas
+- 2026-11-15 07:39 · pro-3: tomada
