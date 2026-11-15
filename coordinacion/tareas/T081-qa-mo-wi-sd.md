@@ -1,7 +1,7 @@
 ---
 id: T081
 titulo: Control de calidad de MO, WI y SD con el release publicado
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-3
 estados:
@@ -12,7 +12,7 @@ depende_de:
 - T062
 rama: null
 creada: 2026-11-15T06:18
-actualizada: 2026-11-15 10:52
+actualizada: 2026-11-15 10:59
 ---
 
 ## Qué hacer
@@ -39,3 +39,4 @@ El informe en un PR.
 
 ## Notas
 - 2026-11-15 10:52 · pro-3: tomada
+- 2026-11-15 10:59 · pro-3: terminada por el trabajador: PR #146, falta la revisión de max-1
