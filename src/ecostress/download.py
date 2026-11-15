@@ -321,7 +321,14 @@ def bajar_mes(token: str, mes: str, puntos: pd.DataFrame, workers: int, limite: 
     return True
 
 
+def asegurar_manifest(man: Path) -> None:
+    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
+    if not man.exists() or man.stat().st_size == 0:
+        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
+
+
 def registrar(p: Path, mes: str) -> None:
+    asegurar_manifest(MANIFEST)
     with open(MANIFEST, encoding="utf-8", newline="") as fh:
         filas = list(csv.reader(fh))
     rel = p.relative_to(REPO).as_posix()

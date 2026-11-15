@@ -100,9 +100,16 @@ def correr(tareas, hilos: int) -> None:
     log("fin")
 
 
+def asegurar_manifest(man: Path) -> None:
+    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
+    if not man.exists() or man.stat().st_size == 0:
+        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
+
+
 def manifest() -> None:
     """Upsert por archivo en manifest.csv (conserva filas y fin de línea existentes)."""
     mpath = RAIZ / "manifest.csv"
+    asegurar_manifest(mpath)
     texto = mpath.read_bytes().decode("utf-8")
     eol = "\r\n" if "\r\n" in texto else "\n"
     existentes = {row["archivo"] for row in csv.DictReader(texto.splitlines())}
