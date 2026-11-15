@@ -22,6 +22,7 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
 | produccion_anual.csv | sup_sembrada_ha | sup_sembrada_ac × 0,4047 (acres_a_ha) | ha | Derivada de NASS Quick Stats | Y01 | 2000 | 2025 | 24.2 |
 | produccion_anual.csv | ratio_cosechada | sup_cosechada_ac / sup_sembrada_ac | fracción | Derivada de NASS Quick Stats | Y05 | 2000 | 2025 | 24.2 |
 | produccion_anual.csv | flag_nass | Código original de NASS cuando el valor está oculto: (D), (Z), (NA)… (separados por ;) | texto | USDA NASS Quick Stats (SURVEY, condado) |  | 2013 | 2013 | 98.5 |
+| produccion_anual.csv | fila_nass | 1 = la fila viene de NASS; 0 = NASS no publicó ese condado, año y cultivo y la fila se completó vacía (T138) | 0/1 | Derivada de NASS Quick Stats |  | 2000 | 2025 | 0.0 |
 | fenologia_estado.csv | doy_50_sembrado | Día del año en que se cruza el 50 % sembrado (PCT PLANTED, interpolado) | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) | CT03 | 2000 | 2025 | 0.6 |
 | fenologia_estado.csv | doy_50_emergido | Día del año en que se cruza el 50 % emergido (PCT EMERGED) | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) |  | 2000 | 2025 | 1.3 |
 | fenologia_estado.csv | doy_50_floracion | Día del año del 50 % en floración (maíz PCT SILKING, soja PCT BLOOMING) | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) | CT05 | 2000 | 2025 | 0.0 |
@@ -248,3 +249,27 @@ MN 87, KS 105. Script: `docs/datasets/cobertura_nass.py` (solo lee; la tabla es 
 - En OH, NE y MN, el número de condados con `sup_sembrada_ac` de maíz y soja de `produccion_anual.csv`
   (release `datos-oh-ne-mn`) coincide con el de Quick Stats en todos los años. IA, IL, IN y KS no tienen
   release de `cultivos` en este repo: sus columnas salen solo de Quick Stats.
+
+## Grilla completa de `produccion_anual.csv` (T138)
+
+> Retenido hasta el OK del humano a la fila 7 de `coordinacion/para_decidir.md`.
+
+- `produccion_anual.csv` tiene **una fila por cada `fips` de `condados.csv` × `anio` del período ×
+  cultivo de `config.yaml`** (`src/cultivos/grilla.py`, llamado desde `process.py`). Donde NASS no publica
+  el condado (lo suma a "OTHER (COMBINED) COUNTIES", ver la sección de cobertura), la fila va con todas las
+  variables vacías. No se rellena nada: una celda vacía es "NASS no publicó", nunca un 0.
+- **`fila_nass`** (última columna): 1 si la fila viene de NASS (tiene al menos una variable o un
+  `flag_nass`), 0 si se completó. `flag_nass` y el resto de las columnas no cambian.
+- Se completan también los cultivos que NASS no estima en todo un estado (por ejemplo trigo de invierno en
+  Minnesota e Iowa, ningún año): quedan como filas con `fila_nass` = 0.
+- Para entrenar con el rendimiento, filtrar `rend_bu_ac` no vacío (como antes). Para saber qué falta,
+  filtrar `fila_nass` = 0. Las filas completadas no tienen dato del cultivo: no sirven para saber si el
+  condado lo sembró (para eso está `rotacion_anual.csv`).
+- `src/merge.py` arma `tabla_anual.csv` con las filas de `produccion_anual.csv`: con la grilla, la tabla
+  unida también tiene una fila por condado × año × cultivo.
+- Sobre un `produccion_anual.csv` ya hecho (por ejemplo, el de un release) se corre solo la grilla, que
+  reescribe el archivo y es idempotente:
+  `FIELDSHIFT_ESTADOS=OH,NE,MN .venv/bin/python -X utf8 src/cultivos/grilla.py <csv> --condados <condados.csv>`.
+- Con el release `datos-oh-ne-mn` (268 condados, 26 años, 6 cultivos): de 23.016 filas pasa a 41.808
+  (18.792 completadas: OH 6.893, NE 5.786, MN 6.113). Por año, las completadas van de 439 (2013) a 1.248
+  (2024). `validar_csv()` pasa sin errores.
