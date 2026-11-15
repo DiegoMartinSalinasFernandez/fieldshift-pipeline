@@ -35,6 +35,17 @@ URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
 PARAMS = ["T2M", "T2M_MAX", "T2M_MIN", "PRECTOTCORR", "RH2M", "WS2M",
           "ALLSKY_SFC_SW_DWN", "GWETTOP", "GWETROOT", "GWETPROF"]
 
+# Versión de la API (T123). La respuesta en CSV no la trae en el texto, pero sí en el encabezado HTTP
+# `x-app-version` (p. ej. "v2.10.3"); en JSON viene en header.api.version. Ver docs/research/power_version.md.
+# Si un archivo ya estaba en raw sin fila en el manifest, la versión con la que se bajó no se conoce.
+VERSION_DESCONOCIDA = "v2 (API, versión no registrada)"
+
+
+def version_api(r) -> str:
+    """Texto de la columna `version` del manifest a partir de la respuesta HTTP de POWER."""
+    v = (r.headers.get("x-app-version") or "").strip()
+    return f"POWER API {v}" if v else VERSION_DESCONOCIDA
+
 
 def rango_fechas():
     cfg = cargar_config()["periodo"]
@@ -49,9 +60,10 @@ def consulta(lat, lon, ini, fin):
 
 
 def bajar(fips, lat, lon, ini, fin):
+    """Devuelve (fips, estado, url, version); url y version son None si no se bajó."""
     dest = RAW / f"power_diario_{fips}.csv"
     if dest.exists():
-        return fips, "ya estaba", None
+        return fips, "ya estaba", None, None
     INTERIM.mkdir(parents=True, exist_ok=True)
     part = INTERIM / f"power_diario_{fips}.csv.part"
     q = consulta(lat, lon, ini, fin)
@@ -70,11 +82,11 @@ def bajar(fips, lat, lon, ini, fin):
             RAW.mkdir(parents=True, exist_ok=True)
             os.replace(part, dest)
             url = requests.Request("GET", URL, params=q).prepare().url
-            return fips, "bajado", url
+            return fips, "bajado", url, version_api(r)
         except Exception as e:  # noqa: BLE001
             err = e
             time.sleep(3 * (intento + 1))
-    return fips, f"error: {err}", None
+    return fips, f"error: {err}", None, None
 
 
 def asegurar_manifest(man: Path) -> None:
@@ -106,11 +118,11 @@ def main():
         futs = [ex.submit(bajar, r.fips, r.lat_centroide, r.lon_centroide, ini, fin)
                 for r in cond.itertuples()]
         for i, fu in enumerate(as_completed(futs), 1):
-            fips, estado, url = fu.result()
+            fips, estado, url, version = fu.result()
             if url:
                 filas.append(["clima", f"data/raw/clima/power/power_diario_{fips}.csv", "NASA POWER",
                               "POWER daily point API, community AG (" + ",".join(PARAMS) + ")",
-                              "v2 (API)", hoy, url])
+                              version, hoy, url])
             if estado.startswith("error"):
                 errores.append((fips, estado))
             print(f"[{i}/{len(futs)}] {fips} {estado}", flush=True)
@@ -126,7 +138,7 @@ def main():
         url = requests.Request("GET", URL, params=consulta(r.lat_centroide, r.lon_centroide, ini, fin)).prepare().url
         pend.append(["clima", p.relative_to(REPO).as_posix(), "NASA POWER",
                      "POWER daily point API, community AG (" + ",".join(PARAMS) + ")",
-                     "v2 (API)", dt.date.fromtimestamp(p.stat().st_mtime).isoformat(), url])
+                     VERSION_DESCONOCIDA, dt.date.fromtimestamp(p.stat().st_mtime).isoformat(), url])
     registrar(pend)
     print(f"errores: {len(errores)} {errores[:5]}")
     bajar_imerg()
@@ -149,9 +161,10 @@ def consulta_imerg(lat, lon):
 
 
 def bajar_celda(lat, lon):
+    """Devuelve (destino, estado, version); version es None si no se bajó."""
     dest = RAW_IM / nombre_celda(lat, lon)
     if dest.exists():
-        return dest, "ya estaba"
+        return dest, "ya estaba", None
     INTERIM_IM.mkdir(parents=True, exist_ok=True)
     part = INTERIM_IM / (dest.name + ".part")
     q = consulta_imerg(lat, lon)
@@ -170,18 +183,18 @@ def bajar_celda(lat, lon):
             part.write_bytes(r.content)
             RAW_IM.mkdir(parents=True, exist_ok=True)
             os.replace(part, dest)
-            return dest, "bajado"
+            return dest, "bajado", version_api(r)
         except Exception as e:  # noqa: BLE001
             err = e
             time.sleep(3 * (intento + 1))
-    return dest, f"error: {err}"
+    return dest, f"error: {err}", None
 
 
-def fila_manifest_imerg(p: Path):
+def fila_manifest_imerg(p: Path, version: str | None = None):
     lat, lon = celda_de_nombre(p.name)
     url = requests.Request("GET", URL, params=consulta_imerg(lat, lon)).prepare().url
     return ["clima", p.relative_to(REPO).as_posix(), "NASA POWER (GPM IMERG)", PRODUCTO_IM,
-            "POWER API v2.10.3", dt.date.fromtimestamp(p.stat().st_mtime).isoformat(), url]
+            version or VERSION_DESCONOCIDA, dt.date.fromtimestamp(p.stat().st_mtime).isoformat(), url]
 
 
 def bajar_imerg(hilos: int = 8):
@@ -189,19 +202,21 @@ def bajar_imerg(hilos: int = 8):
     celdas = celdas_imerg()[["lat", "lon"]].drop_duplicates().sort_values(["lat", "lon"])
     pend = [(r.lat, r.lon) for r in celdas.itertuples() if not (RAW_IM / nombre_celda(r.lat, r.lon)).exists()]
     print(f"IMERG: {len(celdas)} celdas, {len(pend)} por bajar", flush=True)
-    errores = []
+    errores, versiones = [], {}
     LOG_IM.parent.mkdir(parents=True, exist_ok=True)
     with ThreadPoolExecutor(max_workers=hilos) as ex, open(LOG_IM, "a", encoding="utf-8") as log:
         futs = [ex.submit(bajar_celda, la, lo) for la, lo in pend]
         for i, fu in enumerate(as_completed(futs), 1):
-            dest, estado = fu.result()
+            dest, estado, version = fu.result()
+            if version:
+                versiones[dest.name] = version
             if estado.startswith("error"):
                 errores.append((dest.name, estado))
             if i % 50 == 0 or estado.startswith("error"):
                 log.write(f"{dt.datetime.now():%H:%M:%S} [{i}/{len(futs)}] {dest.name} {estado}\n")
                 log.flush()
                 print(f"IMERG [{i}/{len(futs)}] {estado}", flush=True)
-    registrar([fila_manifest_imerg(p) for p in sorted(RAW_IM.glob("imerg_*.csv"))])
+    registrar([fila_manifest_imerg(p, versiones.get(p.name)) for p in sorted(RAW_IM.glob("imerg_*.csv"))])
     print(f"IMERG errores: {len(errores)} {errores[:5]}")
 
 
