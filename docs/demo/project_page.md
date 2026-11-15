@@ -14,7 +14,8 @@ Rules for whoever pastes this into the form:
 - **Coverage caveat.** Most data cards and the validation table describe the **first batch: Iowa, Illinois and
   Indiana, 293 counties** (`docs/datasets/base.md`, `clima.md`, `validacion.md`). The 7-state, 666-county scope
   comes from `CLAUDE.md` §2 and `docs/datasets/README_en.md` §1. Before claiming 666 counties as delivered,
-  check that the releases for OH, NE, MN and KS are published. **[TBD: confirm]**
+  check that the releases for OH, NE, MN and KS are published: `docs/demo/coverage.md` lists the published
+  releases with counted numbers. **[TBD: confirm]**
 - **Model results.** This repo builds the data only and trains no models (`CLAUDE.md`). Any claim about model
   accuracy or recommended rotations has to come from the ML or frontend team. **[TBD]**
 - Field order follows the form. The demo text itself is in `docs/demo/slides.md` (task T056).
@@ -67,7 +68,8 @@ project from Global Judging (`space_apps_criterios.md` §2). The draft is in `do
 - **Code:** **[TBD: public GitHub repository URL]**. The repo is public (`CLAUDE.md` §1, rule 8).
 - **Data:** processed CSVs are published as GitHub Releases, one per group of states (`datos-<states>`, made by
   `scripts/entregar.py`), plus a separate field-level release (`fieldshift_lotes_v1`, `CLAUDE.md` §6.6).
-  **[TBD: release URLs]**
+  What is published today, with states, counties, years and rows counted from the zips:
+  `docs/demo/coverage.md` (refresh with `docs/demo/coverage.py`). **[TBD: release URLs]**
 - **English documentation for judges:** `docs/datasets/README_en.md` (data summary, sources, quality control,
   limitations). **[TBD: link]**
 - **Tool / frontend:** **[TBD: link, if there is one]**.
