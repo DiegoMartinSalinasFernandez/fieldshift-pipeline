@@ -118,8 +118,9 @@ def clasificar(enlace: Enlace, repo: Path, base_github: str | None) -> tuple[str
         subidas = sum(1 for p in partes if p == "..")
         resto = [p for p in partes if p not in ("..", ".")]
         profundidad = len(rel_raiz.parts)
-        if base_github and resto and resto[0] in RUTAS_GITHUB and subidas == profundidad + 2:
-            return "release" if resto[0] == "releases" else "externa", base_github + "/" + "/".join(resto)
+        if resto and resto[0] in RUTAS_GITHUB and subidas == profundidad + 2:
+            base = base_github or "https://github.com/<sin-remoto-origin>"
+            return "release" if resto[0] == "releases" else "externa", base + "/" + "/".join(resto)
         return "relativo", str(destino)
     return "relativo", str(destino)
 
@@ -153,9 +154,9 @@ def archivos_por_defecto(repo: Path = REPO) -> list[Path]:
     return [repo / "README.md", *sorted((repo / "docs" / "demo").glob("**/*.md"))]
 
 
-def revisar(archivos: list[Path], repo: Path = REPO, con_red: bool = True, timeout_externa: int = 10,
+def revisar(archivos: list[Path], repo: Path = REPO, con_red: bool = True, timeout_externa: int = 20,
             timeout_release: int = 30, base_github: str | None = None) -> list[Resultado]:
-    if base_github is None and con_red:
+    if base_github is None:
         base_github = url_repo_github(repo)
     resultados: list[Resultado] = []
     cache: dict[str, tuple[bool, str]] = {}
@@ -186,7 +187,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("archivos", nargs="*", help="(por defecto README.md y docs/demo/**/*.md)")
     ap.add_argument("--sin-red", action="store_true", help="solo enlaces relativos e imágenes")
-    ap.add_argument("--timeout", type=int, default=10, help="segundos por URL externa (por defecto 10)")
+    ap.add_argument("--timeout", type=int, default=20, help="segundos por URL externa (por defecto 20: algunos DOI tardan más de 10)")
     args = ap.parse_args(argv)
 
     archivos = [Path(a).resolve() for a in args.archivos] or archivos_por_defecto()
