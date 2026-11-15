@@ -41,3 +41,4 @@
 - 09:03 T122: tomada por el trabajador
 - 09:05 T122: terminada, PR #113
 - 09:05 T123: tomada por el trabajador
+- 09:08 T123: terminada, PR #115
