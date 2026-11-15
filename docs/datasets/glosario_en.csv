@@ -106,6 +106,10 @@ cultivos,practicas_censo.csv,pct_cobertura,"Cover crop planted area (excl. CRP) 
 cultivos,practicas_censo.csv,pct_labranza_cero,"No-till area / cropland × 100 (Census short_desc CONSERVATION TILLAGE, NO-TILL / AG LAND, CROPLAND)",%,USDA NASS Census of Agriculture (Quick Stats CENSUS),
 cultivos,practicas_censo.csv,pct_drenaje_tile,"Tile-drained area / cropland × 100 (Census short_desc DRAINED BY TILE / AG LAND, CROPLAND)",%,USDA NASS Census of Agriculture (Quick Stats CENSUS),
 cultivos,practicas_censo.csv,pct_riego,"Irrigated land / cropland × 100 (Census short_desc AG LAND, IRRIGATED / AG LAND, CROPLAND)",%,USDA NASS Census of Agriculture (Quick Stats CENSUS),
+cultivos,fenologia_estado.csv,doy_50_espigado,Oats and winter wheat: day of year of 50 % headed (PCT HEADED),day of year,"USDA NASS Quick Stats Crop Progress (SURVEY, state)",
+cultivos,fenologia_estado.csv,doy_50_sembrado_otono,Winter wheat: day of year (of anio − 1) of 50 % planted in the fall,day of year,"USDA NASS Quick Stats Crop Progress (SURVEY, state)",
+cultivos,fenologia_estado.csv,doy_50_emergido_otono,Winter wheat: day of year (of anio − 1) of 50 % emerged in the fall,day of year,"USDA NASS Quick Stats Crop Progress (SURVEY, state)",
+cultivos,fenologia_estado.csv,flag_hueco_50,Stages (separated by ;) whose 50 % crossing was interpolated between reports more than 14 days apart,text,Derived from NASS Quick Stats,
 economia,economia_anual.csv,precio_usd_bu,"Price received by farmers, marketing-year average (NASS PRICE RECEIVED, MARKETING YEAR, state level)",USD/bu,USDA NASS Quick Stats (qs.crops bulk file),MK01
 economia,economia_anual.csv,valor_produccion_usd_ac,"Gross value of production per planted acre (ERS 'Total, gross value of production', regions weighted by planted area)",USD/ac,USDA ERS Commodity Costs and Returns,
 economia,economia_anual.csv,costo_operativo_usd_ac,"Operating costs per planted acre (ERS 'Total, operating costs', regions weighted by planted area)",USD/ac,USDA ERS Commodity Costs and Returns,MK03

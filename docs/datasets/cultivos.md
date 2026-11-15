@@ -248,3 +248,46 @@ MN 87, KS 105. Script: `docs/datasets/cobertura_nass.py` (solo lee; la tabla es 
 - En OH, NE y MN, el número de condados con `sup_sembrada_ac` de maíz y soja de `produccion_anual.csv`
   (release `datos-oh-ne-mn`) coincide con el de Quick Stats en todos los años. IA, IL, IN y KS no tienen
   release de `cultivos` en este repo: sus columnas salen solo de Quick Stats.
+
+## Fenología de avena y trigo de invierno (T135)
+
+Pendiente del OK de `coordinacion/para_decidir.md` #8. Código: `src/cultivos/fenologia.py`.
+
+- `fenologia_estado.csv` suma las filas `cultivo = avena` (`OATS`; Crop Progress la informa en
+  OH, NE y MN, y en IA/IL/IN si viene en el archivo) y `cultivo = trigo_invierno` (`WHEAT` /
+  `CLASS_DESC=WINTER`; OH, NE y KS, no MN). Etapas: PLANTED, EMERGED, HEADED y HARVESTED, todas
+  con `UTIL_PRACTICE_DESC=ALL UTILIZATION PRACTICES` (supuesto: no se pudo mirar el archivo crudo
+  al escribir el código; si alguna etapa no aparece, revisar ese filtro).
+- Las filas y columnas de maíz y soja no cambian. Se agregan cuatro columnas al final, vacías
+  donde no corresponden:
+  - `doy_50_espigado`: 50 % espigado (HEADED) de avena y trigo. Para ellos `doy_50_floracion`
+    queda vacía (las dos etapas no son lo mismo).
+  - `doy_50_sembrado_otono` y `doy_50_emergido_otono`: solo trigo de invierno.
+  - `flag_hueco_50`: ver abajo.
+- **Año del trigo de invierno**: `anio` es el año de la **cosecha**, como en el resto del
+  proyecto. Las semanas de siembra y emergencia con `WEEK_ENDING` de agosto a diciembre van al
+  `anio` siguiente; sus días se guardan como día del año calendario del otoño (de `anio − 1`)
+  en las columnas `_otono`, para no mezclarlos con días de primavera ni usar días negativos
+  (el rango 1–366 y la coherencia sembrado ≤ emergido ≤ floración ≤ cosechado del spec siguen
+  valiendo). Para el trigo, `doy_50_sembrado` y `doy_50_emergido` quedan vacías. El año se
+  toma de `WEEK_ENDING` y no de `YEAR`, porque no se verificó qué `YEAR` pone Quick Stats a las
+  filas de otoño. La siembra del otoño de 2025 (cosecha 2026) queda fuera del período.
+- **`flag_hueco_50`**: lista de etapas (`sembrado`, `emergido`, `floracion`, `cosechado`,
+  `espigado`, `sembrado_otono`, `emergido_otono`, separadas por `;`) cuyo cruce del 50 % se
+  interpoló entre dos semanas con dato separadas por más de 14 días. Las semanas `(NA)` cuentan
+  como faltantes. Caso conocido: el cierre del gobierno federal de 2025, sin reportes de las
+  semanas del 5 de octubre al 9 de noviembre (cosecha de maíz y soja, siembra y emergencia del
+  trigo para 2026). Si el 50 % cae justo en una semana con dato, no se marca. Vacía si ninguna.
+- Avena de Nebraska: algunos años el primer reporte ya supera el 50 % (siembra y cosecha), y la
+  celda queda vacía, igual que en maíz y soja.
+- Fuente de las etapas por estado: `docs/research/crop_progress_estados_nuevos.md` (T019).
+
+Columnas nuevas de `fenologia_estado.csv` (cobertura y faltantes: se completan al regenerar este
+data card con `python src/cultivos/data_card.py` después de correr `process.py`):
+
+| archivo | columna | descripcion | unidad | fuente | id_catalogo | desde | hasta | faltantes_pct |
+|---|---|---|---|---|---|---|---|---|
+| fenologia_estado.csv | doy_50_espigado | Avena y trigo de invierno: día del año del 50 % espigado (PCT HEADED) | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) |  |  |  |  |
+| fenologia_estado.csv | doy_50_sembrado_otono | Trigo de invierno: día del año (de anio − 1) del 50 % sembrado en otoño | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) |  |  |  |  |
+| fenologia_estado.csv | doy_50_emergido_otono | Trigo de invierno: día del año (de anio − 1) del 50 % emergido en otoño | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) |  |  |  |  |
+| fenologia_estado.csv | flag_hueco_50 | Etapas (separadas por ;) cuyo 50 % se interpoló entre semanas separadas por más de 14 días | texto | Derivada de NASS Quick Stats |  |  |  |  |
