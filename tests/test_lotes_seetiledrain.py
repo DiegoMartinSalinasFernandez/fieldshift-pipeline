@@ -163,5 +163,23 @@ class TestSEETileDrain(unittest.TestCase):
             self.assertTrue((np.diff(orden) == ANCHO * 4).all())
 
 
+class TestControles(unittest.TestCase):
+    def test_controles_seetiledrain(self):
+        import pandas as pd
+        spec = importlib.util.spec_from_file_location("t131_lotes_process", REPO / "src/lotes/process.py")
+        proc = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(proc)
+        vacio = pd.DataFrame({"id_lote": ["a", "a"], "drenado_canos": pd.array([1, 0], dtype="Int64"),
+                              "tile_prob_seetiledrain": [np.nan, np.nan],
+                              "tile_seetiledrain": pd.array([pd.NA, pd.NA], dtype="Int64")})
+        self.assertIn("Sin recortes", "\n".join(proc.controles_seetiledrain(vacio)))
+        d = pd.DataFrame({"id_lote": ["a"] * 4, "drenado_canos": pd.array([1, 0, 1, pd.NA], dtype="Int64"),
+                          "tile_prob_seetiledrain": [0.9, 0.2, 0.4, np.nan],
+                          "tile_seetiledrain": pd.array([1, 0, 0, pd.NA], dtype="Int64")})
+        fila = [r for r in proc.controles_seetiledrain(d) if r.startswith("| a |")][0]
+        # 75 % con prob, media 0,5, 33,3 % clase 1, 33,3 % prob >= 0,5, acuerdo con AgTile 2 de 3
+        self.assertEqual(fila, "| a | 75.0 | 0.500 | 33.3 | 33.3 | 66.7 |")
+
+
 if __name__ == "__main__":
     unittest.main()
