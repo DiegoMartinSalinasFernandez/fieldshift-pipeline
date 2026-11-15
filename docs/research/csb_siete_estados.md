@@ -11,8 +11,9 @@ una ventana de 16 años 2008–2023, pero su enlace da **404**. **No hay archivo
 único zip nacional con una file geodatabase de ESRI (una capa `national<aa><aa>` de multipolígonos, en Albers
 NAD83). Pesan de 3,5 a 4,6 GB cada uno, y las 11 suman 44,1 GB. No se encontró el tamaño de cada estado (ver
 Detalle 2: se puede leer solo un estado a distancia sin bajar el zip). Los campos **no coinciden del todo con los
-metadatos**: la capa 2018–2025 trae además `CSBYEARS` y `ORIG_FID`, que los metadatos no documentan, y `CSBACRES`
-es real (float), no entero. Abajo, la comparación de las 11 ventanas. Límites de condado: según el paper de NASS,
+metadatos**: las 11 capas traen además `CSBYEARS`, y 2018–2025 también `ORIG_FID`; ninguno de los dos está en los
+metadatos. `CSBACRES` es real (float), no entero. Fuera de eso, las 11 ventanas tienen el mismo esquema. La ruta de
+la `.gdb` dentro del zip cambia en 2018–2025. Límites de condado: según el paper de NASS,
 las subregiones de proceso se cortan por la red de rutas y vías justamente para **no partir lotes en los límites
 de estado o condado**. Por eso un polígono puede cruzar el límite y tener un solo `CNTYFIPS`; el método exacto
 para asignar el condado no está documentado. Pivotes: **ninguna fuente oficial que abrí habla de riego ni de
@@ -79,10 +80,34 @@ Tamaño de cada zip (cabecera `Content-Length` del servidor de NASS, 2026-11-15)
 `STATEFIPS`, `STATEASD`, `ASD`, `CNTY`, `CNTYFIPS`, `INSIDE_X`, `INSIDE_Y`, `Shape_Length` y `Shape_Area`.
 Lo que trae la capa real, leído a distancia con `docs/research/csb_siete_estados_campos.py`:
 
-CAMPOS_TABLA
+| Ventana | Ruta `.gdb`/capa en el zip | Polígonos | Campos (en orden; `CDL<año>` son 8 columnas int32) |
+|---|---|---|---|
+| 2008-2015 | `NationalCSB_2008-2015_rev23/CSB0815.gdb/national0815` | 20.940.243 | `CSBID:object`, `CSBYEARS:object`, `CSBACRES:float64`, `CDL<año>:int32`, `STATEFIPS:object`, `STATEASD:object`, `ASD:object`, `CNTY:object`, `CNTYFIPS:object`, `INSIDE_X:float64`, `INSIDE_Y:float64`, `Shape_Length:float64`, `Shape_Area:float64` (CDL2008…CDL2015) |
+| 2009-2016 | `NationalCSB_2009-2016_rev23/CSB0916.gdb/national0916` | 20.009.155 | `CSBID:object`, `CSBYEARS:object`, `CSBACRES:float64`, `CDL<año>:int32`, `STATEFIPS:object`, `STATEASD:object`, `ASD:object`, `CNTY:object`, `CNTYFIPS:object`, `INSIDE_X:float64`, `INSIDE_Y:float64`, `Shape_Length:float64`, `Shape_Area:float64` (CDL2009…CDL2016) |
+| 2010-2017 | `NationalCSB_2010-2017_rev23/CSB1017.gdb/national1017` | 19.305.223 | `CSBID:object`, `CSBYEARS:object`, `CSBACRES:float64`, `CDL<año>:int32`, `STATEFIPS:object`, `STATEASD:object`, `ASD:object`, `CNTY:object`, `CNTYFIPS:object`, `INSIDE_X:float64`, `INSIDE_Y:float64`, `Shape_Length:float64`, `Shape_Area:float64` (CDL2010…CDL2017) |
+| 2011-2018 | `NationalCSB_2011-2018_rev23/CSB1118.gdb/national1118` | 18.355.150 | `CSBID:object`, `CSBYEARS:object`, `CSBACRES:float64`, `CDL<año>:int32`, `STATEFIPS:object`, `STATEASD:object`, `ASD:object`, `CNTY:object`, `CNTYFIPS:object`, `INSIDE_X:float64`, `INSIDE_Y:float64`, `Shape_Length:float64`, `Shape_Area:float64` (CDL2011…CDL2018) |
+| 2012-2019 | `NationalCSB_2012-2019_rev23/CSB1219.gdb/national1219` | 17.942.816 | `CSBID:object`, `CSBYEARS:object`, `CSBACRES:float64`, `CDL<año>:int32`, `STATEFIPS:object`, `STATEASD:object`, `ASD:object`, `CNTY:object`, `CNTYFIPS:object`, `INSIDE_X:float64`, `INSIDE_Y:float64`, `Shape_Length:float64`, `Shape_Area:float64` (CDL2012…CDL2019) |
+| 2013-2020 | `NationalCSB_2013-2020_rev23/CSB1320.gdb/national1320` | 17.627.882 | `CSBID:object`, `CSBYEARS:object`, `CSBACRES:float64`, `CDL<año>:int32`, `STATEFIPS:object`, `STATEASD:object`, `ASD:object`, `CNTY:object`, `CNTYFIPS:object`, `INSIDE_X:float64`, `INSIDE_Y:float64`, `Shape_Length:float64`, `Shape_Area:float64` (CDL2013…CDL2020) |
+| 2014-2021 | `NationalCSB_2014-2021_rev23/CSB1421.gdb/national1421` | 17.051.346 | `CSBID:object`, `CSBYEARS:object`, `CSBACRES:float64`, `CDL<año>:int32`, `STATEFIPS:object`, `STATEASD:object`, `ASD:object`, `CNTY:object`, `CNTYFIPS:object`, `INSIDE_X:float64`, `INSIDE_Y:float64`, `Shape_Length:float64`, `Shape_Area:float64` (CDL2014…CDL2021) |
+| 2015-2022 | `NationalCSB_2015-2022_rev23/CSB1522.gdb/national1522` | 16.409.700 | `CSBID:object`, `CSBYEARS:object`, `CSBACRES:float64`, `CDL<año>:int32`, `STATEFIPS:object`, `STATEASD:object`, `ASD:object`, `CNTY:object`, `CNTYFIPS:object`, `INSIDE_X:float64`, `INSIDE_Y:float64`, `Shape_Length:float64`, `Shape_Area:float64` (CDL2015…CDL2022) |
+| 2016-2023 | `NationalCSB_2016-2023_rev23/CSB1623.gdb/national1623` | 16.194.800 | `CSBID:object`, `CSBYEARS:object`, `CSBACRES:float64`, `CDL<año>:int32`, `STATEFIPS:object`, `STATEASD:object`, `ASD:object`, `CNTY:object`, `CNTYFIPS:object`, `INSIDE_X:float64`, `INSIDE_Y:float64`, `Shape_Length:float64`, `Shape_Area:float64` (CDL2016…CDL2023) |
+| 2017-2024 | `NationalCSB_2017-2024_rev23/CSB1724.gdb/national1724` | 16.418.258 | `CSBID:object`, `CSBYEARS:object`, `CSBACRES:float64`, `CDL<año>:int32`, `STATEFIPS:object`, `STATEASD:object`, `ASD:object`, `CNTY:object`, `CNTYFIPS:object`, `INSIDE_X:float64`, `INSIDE_Y:float64`, `Shape_Length:float64`, `Shape_Area:float64` (CDL2017…CDL2024) |
+| 2018-2025 | `CSB1825.gdb/national1825` (en la raíz del zip) | 15.973.095 | `CSBID:object`, `CSBYEARS:object`, `CSBACRES:float64`, `CDL<año>:int32`, `STATEFIPS:object`, `STATEASD:object`, `ASD:object`, `CNTY:object`, `CNTYFIPS:object`, `INSIDE_X:float64`, `INSIDE_Y:float64`, **`ORIG_FID:int32`**, `Shape_Length:float64`, `Shape_Area:float64` (CDL2018…CDL2025) ¹ |
 
-Diferencias con los metadatos, en la capa 2018–2025 leída a distancia:
-- `CSBYEARS` (texto) y `ORIG_FID` (entero) existen pero **no están en los metadatos**. Por el nombre, `CSBYEARS`
+¹ En la corrida completa del script, 2018–2025 falló con un `SSLError` pasajero del servidor de NASS. Esta fila
+sale de una lectura anterior de la misma capa, hecha a mano en esta corrida con `pyogrio.read_info` y la misma
+ruta.
+
+Conclusión: **las 11 ventanas tienen el mismo esquema** (mismos nombres, tipos y orden; las columnas
+`CDL<año>` cambian de nombre con la ventana), salvo dos diferencias:
+- **`ORIG_FID` solo está en 2018–2025.** Hay que leerlo como opcional.
+- **La ruta de la `.gdb` dentro del zip:** en 2008–2015 … 2017–2024 está en una carpeta
+  `NationalCSB_<ventana>_rev23/`, y en 2018–2025 está en la raíz. La capa siempre se llama `national<aa><aa>`.
+
+El número de polígonos baja de 20,9 millones (2008–2015) a 16,0 millones (2018–2025).
+
+Diferencias con los metadatos:
+- `CSBYEARS` (texto, en las 11 ventanas) y `ORIG_FID` (entero, solo en 2018–2025) existen pero **no están en los metadatos**. Por el nombre, `CSBYEARS`
   sería la ventana y `ORIG_FID` el FID de la capa de origen antes de la unión nacional. Es una suposición: no
   encontré documentación de ninguno de los dos.
 - `CSBACRES` es `float64`, no entero como dicen los metadatos. Para pesar por área conviene usar `Shape_Area`
@@ -164,7 +189,8 @@ distancia por `bbox` no resultó práctica (sección 6). Cada zip se puede bajar
 a uno por vez, para no tener más de unos 4,6 GB en disco al mismo tiempo. Habría que pesar por área recalculada y no por `CSBACRES`, resolver la ruta
 de la `.gdb` dentro de cada zip y leer las columnas `CDL<año>` según la ventana. Paquete `lotes`
 (`src/lotes/download.py`): la ventana 2018–2025 ya cubre 2025; `CSBYEARS` y `ORIG_FID` se pueden guardar en raw
-tal cual. El riego tiene que salir del censo o de una máscara, no del CSB. Data cards `docs/datasets/cultivos.md`
+tal cual. El riego tiene que salir del censo o de una máscara, no del CSB. `docs/research/cdl_csb.md` (sección 5) lista los campos
+de los metadatos: le faltan `CSBYEARS` y `ORIG_FID`, y `CSBACRES` figura como entero. Data cards `docs/datasets/cultivos.md`
 y `docs/datasets/lotes.md`, sección "Problemas conocidos": lotes que cruzan límites de condado, sobreestimación
 de superficie y campos no documentados.
 
