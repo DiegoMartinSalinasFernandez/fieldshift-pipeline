@@ -60,6 +60,13 @@ REGLINK = ERS_DIR / "reglink.xls"
 REGIONES = {1: "Heartland", 2: "Northern Crescent", 3: "Northern Great Plains",
             4: "Prairie Gateway", 5: "Eastern Uplands", 6: "Southern Seaboard",
             7: "Fruitful Rim", 8: "Basin and Range", 9: "Mississippi Portal"}
+# Códigos de condado viejos de reglink.xls -> código actual del Census. Fuente: Census Bureau,
+# "Substantial Changes to Counties and County Equivalent Entities: 2010-present"
+# (https://www.census.gov/programs-surveys/geography/technical-documentation/county-changes/2010.html,
+# consultado 2026-11-15): Shannon County, SD (46113) pasó a Oglala Lakota County (46102) el
+# 2015-05-01. Es el único cambio de código desde 2000 en los 10 estados de config.yaml (la página
+# de 2000-2009 solo tiene en ellos la corrección de nombre de LaSalle, IL, sin cambio de código).
+CODIGOS_NUEVOS = {"46113": "46102"}
 # área sembrada por condado (NASS SURVEY) con la que se pondera cada región
 AREA = {
     "maiz": "CORN - ACRES PLANTED",
@@ -178,10 +185,24 @@ def regiones_condado() -> pd.DataFrame:
     if not REGLINK.exists():
         raise SystemExit(f"falta {REGLINK}: correr src/economia/download.py")
     r = pd.read_excel(REGLINK, header=None, usecols=[0, 1], names=["fips", "codigo"])
+    return limpiar_reglink(r)
+
+
+def limpiar_reglink(r: pd.DataFrame) -> pd.DataFrame:
+    """Columnas fips y codigo de reglink.xls -> fips_condado (5 dígitos), region_ers.
+
+    Descarta los encabezados y la clave de regiones (filas no numéricas) y pasa los códigos de
+    condado viejos de reglink.xls a los actuales del Census (CODIGOS_NUEVOS).
+    """
     r = r[pd.to_numeric(r["fips"], errors="coerce").notna()
           & pd.to_numeric(r["codigo"], errors="coerce").notna()]
     r = r.astype(int)
     r["fips_condado"] = r["fips"].astype(str).str.zfill(5)
+    # si la planilla ya trae el código nuevo, la fila con el viejo sobra
+    viejos = r["fips_condado"].isin(CODIGOS_NUEVOS) & r["fips_condado"].map(CODIGOS_NUEVOS).isin(
+        r["fips_condado"])
+    r = r[~viejos].copy()
+    r["fips_condado"] = r["fips_condado"].replace(CODIGOS_NUEVOS)
     r["region_ers"] = r["codigo"].map(REGIONES)
     if r["region_ers"].isna().any() or r["fips_condado"].duplicated().any():
         raise SystemExit(f"{REGLINK.name}: códigos de región desconocidos o condados duplicados")
@@ -352,6 +373,10 @@ por condado en el período). Se guardan también en `data/interim/economia/pesos
 - **Sin área por condado.** Si NASS no publica `ACRES PLANTED` por condado de un cultivo en un
   estado (avena en IN), el peso de cada región es su proporción de condados (`base = condados`
   en la tabla de pesos; la columna `acres` trae entonces la cantidad de condados).
+- **Códigos de condado viejos en `reglink.xls`.** La planilla de ERS trae a Oglala Lakota (SD)
+  con el código de Shannon County (46113); el Census lo cambió a 46102 en 2015 (Census Bureau,
+  "Substantial Changes to Counties and County Equivalent Entities: 2010-present"). Al leerla se
+  pasa 46113 → 46102. Es el único cambio de código desde 2000 en los estados de la zona.
 - **Condados combinados.** Las filas de NASS de `OTHER (COMBINED) COUNTIES` no tienen condado
   y no entran en los pesos. Los códigos `(D)` y similares cuentan como sin dato.
 - **Trigo.** ERS publica costos de trigo en general (no separa el de invierno). Se asignan a
