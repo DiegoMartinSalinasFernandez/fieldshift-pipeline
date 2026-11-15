@@ -1,9 +1,9 @@
 ---
 id: T024
 titulo: 'Research: precisión del CDL por estado y año (2008–2025)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 02:50
-actualizada: 2026-11-15 02:50
+actualizada: 2026-11-15 02:41
 ---
 
 ## Qué hacer
@@ -40,3 +40,4 @@ Escribí `docs/research/cdl_precision.md`, con una tabla por cultivo.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 02:41 · pro-1: tomada
