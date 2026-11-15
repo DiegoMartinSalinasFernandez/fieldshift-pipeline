@@ -1,14 +1,14 @@
 ---
 id: T140
 titulo: 'Rama de integración con todos los PR retenidos (117 a 126 y los que sigan): conflictos y pruebas'
-estado: tomada
+estado: libre
 plan_minimo: pro
-maquina: pro-2
+maquina: null
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:59
-actualizada: 2026-11-15 10:23
+actualizada: 2026-11-15 10:24
 ---
 
 ## Qué hacer
@@ -46,3 +46,4 @@ El PR en borrador abierto con la tabla y las pruebas en verde (o la lista exacta
 - 2026-11-15 10:21 · pro-2: tomada
 - 2026-11-15 10:23 · pro-2: soltada: quedó a medias, PR #137. INCOMPLETA: falta sumar el PR 134 (T141) a la rama real `integracion/retenidos` y agregar su fila al PR 135. El merge está probado (limpio, 430 pruebas pasan), pero esta sesión no puede cambiar de rama, crear commits en otra rama, hacer push ni usar `gh`. Son 4 comandos y están en `docs/qa/integraci
 - 2026-11-15 10:23 · pro-2: tomada
+- 2026-11-15 10:24 · pro-2: soltada: quedó a medias, PR #137 actualizado. INCOMPLETA: falta sumar el PR 134 (T141, para_decidir #21) a la rama real `integracion/retenidos` y agregar su fila a la tabla del PR en borrador 135. La unión está probada y sale limpia. El trabajador no puede cambiar de rama, hacer push ni usar `gh` (`gh` además está bloqueado por permisos), así q
