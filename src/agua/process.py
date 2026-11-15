@@ -4,8 +4,10 @@ agua_semanal.csv: percentiles de GRACE-DA-DM (US, 0,125°) por condado, media po
 fracción del condado que cae en cada celda (fracciones calculadas rasterizando los condados a
 una grilla 10 veces más fina). Lee solo data/raw/agua/grace/*.nc4.
 
-SMAP L4 (agua_diario.csv, agua_mensual.csv) no se procesa: sin Earthdata no hay acceso
-(ver docs/datasets/agua.md).
+agua_diario.csv y agua_mensual.csv: SMAP L4 (capas diarias de Crop-CASMA, data/raw/agua/smap/).
+
+agua_estatico.csv: fracción del área con dato SMAP de cada condado cuyas celdas descarta el filtro
+0 ≤ v ≤ SM_MAX en la capa SUB (zona radicular), promediada sobre los días (ver data card).
 
 Uso: python src/agua/process.py
 """
@@ -128,7 +130,23 @@ def pesos_smap(gdf_estado, shape, transform):
     return W
 
 
-def diario_smap() -> pd.DataFrame:
+def celdas_smap(a: np.ndarray, nd) -> tuple[np.ndarray, np.ndarray]:
+    """(con_dato, validas): celdas que no son nodata y, de ellas, las que pasan el filtro 0 ≤ v ≤ SM_MAX."""
+    con_dato = np.isfinite(a) & (a != nd)
+    return con_dato, con_dato & (a >= 0) & (a <= SM_MAX)
+
+
+def frac_excluida(W: np.ndarray, con_dato: np.ndarray, validas: np.ndarray) -> np.ndarray:
+    """Fracción del área con dato de cada condado (filas de W) en celdas que el filtro descarta."""
+    den = W @ con_dato.astype("float64")
+    num = W @ (con_dato & ~validas).astype("float64")
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return np.where(den > 0, num / den, np.nan)
+
+
+def diario_smap(excluidas: list | None = None) -> pd.DataFrame:
+    """Medias diarias de SMAP por condado. Si se pasa `excluidas`, le agrega un DataFrame por archivo SUB con
+    `fips, fecha, frac` (fracción excluida por el filtro ese día), para armar agua_estatico.csv."""
     import geopandas as gpd
     import rasterio
 
@@ -153,7 +171,10 @@ def diario_smap() -> pd.DataFrame:
                 cache[clave] = pesos_smap(sub, src.shape, src.transform)
             W = cache[clave]
         a = a.ravel()
-        ok = np.isfinite(a) & (a != nd) & (a >= 0) & (a <= SM_MAX)
+        con_dato, ok = celdas_smap(a, nd)
+        if excluidas is not None and capa == "SUB":
+            excluidas.append(pd.DataFrame({"fips": sub["fips"].to_numpy(), "fecha": fecha,
+                                           "frac": frac_excluida(W, con_dato, ok)}))
         num = W @ np.where(ok, a, 0.0)
         den = W @ ok.astype("float64")
         with np.errstate(invalid="ignore", divide="ignore"):
@@ -202,16 +223,29 @@ def mensual_smap(d: pd.DataFrame) -> pd.DataFrame:
     return m[cols].sort_values(["fips", "mes"]).reset_index(drop=True)
 
 
+def estatico_smap(excluidas: list) -> pd.DataFrame:
+    """agua_estatico.csv: `fips, frac_celdas_excluidas` = media sobre los días SUB de la fracción diaria."""
+    if not excluidas:
+        return pd.DataFrame(columns=["fips", "frac_celdas_excluidas"])
+    e = pd.concat(excluidas, ignore_index=True)
+    out = e.groupby("fips", as_index=False)["frac"].mean()  # mean ignora los días sin dato (NaN)
+    out = out.rename(columns={"frac": "frac_celdas_excluidas"})
+    return out.sort_values("fips").reset_index(drop=True)
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     df = semanal()
     df.to_csv(OUT / "agua_semanal.csv", index=False, float_format="%.2f", encoding="utf-8",
               lineterminator="\n")
-    d = diario_smap()
+    excluidas: list = []
+    d = diario_smap(excluidas)
     d.to_csv(OUT / "agua_diario.csv", index=False, float_format="%.4f", encoding="utf-8", lineterminator="\n")
     m = mensual_smap(d)
     m["dias_sm_saturado"] = m["dias_sm_saturado"].astype("Int64")
     m.to_csv(OUT / "agua_mensual.csv", index=False, float_format="%.4f", encoding="utf-8", lineterminator="\n")
+    e = estatico_smap(excluidas)
+    e.to_csv(OUT / "agua_estatico.csv", index=False, float_format="%.4f", encoding="utf-8", lineterminator="\n")
     from src.agua import data_card
 
     data_card.main()
