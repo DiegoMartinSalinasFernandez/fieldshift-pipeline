@@ -1,14 +1,14 @@
 ---
 id: T059
 titulo: README del repo en inglés para los jueces
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:30
-actualizada: 2026-11-15 04:30
+actualizada: 2026-11-15 04:44
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ El envío a Space Apps cierra el **domingo 2026-11-15 a las 23:59 hora del event
 El README en un PR.
 
 ## Notas
+- 2026-11-15 04:44 · pro-1: tomada
