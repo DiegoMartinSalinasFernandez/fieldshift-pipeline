@@ -62,10 +62,71 @@ def log(msg: str) -> None:
         f.write(f"{dt.datetime.now():%Y-%m-%d %H:%M:%S} {msg}\n")
 
 
+MARGEN = 0.05  # grados alrededor de cada estado
+
+
 def bbox_zona() -> list[float]:
+    """Un solo bbox para todos los condados (lo usaba todo antes de T023; queda por compatibilidad)."""
     g = gpd.read_file(REPO / "data" / "reference" / "condados.gpkg")
     b = g.total_bounds
-    return [float(b[0]) - 0.05, float(b[1]) - 0.05, float(b[2]) + 0.05, float(b[3]) + 0.05]
+    return [float(b[0]) - MARGEN, float(b[1]) - MARGEN, float(b[2]) + MARGEN, float(b[3]) + MARGEN]
+
+
+def _se_tocan(a: list[float], b: list[float]) -> bool:
+    return a[0] <= b[2] and b[0] <= a[2] and a[1] <= b[3] and b[1] <= a[3]
+
+
+def grupos_bbox(gpkg: Path | None = None) -> list[tuple[tuple[str, ...], list[float]]]:
+    """[(estados, bbox)] con un bbox (oeste, sur, este, norte; EPSG:4326) por estado de condados.gpkg.
+
+    Los bbox de estados vecinos que se tocan (con el margen) se juntan en uno: así una tesela o una
+    ventana no se baja dos veces y, con estados contiguos como IA, IL e IN, queda un único grupo cuyo
+    bbox es exactamente el de bbox_zona() (min y max de los mismos números, con el mismo margen).
+    Con estados lejanos (OH y NE, OH y MN) cada uno queda con su bbox y no se bajan los del medio.
+    """
+    g = gpd.read_file(gpkg or REPO / "data" / "reference" / "condados.gpkg")
+    if g.crs is not None and g.crs.to_epsg() != 4326:
+        g = g.to_crs(4326)
+    est = g["fips"].astype(str).str.zfill(5).str[:2]
+    alfa = g["estado"].astype(str) if "estado" in g else est
+    grupos = []
+    for e, sub in sorted(g.groupby(est)):
+        b = sub.total_bounds
+        grupos.append(((str(alfa[sub.index[0]]),), [float(b[0]) - MARGEN, float(b[1]) - MARGEN,
+                                                   float(b[2]) + MARGEN, float(b[3]) + MARGEN]))
+    junto = True
+    while junto:
+        junto = False
+        for i in range(len(grupos)):
+            for j in range(i + 1, len(grupos)):
+                (ei, bi), (ej, bj) = grupos[i], grupos[j]
+                if _se_tocan(bi, bj):
+                    grupos[i] = (tuple(sorted(ei + ej)), [min(bi[0], bj[0]), min(bi[1], bj[1]),
+                                                          max(bi[2], bj[2]), max(bi[3], bj[3])])
+                    del grupos[j]
+                    junto = True
+                    break
+            if junto:
+                break
+    return sorted(grupos)
+
+
+def union_bbox(bboxes: list[list[float]]) -> list[float]:
+    return [min(b[0] for b in bboxes), min(b[1] for b in bboxes),
+            max(b[2] for b in bboxes), max(b[3] for b in bboxes)]
+
+
+def buscar_grupos(coleccion: str, prefijo: str, grupos: list, anio: int) -> list[tuple[dict, list[float]]]:
+    """Items de todos los grupos sin repetir, cada uno con la ventana que le toca.
+
+    Si una tesela cae en más de un grupo se baja una sola vez, con la unión de los bbox de esos
+    grupos. Con un solo grupo (IA, IL, IN) la ventana es la misma de antes.
+    """
+    por_id: dict[str, tuple[dict, list[list[float]]]] = {}
+    for _, bbox in grupos:
+        for it in buscar(coleccion, prefijo, bbox, anio):
+            por_id.setdefault(it["id"], (it, []))[1].append(bbox)
+    return [(it, union_bbox(bbs)) for _, (it, bbs) in sorted(por_id.items())]
 
 
 def buscar(coleccion: str, prefijo: str, bbox: list[float], anio: int) -> list[dict]:
@@ -149,17 +210,18 @@ def main() -> None:
     cfg = cargar_config()
     a0 = int(sys.argv[2]) if len(sys.argv) > 2 else int(cfg["periodo"]["anio_inicio"])
     a1 = int(sys.argv[3]) if len(sys.argv) > 3 else int(cfg["periodo"]["anio_fin"])
-    bbox = bbox_zona()
+    grupos = grupos_bbox()
+    log("grupos de estados: " + "; ".join(f"{'+'.join(e)} {[round(v, 2) for v in b]}" for e, b in grupos))
     token = requests.get(SAS, timeout=60).json()["token"]
     for pk in prods:
         prod = PRODUCTOS[pk]
         for anio in range(max(a0, prod["desde"]), a1 + 1):
-            items = buscar(prod["coleccion"], prod["prefijo"], bbox, anio)
-            pend = [it for it in items
+            items = buscar_grupos(prod["coleccion"], prod["prefijo"], grupos, anio)
+            pend = [(it, bb) for it, bb in items
                     if not (RAW / prod["prefijo"].lower() / str(anio) / f"{it['id']}.tif").exists()]
             log(f"{pk} {anio}: {len(items)} items, {len(pend)} pendientes")
             with ThreadPoolExecutor(12) as ex:
-                futs = {ex.submit(bajar_item, it, prod, bbox, token): it["id"] for it in pend}
+                futs = {ex.submit(bajar_item, it, prod, bb, token): it["id"] for it, bb in pend}
                 for fu in as_completed(futs):
                     try:
                         fu.result()
