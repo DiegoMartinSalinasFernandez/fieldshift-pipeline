@@ -31,7 +31,9 @@ la fuente (NASS por condado) y de documentación.
 
 - Los 8 `.sha256` coinciden (`sha256sum -c`). **Ojo:** los `.sha256` del release tienen fin de línea CRLF
   (se armaron en Windows) y `sha256sum -c` los rechaza tal cual ("No such file or directory" por el `\r`); hay que
-  quitar el `\r` (`tr -d '\r'`). `verificar_entrega.py` sí los lee bien (usa `split()`).
+  quitar el `\r` (`tr -d '\r'`). `verificar_entrega.py` sí los lee bien (usa `split()`). **Resuelto** con la
+  republicación del 2026-11-15 06:50: los 8 `.sha256` tienen LF y `sha256sum -c` pasa directo, sin `tr`
+  (problema 4).
 - 8 APTO, 0 NO APTO, sin problemas ni avisos.
 - `condados.csv` del zip: 268 condados (OH 88, NE 93, MN 87), el total esperado.
 
@@ -156,8 +158,12 @@ git). `AREA PLANTED`, SURVEY, `ALL PRODUCTION PRACTICES`, año completo.
 3. **`ndvi_maiz` / `ndvi_soja` con muchos más faltantes en OH (y soja en los tres)** que en IA/IL/IN. → tarea
    nueva para que el data card de `vegetacion` muestre la cobertura por estado y año, y para evaluar con el
    humano si conviene un umbral más bajo (por ejemplo 50 %) solo como columna aparte.
-4. **`.sha256` con CRLF** en el release: `sha256sum -c` falla en Linux. → tarea nueva chica para
-   `scripts/entregar.py` (escribir el `.sha256` con `\n`).
+4. ~~**`.sha256` con CRLF** en el release: `sha256sum -c` falla en Linux.~~ **Resuelto** (2026-11-15, T099):
+   tras la republicación de las 06:50, los 8 `.sha256` de `datos-oh-ne-mn` se bajaron de nuevo con `curl -L`;
+   ninguno tiene `\r` (`file`: "ASCII text", sin CRLF) y `sha256sum -c *.sha256` da OK en los 8 sin quitar
+   nada. Solo cambió el hash de `vegetacion` (zip republicado con NDVI/EVI de enero–abril de 2014: el mensual
+   pasa de 0 a 172–268 condados con `ndvi` en esos meses y `vegetacion_16d.csv` suma 8 fechas, 2.144 filas);
+   los otros 7 hashes son los mismos de antes.
 5. **`doy_primera_helada` no ve la helada del 20-8-2004 en el norte de MN** (límite de la celda de POWER). → nota
    para el data card de `clima`, en la misma tarea de documentación que el punto 1.
 
