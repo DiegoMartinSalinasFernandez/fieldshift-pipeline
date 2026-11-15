@@ -7,9 +7,11 @@ Suelo (data/raw/suelo_terreno/sda/):
   primera restricción que limita raíces, el fondo del perfil y 150 cm.
 - Componente → unidad cartográfica (MUKEY): media ponderada por comppct_r.
 - MUKEY → condado: media ponderada por muacres de la unidad en el área de relevamiento del
-  condado (areasymbol IA169 = fips 19169; las áreas que no siguen esa regla están en
-  AREAS_ESPECIALES). Clases (drenaje, grupo hidrológico): la de mayor
-  superficie.
+  condado (areasymbol IA169 = fips 19169; las áreas de MN que no siguen esa regla están en
+  AREAS_ESPECIALES). Las áreas que juntan varios condados o tienen código propio (en KY:
+  KY601–KY648, KY709) se reparten con la tabla `solape` (laoverlap + muaoverlap de SDA): cada
+  unidad pesa por areaovacres, su superficie dentro de cada condado (ver repartir_por_condado).
+  Clases (drenaje, grupo hidrológico): la de mayor superficie.
 Terreno (data/raw/suelo_terreno/nasadem/): ver terreno.py.
 """
 from __future__ import annotations
@@ -50,9 +52,13 @@ NCCPI = {
 }
 
 
-def leer(tabla: str) -> pd.DataFrame:
-    partes = [pd.read_csv(RAW / f"{tabla}_{alfa}.csv", dtype={"areasymbol": str})
-              for alfa in estados_config()]
+def leer(tabla: str, opcional: bool = False) -> pd.DataFrame | None:
+    archivos = [RAW / f"{tabla}_{alfa}.csv" for alfa in estados_config()]
+    if opcional:
+        archivos = [a for a in archivos if a.exists()]
+        if not archivos:
+            return None
+    partes = [pd.read_csv(a, dtype={"areasymbol": str, "condado": str}) for a in archivos]
     return pd.concat(partes, ignore_index=True).drop_duplicates()
 
 
@@ -124,17 +130,20 @@ def main() -> None:
     mu = mu.merge(mukey, left_on="mukey", right_index=True, how="left")
     mu["aws0100_mm"] = mu["aws0100wta"] * 10  # muaggatt en cm
     mu["aws0150_mm"] = mu["aws0150wta"] * 10
-    mu["fips"] = mu["areasymbol"].map(fips_de_area)
-    sin_condado = sorted(set(mu.loc[mu["fips"].isna(), "areasymbol"]) - set(AREAS_ESPECIALES))
+    condados = pd.read_csv(REPO / "data" / "reference" / "condados.csv", dtype={"fips": str})
+    solape = leer("solape", opcional=True)
+    if solape is None:
+        print("AVISO: falta solape_<estado>.csv (correr download.py solape): las áreas que no son "
+              "un condado quedan afuera", flush=True)
+    mu, sin_condado = repartir_por_condado(mu, solape, set(condados["fips"]))
     if sin_condado:
         print(f"AVISO: áreas de relevamiento sin condado (quedan afuera): {sin_condado}", flush=True)
-    mu = mu.dropna(subset=["fips"])
     num = vars_comp + ["aws0100_mm", "aws0150_mm", "wtdepannmin"]
-    cond = media_pond(mu, "fips", "muacres", num)
+    cond = media_pond(mu, "fips", "peso", num)
     for col, src in (("clase_drenaje", "drclassdcd"), ("grupo_hidrologico", "hydgrpdcd")):
-        v = mu.dropna(subset=[src, "muacres"])
-        cond[col] = (v.groupby(["fips", src])["muacres"].sum().reset_index()
-                     .sort_values(["fips", "muacres", src], ascending=[True, False, True])
+        v = mu.dropna(subset=[src, "peso"])
+        cond[col] = (v.groupby(["fips", src])["peso"].sum().reset_index()
+                     .sort_values(["fips", "peso", src], ascending=[True, False, True])
                      .groupby("fips").head(1).set_index("fips")[src])
 
     out = pd.DataFrame(index=cond.index)
@@ -158,7 +167,6 @@ def main() -> None:
                                   zip(out["arena_pct"], out["limo_pct"], out["arcilla_pct"])]
     out["factor_k_rusle"] = cond["kwfact"]
 
-    condados = pd.read_csv(REPO / "data" / "reference" / "condados.csv", dtype={"fips": str})
     out = condados[["fips"]].merge(out, left_on="fips", right_index=True, how="left")
 
     sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -184,8 +192,49 @@ def main() -> None:
     print(f"listo {len(out)} condados, {time.time() - t0:.1f}s", flush=True)
 
 
-def fips_de_area(area: str):
-    estados = {alfa: e["fips"] for alfa, e in estados_config().items()}
+def repartir_por_condado(mu: pd.DataFrame, solape: pd.DataFrame | None, fips_validos: set[str],
+                         estados: dict[str, str] | None = None) -> tuple[pd.DataFrame, list[str]]:
+    """Asigna cada unidad cartográfica (fila de mapunit) a su condado, con columnas `fips` y `peso`.
+
+    - Área de un condado (fips_de_area da un FIPS de `fips_validos`, o es de AREAS_ESPECIALES):
+      una fila con peso = muacres, igual que antes (los 10 estados de hoy dan lo mismo).
+    - Área que no es un condado (KY601, KY646, …) y figura en `solape`: una fila por cada condado
+      que toca, con peso = areaovacres de la unidad en ese condado (muaoverlap). Las unidades que el
+      solape no nombra en un condado no pesan ahí.
+    - El resto queda afuera y se devuelve en la lista de áreas sin condado.
+    `estados`: alfa → fips del estado (por defecto, los de config.yaml).
+    """
+    fips = mu["areasymbol"].map(lambda a: fips_de_area(a, estados))
+    directa = fips.isin(fips_validos) | mu["areasymbol"].isin(AREAS_ESPECIALES)
+    base = mu[directa & fips.notna()].assign(fips=fips[directa & fips.notna()])
+    base = base.assign(peso=base["muacres"])
+    resto = mu[~directa]
+    partes = [base]
+    if solape is not None and len(resto):
+        s = solape[solape["areasymbol"].isin(set(resto["areasymbol"]))].copy()
+        s["fips"] = s["condado"].map(lambda c: fips_de_condado(c, estados))
+        s = s[s["fips"].isin(fips_validos)]
+        s = s.groupby(["areasymbol", "mukey", "fips"], as_index=False)["areaovacres"].sum()
+        rep = resto.merge(s, on=["areasymbol", "mukey"], how="inner")
+        partes.append(rep.rename(columns={"areaovacres": "peso"}))
+    out = pd.concat(partes, ignore_index=True)
+    sin_condado = sorted(set(resto["areasymbol"]) - set(out["areasymbol"]))
+    return out, sin_condado
+
+
+def fips_de_condado(simbolo: str, estados: dict[str, str] | None = None):
+    """Símbolo de condado de laoverlap (KY015) → FIPS (21015); sin AREAS_ESPECIALES."""
+    if estados is None:
+        estados = {alfa: e["fips"] for alfa, e in estados_config().items()}
+    alfa, cod = str(simbolo)[:2], str(simbolo)[2:]
+    if alfa in estados and cod.isdigit() and len(cod) == 3:
+        return estados[alfa] + cod
+    return np.nan
+
+
+def fips_de_area(area: str, estados: dict[str, str] | None = None):
+    if estados is None:
+        estados = {alfa: e["fips"] for alfa, e in estados_config().items()}
     alfa, cod = area[:2], area[2:]
     if area in AREAS_ESPECIALES:
         f = AREAS_ESPECIALES[area]
