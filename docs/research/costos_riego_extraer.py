@@ -39,7 +39,9 @@ def riego_de(titulo):
     t = titulo.lower()
     if "dryland" in t or "rainfed" in t or "non-irrigated" in t:
         return "secano"
-    if "pivot" in t:
+    if "non-irrigated" in t:
+        return "secano"
+    if "pivot" in t or (t.startswith(("corn irrigated", "soybeans irrigated"))):
         return "pivote"
     if "gravity" in t or "furrow" in t:
         return "gravedad"
@@ -138,9 +140,40 @@ def main_unl(d):
     return salida
 
 
+def main_ks(d):
+    """K-State, Farm Management Guides, Centro-Norte de Kansas, rendimiento medio (la primera hoja abstract)."""
+    salida = []
+    for p in sorted(Path(d).glob("*.txt")):
+        lineas = p.read_text(errors="replace").splitlines()
+        cab = " ".join(lineas[:6])
+        m = re.search(r"\b(20\d{2})\b", cab)
+        if not m:
+            continue
+        anio = int(m.group(1))
+        texto = "\n".join(lineas)
+
+        def primero(patron):
+            mm = re.search(patron, texto)
+            return num(mm.group(1)) if mm else None
+
+        prod = re.search(r"(Corn|Soybeans?) - North Central KS\s+bu\s+\$([\d.]+)\s+([\d.]+)", texto)
+        directos = primero(r"TOTAL DIRECT EXPENSES--\s+\$([\d,]+\.\d+)")
+        fijos = primero(r"TOTAL FIXED EXPENSES--\s+\$([\d,]+\.\d+)")
+        renta = primero(r"Cash rent[^\n$]*\$([\d,]+\.\d+)")
+        titulo = "irrigated" if "irrigated" in p.name.lower() else "non-irrigated"
+        titulo = f"{'Corn' if 'corn' in p.name.lower() else 'Soybeans'} {titulo} North Central Kansas"
+        salida.append(dict(fuente="K-State", anio=anio, presupuesto=None, titulo=titulo,
+                           rinde_bu_ac=float(prod.group(3)) if prod else None,
+                           precio_usd_bu=float(prod.group(2)) if prod else None,
+                           costo_operativo_usd_ac=directos, alquiler_usd_ac=renta, costo_fijo_usd_ac=fijos,
+                           costo_total_usd_ac=round(directos + fijos, 2) if directos and fijos else None,
+                           archivo=p.name))
+    return salida
+
+
 def main():
     modo, d = sys.argv[1], sys.argv[2]
-    filas = main_unl(d) if modo == "unl" else []
+    filas = main_unl(d) if modo == "unl" else main_ks(d)
     out = []
     for f in filas:
         c = cultivo_de(f["titulo"])
@@ -153,7 +186,7 @@ def main():
             f["rinde_bu_ac"] = rinde_de(f["titulo"])
         out.append(f)
     cols = ["fuente", "anio", "presupuesto", "cultivo", "riego", "rinde_bu_ac", "costo_operativo_usd_ac",
-            "costo_total_usd_ac", "costo_efectivo_usd_bu", "costo_total_usd_bu", "titulo", "archivo"]
+            "costo_fijo_usd_ac", "alquiler_usd_ac", "costo_total_usd_ac", "precio_usd_bu", "costo_efectivo_usd_bu", "costo_total_usd_bu", "titulo", "archivo"]
     w = csv.DictWriter(sys.stdout, fieldnames=cols, extrasaction="ignore")
     w.writeheader()
     w.writerows(out)
