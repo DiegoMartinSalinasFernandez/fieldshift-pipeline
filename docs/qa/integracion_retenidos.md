@@ -121,3 +121,17 @@ da el mismo árbol `2a4377d2b5` sin conflictos y los PR abiertos siguen llegando
 nuevos). En esta sesión `git worktree add` + `git merge` y `gh` volvieron a estar bloqueados por permisos. El
 trabajador automático no puede terminar esta tarea: hace falta que el humano o max-1 corra los cuatro comandos de
 arriba (merge de T141 en `integracion/retenidos`, push y agregar la fila del PR 134 a la tabla del PR 135).
+
+## Séptima sesión de pro-2 (2026-11-15): la rama real ya está completa
+
+`origin/integracion/retenidos` avanzó a `b40e56c` ("Merge remote-tracking branch 'origin/tarea/T141-auto' into
+integracion/retenidos", 10:26). Su árbol es `2a4377d`, el mismo que daba la simulación con `git merge-tree`: el PR
+134 entró sin conflictos y sin cambios. Probado sobre una copia de ese árbol (`git archive`):
+**430 passed, 3 skipped, 1 xfailed**.
+
+Todas las filas de `coordinacion/para_decidir.md` con "código listo en PR N" (117–132 y 134) están en la rama. Las
+únicas ramas `tarea/*` del remoto que no están ni en `main` ni en `integracion/retenidos` son `T003-procesar`,
+`T013-kansas` (viejas, no son retenidos) y esta misma (`T140-auto`). No hay retenidos nuevos.
+
+Lo único que este trabajador no pudo verificar (sin `gh`): si la tabla del cuerpo del PR 135 ya tiene la fila del
+PR 134. Si no la tiene, va la fila de la sección "Rama real y PR retenidos nuevos" de arriba.
