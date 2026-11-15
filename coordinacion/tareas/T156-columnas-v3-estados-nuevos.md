@@ -1,6 +1,7 @@
 ---
 id: T156
-titulo: Llenar en los estados nuevos las 37 columnas que hoy solo tiene IA/IL/IN (aptitud, teledeteccion, validacion, ecostress, hidrologia)
+titulo: Llenar en los estados nuevos las 37 columnas que hoy solo tiene IA/IL/IN (aptitud, teledeteccion, validacion,
+  ecostress, hidrologia)
 estado: libre
 plan_minimo: max
 maquina: null
@@ -14,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T15:08Z
-actualizada: 2026-11-15T15:08Z
+actualizada: 2026-11-15 14:58
 ---
 
 ## Qué pasa
@@ -45,3 +46,4 @@ Las 37 columnas tienen dato en los estados nuevos, o hay un motivo escrito por e
 publican de nuevo y se rearma `unido_9_estados`.
 
 ## Notas
+- 2026-11-15 14:58 · max-1: max-1: aptitud (16 columnas) y PRISM (4) armados para OH/NE/MN, MO/WI/SD, KS y ND con el código del loop sobre los crudos ya bajados (globales/CONUS); van en el zip de 11 estados para ML y front, todavía no en los releases ni en src/ de este repo. Faltan teledeteccion, ecostress, hidrologia y CoCoRaHS.
