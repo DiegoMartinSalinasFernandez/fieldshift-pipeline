@@ -1,0 +1,1131 @@
+# Checks de los entregables de datos de Field Shift (Corn Belt de EE.UU.).
+#
+# Salen del CLAUDE.md (secciones 4 a 7) y del catálogo de variables (loop/spec/catalogo.csv).
+# Se escriben ANTES de construir, los aprueba el humano con
+#     python loop/aprobar_checks.py --resumen   (los muestra en palabras simples)
+#     python loop/aprobar_checks.py --aprobar   (los bloquea y hace commit)
+# y durante la corrida el agente no los puede editar.
+#
+# Nombres de columna: los que fija el CLAUDE.md se copian tal cual. Los que el CLAUDE.md
+# no fija (marcados "propuesta") siguen la convención snake_case con la unidad al final.
+# El catálogo es de la versión argentina: de ahí salen solo el ID y la prioridad de cada
+# variable (K01 = clave espacial, que ahora es fips; K03 = año).
+#
+# temporal: diario | 16d | 8d | semanal | mensual | anual | lista_anios | censo | ventana | estatico
+# unidad: condado (por defecto) | estado (archivos por estado, clave fips_estado) | lote | pixel (las define
+#         `unidades`) | fila (la cobertura se mide contra las filas del propio archivo)
+# grande: true → el scorer lee el archivo por partes (millones de filas)
+# peso (en una columna): reemplaza el peso que le daría su ID del catálogo
+
+version: 2
+
+puntaje:
+  pesos_prioridad: {Alta: 3, Media: 2, Baja: 1}
+  peso_sin_catalogo: 1
+  # Una columna suma su peso completo cuando: el archivo cumple el contrato, los valores
+  # están en rango y tiene esta fracción de celdas llenas en su ventana de tiempo.
+  umbral_cobertura: 0.95
+  parte_datos: 0.75
+  parte_documentacion: 0.25
+  tolerancia_fuera_de_rango: 0.001
+  peso_manifest: 2
+  peso_data_card: 1
+
+contrato:
+  valores_relleno_prohibidos: ["-999", "-999.0", "-9999", "-9999.0", "-99", "-99.0", "9999", "9999.0", "-32768", "32767", "65535", "nan", "NaN", "NAN", "NA", "N/A", "n/a", "null", "NULL", "None", "inf", "-inf", "Inf", "-Inf", "(D)", "(Z)", "(NA)", "(X)", "(S)", "(L)", "(H)"]
+  max_mb_archivo_git: 50
+
+data_card:
+  # Tabla markdown obligatoria en docs/datasets/<paquete>.md (encabezados exactos, sin tildes)
+  columnas_tabla: [archivo, columna, descripcion, unidad, fuente, id_catalogo, desde, hasta, faltantes_pct]
+  secciones: ["Supuestos", "Problemas conocidos"]
+  tolerancia_faltantes_pct: 2.0
+
+# Rutas que cualquier tarea de datos puede escribir además de las de su paquete
+rutas_comunes: [manifest.csv, requirements.txt]
+
+# Unidades que no son condados (paquete lotes): cada una la define un archivo procesado. La cobertura de los
+# archivos con esa unidad se mide contra las filas de ese archivo, y sus claves tienen que existir ahí.
+unidades:
+  lote: {archivo: data/processed/lotes/lotes.csv, claves: [fips, id_lote]}
+  pixel: {archivo: data/processed/lotes/pixeles.csv, claves: [fips, id_lote, px_id]}
+
+paquetes:
+
+  base:
+    titulo: "Paquete 0 — Base"
+    seccion_claude: "§5"
+    descripcion: >
+      Condados del US Census (TIGER/Line o Cartographic Boundary 1:500k) filtrados a los
+      estados de config/config.yaml (data/reference/condados.gpkg), tabla de condados con
+      centroide y área (data/reference/condados.csv; fips de 5 dígitos como texto, estado =
+      código de dos letras de config.yaml), tabla de años con las ventanas del CLAUDE.md §4
+      (data/reference/anios.csv) y funciones comunes en src/common: fecha_a_anio(fecha) -> int,
+      zonal_mean(...), bu_ac_a_kgha(cultivo) -> factor de config.yaml, acres_a_ha(acres) -> ha
+      y validar_csv(ruta) -> lista de errores (vacía si está bien), importables con
+      `from src.common import fecha_a_anio, zonal_mean, bu_ac_a_kgha, acres_a_ha, validar_csv`.
+      El código va en src/base/download.py y src/base/process.py.
+    escribe: [src/__init__.py, src/base/, src/common/, data/raw/base/, data/interim/base/, data/reference/condados.gpkg, data/reference/condados.csv, data/reference/anios.csv, docs/datasets/base.md]
+    process: src/base/process.py
+    salidas: [data/reference/condados.csv, data/reference/anios.csv]
+    archivos:
+      - ruta: data/reference/condados.csv
+        temporal: estatico
+        claves: [fips]
+        columnas:
+          - {nombre: estado, catalogo: K02, tipo: texto}
+          - {nombre: condado, tipo: texto}
+          - {nombre: lat_centroide, catalogo: K06, rango: [35, 50]}
+          - {nombre: lon_centroide, catalogo: K06, rango: [-105, -80]}
+          - {nombre: area_km2, rango: [1, 20000]}
+      - ruta: data/reference/anios.csv
+        temporal: lista_anios
+        claves: [anio]
+        columnas:
+          - {nombre: inicio_temporada, catalogo: K04, tipo: fecha}
+          - {nombre: fin_temporada, catalogo: K04, tipo: fecha}
+          - {nombre: inicio_invierno_previo, catalogo: K04, tipo: fecha}
+          - {nombre: fin_invierno_previo, catalogo: K04, tipo: fecha}
+    especiales:
+      - {id: zona_config, peso: 3, catalogo: K01, descripcion: "condados.csv tiene exactamente los condados de los estados de config.yaml (la cantidad de cada estado), con fips de 5 dígitos cuyos 2 primeros son los del estado y la columna estado coincide"}
+      - {id: gpkg_condados, peso: 3, catalogo: K06, descripcion: "condados.gpkg es un GeoPackage válido con una capa de tantos polígonos como filas tiene condados.csv"}
+      - {id: anios_exactos, peso: 3, catalogo: K03, descripcion: "anios.csv tiene una fila por año del período con temporada AAAA-04-01 a AAAA-09-30 e invierno previo (AAAA−1)-11-01 a AAAA-03-31"}
+      - {id: funciones_comunes, peso: 3, descripcion: "fecha_a_anio, bu_ac_a_kgha (maíz 62,77; soja y trigo 67,25; avena 35,87) y acres_a_ha (0,4047) dan bien; validar_csv acepta un CSV correcto y rechaza claves duplicadas y fips inexistentes; zonal_mean existe"}
+
+  clima:
+    titulo: "clima — NASA POWER y GPM IMERG"
+    seccion_claude: "§6.1"
+    descripcion: >
+      NASA POWER (comunidad AG, API diaria por punto en el centroide de cada condado, sin
+      login, desde 1981 para climatologías y SPI) y GPM IMERG Final diario (GPM_3IMERGDF,
+      0,1°; por GES DISC requiere Earthdata) como media por condado. PRISM es opcional y solo
+      para validar. Salidas: clima_diario.csv, clima_mensual.csv y clima_anual.csv. Ventanas
+      de clima_anual: temporada = abril a septiembre del anio, invierno previo = noviembre del
+      anio − 1 a marzo del anio, julio y agosto. gdd_10_30 es el método del maíz (base 10 °C,
+      tope 30 °C). Ojo: en la API mensual de POWER la lluvia viene como media en mm/día.
+    escribe: [src/clima/, data/raw/clima/, data/interim/clima/, data/processed/clima/, docs/datasets/clima.md]
+    process: src/clima/process.py
+    salidas: [data/processed/clima/]
+    requiere: [base]
+    archivos:
+      - ruta: data/processed/clima/clima_diario.csv
+        temporal: diario
+        claves: [fips, anio, fecha]
+        nota: "Nombres de columna: propuesta (el CLAUDE.md dice 'variables crudas renombradas')."
+        coherencia: ["tmin_c <= tmed_c <= tmax_c"]
+        columnas:
+          - {nombre: tmed_c, catalogo: C01, rango: [-45, 45]}
+          - {nombre: tmax_c, catalogo: C02, rango: [-40, 50]}
+          - {nombre: tmin_c, catalogo: C03, rango: [-50, 40]}
+          - {nombre: prec_power_mm, catalogo: C08, rango: [0, 500]}
+          - {nombre: prec_imerg_mm, catalogo: P01, rango: [0, 500], login: earthdata}
+          - {nombre: hr_pct, catalogo: C06, rango: [0, 100]}
+          - {nombre: viento_ms, catalogo: C07, rango: [0, 40]}
+          - {nombre: rad_mj_m2, catalogo: C09, rango: [0, 45], desde: "1984-01-01"}
+          - {nombre: gwettop, catalogo: C11, rango: [0, 1]}
+          - {nombre: gwetroot, catalogo: C12, rango: [0, 1]}
+          - {nombre: gwetprof, catalogo: C13, rango: [0, 1]}
+          - {nombre: eto_pm_mm, catalogo: D01, rango: [0, 20]}
+      - ruta: data/processed/clima/clima_mensual.csv
+        temporal: mensual
+        claves: [fips, anio, mes]
+        coherencia:
+          - "tmin_c <= tmed_c <= tmax_c"
+          - "dias_tmax_gt35 <= dias_tmax_gt30"
+          - "dias_tmin_le_m2 <= dias_tmin_le0"
+          - "dias_lluvia_gt50 <= dias_lluvia_ge1"
+          - "prec_max1d_mm <= prec_max5d_mm"
+        estacionalidad:
+          - {columna: tmed_c, mayor: [6, 7, 8], menor: [12, 1, 2]}
+        columnas:
+          - {nombre: prec_imerg_mm, catalogo: P01, rango: [0, 1500], login: earthdata}
+          - {nombre: prec_power_mm, catalogo: C08, rango: [0, 1500]}
+          - {nombre: tmax_c, catalogo: C02, rango: [-30, 45]}
+          - {nombre: tmin_c, catalogo: C03, rango: [-40, 35]}
+          - {nombre: tmed_c, catalogo: C01, rango: [-35, 40]}
+          - {nombre: rad_mj_m2, catalogo: C09, rango: [0, 1100]}
+          - {nombre: eto_pm_mm, catalogo: D01, rango: [0, 400]}
+          - {nombre: deficit_mm, catalogo: D04, rango: [-400, 1500]}
+          - {nombre: dias_tmax_gt30, catalogo: D09, rango: [0, 31]}
+          - {nombre: dias_tmax_gt35, catalogo: D10, rango: [0, 31]}
+          - {nombre: dias_tmin_le0, catalogo: D11, rango: [0, 31]}
+          - {nombre: dias_tmin_le_m2, catalogo: D11, rango: [0, 31]}
+          - {nombre: gdd_10_30, catalogo: D08, rango: [0, 650]}
+          - {nombre: gdd_base0, catalogo: D08, rango: [0, 1100]}
+          - {nombre: dias_lluvia_ge1, catalogo: D18, rango: [0, 31]}
+          - {nombre: prec_max1d_mm, catalogo: D16, rango: [0, 500]}
+          - {nombre: prec_max5d_mm, catalogo: D16, rango: [0, 800]}
+          - {nombre: dias_lluvia_gt50, catalogo: D15, rango: [0, 31]}
+          - {nombre: racha_seca_max_dias, catalogo: D17, rango: [0, 31]}
+          - {nombre: spi1, catalogo: D06, rango: [-5, 5]}
+          - {nombre: spi3, catalogo: D06, rango: [-5, 5]}
+          - {nombre: spi6, catalogo: D06, rango: [-5, 5]}
+          - {nombre: anom_tmed_c, catalogo: D23, rango: [-20, 20]}
+          - {nombre: gwettop, catalogo: C11, rango: [0, 1]}
+          - {nombre: gwetroot, catalogo: C12, rango: [0, 1]}
+          - {nombre: gwetprof, catalogo: C13, rango: [0, 1]}
+      - ruta: data/processed/clima/clima_anual.csv
+        temporal: anual
+        claves: [fips, anio]
+        nota: "Nombres de las tendencias: propuesta. Las tendencias no pueden usar años posteriores al anio de la fila."
+        coherencia: ["doy_ultima_helada <= doy_primera_helada"]
+        columnas:
+          - {nombre: doy_ultima_helada, catalogo: D12, rango: [1, 366]}
+          - {nombre: doy_primera_helada, catalogo: D13, rango: [1, 366]}
+          - {nombre: periodo_libre_heladas_dias, catalogo: D14, rango: [0, 366]}
+          - {nombre: prec_temporada_mm, catalogo: D19, rango: [0, 2500]}
+          - {nombre: gdd_temporada, catalogo: D08, rango: [0, 4000]}
+          - {nombre: prec_invierno_previo_mm, catalogo: D20, rango: [0, 2000]}
+          - {nombre: prec_jul_mm, catalogo: D19, rango: [0, 800]}
+          - {nombre: tmax_jul_c, catalogo: D10, rango: [10, 45]}
+          - {nombre: dias_tmax_gt30_jul, catalogo: D10, rango: [0, 31]}
+          - {nombre: prec_ago_mm, catalogo: D19, rango: [0, 800]}
+          - {nombre: deficit_temporada_mm, catalogo: D04, rango: [-2000, 2000]}
+          - {nombre: tend_prec_mm_decada, catalogo: D24, rango: [-1000, 1000]}
+          - {nombre: tend_tmed_c_decada, catalogo: D24, rango: [-5, 5]}
+
+  cultivos:
+    titulo: "cultivos — USDA NASS Quick Stats, Cropland Data Layer y Crop Sequence Boundaries"
+    seccion_claude: "§6.2"
+    descripcion: >
+      NASS Quick Stats por condado (encuesta: rendimiento en bu/acre, superficie sembrada y
+      cosechada en acres, producción en bu; filtros del CLAUDE.md §6.2), Crop Progress por
+      estado, Censo Agropecuario 2012, 2017 y 2022 (prácticas), Cropland Data Layer (30 m, por
+      estado y año, 2008–2025, EPSG:5070) y Crop Sequence Boundaries. La API de Quick Stats
+      pide NASS_API_KEY (.env); sin clave, buscá la descarga pública de la base completa de
+      Quick Stats. (D) y (Z) van vacíos con el código en flag_nass; las filas OTHER (COMBINED)
+      COUNTIES (county_code 998) quedan afuera. NO sacar la tendencia del rendimiento.
+      Guardar el valor original (bu, acres) y la conversión en otra columna con las funciones
+      de src/common. Los códigos de cultivo son los de config.yaml. Los .tif de
+      data/reference van a git: máximo 50 MB cada uno (comprimidos; si a 30 m no entran,
+      documentá otra resolución en Supuestos).
+    escribe:
+      - src/cultivos/
+      - data/raw/cultivos/
+      - data/interim/cultivos/
+      - data/processed/cultivos/
+      - docs/datasets/cultivos.md
+      - data/reference/clases_cdl.csv
+      - data/reference/mascara_agricola.tif
+      - data/reference/mascara_maiz_2008.tif
+      - data/reference/mascara_maiz_2009.tif
+      - data/reference/mascara_maiz_2010.tif
+      - data/reference/mascara_maiz_2011.tif
+      - data/reference/mascara_maiz_2012.tif
+      - data/reference/mascara_maiz_2013.tif
+      - data/reference/mascara_maiz_2014.tif
+      - data/reference/mascara_maiz_2015.tif
+      - data/reference/mascara_maiz_2016.tif
+      - data/reference/mascara_maiz_2017.tif
+      - data/reference/mascara_maiz_2018.tif
+      - data/reference/mascara_maiz_2019.tif
+      - data/reference/mascara_maiz_2020.tif
+      - data/reference/mascara_maiz_2021.tif
+      - data/reference/mascara_maiz_2022.tif
+      - data/reference/mascara_maiz_2023.tif
+      - data/reference/mascara_maiz_2024.tif
+      - data/reference/mascara_maiz_2025.tif
+      - data/reference/mascara_soja_2008.tif
+      - data/reference/mascara_soja_2009.tif
+      - data/reference/mascara_soja_2010.tif
+      - data/reference/mascara_soja_2011.tif
+      - data/reference/mascara_soja_2012.tif
+      - data/reference/mascara_soja_2013.tif
+      - data/reference/mascara_soja_2014.tif
+      - data/reference/mascara_soja_2015.tif
+      - data/reference/mascara_soja_2016.tif
+      - data/reference/mascara_soja_2017.tif
+      - data/reference/mascara_soja_2018.tif
+      - data/reference/mascara_soja_2019.tif
+      - data/reference/mascara_soja_2020.tif
+      - data/reference/mascara_soja_2021.tif
+      - data/reference/mascara_soja_2022.tif
+      - data/reference/mascara_soja_2023.tif
+      - data/reference/mascara_soja_2024.tif
+      - data/reference/mascara_soja_2025.tif
+    process: src/cultivos/process.py
+    salidas: [data/processed/cultivos/, data/reference/clases_cdl.csv]
+    requiere: [base]
+    archivos:
+      - ruta: data/processed/cultivos/produccion_anual.csv
+        temporal: anual
+        claves: [fips, anio, cultivo]
+        multiplica_por: cultivos
+        # alfalfa y heno no se miden en bu y NASS no publica todos los condados. Con todo lo que
+        # existe se llega a 41,6 % (loop/notes/decisiones.md, ronda 5): 40 % suma completo
+        umbral_cobertura: 0.40
+        columnas_prohibidas: [tendencia, detrend, anom, sin_tend]
+        coherencia: ["sup_cosechada_ac <= sup_sembrada_ac"]
+        columnas:
+          - {nombre: sup_sembrada_ac, catalogo: Y01, rango: [0, 1000000]}
+          - {nombre: sup_cosechada_ac, catalogo: Y02, rango: [0, 1000000]}
+          - {nombre: produccion_bu, catalogo: Y03, rango: [0, 300000000]}
+          - {nombre: rend_bu_ac, catalogo: Y04, rango: [0, 320]}
+          - {nombre: rend_kgha, catalogo: Y04, rango: [0, 20000]}
+          - {nombre: sup_sembrada_ha, catalogo: Y01, rango: [0, 405000]}
+          - {nombre: ratio_cosechada, catalogo: Y05, rango: [0, 1.05]}
+          - {nombre: flag_nass, tipo: texto, sin_cobertura: true}
+      - ruta: data/processed/cultivos/rotacion_anual.csv
+        temporal: anual
+        claves: [fips, anio]
+        desde: "2008-01-01"
+        nota: "Nombres de los porcentajes por cultivo: propuesta. Los de transiciones los fija el CLAUDE.md (desde 2009: necesitan el CDL del año anterior)."
+        columnas:
+          - {nombre: pct_maiz, catalogo: R04, rango: [0, 100]}
+          - {nombre: pct_soja, catalogo: R04, rango: [0, 100]}
+          - {nombre: pct_trigo, catalogo: R04, rango: [0, 100]}
+          - {nombre: pct_alfalfa, catalogo: R04, rango: [0, 100]}
+          - {nombre: pct_heno, catalogo: R04, rango: [0, 100]}
+          - {nombre: pct_doble_trigo_soja, catalogo: R09, rango: [0, 100]}
+          - {nombre: pct_barbecho, catalogo: R14, rango: [0, 100]}
+          - {nombre: pct_maiz_tras_soja, catalogo: R03, rango: [0, 100], desde: "2009-01-01"}
+          - {nombre: pct_maiz_tras_maiz, catalogo: R03, rango: [0, 100], desde: "2009-01-01"}
+          - {nombre: pct_soja_tras_maiz, catalogo: R03, rango: [0, 100], desde: "2009-01-01"}
+          - {nombre: pct_soja_tras_soja, catalogo: R03, rango: [0, 100], desde: "2009-01-01"}
+      - ruta: data/processed/cultivos/rotacion_secuencia.csv
+        temporal: ventana
+        claves: [fips, ventana]
+        nota: "ventana = 'AAAA-AAAA' (8 años del CSB, ej. 2018-2025). Nombres: propuesta."
+        columnas:
+          - {nombre: pct_maiz_soja_alternado, rango: [0, 100]}
+          - {nombre: pct_maiz_continuo, catalogo: R13, rango: [0, 100]}
+          - {nombre: pct_soja_continua, catalogo: R13, rango: [0, 100]}
+          - {nombre: pct_rotacion_trigo, rango: [0, 100]}
+          - {nombre: pct_rotacion_alfalfa, catalogo: R10, rango: [0, 100]}
+          - {nombre: cultivos_por_anio, catalogo: R05, rango: [0, 3]}
+          - {nombre: diversidad_shannon, catalogo: R11, rango: [0, 3]}
+      - ruta: data/processed/cultivos/practicas_censo.csv
+        temporal: censo
+        claves: [fips, anio_censo]
+        # el Censo oculta condados con (D): 60 % suma completo
+        umbral_cobertura: 0.6
+        columnas:
+          - {nombre: pct_cobertura, rango: [0, 100]}
+          - {nombre: pct_labranza_cero, rango: [0, 100]}
+          - {nombre: pct_drenaje_tile, rango: [0, 100]}
+          - {nombre: pct_riego, rango: [0, 100]}
+      - ruta: data/processed/cultivos/fenologia_estado.csv
+        temporal: anual
+        unidad: estado
+        claves: [fips_estado, anio, cultivo]
+        multiplica_por: 2
+        nota: "Solo maíz y soja. Día del año en que se cruza el 50 % (interpolado)."
+        coherencia: ["doy_50_sembrado <= doy_50_emergido <= doy_50_floracion <= doy_50_cosechado"]
+        columnas:
+          - {nombre: doy_50_sembrado, catalogo: CT03, rango: [1, 366]}
+          - {nombre: doy_50_emergido, rango: [1, 366]}
+          - {nombre: doy_50_floracion, catalogo: CT05, rango: [1, 366]}
+          - {nombre: doy_50_cosechado, catalogo: CT04, rango: [1, 366]}
+    especiales:
+      - {id: clases_cdl, peso: 2, descripcion: "data/reference/clases_cdl.csv (codigo, nombre, grupo) tiene los códigos 1, 5, 24, 26, 28, 36, 37, 61 y 176 con los nombres oficiales del CDL"}
+      - {id: consistencia_rendimiento, peso: 2, descripcion: "en produccion_anual.csv: produccion_bu / sup_cosechada_ac ≈ rend_bu_ac (±10 %), rend_kgha = rend_bu_ac × factor de config.yaml (±1 %), sup_sembrada_ha = sup_sembrada_ac × 0,4047 (±1 %), y rendimientos plausibles (maíz 20–300, soja 5–100, trigo 10–150, avena 20–200 bu/ac)"}
+      - {id: mascara_agricola, peso: 3, catalogo: K07, descripcion: "data/reference/mascara_agricola.tif existe y es un GeoTIFF"}
+      - {id: mascaras_cultivo, peso: 2, catalogo: K07, descripcion: "data/reference/mascara_maiz_<anio>.tif y mascara_soja_<anio>.tif son GeoTIFF para cada año 2008–2025 (suma en proporción)"}
+
+  suelo_terreno:
+    titulo: "suelo_terreno — gSSURGO (USDA NRCS) y SRTM / NASADEM"
+    seccion_claude: "§6.5"
+    descripcion: >
+      gSSURGO por estado (file geodatabase con el raster MUKEY de 10 m y las tablas Valu1,
+      muaggatt, component y chorizon; EPSG:5070). Alternativas: gNATSGO o Soil Data Access;
+      SoilGrids v2.0 solo si gSSURGO falla. SRTM GL1 o NASADEM a 30 m. Los atributos se unen
+      al raster por MUKEY y se promedian por condado contando píxeles por MUKEY dentro de la
+      máscara agrícola (si existe). Verificá los nombres de columnas de Valu1 y muaggatt en la
+      documentación del NRCS. Una fila por condado.
+    escribe: [src/suelo_terreno/, data/raw/suelo_terreno/, data/interim/suelo_terreno/, data/processed/suelo_terreno/, docs/datasets/suelo_terreno.md]
+    process: src/suelo_terreno/process.py
+    salidas: [data/processed/suelo_terreno/]
+    requiere: [base]
+    archivos:
+      - ruta: data/processed/suelo_terreno/suelo_terreno_estatico.csv
+        temporal: estatico
+        claves: [fips]
+        nota: "Nombres: propuesta (los de Valu1 con la unidad al final: aws0_100 → aws0_100_mm)."
+        columnas:
+          - {nombre: aws0_100_mm, catalogo: L12, rango: [0, 600]}
+          - {nombre: aws0_150_mm, catalogo: L12, rango: [0, 800]}
+          - {nombre: soc0_30_gm2, catalogo: L10, rango: [0, 100000]}
+          - {nombre: soc0_100_gm2, catalogo: L04, rango: [0, 300000]}
+          - {patron: "nccpi_*", catalogo: L15, min_columnas: 2, rango: [0, 1]}
+          - {nombre: prof_raices_cm, rango: [0, 300]}
+          - {nombre: clase_drenaje, catalogo: L17, tipo: texto}
+          - {nombre: grupo_hidrologico, tipo: categoria, valores: [A, B, C, D, A/D, B/D, C/D]}
+          - {nombre: napa_min_cm, rango: [0, 300]}
+          - {nombre: arcilla_pct, catalogo: L01, rango: [0, 100]}
+          - {nombre: arena_pct, catalogo: L02, rango: [0, 100]}
+          - {nombre: limo_pct, catalogo: L03, rango: [0, 100]}
+          - {nombre: materia_organica_pct, catalogo: L04, rango: [0, 100]}
+          - {nombre: ph_agua, catalogo: L06, rango: [3, 10]}
+          - {nombre: clase_textural_usda, catalogo: L11, tipo: categoria, valores: [arcilla, arcillo_arenoso, arcillo_limoso, franco_arcillo_arenoso, franco_arcilloso, franco_arcillo_limoso, franco_arenoso, franco, franco_limoso, limoso, areno_franco, arenoso]}
+          - {nombre: factor_k_rusle, catalogo: L13, rango: [0, 0.8]}
+          - {nombre: elevacion_media_m, catalogo: T01, rango: [-10, 2000]}
+          - {nombre: elevacion_desvio_m, catalogo: T01, rango: [0, 300]}
+          - {nombre: pendiente_media_pct, catalogo: T02, rango: [0, 60]}
+          - {nombre: pendiente_gt2_pct, catalogo: T02, rango: [0, 100]}
+          - {nombre: twi_medio, catalogo: T06, rango: [0, 30]}
+          - {nombre: twi_decil_sup_pct, catalogo: T06, rango: [0, 100]}
+    especiales:
+      - {id: textura_suma_100, peso: 1, descripcion: "arcilla_pct + arena_pct + limo_pct da 100 ± 3 en cada condado"}
+
+  vegetacion:
+    titulo: "vegetacion — MODIS (MOD13Q1, MOD11A2, MOD16A2, MCD12Q1)"
+    seccion_claude: "§6.3"
+    descripcion: >
+      MOD13Q1 (NDVI, EVI, pixel reliability; 250 m, 16 días, 2000+), MOD11A2 (LST día y
+      noche; 1 km, 8 días), MOD16A2 (ET y PET; 500 m, 8 días, 2001+) y MCD12Q1 (máscara
+      provisoria hasta tener la del CDL) por condado. El CLAUDE.md propone AppEEARS (requiere
+      Earthdata y los pedidos van en cola). Filtrar por calidad de píxel antes de promediar.
+      Con las máscaras del CDL (paquete cultivos), NDVI solo de maíz y solo de soja de ese año:
+      un píxel de 250 m cuenta si al menos 75 % de su área es de ese cultivo (documentar el
+      umbral). Fenología con Savitzky-Golay y umbrales documentados.
+    escribe: [src/vegetacion/, data/raw/vegetacion/, data/interim/vegetacion/, data/processed/vegetacion/, docs/datasets/vegetacion.md]
+    process: src/vegetacion/process.py
+    salidas: [data/processed/vegetacion/]
+    requiere: [base]
+    archivos:
+      - ruta: data/processed/vegetacion/vegetacion_16d.csv
+        temporal: 16d
+        claves: [fips, anio, fecha]
+        columnas:
+          - {nombre: ndvi, catalogo: M01, rango: [-1, 1]}
+          - {nombre: evi, catalogo: M02, rango: [-1, 1]}
+          - {nombre: ndvi_maiz, catalogo: M01, rango: [-1, 1], desde: "2008-01-01"}
+          - {nombre: ndvi_soja, catalogo: M01, rango: [-1, 1], desde: "2008-01-01"}
+          - {nombre: frac_pixeles_validos, catalogo: M03, rango: [0, 1]}
+      - ruta: data/processed/vegetacion/vegetacion_mensual.csv
+        temporal: mensual
+        claves: [fips, anio, mes]
+        coherencia: ["lst_noche_c <= lst_dia_c", "et_mm <= pet_mm"]
+        estacionalidad:
+          - {columna: lst_dia_c, mayor: [6, 7, 8], menor: [12, 1, 2]}
+        columnas:
+          - {nombre: ndvi, catalogo: M01, rango: [-1, 1]}
+          - {nombre: evi, catalogo: M02, rango: [-1, 1]}
+          - {nombre: ndvi_maiz, catalogo: M01, rango: [-1, 1], desde: "2008-01-01"}
+          - {nombre: ndvi_soja, catalogo: M01, rango: [-1, 1], desde: "2008-01-01"}
+          - {nombre: lst_dia_c, catalogo: M04, rango: [-40, 75]}
+          - {nombre: lst_noche_c, catalogo: M05, rango: [-50, 45]}
+          - {nombre: et_mm, catalogo: M06, rango: [0, 300], desde: "2001-01-01"}
+          - {nombre: pet_mm, catalogo: M07, rango: [0, 500], desde: "2001-01-01"}
+          - {nombre: et_pet_ratio, rango: [0, 2], desde: "2001-01-01"}
+          - {nombre: ndvi_anom_z, catalogo: F10, rango: [-6, 6]}
+          - {nombre: vci, catalogo: F11, rango: [0, 100]}
+          - {nombre: tci, catalogo: F12, rango: [0, 100]}
+          - {nombre: vhi, catalogo: F13, rango: [0, 100]}
+      - ruta: data/processed/vegetacion/fenologia_anual.csv
+        temporal: anual
+        claves: [fips, anio]
+        coherencia: ["doy_inicio <= doy_pico <= doy_fin"]
+        columnas:
+          - {nombre: doy_inicio, catalogo: F01, rango: [1, 366]}
+          - {nombre: doy_pico, catalogo: F02, rango: [1, 366]}
+          - {nombre: doy_fin, catalogo: F04, rango: [1, 366]}
+          - {nombre: ndvi_max, catalogo: F03, rango: [-1, 1]}
+          - {nombre: duracion_dias, catalogo: F05, rango: [0, 366]}
+          - {nombre: ndvi_integral, catalogo: F06, rango: [0, 400]}
+          - {nombre: n_ciclos, catalogo: F07, rango: [0, 4]}
+          - {nombre: ndvi_max_maiz, catalogo: F03, rango: [-1, 1], desde: "2008-01-01"}
+          - {nombre: ndvi_max_soja, catalogo: F03, rango: [-1, 1], desde: "2008-01-01"}
+          - {nombre: dias_ndvi_lt03_invierno, catalogo: F09, rango: [0, 152]}
+
+  agua:
+    titulo: "agua — SMAP L4 y GRACE-DA-DM"
+    seccion_claude: "§6.4"
+    descripcion: >
+      SMAP L4 (SPL4SMGP: sm_surface, sm_rootzone; 9 km, cada 3 h, desde 2015-03) y
+      GRACE-DA-DM (GRACEDADM_CLSM025GL_7D global, o la versión solo para EE.UU.: percentiles
+      de agua subterránea, zona radicular y superficie; semanal). El CLAUDE.md propone
+      AppEEARS y GES DISC (requieren Earthdata). Documentar el umbral de saturación: en el
+      Corn Belt el exceso de agua en primavera retrasa la siembra.
+    escribe: [src/agua/, data/raw/agua/, data/interim/agua/, data/processed/agua/, docs/datasets/agua.md]
+    process: src/agua/process.py
+    salidas: [data/processed/agua/]
+    requiere: [base]
+    archivos:
+      - ruta: data/processed/agua/agua_diario.csv
+        temporal: diario
+        claves: [fips, anio, fecha]
+        desde: "2015-03-31"
+        nota: "Nombres: propuesta."
+        columnas:
+          - {nombre: sm_surface_m3m3, catalogo: S02, rango: [0, 0.6]}
+          - {nombre: sm_rootzone_m3m3, catalogo: S03, rango: [0, 0.6]}
+      - ruta: data/processed/agua/agua_mensual.csv
+        temporal: mensual
+        claves: [fips, anio, mes]
+        desde: "2015-04-01"
+        nota: "Nombres: propuesta, salvo sm_rootzone_anom_z que fija el CLAUDE.md."
+        coherencia: ["sm_rootzone_min_m3m3 <= sm_rootzone_m3m3", "sm_surface_min_m3m3 <= sm_surface_m3m3"]
+        columnas:
+          - {nombre: sm_surface_m3m3, catalogo: S02, rango: [0, 0.6]}
+          - {nombre: sm_rootzone_m3m3, catalogo: S03, rango: [0, 0.6]}
+          - {nombre: sm_surface_min_m3m3, catalogo: S02, rango: [0, 0.6]}
+          - {nombre: sm_rootzone_min_m3m3, catalogo: S03, rango: [0, 0.6]}
+          - {nombre: sm_rootzone_anom_z, catalogo: D25, rango: [-6, 6]}
+          - {nombre: dias_sm_saturado, catalogo: D26, rango: [0, 31]}
+      - ruta: data/processed/agua/agua_semanal.csv
+        temporal: semanal
+        claves: [fips, anio, fecha]
+        desde: "2003-02-01"
+        nota: "Fecha de inicio a verificar (research productos_nasa). Nombres: propuesta."
+        columnas:
+          - {nombre: gws_pctl, catalogo: W01, rango: [0, 100]}
+          - {nombre: rtzsm_pctl, catalogo: W02, rango: [0, 100]}
+          - {nombre: sfsm_pctl, catalogo: W03, rango: [0, 100]}
+
+  # ------------------------------------------------------------------ recursos del desafío
+  # Paquetes que suman los "NASA Data & Resources" del desafío que el CLAUDE.md no incluía
+  # (pestaña Resources de "Field Shift: Adapting Farms with NASA Data", consultada 2026-11-14).
+  # Mismo contrato de CSV (CLAUDE.md §4) y mismas reglas. Nombres de columna: propuesta.
+  # Las fuentes que no se usan, y por qué, están en la hoja Fuentes de loop/runs/registro_rondas.xlsx.
+
+  economia:
+    titulo: "economia — precios recibidos (USDA NASS) y costos y retornos (USDA ERS)"
+    seccion_claude: "recursos del desafío: USDA NASS Quick Stats y USDA AMS Market News; CLAUDE.md §8, research 7"
+    descripcion: >
+      Precios y costos para comparar rotaciones (short_desc, regiones e ítems verificados en
+      docs/research/precios_margenes.md). Por estado, año y cultivo: el precio recibido de NASS del año
+      comercial (statisticcat_desc=PRICE RECEIVED, reference_period_desc=MARKETING YEAR,
+      agg_level_desc=STATE) en su unidad original, sacado del volcado público qs.crops que ya está en
+      data/raw/cultivos/nass/ (leelo desde ahí, sin copiarlo, y anotá en el manifest ese archivo como
+      fuente) o de la API si hay NASS_API_KEY. Los costos y retornos por acre sembrado salen de USDA ERS
+      Commodity Costs and Returns, región Heartland (IA, IL e IN están adentro: el mismo valor para los
+      tres estados): valor de la producción, costos operativos, costos totales listados y valor de la
+      producción menos costos operativos. Granos (maiz, soja, trigo_invierno, avena) en
+      economia_anual.csv; forrajes (alfalfa, heno) en economia_forrajes_anual.csv, solo con precio (ERS
+      no tiene costos de forrajes). Los nombres de cultivo son los de produccion_anual.csv. (D), (S) y
+      (NA) van vacíos, con el código en flag_nass. USDA AMS Market News es opcional.
+    escribe: [src/economia/, data/raw/economia/, data/interim/economia/, data/processed/economia/, docs/datasets/economia.md]
+    process: src/economia/process.py
+    salidas: [data/processed/economia/]
+    requiere: [base]
+    archivos:
+      - ruta: data/processed/economia/economia_anual.csv
+        temporal: anual
+        unidad: estado
+        claves: [fips_estado, anio, cultivo]
+        multiplica_por: 4
+        # NASS dejó de publicar el precio del trigo en Iowa (2020+) y el de la avena en Indiana (2016+)
+        umbral_cobertura: 0.85
+        nota: "Cultivos: maiz, soja, trigo_invierno, avena. ERS publica trigo (todo) y avena por región: documentá la equivalencia."
+        coherencia: ["costo_operativo_usd_ac <= costo_total_usd_ac"]
+        columnas:
+          - {nombre: precio_usd_bu, catalogo: MK01, rango: [0.5, 40]}
+          - {nombre: valor_produccion_usd_ac, rango: [0, 3000]}
+          - {nombre: costo_operativo_usd_ac, catalogo: MK03, rango: [10, 1500]}
+          - {nombre: costo_total_usd_ac, catalogo: MK03, rango: [20, 2500]}
+          - {nombre: margen_operativo_usd_ac, catalogo: MK02, rango: [-1500, 2500]}
+          - {nombre: flag_nass, tipo: texto, sin_cobertura: true}
+      - ruta: data/processed/economia/economia_forrajes_anual.csv
+        temporal: anual
+        unidad: estado
+        claves: [fips_estado, anio, cultivo]
+        multiplica_por: 2
+        nota: "Cultivos: alfalfa (HAY, ALFALFA) y heno (HAY, (EXCL ALFALFA)), en dólares por tonelada corta (2000 lb), como los publica NASS."
+        columnas:
+          - {nombre: precio_usd_ton, catalogo: MK01, rango: [10, 700]}
+          - {nombre: flag_nass, tipo: texto, sin_cobertura: true}
+
+  aptitud:
+    titulo: "aptitud — FAO GAEZ v4: aptitud y rendimiento alcanzable, clima actual y 2041–2070"
+    seccion_claude: "recursos del desafío: FAO Global Agro-Ecological Zones (GAEZ)"
+    descripcion: >
+      FAO GAEZ v4 (gaez.fao.org, capas públicas): índice de aptitud (de 0–10000 a 0–100) y rendimiento
+      alcanzable en secano con manejo alto de maíz, soja, trigo, avena y alfalfa, con el clima de
+      referencia 1981–2010 y con el de 2041–2070 bajo RCP8.5 (ensamble de modelos si existe; si no,
+      documentá cuáles usaste). Sirve para ver qué cultivos ganan o pierden aptitud con el clima que
+      viene. Media por condado sobre los píxeles agrícolas (data/reference/mascara_agricola.tif) si tiene
+      sentido a la resolución de GAEZ; si no, sobre todo el condado (documentalo). Verificá en el portal
+      los nombres exactos de las capas (tema "Suitability and Attainable Yield") y la unidad del
+      rendimiento (GAEZ lo da en kg de materia seca por hectárea: documentalo). Una fila por condado.
+    escribe: [src/aptitud/, data/raw/aptitud/, data/interim/aptitud/, data/processed/aptitud/, docs/datasets/aptitud.md]
+    process: src/aptitud/process.py
+    salidas: [data/processed/aptitud/]
+    requiere: [base]
+    archivos:
+      - ruta: data/processed/aptitud/aptitud_estatico.csv
+        temporal: estatico
+        claves: [fips]
+        columnas:
+          - {nombre: aptitud_maiz_1981_2010, catalogo: Z01, rango: [0, 100]}
+          - {nombre: aptitud_soja_1981_2010, catalogo: Z01, rango: [0, 100]}
+          - {nombre: aptitud_trigo_1981_2010, catalogo: Z01, rango: [0, 100]}
+          - {nombre: aptitud_avena_1981_2010, catalogo: Z01, rango: [0, 100]}
+          - {nombre: aptitud_alfalfa_1981_2010, catalogo: Z01, rango: [0, 100]}
+          - {nombre: aptitud_maiz_2041_2070, catalogo: Z04, rango: [0, 100]}
+          - {nombre: aptitud_soja_2041_2070, catalogo: Z04, rango: [0, 100]}
+          - {nombre: aptitud_trigo_2041_2070, catalogo: Z04, rango: [0, 100]}
+          - {nombre: aptitud_avena_2041_2070, catalogo: Z04, rango: [0, 100]}
+          - {nombre: aptitud_alfalfa_2041_2070, catalogo: Z04, rango: [0, 100]}
+          - {nombre: rend_alcanzable_maiz_kgha_1981_2010, catalogo: Z02, rango: [0, 25000]}
+          - {nombre: rend_alcanzable_maiz_kgha_2041_2070, catalogo: Z02, rango: [0, 25000]}
+          - {nombre: rend_alcanzable_soja_kgha_1981_2010, catalogo: Z02, rango: [0, 10000]}
+          - {nombre: rend_alcanzable_soja_kgha_2041_2070, catalogo: Z02, rango: [0, 10000]}
+          - {nombre: rend_alcanzable_trigo_kgha_1981_2010, catalogo: Z02, rango: [0, 15000]}
+          - {nombre: rend_alcanzable_trigo_kgha_2041_2070, catalogo: Z02, rango: [0, 15000]}
+
+  paisaje:
+    titulo: "paisaje — USGS NLCD: cobertura del suelo a 30 m"
+    seccion_claude: "recursos del desafío: USGS National Land Cover Database (NLCD)"
+    descripcion: >
+      USGS National Land Cover Database: porcentaje del área de cada condado en cultivos (clase 82),
+      pasturas y heno (81), bosque (41 a 43), humedales (90 y 95), urbano (21 a 24) y agua (11), y la
+      superficie impermeable media (producto de impermeabilidad de NLCD). Preferí Annual NLCD (una capa
+      por año) para cubrir 2000–2025; si solo conseguís las ediciones clásicas (2001, 2004, 2006, 2008,
+      2011, 2013, 2016, 2019, 2021), poné solo esos años y documentalo. El porcentaje es sobre el área
+      total del condado, no sobre la máscara agrícola. Leé las capas por ventana sobre los tres estados
+      (COG o servicios de MRLC) para no pasar los 5 GB en data/raw/paisaje.
+    escribe: [src/paisaje/, data/raw/paisaje/, data/interim/paisaje/, data/processed/paisaje/, docs/datasets/paisaje.md]
+    process: src/paisaje/process.py
+    salidas: [data/processed/paisaje/]
+    requiere: [base]
+    archivos:
+      - ruta: data/processed/paisaje/paisaje_anual.csv
+        temporal: anual
+        claves: [fips, anio]
+        # Annual NLCD puede no tener todavía 2024 y 2025
+        umbral_cobertura: 0.9
+        columnas:
+          - {nombre: pct_cultivos_nlcd, rango: [0, 100]}
+          - {nombre: pct_pasturas_heno_nlcd, rango: [0, 100]}
+          - {nombre: pct_bosque_nlcd, rango: [0, 100]}
+          - {nombre: pct_humedales_nlcd, rango: [0, 100]}
+          - {nombre: pct_urbano_nlcd, rango: [0, 100]}
+          - {nombre: pct_agua_nlcd, rango: [0, 100]}
+          - {nombre: impermeable_pct, rango: [0, 100]}
+
+  teledeteccion:
+    titulo: "teledeteccion — Landsat y Sentinel-2 a 30 m: lotes desnudos y cobertura invernal"
+    seccion_claude: "recursos del desafío: Landsat y Copernicus Sentinel-2"
+    descripcion: >
+      Landsat Collection 2 Level-2 (NASA/USGS, 30 m) y Sentinel-2 L2A (ESA, 10–20 m, 2017+), o su versión
+      armonizada HLS (NASA, 30 m). Miden lo que MODIS (250 m) mezcla: qué parte de los lotes queda desnuda
+      y cuál tiene cobertura verde fuera de la temporada (cultivos de cobertura, trigo de invierno). Por
+      condado y año, sobre los píxeles agrícolas del CDL de ese año: % de píxeles con suelo desnudo
+      (NDVI < 0,25) en la mediana de abril–mayo y en la de octubre–noviembre, % con cobertura verde
+      (NDVI ≥ 0,3) en la mediana del 15 de marzo al 30 de abril, BSI medio de abril–mayo, NDVI máximo de
+      abril–septiembre (media de los píxeles), cantidad de escenas válidas y fracción de píxeles válidos.
+      Enmascarar nubes, sombras, nieve y agua con las bandas de calidad (QA_PIXEL, SCL o Fmask). Para no
+      bajar escenas enteras: leer las COG por ventana o muestrear al azar píxeles agrícolas de cada
+      condado (documentá el método, el tamaño de la muestra, la resolución efectiva y los umbrales).
+      Planetary Computer tiene Landsat y Sentinel-2 sin login; HLS por LP DAAC pide Earthdata. Cubrí
+      primero todos los condados en los años recientes y completá hacia atrás en las rondas siguientes.
+    escribe: [src/teledeteccion/, data/raw/teledeteccion/, data/interim/teledeteccion/, data/processed/teledeteccion/, docs/datasets/teledeteccion.md]
+    process: src/teledeteccion/process.py
+    salidas: [data/processed/teledeteccion/]
+    requiere: [base]
+    archivos:
+      - ruta: data/processed/teledeteccion/teledeteccion_anual.csv
+        temporal: anual
+        claves: [fips, anio]
+        # desde el primer CDL nacional; nubes, nieve y el bandeado de Landsat 7 dejan huecos
+        desde: "2008-01-01"
+        umbral_cobertura: 0.8
+        columnas:
+          - {nombre: pct_suelo_desnudo_abr_may, catalogo: F08, rango: [0, 100]}
+          - {nombre: pct_suelo_desnudo_oct_nov, catalogo: F08, rango: [0, 100]}
+          - {nombre: pct_cobertura_verde_mar_abr, rango: [0, 100]}
+          - {nombre: bsi_abr_may, catalogo: H05, rango: [-1, 1]}
+          - {nombre: ndvi_max_30m, catalogo: H02, rango: [-1, 1]}
+          - {nombre: n_escenas_validas, rango: [0, 5000]}
+          - {nombre: frac_pixeles_validos, catalogo: H06, rango: [0, 1]}
+
+  validacion:
+    titulo: "validacion — PRISM y CoCoRaHS: lluvia y temperatura medidas para validar POWER e IMERG"
+    seccion_claude: "§6.1 (PRISM opcional); recursos del desafío: PRISM y CoCoRaHS"
+    descripcion: >
+      Datos de superficie para validar la lluvia y la temperatura de NASA POWER e IMERG (no son de la
+      NASA). PRISM (Oregon State University, 4 km, mensual; uso no comercial con cita): media por condado
+      de la lluvia y de las temperaturas máxima, mínima y media de cada mes 2000–2025 (servicio web de
+      PRISM; respetá sus límites de descarga). CoCoRaHS (pluviómetros de voluntarios): lluvia mensual por
+      condado como media de las estaciones que reportaron al menos 25 días del mes, y cuántas son (los
+      condados sin estaciones van vacíos). En el data card, una tabla corta con el sesgo y la correlación
+      mensual de POWER frente a PRISM y a CoCoRaHS.
+    escribe: [src/validacion/, data/raw/validacion/, data/interim/validacion/, data/processed/validacion/, docs/datasets/validacion.md]
+    process: src/validacion/process.py
+    salidas: [data/processed/validacion/]
+    requiere: [base]
+    archivos:
+      - ruta: data/processed/validacion/validacion_mensual.csv
+        temporal: mensual
+        claves: [fips, anio, mes]
+        # CoCoRaHS no tiene estaciones en todos los condados
+        umbral_cobertura: 0.6
+        coherencia: ["tmin_prism_c <= tmed_prism_c <= tmax_prism_c"]
+        columnas:
+          - {nombre: prec_prism_mm, rango: [0, 1000]}
+          - {nombre: tmax_prism_c, rango: [-30, 45]}
+          - {nombre: tmin_prism_c, rango: [-40, 35]}
+          - {nombre: tmed_prism_c, rango: [-35, 40]}
+          - {nombre: prec_cocorahs_mm, rango: [0, 1000], desde: "2008-01-01"}
+          - {nombre: n_estaciones_cocorahs, rango: [0, 500], desde: "2008-01-01"}
+
+  ecostress:
+    titulo: "ecostress — ECOSTRESS: temperatura de superficie, ET y estrés evaporativo a 70 m"
+    seccion_claude: "recursos del desafío: ECOSTRESS"
+    descripcion: >
+      ECOSTRESS (NASA/JPL, desde la Estación Espacial, 2018-07 en adelante, con pasadas a horas variables):
+      temperatura de superficie (ECO_L2T_LSTE), evapotranspiración (ECO_L3T_JET) y el índice de estrés
+      evaporativo (ECO_L4T_ESI) de la colección 2 en LP DAAC. Pide Earthdata: lo más simple es un pedido
+      por área en AppEEARS con los polígonos de condados.gpkg (va en cola: lanzalo, anotá el ID en tu
+      bitácora y seguí en la ronda siguiente). Media mensual por condado sobre los píxeles agrícolas, solo
+      con píxeles de buena calidad y sin nubes, y cuántas pasadas se usaron. Verificá en LP DAAC los
+      nombres exactos de producto y capa.
+    escribe: [src/ecostress/, data/raw/ecostress/, data/interim/ecostress/, data/processed/ecostress/, docs/datasets/ecostress.md]
+    process: src/ecostress/process.py
+    salidas: [data/processed/ecostress/]
+    requiere: [base]
+    archivos:
+      - ruta: data/processed/ecostress/ecostress_mensual.csv
+        temporal: mensual
+        claves: [fips, anio, mes]
+        desde: "2018-08-01"
+        # pasadas irregulares, nubes y nieve: muchos meses sin dato
+        umbral_cobertura: 0.6
+        columnas:
+          - {nombre: lst_ecostress_c, catalogo: X01, rango: [-40, 75], login: earthdata}
+          - {nombre: et_ecostress_mm_dia, catalogo: X02, rango: [0, 15], login: earthdata}
+          - {nombre: esi_ecostress, catalogo: X03, rango: [0, 2], login: earthdata}
+          - {nombre: n_pasadas_ecostress, rango: [0, 300], login: earthdata}
+
+  nldas:
+    titulo: "nldas — NLDAS-2: humedad del suelo por capas, ET y escorrentía desde 1979"
+    seccion_claude: "recursos del desafío: NLDAS/GLDAS"
+    descripcion: >
+      NLDAS-2 (NASA GES DISC), modelo Noah (NLDAS_NOAH0125_M, mensual, 0,125°, desde 1979): completa a SMAP,
+      que empieza en 2015-03. Media mensual por condado de la humedad del suelo de 0–10 cm y de 0–100 cm
+      (los kg/m² de cada capa pasados a m³/m³ dividiendo por su espesor), la anomalía z de la de 0–100 cm
+      por mes calendario con base 1991–2020, la evapotranspiración, la escorrentía total (superficial más
+      subsuperficial) y el equivalente en agua de la nieve. GES DISC pide Earthdata: buscá primero un
+      acceso público sin login al mismo producto (documentalo). GLDAS no hace falta: NLDAS cubre EE.UU. con
+      más resolución.
+    escribe: [src/nldas/, data/raw/nldas/, data/interim/nldas/, data/processed/nldas/, docs/datasets/nldas.md]
+    process: src/nldas/process.py
+    salidas: [data/processed/nldas/]
+    requiere: [base]
+    archivos:
+      - ruta: data/processed/nldas/nldas_mensual.csv
+        temporal: mensual
+        claves: [fips, anio, mes]
+        columnas:
+          - {nombre: sm_0_10cm_m3m3, catalogo: G01, rango: [0, 0.6], login: earthdata}
+          - {nombre: sm_0_100cm_m3m3, catalogo: G02, rango: [0, 0.6], login: earthdata}
+          - {nombre: sm_0_100cm_anom_z, rango: [-6, 6], login: earthdata}
+          - {nombre: et_nldas_mm, catalogo: G03, rango: [0, 300], login: earthdata}
+          - {nombre: escorrentia_nldas_mm, catalogo: G04, rango: [0, 600], login: earthdata}
+          - {nombre: swe_nldas_mm, rango: [0, 1500], login: earthdata}
+
+  hidrologia:
+    titulo: "hidrologia — USGS NWIS: napa freática y caudales medidos"
+    seccion_claude: "recursos del desafío: USGS National Water Information System (NWIS)"
+    descripcion: >
+      USGS National Water Information System (hoy por las Water Data APIs de USGS, sin login): profundidad
+      de la napa en los pozos de monitoreo de cada condado y caudal en sus estaciones de aforo. Por condado
+      y mes: mediana de la profundidad a la napa (m bajo la superficie) de los pozos con dato ese mes y
+      cuántos son; percentil del caudal medio mensual de cada estación respecto de su propio período
+      1991–2020, promediado entre las estaciones del condado, y cuántas son. Muchos condados no tienen
+      pozos o estaciones: van vacíos.
+    escribe: [src/hidrologia/, data/raw/hidrologia/, data/interim/hidrologia/, data/processed/hidrologia/, docs/datasets/hidrologia.md]
+    process: src/hidrologia/process.py
+    salidas: [data/processed/hidrologia/]
+    requiere: [base]
+    archivos:
+      - ruta: data/processed/hidrologia/hidrologia_mensual.csv
+        temporal: mensual
+        claves: [fips, anio, mes]
+        # pocos condados tienen pozos de monitoreo con serie mensual
+        umbral_cobertura: 0.3
+        columnas:
+          - {nombre: napa_prof_m, rango: [0, 300]}
+          - {nombre: n_pozos, rango: [0, 1000]}
+          - {nombre: caudal_pctl, rango: [0, 100]}
+          - {nombre: n_estaciones_aforo, rango: [0, 300]}
+
+  lotes:
+    titulo: "lotes — datos por píxel de 30 m dentro de 10 lotes de demostración (pedido 1 del equipo de ML)"
+    seccion_claude: "§6.6"
+    # No entra en tabla_anual.csv ni en tabla_mensual.csv: otra granularidad (lote y píxel).
+    fuera_de_tablas: true
+    descripcion: >
+      Pedido del equipo de ML (aprobado por el humano el 2026-11-14): datos por píxel de 30 m dentro de 10 lotes
+      concretos, para que ML divida cada lote en sectores (loma seca, bajo húmedo, zona media). Va a una entrega
+      aparte (fieldshift_lotes_v1) y no entra en las tablas unidas. GRILLA: la de data/reference/mascara_agricola.tif
+      (EPSG:5070, 30 m; los centros de píxel son múltiplos de 30 m). Un píxel es del lote si su centro cae dentro del
+      polígono; es interior (interior = 1) si su centro cae dentro del polígono achicado 30 m hacia adentro.
+      LOTES: polígonos de USDA NASS Crop Sequence Boundaries (CSB) de la ventana de 8 años más reciente que esté
+      publicada (todavía no está bajado: GeoParquet en Source Cooperative, fiboa/us-usda-cropland, con filtro espacial,
+      o la descarga de NASS por estado). id_lote = <fips>_<CSBID> (solo letras y números); px_id = entero único dentro
+      del lote (por ejemplo, el índice fila × columna en el recuadro del lote). Paisajes y cantidades: 3 lotes en la
+      llanura con depresiones del Des Moines Lobe (Story 19169, Hamilton 19079 o Wright 19197), 3 en lomas sobre loess
+      (Crawford 19047 o Shelby 19165), 2 de control en llanura plana (Champaign 17019) y 2 en un condado de Indiana a
+      elección. Criterios: maíz o soja en al menos 6 de los 8 años de la ventana del CSB; 30 a 120 ha y forma compacta;
+      al menos 300 píxeles interiores; sin riego (pct_riego del censo más reciente del condado menor a 5 %); en
+      depresiones y lomas, relieve dentro del lote (NASADEM, máxima menos mínima) de más de 3 m. Elegí con una regla
+      determinística (documentala) y guardá en lotes.csv el motivo y cuántos candidatos cumplían. Empezá por
+      lotes.csv, lotes.gpkg y pixeles.csv: definen los lotes y los píxeles contra los que se mide la cobertura de los
+      demás archivos. VEGETACIÓN (vegetacion_px_obs.csv): todas las observaciones despejadas del 1 de marzo al 30 de
+      noviembre de 2000 a 2025, una fila por píxel, fecha, producto y sensor. Landsat Collection 2 Level-2
+      (landsat-c2-l2 en Planetary Computer, sin login; L5, L7, L8 y L9; reflectancia = DN × 0.0000275 − 0.2) con las
+      mismas reglas de QA_PIXEL que el paquete teledeteccion (relleno, nube dilatada, cirro, nube, sombra, nieve y
+      agua), y HLS v2 S30 (hls2-s30 en Planetary Computer; el archivo completo está en LP DAAC con Earthdata) con las
+      equivalentes de Fmask; HLS L30 es opcional (producto hls_l30). slc_off = 1 en Landsat 7 desde el 2003-05-31.
+      qa_valor = el valor crudo de QA_PIXEL (Landsat) o de Fmask (HLS). EVI2 = 2.5 (nir − red) / (nir + 2.4 red + 1);
+      GCVI = nir / green − 1; NDMI = (nir − swir1) / (nir + swir1). Redondeá reflectancias e índices a 4 decimales y
+      escribí el archivo ordenado por las claves (es grande: se compara fila a fila al reproducirlo). Los resúmenes de
+      vegetacion_px_anual.csv usan solo ese año y solo Landsat (serie homogénea 2000–2025); las columnas _s2 salen de
+      HLS S30. CULTIVO: clase del CDL por píxel y año desde 2008 (y de antes si existe para el estado). Las teselas de
+      2024–2025 de data/raw/cultivos son exportaciones a 30 m por vecino más cercano y corren los bordes de los lotes:
+      para esos años bajá el CDL nativo de 10 m de la ventana de cada lote y guardá la clase con más superficie dentro
+      del píxel de 30 m y su fracción (frac_clase). En lotes_anual.csv, el cultivo principal de los píxeles interiores,
+      su porcentaje y lote_partido = 1 si es menos de 90 % (no borrar el lote). TERRENO: NASADEM ya bajado en
+      data/raw/suelo_terreno/nasadem (leelo desde ahí y registralo en el manifest); las derivadas se calculan en la
+      grilla original (o en el DEM suavizado: documentá cómo) antes del remuestreo bilineal a la grilla de 30 m; el TWI
+      con el área aportante de una ventana de al menos 2 km alrededor del lote; prof_depresion_m = DEM con las
+      depresiones rellenas menos el DEM; curvaturas en 1/m, TPI en m y aspecto vacío donde la pendiente es 0. Extra
+      aprobado por el humano: USGS 3DEP lidar (1 m o 1/3"; no es de la NASA),
+      las mismas variables agregadas a 30 m en las columnas _3dep. SUELO: SSURGO por Soil Data Access con consulta
+      espacial: mukeys que cortan cada lote y sus polígonos rasterizados a 10 m en una grilla alineada con la de 30 m;
+      fracción de cada mukey en cada píxel en suelo_px.csv y sus atributos en suelo_mukey.csv, con los mismos cálculos
+      y nombres que suelo_terreno (0–30 cm ponderado; aws de Valu1 en mm). frec_inundacion traduce flodfreqdcd (None →
+      nula, Very rare → muy_rara, Rare → rara, Occasional → ocasional, Frequent → frecuente, Very frequent →
+      muy_frecuente); en los demás textos de SSURGO, un "None" va como "nula" ("None" es un valor de relleno prohibido
+      por el contrato). SUELO DESNUDO: por píxel y año, mediana de
+      la reflectancia Landsat de las observaciones con NDVI < 0,25 del 15 de marzo al 15 de mayo y de octubre–noviembre,
+      NBR2 = (swir1 − swir2) / (swir1 + swir2) y cuántas observaciones entraron; el compuesto multianual usa todos los
+      años (decilo en la data card). CLIMA del lote: NASA POWER diario en el centroide del lote (mismas variables y
+      nombres que clima_diario.csv), IMERG Final diario de la celda de 0,1° que cubre el centroide y SMAP L4 diario
+      (zona radicular y superficie) desde 2015-04; los anuales con las mismas ventanas y nombres que clima_anual.csv.
+      DRENAJE con caños (opcional): mapa de 30 m de Valayamkunnath y otros (Scientific Data, 2020), si es público.
+      NO HACER (lo calcula ML dentro de cada fold): nada de z-scores, percentiles, anomalías ni normalización dentro
+      del lote o entre años; no interpolar, suavizar ni rellenar el NDVI en el tiempo; no aplicar filtros espaciales a
+      la reflectancia ni a los índices; no armar sectores, clusters ni umbrales de loma o bajo; no mezclar Landsat y
+      HLS sin las columnas producto y sensor; no borrar las observaciones de Landsat 7 con SLC-off (van marcadas). La
+      data card lleva una sección "Controles de calidad" con el resultado de cada control: píxeles por lote, pureza del
+      cultivo por lote y año, distribución de observaciones despejadas (píxeles-año con menos de 3 en julio–agosto),
+      2012 aparte (observaciones por sensor y % de píxeles en franjas del SLC-off), coherencia Landsat–Sentinel-2
+      (mismo píxel, fechas a 3 días o menos: diferencia media y desvío del NDVI), alineación CSB–CDL, relieve (lotes con
+      menos de 2 m) y cobertura de SSURGO (% del lote con mukey y mukeys por lote). process.py regenera todos los CSV
+      y el GeoPackage desde data/raw y data/interim, sin bajar nada.
+    escribe: [src/lotes/, data/raw/lotes/, data/interim/lotes/, data/processed/lotes/, docs/datasets/lotes.md]
+    process: src/lotes/process.py
+    salidas: [data/processed/lotes/]
+    requiere: [base, cultivos, suelo_terreno]
+    archivos:
+      - ruta: data/processed/lotes/lotes.csv
+        temporal: estatico
+        unidad: lote
+        claves: [fips, id_lote]
+        columnas_prohibidas: &prohibidas_lotes [anom, zscore, _z, percentil, pctl, normaliz, relativ, cluster, sector]
+        motivo_prohibidas: &motivo_lotes "nada de normalizar, anomalías, z-scores, percentiles ni sectores: eso lo calcula ML dentro de cada fold"
+        columnas:
+          - {nombre: paisaje, tipo: categoria, valores: [depresiones, lomas_loess, llanura_control, indiana]}
+          - {nombre: csb_ventana, tipo: categoria, valores: ["2008-2015", "2009-2016", "2010-2017", "2011-2018", "2012-2019", "2013-2020", "2014-2021", "2015-2022", "2016-2023", "2017-2024", "2018-2025"]}
+          - {nombre: area_ha, rango: [30, 120]}
+          - {nombre: area_ac, rango: [74, 297]}
+          - {nombre: lat_centroide, rango: [36.9, 43.6]}
+          - {nombre: lon_centroide, rango: [-96.7, -84.7]}
+          - {nombre: compacidad, rango: [0, 1]}
+          - {nombre: n_px, rango: [300, 1500]}
+          - {nombre: n_px_interior, rango: [300, 1500]}
+          - {nombre: n_anios_maiz_soja, rango: [6, 8]}
+          - {nombre: pct_riego_condado, rango: [0, 5]}
+          - {nombre: relieve_m, rango: [0, 60]}
+          - {nombre: relieve_3dep_m, rango: [0, 60], peso: 0.5}
+          - {nombre: motivo, tipo: texto}
+          - {nombre: n_candidatos, rango: [1, 1000000]}
+      - ruta: data/processed/lotes/lotes_anual.csv
+        temporal: anual
+        unidad: lote
+        claves: [fips, id_lote, anio]
+        desde: "2008-01-01"
+        columnas_prohibidas: *prohibidas_lotes
+        motivo_prohibidas: *motivo_lotes
+        columnas:
+          - {nombre: cultivo_principal, tipo: categoria, valores: &grupos_cdl [maiz, soja, trigo_invierno, avena, alfalfa, heno, doble_trigo_soja, barbecho, pastizal, otro]}
+          - {nombre: cdl_clase_principal, rango: [0, 255]}
+          - {nombre: pct_px_cultivo_principal, rango: [0, 100]}
+          - {nombre: lote_partido, tipo: categoria, valores: ["0", "1"]}
+          # solo los años de la ventana del CSB
+          - {nombre: cultivo_csb, tipo: categoria, valores: *grupos_cdl, sin_cobertura: true}
+          - {nombre: pct_px_igual_csb, rango: [0, 100], sin_cobertura: true}
+      - ruta: data/processed/lotes/pixeles.csv
+        temporal: estatico
+        unidad: pixel
+        claves: [fips, id_lote, px_id]
+        columnas_prohibidas: *prohibidas_lotes
+        motivo_prohibidas: *motivo_lotes
+        columnas:
+          - {nombre: x_m, rango: [-52005, 961695]}
+          - {nombre: y_m, rango: [1569075, 2288295]}
+          - {nombre: lon, rango: [-96.7, -84.7]}
+          - {nombre: lat, rango: [36.9, 43.6]}
+          - {nombre: dist_borde_m, rango: [0, 2000]}
+          - {nombre: interior, tipo: categoria, valores: ["0", "1"]}
+          - {nombre: frac_en_lote, rango: [0, 1], peso: 0.5}
+      - ruta: data/processed/lotes/vegetacion_px_obs.csv
+        temporal: diario
+        unidad: pixel
+        # millones de filas: el scorer lo lee por partes
+        grande: true
+        claves: [fips, id_lote, px_id, anio, fecha, producto, sensor]
+        columnas_prohibidas: *prohibidas_lotes
+        motivo_prohibidas: *motivo_lotes
+        # la cantidad de observaciones no se conoce de antemano: la cobertura la mide el especial lotes_obs_cobertura
+        columnas:
+          - {nombre: producto, tipo: categoria, valores: [landsat_c2_l2, hls_l30, hls_s30], sin_cobertura: true, peso: 0.25}
+          - {nombre: sensor, tipo: categoria, valores: [L5, L7, L8, L9, S2A, S2B, S2C], sin_cobertura: true, peso: 0.25}
+          - {nombre: refl_blue, rango: [-0.2, 1.6], sin_cobertura: true}
+          - {nombre: refl_green, rango: [-0.2, 1.6], sin_cobertura: true}
+          - {nombre: refl_red, rango: [-0.2, 1.6], sin_cobertura: true}
+          - {nombre: refl_nir, rango: [-0.2, 1.6], sin_cobertura: true}
+          - {nombre: refl_swir1, rango: [-0.2, 1.6], sin_cobertura: true}
+          - {nombre: refl_swir2, rango: [-0.2, 1.6], sin_cobertura: true}
+          - {nombre: ndvi, rango: [-1, 1], sin_cobertura: true}
+          - {nombre: evi2, rango: [-1, 1.3], sin_cobertura: true}
+          - {nombre: gcvi, rango: [-1, 100], sin_cobertura: true}
+          - {nombre: ndmi, rango: [-1, 1], sin_cobertura: true}
+          - {nombre: slc_off, tipo: categoria, valores: ["0", "1"], sin_cobertura: true}
+          - {nombre: qa_valor, rango: [0, 65535], sin_cobertura: true}
+      - ruta: data/processed/lotes/vegetacion_px_anual.csv
+        temporal: anual
+        unidad: pixel
+        claves: [fips, id_lote, px_id, anio]
+        # años nublados y 2012 (solo Landsat 7 con SLC-off) dejan píxeles sin observación
+        umbral_cobertura: 0.85
+        columnas_prohibidas: *prohibidas_lotes
+        motivo_prohibidas: *motivo_lotes
+        columnas:
+          - {nombre: ndvi_max, rango: [-1, 1]}
+          - {nombre: doy_ndvi_max, rango: [60, 336]}
+          - {nombre: evi2_max, rango: [-1, 1.3]}
+          - {nombre: doy_evi2_max, rango: [60, 336]}
+          - {nombre: ndvi_media_jul_ago, rango: [-1, 1]}
+          - {nombre: n_obs_mar_nov, rango: [0, 200]}
+          - {nombre: n_obs_may_jun, rango: [0, 100]}
+          - {nombre: n_obs_jul_ago, rango: [0, 100]}
+          - {nombre: ndvi_max_s2, rango: [-1, 1], desde: "2016-01-01", peso: 0.5}
+          - {nombre: n_obs_jul_ago_s2, rango: [0, 100], desde: "2016-01-01", peso: 0.5}
+      - ruta: data/processed/lotes/cultivo_px_anual.csv
+        temporal: anual
+        unidad: pixel
+        claves: [fips, id_lote, px_id, anio]
+        desde: "2008-01-01"
+        columnas_prohibidas: *prohibidas_lotes
+        motivo_prohibidas: *motivo_lotes
+        columnas:
+          - {nombre: cdl_clase, rango: [0, 255]}
+          - {nombre: cultivo, tipo: categoria, valores: *grupos_cdl}
+          # CDL de 10 m (2024 en adelante): fracción del píxel de 30 m con la clase mayoritaria
+          - {nombre: frac_clase, rango: [0, 1], desde: "2024-01-01"}
+      - ruta: data/processed/lotes/terreno_px.csv
+        temporal: estatico
+        unidad: pixel
+        claves: [fips, id_lote, px_id]
+        # en lotes muy planos el aspecto no está definido (pendiente 0)
+        umbral_cobertura: 0.85
+        columnas_prohibidas: *prohibidas_lotes
+        motivo_prohibidas: *motivo_lotes
+        columnas:
+          - {nombre: elevacion_m, rango: [50, 700]}
+          - {nombre: pendiente_pct, rango: [0, 60]}
+          - {nombre: aspecto_grados, rango: [0, 360]}
+          - {nombre: curv_plan, rango: [-1, 1]}
+          - {nombre: curv_perfil, rango: [-1, 1]}
+          - {nombre: tpi_90m_m, rango: [-30, 30]}
+          - {nombre: tpi_300m_m, rango: [-50, 50]}
+          - {nombre: twi, rango: [0, 40]}
+          - {nombre: prof_depresion_m, rango: [0, 30]}
+          - {nombre: elevacion_3dep_m, rango: [50, 700], peso: 0.5}
+          - {nombre: pendiente_3dep_pct, rango: [0, 100], peso: 0.5}
+          - {nombre: tpi_90m_3dep_m, rango: [-30, 30], peso: 0.5}
+          - {nombre: twi_3dep, rango: [0, 40], peso: 0.5}
+          - {nombre: prof_depresion_3dep_m, rango: [0, 30], peso: 0.5}
+      - ruta: data/processed/lotes/suelo_px.csv
+        temporal: estatico
+        unidad: fila
+        claves: [fips, id_lote, px_id, mukey]
+        columnas:
+          - {nombre: frac_mukey, rango: [0, 1]}
+      - ruta: data/processed/lotes/suelo_mukey.csv
+        temporal: estatico
+        unidad: fila
+        claves: [mukey]
+        # map units de agua o sin horizontes dejan huecos
+        umbral_cobertura: 0.9
+        columnas:
+          - {nombre: muname, tipo: texto}
+          - {nombre: aws0_100_mm, rango: [0, 600]}
+          - {nombre: aws0_150_mm, rango: [0, 800]}
+          - {nombre: soc0_30_gm2, rango: [0, 100000]}
+          - {nombre: nccpi_general, rango: [0, 1]}
+          - {nombre: nccpi_maiz, rango: [0, 1]}
+          - {nombre: nccpi_soja, rango: [0, 1]}
+          - {nombre: clase_drenaje, tipo: texto}
+          - {nombre: clase_drenaje_mas_humeda, tipo: texto}
+          - {nombre: grupo_hidrologico, tipo: categoria, valores: [A, B, C, D, A/D, B/D, C/D]}
+          - {nombre: pct_componentes_hidricos, rango: [0, 100]}
+          - {nombre: pct_encharcamiento, rango: [0, 100]}
+          # flodfreqdcd traducido: None → nula, Very rare → muy_rara, Rare → rara, Occasional → ocasional, ...
+          - {nombre: frec_inundacion, tipo: categoria, valores: [nula, muy_rara, rara, ocasional, frecuente, muy_frecuente]}
+          - {nombre: napa_min_cm, rango: [0, 300]}
+          - {nombre: pendiente_dcd_pct, rango: [0, 100]}
+          - {nombre: pendiente_comp_pct, rango: [0, 100]}
+          - {nombre: clase_erosion, tipo: texto}
+          - {nombre: pct_comp_dominante, rango: [0, 100]}
+          - {nombre: materia_organica_pct, rango: [0, 100]}
+          - {nombre: arcilla_pct, rango: [0, 100]}
+          - {nombre: arena_pct, rango: [0, 100]}
+          - {nombre: limo_pct, rango: [0, 100]}
+          - {nombre: ph_agua, rango: [3, 10]}
+          - {nombre: factor_k_rusle, rango: [0, 0.8]}
+      - ruta: data/processed/lotes/suelo_desnudo_px.csv
+        temporal: anual
+        unidad: pixel
+        claves: [fips, id_lote, px_id, anio]
+        # con rastrojo, cultivos de cobertura o nubes no hay suelo desnudo todos los años
+        umbral_cobertura: 0.4
+        columnas_prohibidas: *prohibidas_lotes
+        motivo_prohibidas: *motivo_lotes
+        columnas:
+          - {nombre: refl_blue_mar_may, rango: [-0.2, 1.6], peso: 0.5}
+          - {nombre: refl_red_mar_may, rango: [-0.2, 1.6], peso: 0.5}
+          - {nombre: refl_nir_mar_may, rango: [-0.2, 1.6], peso: 0.5}
+          - {nombre: refl_swir1_mar_may, rango: [-0.2, 1.6], peso: 0.5}
+          - {nombre: refl_swir2_mar_may, rango: [-0.2, 1.6], peso: 0.5}
+          - {nombre: nbr2_mar_may, rango: [-1, 1], peso: 0.5}
+          - {nombre: n_obs_mar_may, rango: [0, 60], peso: 0.5}
+          - {nombre: refl_blue_oct_nov, rango: [-0.2, 1.6], peso: 0.5}
+          - {nombre: refl_red_oct_nov, rango: [-0.2, 1.6], peso: 0.5}
+          - {nombre: refl_nir_oct_nov, rango: [-0.2, 1.6], peso: 0.5}
+          - {nombre: refl_swir1_oct_nov, rango: [-0.2, 1.6], peso: 0.5}
+          - {nombre: refl_swir2_oct_nov, rango: [-0.2, 1.6], peso: 0.5}
+          - {nombre: nbr2_oct_nov, rango: [-1, 1], peso: 0.5}
+          - {nombre: n_obs_oct_nov, rango: [0, 60], peso: 0.5}
+      - ruta: data/processed/lotes/suelo_desnudo_px_compuesto.csv
+        temporal: estatico
+        unidad: pixel
+        claves: [fips, id_lote, px_id]
+        # usa todos los años: si ML deja años afuera, lo recalcula dentro del fold con suelo_desnudo_px.csv
+        umbral_cobertura: 0.9
+        columnas_prohibidas: *prohibidas_lotes
+        motivo_prohibidas: *motivo_lotes
+        columnas:
+          - {nombre: refl_blue, rango: [-0.2, 1.6], peso: 0.25}
+          - {nombre: refl_red, rango: [-0.2, 1.6], peso: 0.25}
+          - {nombre: refl_nir, rango: [-0.2, 1.6], peso: 0.25}
+          - {nombre: refl_swir1, rango: [-0.2, 1.6], peso: 0.25}
+          - {nombre: refl_swir2, rango: [-0.2, 1.6], peso: 0.25}
+          - {nombre: nbr2, rango: [-1, 1], peso: 0.25}
+          - {nombre: n_obs, rango: [0, 3000], peso: 0.25}
+      - ruta: data/processed/lotes/clima_lote_diario.csv
+        temporal: diario
+        unidad: lote
+        claves: [fips, id_lote, anio, fecha]
+        coherencia: ["tmin_c <= tmed_c <= tmax_c"]
+        columnas_prohibidas: *prohibidas_lotes
+        motivo_prohibidas: *motivo_lotes
+        columnas:
+          - {nombre: prec_power_mm, rango: [0, 500], peso: 0.5}
+          - {nombre: tmax_c, rango: [-40, 50], peso: 0.5}
+          - {nombre: tmin_c, rango: [-45, 40], peso: 0.5}
+          - {nombre: tmed_c, rango: [-42, 45], peso: 0.5}
+          - {nombre: hr_pct, rango: [0, 100], peso: 0.5}
+          - {nombre: viento_ms, rango: [0, 40], peso: 0.5}
+          - {nombre: rad_mj_m2, rango: [0, 40], peso: 0.5}
+          - {nombre: eto_pm_mm, rango: [0, 20], peso: 0.5}
+          - {nombre: deficit_mm, rango: [-20, 500], peso: 0.5}
+          - {nombre: prec_imerg_mm, rango: [0, 500], desde: "2000-06-01", login: earthdata, peso: 0.5}
+          - {nombre: sm_rootzone_m3m3, rango: [0, 0.6], desde: "2015-04-01", login: earthdata, peso: 0.5}
+          - {nombre: sm_surface_m3m3, rango: [0, 0.6], desde: "2015-04-01", login: earthdata, peso: 0.5}
+      - ruta: data/processed/lotes/clima_lote_anual.csv
+        temporal: anual
+        unidad: lote
+        claves: [fips, id_lote, anio]
+        columnas_prohibidas: *prohibidas_lotes
+        motivo_prohibidas: *motivo_lotes
+        columnas:
+          - {nombre: prec_temporada_mm, rango: [0, 2500], peso: 0.5}
+          - {nombre: prec_abr_mm, rango: [0, 600], peso: 0.5}
+          - {nombre: prec_may_mm, rango: [0, 600], peso: 0.5}
+          - {nombre: prec_jul_mm, rango: [0, 800], peso: 0.5}
+          - {nombre: prec_ago_mm, rango: [0, 800], peso: 0.5}
+          - {nombre: deficit_temporada_mm, rango: [-1500, 2000], peso: 0.5}
+          - {nombre: dias_tmax_gt30_jul, rango: [0, 31], peso: 0.5}
+          - {nombre: tmax_jul_c, rango: [10, 45], peso: 0.5}
+          - {nombre: gdd_temporada, rango: [0, 4000], peso: 0.5}
+          - {nombre: prec_invierno_previo_mm, rango: [0, 1500], peso: 0.5}
+          - {nombre: dias_lluvia_gt50_abr_may, rango: [0, 61], peso: 0.5}
+          - {nombre: prec_temporada_imerg_mm, rango: [0, 2500], desde: "2001-01-01", login: earthdata, peso: 0.5}
+          - {nombre: prec_abr_imerg_mm, rango: [0, 600], desde: "2001-01-01", login: earthdata, peso: 0.5}
+          - {nombre: prec_may_imerg_mm, rango: [0, 600], desde: "2001-01-01", login: earthdata, peso: 0.5}
+          - {nombre: prec_jul_imerg_mm, rango: [0, 800], desde: "2001-01-01", login: earthdata, peso: 0.5}
+          - {nombre: prec_ago_imerg_mm, rango: [0, 800], desde: "2001-01-01", login: earthdata, peso: 0.5}
+          - {nombre: dias_lluvia_gt50_abr_may_imerg, rango: [0, 61], desde: "2001-01-01", login: earthdata, peso: 0.5}
+          - {nombre: sm_rootzone_temporada_m3m3, rango: [0, 0.6], desde: "2015-01-01", login: earthdata, peso: 0.5}
+      - ruta: data/processed/lotes/drenaje_px.csv
+        temporal: estatico
+        unidad: pixel
+        claves: [fips, id_lote, px_id]
+        columnas:
+          - {nombre: drenado_canos, rango: [0, 1], peso: 0.25}
+    especiales:
+      - id: lotes_seleccion
+        peso: 3
+        paisajes:
+          depresiones: {lotes: 3, condados: ["19169", "19079", "19197"], relieve_min_m: 3}
+          lomas_loess: {lotes: 3, condados: ["19047", "19165"], relieve_min_m: 3}
+          llanura_control: {lotes: 2, condados: ["17019"]}
+          indiana: {lotes: 2, prefijo: "18"}
+        descripcion: "lotes.csv tiene 10 lotes: 3 de depresiones en 19169, 19079 o 19197, 3 de lomas en 19047 o 19165, 2 de control en 17019 y 2 en Indiana; cada uno con motivo, candidatos, al menos 300 píxeles interiores, maíz o soja en 6 de 8 años y, en depresiones y lomas, más de 3 m de relieve"
+      - id: lotes_claves
+        peso: 2
+        grilla_paso_m: 30
+        descripcion: "los lotes de pixeles.csv son los de lotes.csv, n_px y n_px_interior coinciden con pixeles.csv, id_lote empieza con su fips y los centros de píxel caen en la grilla de 30 m de mascara_agricola.tif sin repetirse"
+      - id: lotes_gpkg
+        peso: 1
+        descripcion: "data/processed/lotes/lotes.gpkg es un GeoPackage en EPSG:4326 con las capas lote, lote_interior y suelo_poligonos; lote y lote_interior tienen un polígono por lote de lotes.csv"
+      - id: lotes_pureza
+        peso: 1
+        descripcion: "en lotes_anual.csv, lote_partido = 1 si y solo si pct_px_cultivo_principal < 90, y ese porcentaje coincide (± 0,5) con el de los píxeles interiores de cultivo_px_anual.csv"
+      - id: lotes_obs_cobertura
+        peso: 3
+        descripcion: "vegetacion_px_obs.csv tiene observaciones de cada píxel de pixeles.csv, solo del 1 de marzo al 30 de noviembre, y en al menos 90 % de los lotes-año de 2000 a 2025 (sin contar 2012) la mediana por píxel es de 5 observaciones de Landsat o más; los n_obs de vegetacion_px_anual.csv coinciden con el archivo de observaciones"
+      - id: lotes_sensores
+        peso: 1
+        descripcion: "cada producto con sus sensores (landsat_c2_l2: L5, L7, L8, L9; hls_l30: L8, L9; hls_s30: S2A, S2B, S2C), cada sensor solo en sus años de misión, slc_off = 1 solo en L7 desde el 2003-05-31, y 2012 con observaciones de Landsat 7"
+      - id: lotes_cdl_10m
+        peso: 1
+        descripcion: "cultivo_px_anual.csv tiene frac_clase en 2024 y 2025 para todos los píxeles, y hay píxeles con frac_clase < 1 (señal de que salió del CDL de 10 m y no de la exportación a 30 m)"
+      - id: lotes_suelo_fracciones
+        peso: 1
+        descripcion: "en suelo_px.csv la suma de frac_mukey por píxel no pasa de 1,01 y es al menos 0,5 en 95 % de los píxeles; todos los mukey están en suelo_mukey.csv y todos los de suelo_mukey.csv se usan"
+      - id: lotes_controles_data_card
+        peso: 1
+        descripcion: "docs/datasets/lotes.md tiene la sección 'Controles de calidad' con los resultados de píxeles por lote, pureza, observaciones despejadas, 2012 y SLC-off, coherencia Landsat–Sentinel-2, alineación CSB–CDL, relieve y cobertura de SSURGO"
+
+  merge:
+    titulo: "merge — tablas unidas"
+    seccion_claude: "§7"
+    descripcion: >
+      src/merge.py une los archivos procesados en dos tablas, sin perder columnas ni duplicar claves.
+      data/processed/tabla_anual.csv: una fila por fips × anio × cultivo (las filas de
+      produccion_anual.csv) con todas las columnas de los archivos anuales y estáticos de todos los
+      paquetes (los de unidad estado se unen por los dos primeros dígitos de fips; los que tienen
+      cultivo, también por cultivo). data/processed/tabla_mensual.csv: fips × anio × mes con todas las
+      columnas de los *_mensual.csv. rotacion_secuencia.csv y practicas_censo.csv quedan aparte (otra
+      granularidad), igual que los paquetes con fuera_de_tablas: true (lotes: data/processed/lotes/ es por lote y
+      píxel y no se une). Que la lista de archivos salga de loop/spec/entregables.yaml (temporal anual,
+      estatico o mensual) o de lo que haya en data/processed, no de una lista fija: cuando un paquete
+      suma o cambia un archivo, hay que volver a correr merge.py. Si dos archivos tienen una columna con
+      el mismo nombre, la segunda va como <paquete>_<columna>. El check compara una muestra de valores
+      de las tablas con los archivos de cada paquete: una tabla vieja no pasa.
+    escribe: [src/merge.py, data/processed/tabla_anual.csv, data/processed/tabla_mensual.csv, docs/datasets/merge.md]
+    process: src/merge.py
+    salidas: [data/processed/tabla_anual.csv, data/processed/tabla_mensual.csv]
+    requiere: [base]
+    requiere_paquetes_con_datos: 2
+    sin_data_card: true
+    archivos: []
+    especiales:
+      - {id: tabla_anual, peso: 3, descripcion: "tabla_anual.csv tiene claves fips, anio, cultivo sin duplicar, todas las filas de produccion_anual.csv y todas las columnas de los archivos anuales y estáticos procesados, con los mismos valores que esos archivos (muestra)"}
+      - {id: tabla_mensual, peso: 3, descripcion: "tabla_mensual.csv tiene claves fips, anio, mes sin duplicar y todas las columnas de los *_mensual.csv procesados, con los mismos valores que esos archivos (muestra)"}

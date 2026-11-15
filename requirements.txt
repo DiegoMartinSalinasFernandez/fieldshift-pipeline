@@ -1,0 +1,13 @@
+pandas
+numpy
+geopandas
+rasterio
+rasterstats
+xarray
+requests
+pyyaml
+scipy
+pysheds>=0.5
+h5netcdf
+h5py
+pyproj

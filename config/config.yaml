@@ -1,0 +1,62 @@
+# Parámetros del proyecto Field Shift (sección 2 del CLAUDE.md).
+# Zona: Corn Belt de EE.UU. Cambiar los estados es decisión del humano.
+# Cada máquina trabaja solo con sus estados: FIELDSHIFT_ESTADOS=KS (o OH,NE,MN) filtra esta lista
+# al cargar la config (src/common/config.py). Sin la variable se usan todos.
+
+zona:
+  nombre: corn_belt
+  confirmada: false
+  estados:
+    # Primera tanda (ResearchAgent, corrida noche2-20261114)
+    IA: {fips: "19", nombre: Iowa, condados: 99}
+    IL: {fips: "17", nombre: Illinois, condados: 102}
+    IN: {fips: "18", nombre: Indiana, condados: 92}
+    # Segunda tanda, aprobada por el humano el 2026-11-14
+    OH: {fips: "39", nombre: Ohio, condados: 88}
+    NE: {fips: "31", nombre: Nebraska, condados: 93}
+    MN: {fips: "27", nombre: Minnesota, condados: 87}
+    KS: {fips: "20", nombre: Kansas, condados: 105}
+  condados: todos
+
+unidad_espacial: condado
+
+# anio = año calendario de la cosecha. En los archivos diarios, de 8/16 días, semanales y
+# mensuales, anio es el año calendario de la fecha o del mes.
+# Ventanas de los archivos anuales (CLAUDE.md §4), las mismas en todos los paquetes:
+ventanas:
+  temporada: {desde: "04-01", hasta: "09-30"}          # abril a septiembre del anio
+  invierno_previo: {desde: "11-01", hasta: "03-31"}    # noviembre del anio − 1 a marzo del anio
+  meses_criticos: {julio: 7, agosto: 8}                # floración del maíz y llenado de la soja
+
+periodo:
+  anio_inicio: 2000
+  anio_fin: 2025
+  rotaciones_desde: 2008          # desde 2008 el Cropland Data Layer cubre todo el país
+  censos: [2012, 2017, 2022]      # Censo Agropecuario
+  # POWER se puede bajar desde 1981 para climatologías y SPI (solo como insumo interno)
+  power_climatologia_desde: "1981-01-01"
+  anomalias_base: ["1991-01-01", "2020-12-31"]
+
+# Códigos que usan los CSV en la columna `cultivo`
+cultivos:
+  maiz: Maíz
+  soja: Soja
+  trigo_invierno: Trigo de invierno
+  avena: Avena
+  alfalfa: Alfalfa
+  heno: Heno (otros)
+
+# Cultivos de cobertura: solo como práctica (Censo) y para la tabla de cultivos de research
+cultivos_cobertura:
+  centeno: Centeno
+  avena: Avena
+  trebol: Trébol
+
+# Conversiones de unidades (CLAUDE.md §4). El valor original se guarda siempre con su unidad.
+conversiones:
+  bu_ac_a_kgha: {maiz: 62.77, soja: 67.25, trigo_invierno: 67.25, avena: 35.87}
+  acre_a_ha: 0.4047
+
+crs:
+  guardar: "EPSG:4326"
+  areas: "EPSG:5070"     # Albers CONUS (CDL y gSSURGO vienen así)

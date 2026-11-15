@@ -1,0 +1,151 @@
+# Checks de las tareas de research (CLAUDE.md §8), Corn Belt de EE.UU.
+#
+# Los agentes de research no bajan datasets ni tocan src/ ni data/. Responden preguntas en
+# docs/research/<tema>.md con el formato de abajo. Para que una respuesta no pueda
+# inventarse, las citas se verifican: el orquestador baja la fuente y busca la cita textual
+# en el documento. Una cita que no aparece en su fuente no suma.
+
+version: 2
+
+formato:
+  # Campos obligatorios, cada uno al comienzo de una línea (CLAUDE.md §8)
+  campos: ["Pregunta:", "Respuesta corta:", "Detalle:", "Fuentes:", "Confianza:", "Impacto:"]
+  confianza: [alta, media, baja]
+  fecha_consulta: 'consultado \d{4}-\d{2}-\d{2}'
+  # Sección extra para la verificación: líneas con
+  #   > "texto copiado tal cual de la fuente" — [título](https://...)
+  seccion_citas: "Citas:"
+  cita_min_caracteres: 20
+  cita_max_caracteres: 400
+
+puntaje:
+  formato: 3            # todos los campos, confianza válida, al menos una fuente con fecha
+  fuente_accesible: 1   # al menos una URL de Fuentes responde
+  por_cita_verificada: 1
+  max_citas: 2
+  por_celda_verificada: 0.25
+
+temas:
+  - id: cultivos_zona
+    orden: 1
+    archivo: docs/research/cultivos_zona.md
+    prioridad: maxima
+    pregunta: >
+      Tabla de cultivos para el Corn Belt → completar config/cultivos.csv: fechas habituales
+      de siembra y cosecha por estado (USDA Agricultural Handbook 628 y Crop Progress), ventana
+      de período crítico, Kc inicial/medio/final y duración de etapas (FAO-56), temperatura
+      base y método de GDD, umbral de daño por calor, sensibilidad a helada, profundidad de
+      raíces, fijación de N, rastrojo y C:N, familia botánica, tolerancia a sequía y a
+      anegamiento, valor forrajero. Incluir cultivos de cobertura (centeno, avena, trébol).
+    escribe: [docs/research/cultivos_zona.md, docs/research/cultivos_fuentes.csv, config/cultivos.csv]
+  - id: nass_quickstats
+    orden: 2
+    archivo: docs/research/nass_quickstats.md
+    pregunta: >
+      NASS Quick Stats: short_desc exactos de rendimiento, superficie y producción por
+      cultivo; cómo vienen los condados combinados y los valores (D); si están publicados los
+      datos de condado de 2024 y 2025.
+    escribe: [docs/research/nass_quickstats.md]
+  - id: cdl_csb
+    orden: 3
+    archivo: docs/research/cdl_csb.md
+    pregunta: >
+      CDL y CSB: tabla oficial de clases, forma más rápida de bajar por estado (servicio de
+      CropScape), precisión por estado y estructura de los campos del CSB.
+    escribe: [docs/research/cdl_csb.md]
+  - id: productos_nasa
+    orden: 4
+    archivo: docs/research/productos_nasa.md
+    pregunta: >
+      Nombres exactos de productos y capas: SMAP L4, GRACE-DA-DM (global o EE.UU.; variables y
+      fecha de inicio), IDs de IMERG en Earth Engine.
+    escribe: [docs/research/productos_nasa.md]
+  - id: gssurgo
+    orden: 5
+    archivo: docs/research/gssurgo.md
+    pregunta: >
+      gSSURGO: nombres de columnas de Valu1 y muaggatt (NCCPI, agua disponible, drenaje), y si
+      conviene el file geodatabase por estado o Soil Data Access.
+    escribe: [docs/research/gssurgo.md]
+  - id: censo_agropecuario
+    orden: 6
+    archivo: docs/research/censo_agropecuario.md
+    pregunta: >
+      Censo Agropecuario: short_desc de cultivos de cobertura, labranza cero, drenaje con
+      caños y riego por condado (2012, 2017, 2022).
+    escribe: [docs/research/censo_agropecuario.md]
+  - id: precios_margenes
+    orden: 7
+    archivo: docs/research/precios_margenes.md
+    pregunta: >
+      Precios y márgenes: precios recibidos de NASS por estado, costos y retornos del USDA
+      ERS, y presupuestos por cultivo de Iowa State (Ag Decision Maker) o Illinois (farmdoc).
+    escribe: [docs/research/precios_margenes.md]
+
+  - id: recursos_desafio
+    orden: 8
+    archivo: docs/research/recursos_desafio.md
+    pregunta: >
+      Recursos del desafío (pestaña Resources de "Field Shift: Adapting Farms with NASA Data" en
+      spaceappschallenge.org, 2026): para cada uno de los 26 (SMAP, GPM IMERG, Landsat, MODIS, VIIRS,
+      NASA POWER, SRTM, ECOSTRESS, USDA Ag Data Commons, Web Soil Survey, Cropland Data Layer, PRISM,
+      SSURGO/STATSGO2, NAIP, NLCD, NLDAS/GLDAS, FAO GAEZ, CoCoRaHS, USGS NWIS, USDA AMS Market News,
+      USDA NASS Quick Stats, OpenET, LANDFIRE, GEDI, Copernicus Sentinel-2, ERA5): cómo se baja para los
+      condados de IA, IL e IN (API, servicio o archivo, y si pide login), producto y versión vigentes,
+      cobertura temporal, resolución y qué paquete del pipeline lo usa, o por qué no conviene. Verificar
+      en particular: si OpenET cubre IA, IL e IN; si NLDAS-2 y ECOSTRESS tienen algún acceso público sin
+      login de Earthdata; qué años tiene Annual NLCD; y si VIIRS o GEDI suman algo frente a MODIS en
+      lotes de maíz y soja.
+    escribe: [docs/research/recursos_desafio.md]
+  - id: ag_data_commons
+    orden: 9
+    archivo: docs/research/ag_data_commons.md
+    pregunta: >
+      USDA Ag Data Commons: qué datasets sirven para comparar rotaciones en el Corn Belt (por ejemplo
+      OpTIS, el Operational Tillage Information System, con cultivos de cobertura y labranza por condado
+      y año; las Crop Sequence Boundaries; LTAR; mapas de drenaje con caños), con formato, cobertura en IA,
+      IL e IN, años, licencia y cómo se bajan. ¿Qué paquete del pipeline los usaría y qué columnas
+      agregarían?
+    escribe: [docs/research/ag_data_commons.md]
+
+# config/cultivos.csv: una fila por cultivo (los de config.yaml y los de cobertura).
+# Fechas: rango habitual en los estados de config.yaml (el detalle por estado va en
+# docs/research/cultivos_zona.md). Cada celda llena necesita una fila de evidencia en
+# docs/research/cultivos_fuentes.csv:
+#   cultivo,atributo,valor,fuente_url,cita,consultado
+# El valor tiene que coincidir con la celda, la cita tiene que aparecer en la fuente y,
+# si el atributo es numérico, el número tiene que aparecer en la cita.
+cultivos:
+  archivo: config/cultivos.csv
+  evidencia: docs/research/cultivos_fuentes.csv
+  columnas_evidencia: [cultivo, atributo, valor, fuente_url, cita, consultado]
+  filas: [maiz, soja, trigo_invierno, avena, alfalfa, heno, centeno, trebol]
+  atributos:
+    - {nombre: siembra_inicio, catalogo: CT03, tipo: mmdd}
+    - {nombre: siembra_fin, catalogo: CT03, tipo: mmdd}
+    - {nombre: cosecha_inicio, catalogo: CT04, tipo: mmdd}
+    - {nombre: cosecha_fin, catalogo: CT04, tipo: mmdd}
+    - {nombre: critico_inicio, catalogo: CT05, tipo: mmdd}
+    - {nombre: critico_fin, catalogo: CT05, tipo: mmdd}
+    - {nombre: kc_ini, catalogo: CT01, rango: [0.1, 1.4]}
+    - {nombre: kc_med, catalogo: CT01, rango: [0.1, 1.4]}
+    - {nombre: kc_fin, catalogo: CT01, rango: [0.1, 1.4]}
+    - {nombre: etapa_ini_dias, catalogo: CT02, rango: [5, 200]}
+    - {nombre: etapa_des_dias, catalogo: CT02, rango: [5, 200]}
+    - {nombre: etapa_med_dias, catalogo: CT02, rango: [5, 200]}
+    - {nombre: etapa_fin_dias, catalogo: CT02, rango: [5, 200]}
+    - {nombre: tbase_c, catalogo: CT06, rango: [-5, 15]}
+    - {nombre: gdd_tope_c, catalogo: CT06, rango: [20, 45]}
+    - {nombre: gdd_metodo, catalogo: CT06, tipo: texto}
+    - {nombre: tcalor_c, catalogo: CT07, rango: [25, 45]}
+    - {nombre: helada_temp_c, catalogo: CT08, rango: [-30, 5]}
+    - {nombre: helada_etapa, catalogo: CT08, tipo: texto}
+    - {nombre: raiz_max_m, catalogo: CT09, rango: [0.2, 3.0]}
+    - {nombre: fija_n, catalogo: CT10, tipo: categoria, valores: [si, "no"]}
+    - {nombre: fija_n_kgha, catalogo: CT10, rango: [0, 400]}
+    - {nombre: rastrojo_t_ms_ha, catalogo: CT11, rango: [0, 20]}
+    - {nombre: rastrojo_cn, catalogo: CT11, rango: [5, 150]}
+    - {nombre: familia, catalogo: CT12, tipo: texto}
+    - {nombre: tolerancia_sequia, catalogo: CT14, tipo: categoria, valores: [baja, media, alta]}
+    - {nombre: tolerancia_anegamiento, catalogo: CT15, tipo: categoria, valores: [baja, media, alta]}
+    - {nombre: valor_forrajero, catalogo: CT16, tipo: texto}

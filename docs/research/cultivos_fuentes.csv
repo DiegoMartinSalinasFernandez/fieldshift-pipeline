@@ -1,0 +1,195 @@
+cultivo,atributo,valor,fuente_url,cita,consultado
+maiz,kc_ini,0.3,https://www.fao.org/3/x0490e/x0490e0b.htm,i. cereals 0.3 1.15 0.4 barley 1.15 0.25 1 oats 1.15 0.25,2026-11-14
+maiz,kc_med,1.20,https://www.fao.org/3/x0490e/x0490e0b.htm,"maize, field (grain) (field corn) 1.20 0.60-0.35",2026-11-14
+maiz,kc_fin,0.35,https://www.fao.org/3/x0490e/x0490e0b.htm,"maize, field (grain) (field corn) 1.20 0.60-0.35",2026-11-14
+trigo_invierno,kc_ini,0.4,https://www.fao.org/3/x0490e/x0490e0b.htm,winter wheat - with frozen soils 0.4 1.15 0.25-0.4,2026-11-14
+trigo_invierno,kc_med,1.15,https://www.fao.org/3/x0490e/x0490e0b.htm,winter wheat - with frozen soils 0.4 1.15 0.25-0.4,2026-11-14
+trigo_invierno,kc_fin,0.25,https://www.fao.org/3/x0490e/x0490e0b.htm,winter wheat - with frozen soils 0.4 1.15 0.25-0.4,2026-11-14
+avena,kc_ini,0.3,https://www.fao.org/3/x0490e/x0490e0b.htm,i. cereals 0.3 1.15 0.4 barley 1.15 0.25 1 oats 1.15 0.25,2026-11-14
+avena,kc_med,1.15,https://www.fao.org/3/x0490e/x0490e0b.htm,i. cereals 0.3 1.15 0.4 barley 1.15 0.25 1 oats 1.15 0.25,2026-11-14
+avena,kc_fin,0.25,https://www.fao.org/3/x0490e/x0490e0b.htm,i. cereals 0.3 1.15 0.4 barley 1.15 0.25 1 oats 1.15 0.25,2026-11-14
+soja,kc_ini,0.4,https://www.fao.org/3/x0490e/x0490e0b.htm,e. legumes (leguminosae) 0.4 1.15 0.55,2026-11-14
+soja,kc_med,1.15,https://www.fao.org/3/x0490e/x0490e0b.htm,soybeans 1.15 0.50 0.5-1.0,2026-11-14
+soja,kc_fin,0.50,https://www.fao.org/3/x0490e/x0490e0b.htm,soybeans 1.15 0.50 0.5-1.0,2026-11-14
+alfalfa,kc_ini,0.40,https://www.fao.org/3/x0490e/x0490e0b.htm,alfalfa hay - averaged cutting effects 0.40 0.95 13 0.90,2026-11-14
+alfalfa,kc_med,0.95,https://www.fao.org/3/x0490e/x0490e0b.htm,alfalfa hay - averaged cutting effects 0.40 0.95 13 0.90,2026-11-14
+alfalfa,kc_fin,0.90,https://www.fao.org/3/x0490e/x0490e0b.htm,alfalfa hay - averaged cutting effects 0.40 0.95 13 0.90,2026-11-14
+trebol,kc_ini,0.40,https://www.fao.org/3/x0490e/x0490e0b.htm,"clover hay, berseem - averaged cutting effects 0.40 0.90 13 0.85",2026-11-14
+trebol,kc_med,0.90,https://www.fao.org/3/x0490e/x0490e0b.htm,"clover hay, berseem - averaged cutting effects 0.40 0.90 13 0.85",2026-11-14
+trebol,kc_fin,0.85,https://www.fao.org/3/x0490e/x0490e0b.htm,"clover hay, berseem - averaged cutting effects 0.40 0.90 13 0.85",2026-11-14
+heno,kc_ini,0.95,https://www.fao.org/3/x0490e/x0490e0b.htm,rye grass hay - averaged cutting effects 0.95 1.05 1.00,2026-11-14
+heno,kc_med,1.05,https://www.fao.org/3/x0490e/x0490e0b.htm,rye grass hay - averaged cutting effects 0.95 1.05 1.00,2026-11-14
+heno,kc_fin,1.00,https://www.fao.org/3/x0490e/x0490e0b.htm,rye grass hay - averaged cutting effects 0.95 1.05 1.00,2026-11-14
+maiz,etapa_ini_dias,30,https://www.fao.org/3/x0490e/x0490e0b.htm,"30 40 50 50 170 april idaho, usa maize (sweet)",2026-11-14
+maiz,etapa_des_dias,40,https://www.fao.org/3/x0490e/x0490e0b.htm,"30 40 50 50 170 april idaho, usa maize (sweet)",2026-11-14
+maiz,etapa_med_dias,50,https://www.fao.org/3/x0490e/x0490e0b.htm,"30 40 50 50 170 april idaho, usa maize (sweet)",2026-11-14
+maiz,etapa_fin_dias,50,https://www.fao.org/3/x0490e/x0490e0b.htm,"30 40 50 50 170 april idaho, usa maize (sweet)",2026-11-14
+soja,etapa_ini_dias,20,https://www.fao.org/3/x0490e/x0490e0b.htm,20 30/35 60 25 140 may central usa,2026-11-14
+soja,etapa_des_dias,30,https://www.fao.org/3/x0490e/x0490e0b.htm,20 30/35 60 25 140 may central usa,2026-11-14
+soja,etapa_med_dias,60,https://www.fao.org/3/x0490e/x0490e0b.htm,20 30/35 60 25 140 may central usa,2026-11-14
+soja,etapa_fin_dias,25,https://www.fao.org/3/x0490e/x0490e0b.htm,20 30/35 60 25 140 may central usa,2026-11-14
+trigo_invierno,etapa_ini_dias,160,https://www.fao.org/3/x0490e/x0490e0b.htm,"160 75 75 25 335 october idaho, usa",2026-11-14
+trigo_invierno,etapa_des_dias,75,https://www.fao.org/3/x0490e/x0490e0b.htm,"160 75 75 25 335 october idaho, usa",2026-11-14
+trigo_invierno,etapa_med_dias,75,https://www.fao.org/3/x0490e/x0490e0b.htm,"160 75 75 25 335 october idaho, usa",2026-11-14
+trigo_invierno,etapa_fin_dias,25,https://www.fao.org/3/x0490e/x0490e0b.htm,"160 75 75 25 335 october idaho, usa",2026-11-14
+avena,etapa_ini_dias,20,https://www.fao.org/3/x0490e/x0490e0b.htm,20 25 60 30 135 march/apr 35-45 °l,2026-11-14
+avena,etapa_des_dias,25,https://www.fao.org/3/x0490e/x0490e0b.htm,20 25 60 30 135 march/apr 35-45 °l,2026-11-14
+avena,etapa_med_dias,60,https://www.fao.org/3/x0490e/x0490e0b.htm,20 25 60 30 135 march/apr 35-45 °l,2026-11-14
+avena,etapa_fin_dias,30,https://www.fao.org/3/x0490e/x0490e0b.htm,20 25 60 30 135 march/apr 35-45 °l,2026-11-14
+alfalfa,etapa_ini_dias,10,https://www.fao.org/3/x0490e/x0490e0b.htm,"10 30 25 10 75 idaho, usa. alfalfa",2026-11-14
+alfalfa,etapa_des_dias,30,https://www.fao.org/3/x0490e/x0490e0b.htm,"10 30 25 10 75 idaho, usa. alfalfa",2026-11-14
+alfalfa,etapa_med_dias,25,https://www.fao.org/3/x0490e/x0490e0b.htm,"10 30 25 10 75 idaho, usa. alfalfa",2026-11-14
+alfalfa,etapa_fin_dias,10,https://www.fao.org/3/x0490e/x0490e0b.htm,"10 30 25 10 75 idaho, usa. alfalfa",2026-11-14
+maiz,raiz_max_m,1.7,https://www.fao.org/4/x0490e/x0490e0e.htm,"maize, field (grain) (field corn) 1.0-1.7 0.55",2026-11-14
+soja,raiz_max_m,1.3,https://www.fao.org/4/x0490e/x0490e0e.htm,soybeans 0.6-1.3 0.50,2026-11-14
+trigo_invierno,raiz_max_m,1.8,https://www.fao.org/4/x0490e/x0490e0e.htm,winter wheat 1.5-1.8 0.55,2026-11-14
+avena,raiz_max_m,1.5,https://www.fao.org/4/x0490e/x0490e0e.htm,oats 1.0-1.5 0.55,2026-11-14
+alfalfa,raiz_max_m,2.0,https://www.fao.org/4/x0490e/x0490e0e.htm,alfalfa - for hay 1.0-2.0 0.55,2026-11-14
+trebol,raiz_max_m,0.9,https://www.fao.org/4/x0490e/x0490e0e.htm,"clover hay, berseem 0.6-0.9 0.50",2026-11-14
+heno,raiz_max_m,1.0,https://www.fao.org/4/x0490e/x0490e0e.htm,rye grass hay 0.6-1.0 0.60,2026-11-14
+maiz,siembra_inicio,04-14,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,"11,800 340 270 25 36 9,350 820 apr 14 (na) (na) mar 20 may 4 may 2 sep 28",2026-11-14
+maiz,siembra_fin,06-10,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,jun 10 jun 10 (na) (na) may 10 jun 25 nov 5,2026-11-14
+maiz,cosecha_inicio,09-14,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 9 sep 14 may 9 may 11 jul 4 sep 18 sep 19 jun 15,2026-11-14
+maiz,cosecha_fin,11-25,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 25 sep 20 sep 20 sep 20 aug 10 nov 10 jul 25,2026-11-14
+soja,siembra_inicio,05-01,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,"5,460 110 300 320 7 5,440 450 apr 20 apr 20 (na) (na) apr 1 may 1 sep 25",2026-11-14
+soja,siembra_fin,06-25,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,jun 10 jun 10 (na) (na) may 10 jun 25 nov 5,2026-11-14
+soja,cosecha_inicio,09-19,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 9 sep 14 may 9 may 11 jul 4 sep 18 sep 19 jun 15,2026-11-14
+soja,cosecha_fin,11-10,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 25 sep 20 sep 20 sep 20 aug 10 nov 10 jul 25,2026-11-14
+trigo_invierno,siembra_inicio,09-06,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,"13,400 220 920 300 95 9,530 22 apr 19 apr 19 (na) (na) mar 25 may 2 sep 6",2026-11-14
+trigo_invierno,siembra_fin,11-09,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,jun 5 (na) (na) may 12 jul 6 jun 24 nov 9,2026-11-14
+trigo_invierno,cosecha_inicio,06-15,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 9 sep 14 may 9 may 11 jul 4 sep 18 sep 19 jun 15,2026-11-14
+trigo_invierno,cosecha_fin,08-07,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 21 sep 25 sep 29 sep 3 aug 11 oct 31 aug 7,2026-11-14
+avena,siembra_inicio,03-20,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,"11,800 340 270 25 36 9,350 820 apr 14 (na) (na) mar 20 may 4 may 2 sep 28",2026-11-14
+avena,siembra_fin,05-13,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,may 26 jun 23 (na) (na) may 13 jun 16 oct 30,2026-11-14
+avena,cosecha_inicio,07-04,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 9 sep 14 may 9 may 11 jul 4 sep 18 sep 19 jun 15,2026-11-14
+avena,cosecha_fin,08-13,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 20 sep 21 jul 17 aug 13 nov 20 nov 7 jul 19,2026-11-14
+alfalfa,cosecha_inicio,05-09,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 9 sep 14 may 9 may 11 jul 4 sep 18 sep 19 jun 15,2026-11-14
+alfalfa,cosecha_fin,09-29,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 21 sep 25 sep 29 sep 3 aug 11 oct 31 aug 7,2026-11-14
+heno,cosecha_inicio,05-11,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 9 sep 14 may 9 may 11 jul 4 sep 18 sep 19 jun 15,2026-11-14
+heno,cosecha_fin,09-20,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 25 sep 20 sep 20 sep 20 aug 10 nov 10 jul 25,2026-11-14
+maiz,familia,Poaceae,https://en.wikipedia.org/wiki/Maize,family: poaceae subfamily: panicoideae genus: zea,2026-11-14
+soja,familia,Fabaceae,https://en.wikipedia.org/wiki/Soybean,family: fabaceae subfamily: faboideae genus: glycine,2026-11-14
+trigo_invierno,familia,Poaceae,https://en.wikipedia.org/wiki/Common_wheat,family: poaceae subfamily: pooideae genus: triticum,2026-11-14
+avena,familia,Poaceae,https://en.wikipedia.org/wiki/Oat,family: poaceae subfamily: pooideae genus: avena,2026-11-14
+alfalfa,familia,Fabaceae,https://en.wikipedia.org/wiki/Alfalfa,family: fabaceae subfamily: faboideae genus: medicago,2026-11-14
+centeno,familia,Poaceae,https://en.wikipedia.org/wiki/Rye,family: poaceae subfamily: pooideae genus: secale,2026-11-14
+trebol,familia,Fabaceae,https://en.wikipedia.org/wiki/Trifolium_pratense,family: fabaceae subfamily: faboideae genus: trifolium,2026-11-14
+maiz,tbase_c,10,https://en.wikipedia.org/wiki/Growing_degree-day,"corn is an example of this: it starts growing at 10 °c and stops at 30 °c, meaning any growing degree-days above 30 °c do not count",2026-11-14
+maiz,gdd_tope_c,30,https://en.wikipedia.org/wiki/Growing_degree-day,"corn is an example of this: it starts growing at 10 °c and stops at 30 °c, meaning any growing degree-days above 30 °c do not count",2026-11-14
+maiz,gdd_metodo,media_tmax_tmin_base10_tope30,https://en.wikipedia.org/wiki/Growing_degree-day,"corn is an example of this: it starts growing at 10 °c and stops at 30 °c, meaning any growing degree-days above 30 °c do not count",2026-11-14
+soja,tbase_c,10,https://en.wikipedia.org/wiki/Growing_degree-day,"10 °c maize (including sweet corn), sorghum , rice , soybeans",2026-11-14
+trigo_invierno,tbase_c,4.5,https://en.wikipedia.org/wiki/Growing_degree-day,"4.5 °c wheat , barley , rye , oats",2026-11-14
+avena,tbase_c,4.5,https://en.wikipedia.org/wiki/Growing_degree-day,"4.5 °c wheat , barley , rye , oats",2026-11-14
+centeno,tbase_c,4.5,https://en.wikipedia.org/wiki/Growing_degree-day,"4.5 °c wheat , barley , rye , oats",2026-11-14
+soja,gdd_metodo,media_tmax_tmin_menos_tbase,https://en.wikipedia.org/wiki/Growing_degree-day,a day with a high of 23 °c and a low of 12 °c (and a base of 10 °c) would contribute 7.5 gdds,2026-11-14
+trigo_invierno,gdd_metodo,media_tmax_tmin_menos_tbase,https://en.wikipedia.org/wiki/Growing_degree-day,a day with a high of 23 °c and a low of 12 °c (and a base of 10 °c) would contribute 7.5 gdds,2026-11-14
+avena,gdd_metodo,media_tmax_tmin_menos_tbase,https://en.wikipedia.org/wiki/Growing_degree-day,a day with a high of 23 °c and a low of 12 °c (and a base of 10 °c) would contribute 7.5 gdds,2026-11-14
+centeno,gdd_metodo,media_tmax_tmin_menos_tbase,https://en.wikipedia.org/wiki/Growing_degree-day,a day with a high of 23 °c and a low of 12 °c (and a base of 10 °c) would contribute 7.5 gdds,2026-11-14
+alfalfa,helada_temp_c,-4,https://www.fao.org/3/x0490e/x0490e0b.htm,alfalfa: last -4° c in spring until first -4° c in fall,2026-11-14
+alfalfa,helada_etapa,fin_e_inicio_de_temporada_de_crecimiento,https://www.fao.org/3/x0490e/x0490e0b.htm,alfalfa: last -4° c in spring until first -4° c in fall,2026-11-14
+heno,helada_temp_c,-4,https://www.fao.org/3/x0490e/x0490e0b.htm,grass: 7 days before last -4° c in spring and 7 days after last -4° c in fall,2026-11-14
+heno,helada_etapa,fin_e_inicio_de_temporada_de_crecimiento,https://www.fao.org/3/x0490e/x0490e0b.htm,grass: 7 days before last -4° c in spring and 7 days after last -4° c in fall,2026-11-14
+soja,fija_n,si,https://en.wikipedia.org/wiki/Soybean,this ability to fix nitrogen allows farmers to reduce nitrogen fertilizer use,2026-11-14
+alfalfa,fija_n,si,https://en.wikipedia.org/wiki/Alfalfa,alfalfa engages in symbiotic nitrogen fixation with nitrogen-fixing bacteria called rhizobia,2026-11-14
+trebol,fija_n,si,https://www.sare.org/publications/managing-cover-crops-profitably/legume-cover-crops/red-clover/,"full-season, over-wintered red clover can produce 2 to 4 t dry matter/a and fix 70 to 150 lb. n/a",2026-11-14
+centeno,fija_n,no,https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/,"managing cover crops profitably, 3rd edition » nonlegume cover crops » cereal rye",2026-11-14
+avena,fija_n,no,https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/oats/,"managing cover crops profitably, 3rd edition » nonlegume cover crops » oats",2026-11-14
+maiz,tolerancia_sequia,baja,https://en.wikipedia.org/wiki/Maize,"because of its shallow roots, maize is susceptible to droughts",2026-11-14
+alfalfa,tolerancia_sequia,alta,https://en.wikipedia.org/wiki/Alfalfa,"not accessible to plants with shallow root systems, making it more resistant to droughts and soil erosion",2026-11-14
+trebol,tolerancia_sequia,alta,https://en.wikipedia.org/wiki/Trifolium_pratense,it has a deep taproot which makes it tolerant to drought,2026-11-14
+centeno,tolerancia_sequia,alta,https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/,rye is more cold- and drought-tolerant than wheat,2026-11-14
+centeno,tolerancia_anegamiento,alta,https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/,"it also will grow in heavy clays and poorly drained soils, and many cultivars tolerate waterlogging",2026-11-14
+avena,tolerancia_anegamiento,media,https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/oats/,"oats are more tolerant of wet soil than is barley, but require more moisture",2026-11-14
+alfalfa,valor_forrajero,alto: suele ser la forrajera de mayor rendimiento,https://en.wikipedia.org/wiki/Alfalfa,alfalfa is often the highest-yielding forage plant,2026-11-14
+avena,valor_forrajero,"medio: pastoreo, paja, heno o silaje para rumiantes",https://en.wikipedia.org/wiki/Oat,"oat forage is commonly used to feed all kinds of ruminants, as pasture, straw, hay or silage",2026-11-14
+centeno,valor_forrajero,alto en bota (heno o henolaje); bajo maduro,https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/cereal-rye/,mature rye isn't very palatable and provides poor-quality forage. it makes high quality hay or balage at boot stage,2026-11-14
+trebol,valor_forrajero,alto: máximo valor de 5 a 15 días después de la primera flor,https://www.sare.org/publications/managing-cover-crops-profitably/legume-cover-crops/red-clover/,red clover reaches its prime feeding value at five to 15 days after first bloom,2026-11-14
+soja,tcalor_c,40,https://en.wikipedia.org/wiki/Soybean,temperatures of below 20 °c (70 °f) and over 40 °c (105 °f) stunt growth significantly,2026-11-14
+avena,helada_temp_c,-7,https://en.wikipedia.org/wiki/Oat,they are harmed by sustained cold below −7 °c (20 °f),2026-11-14
+avena,helada_etapa,invierno (frio sostenido),https://en.wikipedia.org/wiki/Oat,they are harmed by sustained cold below −7 °c (20 °f),2026-11-14
+heno,familia,Poaceae,https://en.wikipedia.org/wiki/Lolium_perenne,family: poaceae subfamily: pooideae genus: lolium,2026-11-14
+heno,valor_forrajero,alto: forrajera y de pastura importante (raigrás),https://en.wikipedia.org/wiki/Lolium_perenne,"perennial ryegrass is an important pasture and forage plant, and is used in many pasture seed mixes",2026-11-14
+maiz,rastrojo_cn,57,https://soilhealth.ucdavis.edu/download_file/view/224/234,material c:n ratio rye straw 82:1 wheat straw 80:1 oat straw 70:1 corn stover 57:1,2026-11-14
+trigo_invierno,rastrojo_cn,80,https://soilhealth.ucdavis.edu/download_file/view/224/234,material c:n ratio rye straw 82:1 wheat straw 80:1 oat straw 70:1 corn stover 57:1,2026-11-14
+avena,rastrojo_cn,70,https://soilhealth.ucdavis.edu/download_file/view/224/234,material c:n ratio rye straw 82:1 wheat straw 80:1 oat straw 70:1 corn stover 57:1,2026-11-14
+centeno,rastrojo_cn,37,https://soilhealth.ucdavis.edu/download_file/view/224/234,rye cover crop (anthesis) 37:1 pea straw 29:1,2026-11-14
+alfalfa,rastrojo_cn,13,https://soilhealth.ucdavis.edu/download_file/view/224/234,legume hay 17:1 beef manure 17:1 young alfalfa hay 13:1,2026-11-14
+trigo_invierno,tcalor_c,34,https://fao.org/4/i2800e/i2800e07.pdf,temperatures above 34 oc are possible in most wheat-growing regions during grain filling. such temperatures accelerate senescence,2026-11-14
+trigo_invierno,helada_temp_c,-20,https://fao.org/4/i2800e/i2800e07.pdf,"some winter wheat cultivars in early stages of development exhibit a strong resistance to cold temperature, surviving down to -20 oc",2026-11-14
+trigo_invierno,helada_etapa,espigazon_y_floracion (resiste hasta -20 en etapas tempranas),https://fao.org/4/i2800e/i2800e07.pdf,during the head development and flowering period frost may lead to loss of spikelets,2026-11-14
+trigo_invierno,tolerancia_anegamiento,baja,https://fao.org/4/i2800e/i2800e07.pdf,excess water can cause waterlogging during vegetative growth and can reduce yield substantially,2026-11-14
+soja,helada_etapa,emergencia_y_llenado_de_vainas,https://fao.org/4/i2800e/i2800e07.pdf,soybean is very sensitive to frost at seed emergence and pod filling,2026-11-14
+soja,tolerancia_anegamiento,media,https://fao.org/4/i2800e/i2800e07.pdf,"however soybean tolerates flooding or waterlogging up to 7 days, but yield can be reduced by more than 40 percent",2026-11-14
+maiz,tcalor_c,37.8,https://www.cropscience.bayer.ca/articles/2021/corn-pollination-affected-by-heat-and-drought,temperatures of 37.8° c or greater cause extreme heat stress that can sometimes desiccate pollen,2026-11-14
+maiz,valor_forrajero,alto: planta entera como silaje para rumiantes,https://en.wikipedia.org/wiki/Maize,"when the whole plant (grain plus stalks and leaves) is used for fodder, it is usually chopped and made into silage , as this is more digestible and more palatable to ruminants than the dried form",2026-11-14
+trebol,tolerancia_anegamiento,media,https://www.sare.org/publications/managing-cover-crops-profitably/legume-cover-crops/red-clover/,"responding best to well drained, fertile soils, but also tolerates less well drained conditions",2026-11-14
+alfalfa,fija_n_kgha,174,https://www.saskforage.ca/s/Growing-Forage-Legumes-in-Rotation.pdf,nitrogen fixation rates of alfalfa increased from 174 kg/ha in year one to 466 kg/ha in the third year of the stand,2026-11-14
+maiz,critico_inicio,06-21,https://agry.purdue.edu/Ext/corn/news/timeless/Tassels.html,field corn in indiana typically enters the critical flowering stages of pollen shed and silk emergence sometime between late june to late july,2026-11-14
+maiz,critico_fin,07-31,https://agry.purdue.edu/Ext/corn/news/timeless/Tassels.html,field corn in indiana typically enters the critical flowering stages of pollen shed and silk emergence sometime between late june to late july,2026-11-14
+soja,critico_inicio,07-21,https://crops.extension.iastate.edu/post/fight-finish-moisture,"as soybean planting has moved earlier, we may now change that to say late july and early august makes beans",2026-11-14
+soja,critico_fin,08-10,https://crops.extension.iastate.edu/post/fight-finish-moisture,"as soybean planting has moved earlier, we may now change that to say late july and early august makes beans",2026-11-14
+trigo_invierno,critico_inicio,04-21,https://farmdoc.illinois.edu/?p=43151,"flowering typically begins in late april in southern illinois, the second week of may in central illinois, and the third or fourth week of may in northern illinois",2026-11-14
+trigo_invierno,critico_fin,05-28,https://farmdoc.illinois.edu/?p=43151,"flowering typically begins in late april in southern illinois, the second week of may in central illinois, and the third or fourth week of may in northern illinois",2026-11-14
+maiz,helada_temp_c,-2,https://sylvite.ca/about-us/insights/managing-frost-damage-in-corn-soybeans/,"a killing frost is exactly that, killing the plant at -2°c or lower temperatures",2026-11-14
+soja,helada_temp_c,-2,https://sylvite.ca/about-us/insights/managing-frost-damage-in-corn-soybeans/,"a killing frost is exactly that, killing the plant at -2°c or lower temperatures",2026-11-14
+maiz,helada_etapa,llenado_de_grano (helada mortal antes de madurez fisiológica),https://sylvite.ca/about-us/insights/managing-frost-damage-in-corn-soybeans/,"for both corn and soybeans this will kill the stalk, leaves and pods/cobs. completely stopping grain fill",2026-11-14
+avena,gdd_tope_c,30,https://en.wikipedia.org/wiki/Growing_degree-day,the maximum temperature is usually capped at 30 °c because most plants and insects do not grow any faster above that temperature,2026-11-14
+centeno,gdd_tope_c,30,https://en.wikipedia.org/wiki/Growing_degree-day,the maximum temperature is usually capped at 30 °c because most plants and insects do not grow any faster above that temperature,2026-11-14
+maiz,rastrojo_t_ms_ha,7.5,https://agris.fao.org/search/en/records/65dfbdf263b8185d9cae71bb,corn stover was estimated at 7.5 t ha−1 yr−1,2026-11-14
+trigo_invierno,rastrojo_t_ms_ha,4.3,https://agris.fao.org/search/en/records/65dfbdf263b8185d9cae71bb,"for wheat, the straw biomass was estimated at 4.3 t ha−1 yr−1",2026-11-14
+soja,rastrojo_t_ms_ha,3.1,https://agris.fao.org/search/en/records/65dfbdf263b8185d9cae71bb,soybean straw biomass was estimated at 3.1 t ha−1 yr−1,2026-11-14
+alfalfa,siembra_inicio,02-21,https://crops.extension.iastate.edu/cropnews/2008/04/when-it-too-late-plant-forages,spring hay and pasture seedings are normally done from late february through late april in iowa,2026-11-14
+alfalfa,siembra_fin,04-30,https://crops.extension.iastate.edu/cropnews/2008/04/when-it-too-late-plant-forages,spring hay and pasture seedings are normally done from late february through late april in iowa,2026-11-14
+heno,siembra_inicio,02-21,https://crops.extension.iastate.edu/cropnews/2008/04/when-it-too-late-plant-forages,spring hay and pasture seedings are normally done from late february through late april in iowa,2026-11-14
+heno,siembra_fin,04-30,https://crops.extension.iastate.edu/cropnews/2008/04/when-it-too-late-plant-forages,spring hay and pasture seedings are normally done from late february through late april in iowa,2026-11-14
+maiz,tolerancia_anegamiento,baja,https://ag.purdue.edu/news/department/agry/kernel-news/2026/06/how-flooding-and-soil-waterlogging-affect-corn-growth-and-yield.html,"corn exposed to waterlogged conditions at the v6 growth stage for just one day experienced approximately a 10% yield reduction, while seven days of waterlogging resulted in a 36% yield loss",2026-11-14
+soja,tolerancia_sequia,baja,https://fao.org/4/i2800e/i2800e07.pdf,vegetative (leaf and stem) growth is very sensitive to water deficits,2026-11-14
+trigo_invierno,tolerancia_sequia,media,https://fao.org/4/i2800e/i2800e07.pdf,"maize does not osmotically adjust as well as cotton, sorghum or wheat to low water status",2026-11-14
+avena,tolerancia_sequia,baja,https://www.sare.org/publications/managing-cover-crops-profitably/nonlegume-cover-crops/oats/,"oats are more tolerant of wet soil than is barley, but require more moisture",2026-11-14
+soja,valor_forrajero,alto: tres cuartas partes de la soja se usan para alimentar ganado,https://en.wikipedia.org/wiki/Soybean,three-quarters of soy is used to feed livestock,2026-11-14
+trigo_invierno,valor_forrajero,alto: pastoreo de otoño-invierno de alta calidad (doble propósito),https://www.uaex.uada.edu/publications/pdf/mp404/chapter12wheat.pdf,growing wheat for pasture can provide high quality forage for up to 6 months of the year,2026-11-14
+alfalfa,tbase_c,5,https://www.mesonet.org/images/site/Degree%20day%20Heat%20Unit%20Calculator%20text%281%29.pdf,alfalfa feb 15 41°f (5°c) 86°f (30°c),2026-11-14
+alfalfa,gdd_tope_c,30,https://www.mesonet.org/images/site/Degree%20day%20Heat%20Unit%20Calculator%20text%281%29.pdf,alfalfa feb 15 41°f (5°c) 86°f (30°c),2026-11-14
+alfalfa,gdd_metodo,media_tmax_tmin_menos_tbase (tmax recortada al tope),https://www.mesonet.org/images/site/Degree%20day%20Heat%20Unit%20Calculator%20text%281%29.pdf,"when the maximum daily air temperature is above a crop's upper temperature threshold, the maximum daily air temperature is set to the upper temperature threshold",2026-11-14
+heno,tbase_c,10,https://www.mesonet.org/images/site/Degree%20day%20Heat%20Unit%20Calculator%20text%281%29.pdf,grass hay april 15 50°f (10°c) 86°f (30°c),2026-11-14
+heno,gdd_tope_c,30,https://www.mesonet.org/images/site/Degree%20day%20Heat%20Unit%20Calculator%20text%281%29.pdf,grass hay april 15 50°f (10°c) 86°f (30°c),2026-11-14
+heno,gdd_metodo,media_tmax_tmin_menos_tbase (tmax recortada al tope),https://www.mesonet.org/images/site/Degree%20day%20Heat%20Unit%20Calculator%20text%281%29.pdf,"when the maximum daily air temperature is above a crop's upper temperature threshold, the maximum daily air temperature is set to the upper temperature threshold",2026-11-14
+soja,gdd_tope_c,35,https://www.mesonet.org/images/site/Degree%20day%20Heat%20Unit%20Calculator%20text%281%29.pdf,soybean april 10 50°f (10°c) 95°f (35°c),2026-11-14
+trigo_invierno,gdd_tope_c,30,https://www.mesonet.org/images/site/Degree%20day%20Heat%20Unit%20Calculator%20text%281%29.pdf,wheat october 1 32°f (0°c) 86°f (30°c),2026-11-14
+alfalfa,tolerancia_anegamiento,baja,https://fao.org/4/i2800e/i2800e07.pdf,alfalfa is less tolerant of waterlogging (saturated soils) than other forage (grass) species,2026-11-14
+alfalfa,tcalor_c,30,https://ojs.library.okstate.edu/osu/index.php/OAS/article/view/5454/5080,"when alfalfa is grown at high (e.g. >30 °c) rather than lower temperatures (4-9), flowering occurs earlier, and the herbage yield is lower at specified growth stages",2026-11-14
+centeno,siembra_inicio,08-15,https://crops.extension.iastate.edu/post/planning-successful-cover-crops,mid-august is the beginning of the seeding window for successful cover crop seedings of common cover crop species in a corn and bean rotation,2026-11-14
+heno,etapa_ini_dias,10,https://www.fao.org/3/x0490e/x0490e0b.htm,grass pasture 4 10 20 -- -- -- 7 days before last -4°c in spring until 7 days after first -4°c in fall,2026-11-14
+heno,etapa_des_dias,20,https://www.fao.org/3/x0490e/x0490e0b.htm,grass pasture 4 10 20 -- -- -- 7 days before last -4°c in spring until 7 days after first -4°c in fall,2026-11-14
+centeno,helada_etapa,"invierno, planta bien establecida (el cereal más resistente al frío)",https://uvm.edu/vtvegandberry/factsheets/winterrye.html,"rye is the most winter-hardy of all cereal grains, tolerating temperatures as low as -30°f once it is well established",2026-11-14
+trebol,fija_n_kgha,150,https://www.teagasc.ie/news--events/daily/grassland/the-benefits-of-red-clover.php,an annual nitrogen fixation of 150-200 kg/ha is achievable from swards with a high red clover content,2026-11-14
+trebol,siembra_inicio,02-15,https://crops.extension.iastate.edu/encyclopedia/frosting-seeding-legumes,"typically, frost seeding falls between mid-february and early march, coinciding with the freeze-thaw cycle",2026-11-14
+trebol,siembra_fin,03-10,https://crops.extension.iastate.edu/encyclopedia/frosting-seeding-legumes,"typically, frost seeding falls between mid-february and early march, coinciding with the freeze-thaw cycle",2026-11-14
+centeno,cosecha_inicio,07-15,https://practicalfarmers.org/resources/research-reports/cereal-rye-variety-trial-2020,"when managed as a cash crop, cereal rye is harvested for grain in mid- to late july",2026-11-14
+centeno,cosecha_fin,07-31,https://practicalfarmers.org/resources/research-reports/cereal-rye-variety-trial-2020,"when managed as a cash crop, cereal rye is harvested for grain in mid- to late july",2026-11-14
+heno,tolerancia_anegamiento,media,https://fao.org/4/i2800e/i2800e07.pdf,alfalfa is less tolerant of waterlogging (saturated soils) than other forage (grass) species,2026-11-14
+maiz,fija_n,no,https://www2.kenyon.edu/projects/farmschool/nature/soy.htm,farmers use soybeans and other legumes in roatations with grass crops such as corn or wheat. grass crops are unable to take their own nitrogen from the air,2026-11-14
+trigo_invierno,fija_n,no,https://www2.kenyon.edu/projects/farmschool/nature/soy.htm,farmers use soybeans and other legumes in roatations with grass crops such as corn or wheat. grass crops are unable to take their own nitrogen from the air,2026-11-14
+heno,fija_n,no,https://www2.kenyon.edu/projects/farmschool/nature/soy.htm,grass crops are unable to take their own nitrogen from the air so they either need the nitrogen in the soil that the legumes provide for them,2026-11-14
+soja,fija_n_kgha,111,https://www.mssoy.org/sites/default/files/documents/nebraska-n-review-2008-ok.pdf,n2 fixation ranged from 0 to 337 kg n ha −1 with an aver - age of 111,2026-11-14
+soja,rastrojo_cn,65,https://www.gov.mb.ca/agriculture/crops/soil-fertility/pubs/fer01s02.pdf,corn stover 82:1 3 sunflower stover 60:1 2 soybean residue 65:1 1.5,2026-11-14
+centeno,helada_temp_c,-25,https://int.yara.co.uk/crop-nutrition/rye/rye-agronomic-principles/,established plants will survive temperatures as low as -25°c,2026-11-14
+centeno,raiz_max_m,2,https://int.yara.co.uk/crop-nutrition/rye/rye-agronomic-principles/,rye has a very deep and well developed root system often reaching to depths of 2m,2026-11-14
+centeno,siembra_fin,10-31,https://int.yara.co.uk/crop-nutrition/rye/rye-agronomic-principles/,rye is normally sown in sept - oct (winter rye),2026-11-14
+centeno,critico_inicio,05-01,https://int.yara.co.uk/crop-nutrition/rye/rye-agronomic-principles/,the flowering period is normally may or june,2026-11-14
+centeno,critico_fin,06-30,https://int.yara.co.uk/crop-nutrition/rye/rye-agronomic-principles/,the flowering period is normally may or june,2026-11-14
+heno,rastrojo_cn,22,https://www.ndsu.edu/agriculture/node/5490,"hay, legume (16:1) 15 30 40 50 hay, general (22:1)",2026-11-14
+centeno,kc_ini,0.4,https://www.fao.org/3/x0490e/x0490e0b.htm,winter wheat - with frozen soils 0.4 1.15 0.25-0.4,2026-11-14
+centeno,kc_med,1.15,https://www.fao.org/3/x0490e/x0490e0b.htm,winter wheat - with frozen soils 0.4 1.15 0.25-0.4,2026-11-14
+centeno,kc_fin,0.25,https://www.fao.org/3/x0490e/x0490e0b.htm,winter wheat - with frozen soils 0.4 1.15 0.25-0.4,2026-11-14
+centeno,etapa_ini_dias,160,https://www.fao.org/3/x0490e/x0490e0b.htm,"160 75 75 25 335 october idaho, usa",2026-11-14
+centeno,etapa_des_dias,75,https://www.fao.org/3/x0490e/x0490e0b.htm,"160 75 75 25 335 october idaho, usa",2026-11-14
+centeno,etapa_med_dias,75,https://www.fao.org/3/x0490e/x0490e0b.htm,"160 75 75 25 335 october idaho, usa",2026-11-14
+centeno,etapa_fin_dias,25,https://www.fao.org/3/x0490e/x0490e0b.htm,"160 75 75 25 335 october idaho, usa",2026-11-14
+trebol,helada_temp_c,-6,https://public-pages-files-2025.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2023.1189662/text,lt50-values (temperature at which 50% of the plants are killed) ranging from -6.0°c to -11.5°c,2026-11-14
+heno,tolerancia_sequia,baja,https://ohioline.osu.edu/factsheet/anr-0229,perennial ryegrass or festulolium medium yield; vigorous seedlings; high forage quality and palatability; fair to poor summer regrowth; fair tolerance to wet soils; compatible with legumes. less persistent and lower yielding than orchardgrass; lacks heat and drought tolerance,2026-11-14
+avena,rastrojo_t_ms_ha,2.48,https://library.csbe-scgab.ca/docs/journal/48/c0556.pdf,oat avg max min 0.921 1.342 0.418 2.63 2.88 2.16 1.529 2.183 0.939 2.47 2.92 1.93 0.999 1.237 0.706 2.34 3.10 1.03 3.449 4.763 2.063 2.48,2026-11-14
+trebol,cosecha_inicio,06-01,https://publications.ca.uky.edu/sites/publications.ca.uky.edu/files/agr33.pdf,the first cutting should be taken when clover plants are at about 10 percent bloom. this should occur about june 1-15,2026-11-14
+trebol,cosecha_fin,09-25,https://publications.ca.uky.edu/sites/publications.ca.uky.edu/files/agr33.pdf,to get the last cut off by september 10-25,2026-11-14
+trebol,rastrojo_cn,15,https://lgpress.clemson.edu/?p=1843,red clover ( trifolium pratense ) low: 15-20:1 winter,2026-11-14
+centeno,rastrojo_t_ms_ha,1.26,https://www.mssoy.org/sites/default/files/documents/thompson-et-al-aj-jan-2020.pdf,"spring cereal rye aboveground cover crop biomass, mg ha−1b 1.11b 1.22b 2.20a 0.50c 1.26",2026-11-14

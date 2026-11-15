@@ -1,0 +1,135 @@
+codigo,nombre,grupo
+0,Background,otro
+1,Corn,maiz
+2,Cotton,otro
+3,Rice,otro
+4,Sorghum,otro
+5,Soybeans,soja
+6,Sunflower,otro
+10,Peanuts,otro
+11,Tobacco,otro
+12,Sweet Corn,otro
+13,Pop or Orn Corn,otro
+14,Mint,otro
+21,Barley,otro
+22,Durum Wheat,otro
+23,Spring Wheat,otro
+24,Winter Wheat,trigo_invierno
+25,Other Small Grains,otro
+26,Dbl Crop WinWht/Soybeans,doble_trigo_soja
+27,Rye,otro
+28,Oats,avena
+29,Millet,otro
+30,Speltz,otro
+31,Canola,otro
+32,Flaxseed,otro
+33,Safflower,otro
+34,Rape Seed,otro
+35,Mustard,otro
+36,Alfalfa,alfalfa
+37,Other Hay/Non Alfalfa,heno
+38,Camelina,otro
+39,Buckwheat,otro
+41,Sugarbeets,otro
+42,Dry Beans,otro
+43,Potatoes,otro
+44,Other Crops,otro
+45,Sugarcane,otro
+46,Sweet Potatoes,otro
+47,Misc Vegs & Fruits,otro
+48,Watermelons,otro
+49,Onions,otro
+50,Cucumbers,otro
+51,Chick Peas,otro
+52,Lentils,otro
+53,Peas,otro
+54,Tomatoes,otro
+55,Caneberries,otro
+56,Hops,otro
+57,Herbs,otro
+58,Clover/Wildflowers,otro
+59,Sod/Grass Seed,otro
+60,Switchgrass,otro
+61,Fallow/Idle Cropland,barbecho
+63,Forest,otro
+64,Shrubland,otro
+65,Barren,otro
+66,Cherries,otro
+67,Peaches,otro
+68,Apples,otro
+69,Grapes,otro
+70,Christmas Trees,otro
+71,Other Tree Crops,otro
+72,Citrus,otro
+74,Pecans,otro
+75,Almonds,otro
+76,Walnuts,otro
+77,Pears,otro
+81,Clouds/No Data,otro
+82,Developed,otro
+83,Water,otro
+87,Wetlands,otro
+88,Nonag/Undefined,otro
+92,Aquaculture,otro
+111,Open Water,otro
+112,Perennial Ice/Snow,otro
+121,Developed/Open Space,otro
+122,Developed/Low Intensity,otro
+123,Developed/Med Intensity,otro
+124,Developed/High Intensity,otro
+131,Barren,otro
+141,Deciduous Forest,otro
+142,Evergreen Forest,otro
+143,Mixed Forest,otro
+152,Shrubland,otro
+176,Grassland/Pasture,pastizal
+190,Woody Wetlands,otro
+195,Herbaceous Wetlands,otro
+204,Pistachios,otro
+205,Triticale,otro
+206,Carrots,otro
+207,Asparagus,otro
+208,Garlic,otro
+209,Cantaloupes,otro
+210,Prunes,otro
+211,Olives,otro
+212,Oranges,otro
+213,Honeydew Melons,otro
+214,Broccoli,otro
+215,Avocados,otro
+216,Peppers,otro
+217,Pomegranates,otro
+218,Nectarines,otro
+219,Greens,otro
+220,Plums,otro
+221,Strawberries,otro
+222,Squash,otro
+223,Apricots,otro
+224,Vetch,otro
+225,Dbl Crop WinWht/Corn,otro
+226,Dbl Crop Oats/Corn,otro
+227,Lettuce,otro
+228,Dbl Crop Triticale/Corn,otro
+229,Pumpkins,otro
+230,Dbl Crop Lettuce/Durum Wht,otro
+231,Dbl Crop Lettuce/Cantaloupe,otro
+232,Dbl Crop Lettuce/Cotton,otro
+233,Dbl Crop Lettuce/Barley,otro
+234,Dbl Crop Durum Wht/Sorghum,otro
+235,Dbl Crop Barley/Sorghum,otro
+236,Dbl Crop WinWht/Sorghum,otro
+237,Dbl Crop Barley/Corn,otro
+238,Dbl Crop WinWht/Cotton,otro
+239,Dbl Crop Soybeans/Cotton,otro
+240,Dbl Crop Soybeans/Oats,otro
+241,Dbl Crop Corn/Soybeans,otro
+242,Blueberries,otro
+243,Cabbage,otro
+244,Cauliflower,otro
+245,Celery,otro
+246,Radishes,otro
+247,Turnips,otro
+248,Eggplants,otro
+249,Gourds,otro
+250,Cranberries,otro
+254,Dbl Crop Barley/Soybeans,otro

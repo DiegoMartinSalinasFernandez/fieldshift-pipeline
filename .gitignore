@@ -1,0 +1,37 @@
+# Entorno
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Credenciales (Earthdata va en ~/.netrc, fuera del repo)
+.env
+.env.*
+
+# Datos pesados: raw se baja de nuevo con download.py, interim se regenera
+data/raw/*
+!data/raw/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+
+# Estado del research agent (bitácoras, logs de rondas, caché del verificador)
+loop/notes/
+loop/runs/
+loop/state/
+loop/STOP
+
+# Settings locales de Claude Code (no se versionan ni entran en la verificación de integridad)
+.claude/settings.local.json
+
+# fieldshift-pipeline: los datos no van en git. Cada máquina publica sus CSV procesados con
+# scripts/entregar.py en los Releases de GitHub (ver MAQUINAS.md).
+data/processed/*
+!data/processed/.gitkeep
+data/reference/*
+!data/reference/clases_cdl.csv
+!data/reference/.gitkeep
+data/entregas/
+manifest.csv
+
+# Copia de main que usa scripts/tareas.py para el tablero
+.tablero/

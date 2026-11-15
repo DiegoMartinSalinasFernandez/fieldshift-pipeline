@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(~/.netrc)",
+      "Read(~/_netrc)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  }
+}

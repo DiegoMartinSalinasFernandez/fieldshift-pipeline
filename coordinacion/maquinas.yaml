@@ -1,0 +1,20 @@
+# Quién es quién. Nombres genéricos: el repo es público, no van nombres, mails ni usuarios.
+# plan: max o pro (cambia qué tareas puede tomar y cómo trabaja; ver MAQUINAS.md).
+# estados: los que la máquina baja y procesa (lo mismo que su FIELDSHIFT_ESTADOS).
+maquinas:
+  max-1:
+    plan: max
+    rol: coordinación, unión de estados y entregas a ML
+    estados: [OH, NE, MN, KS]   # descargas en curso desde el 2026-11-14
+  max-2:
+    plan: max
+    rol: sin asignar
+    estados: []
+  pro-1:
+    plan: pro
+    rol: sin asignar
+    estados: []
+  pro-2:
+    plan: pro
+    rol: sin asignar
+    estados: []
