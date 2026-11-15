@@ -91,8 +91,15 @@ def leer_ventana(url, win, hilos, alto=1024):
     return arr
 
 
+def asegurar_manifest(man: Path) -> None:
+    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
+    if not man.exists() or man.stat().st_size == 0:
+        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
+
+
 def upsert_manifest(filas):
     man = ROOT / "manifest.csv"
+    asegurar_manifest(man)
     data = man.read_bytes()
     eol = b"\r\n" if b"\r\n" in data else b"\n"
     existentes = set()
