@@ -1,14 +1,14 @@
 ---
 id: T097
 titulo: QA genérico para cualquier release (para reusar en KS y MO/WI/SD)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T06:55
-actualizada: 2026-11-15T06:55
+actualizada: 2026-11-15 07:11
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ Los zips de los releases son públicos: bajalos con `curl -L` desde `https://git
 El script y la prueba en un PR.
 
 ## Notas
+- 2026-11-15 07:11 · pro-3: tomada
