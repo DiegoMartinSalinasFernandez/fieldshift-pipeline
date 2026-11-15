@@ -1,14 +1,14 @@
 ---
 id: T033
 titulo: Pruebas del tablero (tests/test_tareas.py)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 03:00
-actualizada: 2026-11-15 02:57
+actualizada: 2026-11-15 03:01
 ---
 
 ## Qué hacer
@@ -32,3 +32,4 @@ Las pruebas en un PR, pasando (salvo las marcadas).
 
 ## Notas
 - 2026-11-15 02:57 · pro-1: tomada
+- 2026-11-15 03:01 · pro-1: terminada por el trabajador: PR #26, falta la revisión de max-1
