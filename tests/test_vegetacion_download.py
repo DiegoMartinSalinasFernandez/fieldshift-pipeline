@@ -64,6 +64,7 @@ class DescargaVegetacion(unittest.TestCase):
             mock.patch.object(dl, "buscar", side_effect=buscar_falso),
             mock.patch.object(dl, "bajar_item", self.bajar),
             mock.patch.object(dl, "registrar_manifest"),
+            mock.patch.object(dl.lpdaac, "sesion_earthdata", return_value=None),  # T119: sin LP DAAC
             mock.patch.object(dl, "cargar_config",
                               return_value={"periodo": {"anio_inicio": 2014, "anio_fin": 2016}}),
             mock.patch.object(dl.requests, "get", self.get),

@@ -78,8 +78,9 @@ def url_datos(entry: dict) -> str | None:
     return None
 
 
-def cmr_granulos(prefijo: str, bbox: list[float], anio: int, get=requests.get) -> dict[tuple[str, str], dict]:
+def cmr_granulos(prefijo: str, bbox: list[float], anio: int, get=None) -> dict[tuple[str, str], dict]:
     """Gránulos v061 de CMR que empiezan en `anio` y tocan el bbox: {(compuesto, tesela): {id, url, bytes}}."""
+    get = get or requests.get
     out, page = {}, 1
     while True:
         r = get(CMR, params={"short_name": prefijo, "version": "061", "bounding_box": ",".join(map(str, bbox)),
@@ -110,7 +111,7 @@ def faltantes(cmr: dict[tuple[str, str], dict], pc: set[tuple[str, str]]) -> lis
     return sorted(set(cmr) - set(pc))
 
 
-def faltantes_grupos(prefijo: str, grupos: list, anio: int, items_pc: list[dict], get=requests.get
+def faltantes_grupos(prefijo: str, grupos: list, anio: int, items_pc: list[dict], get=None
                      ) -> list[tuple[dict, list[float]]]:
     """[(gránulo de CMR, bbox)] a rellenar, con la unión de los bbox de los grupos que tocan cada tesela."""
     from src.vegetacion.download import union_bbox
