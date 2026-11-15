@@ -12,5 +12,6 @@ h5netcdf
 h5py
 pyproj
 xlrd
+openpyxl>=3.1.5
 pytest
 matplotlib
