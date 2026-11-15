@@ -117,7 +117,7 @@ class ManifestNuevo(unittest.TestCase):
                 a = chico(m.RAW / "2020" / m.nombre(2020, 6))
                 if self.man.exists():
                     self.man.unlink()
-                m.registrar_manifest([-97.0, 40.0, -89.0, 44.0])
+                m.registrar_manifest({"zona": [-97.0, 40.0, -89.0, 44.0]})  # desde T023: un bbox por grupo
                 self.controlar(a)
 
     def test_vegetacion(self):
