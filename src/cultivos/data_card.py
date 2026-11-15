@@ -237,6 +237,19 @@ Problemas conocidos:
 - `pct_riego` del Censo usa como denominador `AG LAND, CROPLAND` (incluye pasturas en rotación) y
   como numerador toda la tierra regada (incluye pasturas regadas); `frac_riego_lanid` usa la
   máscara agrícola del CDL. No son iguales por definición.
+- **Prueba en Nebraska 2017** (T127; recorte con una máscara agrícola provisoria hecha con las
+  clases agrícolas del CDL 2017, no con la Cultivated Layer; 93 condados, 2011–2017 en 37 s):
+  - `frac_maiz_regado` contra NASS: encuesta, maíz sembrado `IRRIGATED / ALL`, n = 49, r = 0,973,
+    sesgo −0,05 y MAE 0,06; Censo 2017, maíz grano cosechado `IRRIGATED / ALL`, n = 87, r = 0,970,
+    sesgo −0,03 y MAE 0,05.
+  - `frac_soja_regada` **sobreestima**: contra la encuesta (n = 22) r = 0,92 pero sesgo +0,20; contra
+    el Censo 2017 (n = 77) r = 0,92 y sesgo +0,16 (mediana 0,81 contra 0,54). Ordena bien los
+    condados, pero el nivel de la soja regada de LANID no es confiable. No se corrigió: ML decide
+    si usarla.
+  - `frac_riego_lanid`: mediana de los condados 0,49 (2012) a 0,60 (2015); `frac_pixeles_validos` = 1
+    en todos (LANID cubre todo el estado y no declara nodata).
+- La grilla de LANID está alineada con la del CDL (EPSG:5070, 30 m; origen −2354955, 3165615, a un
+  número entero de píxeles del origen del CDL), así que el vecino más cercano no mueve píxeles.
 
 ## Problemas conocidos
 
