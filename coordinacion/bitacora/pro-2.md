@@ -63,3 +63,4 @@
 - 06:11 T071: terminada, PR #68
 - 06:26 trabajador actualizado desde main
 - 06:26 T078: tomada por el trabajador
+- 06:31 T078: terminada, PR #75
