@@ -20,6 +20,8 @@ zona:
     MO: {fips: "29", nombre: Missouri, condados: 115}
     WI: {fips: "55", nombre: Wisconsin, condados: 72}
     SD: {fips: "46", nombre: South Dakota, condados: 66}
+    # Cuarta tanda: ND primero, como recomienda docs/research/cuarta_tanda_decision.md (MI y KY quedan para después)
+    ND: {fips: "38", nombre: North Dakota, condados: 53}
   condados: todos
 
 unidad_espacial: condado
