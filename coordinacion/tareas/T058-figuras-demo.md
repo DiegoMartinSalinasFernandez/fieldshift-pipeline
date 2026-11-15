@@ -1,9 +1,9 @@
 ---
 id: T058
 titulo: Script de figuras para la demo con los datos publicados
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-5
 estados: []
 depende_de: []
 rama: null
@@ -34,3 +34,4 @@ El script y las figuras en un PR.
 ## Notas
 - 2026-11-15 04:39 · pro-5: tomada
 - 2026-11-15 04:43 · pro-5: soltada: quedó a medias, PR #53. INCOMPLETA: el script está terminado y probado, pero faltan los PNG reales. En esta máquina no se pudieron bajar los zips publicados: el permiso de `gh` (y el de la API de GitHub) se denegó. Falta correr `.venv/bin/python -X utf8 docs/demo/figuras.py` en una máquina con `gh` y commitear `docs/demo/f
+- 2026-11-15 04:43 · pro-5: tomada
