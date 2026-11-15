@@ -1,7 +1,7 @@
 ---
 id: T004
 titulo: Separar riego y secano de NASS en NE y KS
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados:
@@ -10,7 +10,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-14 23:59
-actualizada: 2026-11-15 02:00
+actualizada: 2026-11-15 02:13
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ Research escrito con fuentes y confianza, y una propuesta concreta de columnas a
 
 ## Notas
 - 2026-11-15 02:00 · pro-2: tomada
+- 2026-11-15 02:13 · pro-2: terminada por el trabajador: PR #4, falta la revisión de max-1
