@@ -57,3 +57,4 @@
  ! [remote rejected] tarea/T112-au)
 - 08:20 T115: tomada por el trabajador
 - 10:52 T081: tomada por el trabajador
+- 10:59 T081: terminada, PR #146
