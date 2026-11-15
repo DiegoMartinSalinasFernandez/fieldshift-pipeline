@@ -13,3 +13,4 @@ h5py
 pyproj
 xlrd
 pytest
+matplotlib
