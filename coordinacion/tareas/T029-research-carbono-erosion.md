@@ -1,7 +1,7 @@
 ---
 id: T029
 titulo: 'Research: carbono del suelo y erosión según la rotación'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados:
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 03:00
-actualizada: 2026-11-15 02:50
+actualizada: 2026-11-15 02:58
 ---
 
 ## Qué hacer
@@ -43,3 +43,4 @@ El research en un PR.
 
 ## Notas
 - 2026-11-15 02:50 · pro-2: tomada
+- 2026-11-15 02:58 · pro-2: terminada por el trabajador: PR #25, falta la revisión de max-1
