@@ -24,3 +24,7 @@ respuesta y se crea la tarea que lo implementa.
 | 16 | T029 (PR 25) | Correr RUSLE2 con la base del NRCS para C absolutos (tarea aparte) | No hay tabla RUSLE2 publicada para los 7 estados | pendiente |
 | 17 | T032 (PR 27) | `siembra_prevenida_anual.csv` (esquema nuevo), en `cultivos` o en un paquete `seguro`; `openpyxl` en `requirements.txt` para los `.xlsx` de FSA | Esquema nuevo y dependencia nueva: los aprueba el humano. Ojo: los códigos de condado partidos de FSA hay que pasarlos a FIPS antes de `validar_csv()` | pendiente |
 | 18 | T034 (PR 28) | Crear una cuenta de AmeriFlux y bajar FLUXNET-1F (diario y mensual) de los 9 sitios núcleo, con la política CC-BY-4.0 | La cuenta y la aceptación de la política son del humano; después max-1 abre la tarea de validación de la ET. Ojo: US-Ne1 y US-Ne2 tienen riego | pendiente |
+| 19 | `cdl_csb.md` (índice, PR 31) | Sumar las clases 0, 27 y 58 a `data/reference/clases_cdl.csv` | Cambia la tabla de clases de referencia que usan rotación y máscaras | pendiente |
+| 20 | `nitrogeno.md` (índice, PR 31) | Columna de crédito de N en `config/cultivos.csv` | Toca `config/`: lo aprueba el humano | pendiente |
+| 21 | `regiones_ers.md` (índice, PR 31) | Costos del ERS por condado (hoy por región, ponderados por área) | Cambia el esquema de `economia_anual.csv` | pendiente |
+| 22 | `presupuestos_estados_nuevos.md` (índice, PR 31) | Tabla de costos con riego (UNL, K-State) en `docs/`, y FINBIN/KFMA como referencia | Solo referencia; no cambia ningún CSV | pendiente |
