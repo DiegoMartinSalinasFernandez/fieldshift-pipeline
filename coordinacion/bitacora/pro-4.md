@@ -31,3 +31,4 @@
 - 07:34 T103: tomada por el trabajador
 - 08:12 T103: terminada, PR #104
 - 08:13 T113: tomada por el trabajador
+- 08:18 T113: terminada, PR #105
