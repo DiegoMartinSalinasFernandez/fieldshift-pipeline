@@ -239,7 +239,9 @@ def seccion_rangos(rel: Release) -> None:
     if not falta(rel, "clima", "clima_mensual.csv"):
         cm = rel.leer("clima", "clima_mensual.csv")
         for col in ["prec_imerg_mm", "prec_power_mm", "tmax_c", "tmin_c", "gdd_10_30"]:
-            print(f"- `{col}` mensual: {cm[col].min()} a {cm[col].max()}")
+            if col in cm:
+                print(f"- `{col}` mensual: {cm[col].min()} a {cm[col].max()}")
+    if rel.tiene("clima", "clima_mensual.csv") and {"prec_imerg_mm", "prec_power_mm"} <= set(cm.columns):
         tot = cm.groupby(["estado", "fips", "anio"])[["prec_imerg_mm", "prec_power_mm"]].sum(min_count=1)
         r = (tot.prec_imerg_mm / tot.prec_power_mm).groupby("estado").median()
         print("- Cociente lluvia anual IMERG / POWER (mediana): "
