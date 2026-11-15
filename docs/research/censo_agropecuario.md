@@ -125,7 +125,7 @@ Confianza: alta para la existencia de los `short_desc`, los conteos de filas y `
 
 Impacto (lo que T003 tiene que tener en cuenta en `practicas_censo.csv`, paquete `cultivos`):
 1. Los `short_desc` de `CENSO_NUM` y `CENSO_DEN` de `src/cultivos/process.py` sirven sin cambios para OH, NE, MN y KS.
-2. 2012 sigue igual que en IA/IL/IN: solo `pct_riego` por condado; las otras tres prácticas, vacías o desde la Tabla 41 del Censo 2017 (PDF por estado: `Ohio/st39_2_0041_0041.pdf`, `Nebraska/st31_2_0041_0041.pdf`, `Minnesota/st27_2_0041_0041.pdf`, `Kansas/st20_2_0041_0041.pdf`; rutas armadas con el mismo patrón que Iowa, no probadas).
+2. 2012 sigue igual que en IA/IL/IN: solo `pct_riego` por condado; las otras tres prácticas, vacías o desde la Tabla 41 del Censo 2017 (PDF por estado: `Ohio/st39_2_0041_0041.pdf`, `Nebraska/st31_2_0041_0041.pdf`, `Minnesota/st27_2_0041_0041.pdf`, `Kansas/st20_2_0041_0041.pdf`; las cuatro responden 200 con PDF el 2026-11-15; no se probó el parseo).
 3. `pct_drenaje_tile` en NE y KS: ~45–50 % de los condados vacíos (sin fila o `(D)`). Anotarlo en "Problemas conocidos" del data card con los números de arriba; no rellenar con 0.
 4. Propuesta (cambia el esquema del CSV, decide el humano): agregar `pct_maiz_regado` (= `CORN, GRAIN, IRRIGATED - ACRES HARVESTED` / `CORN, GRAIN - ACRES HARVESTED`), `pct_soja_regada` (ídem con `SOYBEANS`) y `pct_cosechado_regado` (= `AG LAND, CROPLAND, HARVESTED, IRRIGATED` / `AG LAND, CROPLAND, HARVESTED`), con su `flag_nass`. Son clave en NE y KS y existen también para 2012.
 5. Ningún `pct_riego` supera 100 % en los cuatro estados (2017 y 2022).
