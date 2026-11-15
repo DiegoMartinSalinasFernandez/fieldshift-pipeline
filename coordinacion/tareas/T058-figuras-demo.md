@@ -1,9 +1,9 @@
 ---
 id: T058
 titulo: Script de figuras para la demo con los datos publicados
-estado: tomada
+estado: libre
 plan_minimo: pro
-maquina: pro-5
+maquina: null
 estados: []
 depende_de: []
 rama: null
@@ -44,3 +44,4 @@ El script y las figuras en un PR.
 - 2026-11-15 04:51 · pro-5: soltada: quedó a medias, PR #53 actualizado. INCOMPLETA: `docs/demo/figuras.py` está terminado (commits 2e71e2f, b9fd815, 863c201), pero siguen faltando los PNG reales en `docs/demo/fig/`. Quinto intento en pro-5: `gh release list` fue denegado por permisos, y correr el script (que baja los zips por HTTPS si `gh` no anda) también fue denegado 
 - 2026-11-15 04:51 · pro-5: tomada
 - 2026-11-15 04:52 · pro-5: corte por el límite de uso de Claude; 3 commits guardados en tarea/T058-auto. El trabajador sigue cuando se renueve.
+- 2026-11-15 04:52 · pro-5: soltada: pro-5 sin cuota de Claude hasta 15/11 08:00
