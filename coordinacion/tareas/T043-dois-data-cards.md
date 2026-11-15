@@ -1,14 +1,14 @@
 ---
 id: T043
 titulo: DOIs de la NASA en los data cards y versiones pendientes
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 03:45
-actualizada: 2026-11-15 03:45
+actualizada: 2026-11-15 03:30
 ---
 
 ## Qué hacer
@@ -31,3 +31,4 @@ data card de `clima` como problema conocido.
 Los cambios en un PR.
 
 ## Notas
+- 2026-11-15 03:30 · pro-2: tomada
