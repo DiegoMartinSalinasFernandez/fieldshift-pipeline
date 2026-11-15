@@ -1,7 +1,7 @@
 ---
 id: T017
 titulo: 'Research: dónde hay drenaje con caños (tile) por condado y por píxel'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:40
-actualizada: 2026-11-15 02:22
+actualizada: 2026-11-15 02:27
 ---
 
 ## Qué hacer
@@ -40,3 +40,4 @@ El research en un PR, con una recomendación de cuál usar (o ninguno) y por qu�
 
 ## Notas
 - 2026-11-15 02:22 · pro-1: tomada
+- 2026-11-15 02:27 · pro-1: terminada por el trabajador: PR #9, falta la revisión de max-1
