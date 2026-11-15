@@ -1,9 +1,9 @@
 ---
 id: T054
 titulo: 'Research: eventos extremos conocidos en OH, NE, MN y KS (2000–2025)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - OH
 - NE
@@ -37,3 +37,4 @@ El research en un PR.
 ## Notas
 - 2026-11-15 04:18 · pro-2: tomada
 - 2026-11-15 04:24 · pro-2: soltada al arrancar: quedó tomada de una corrida anterior de esta máquina
+- 2026-11-15 04:24 · pro-2: tomada
