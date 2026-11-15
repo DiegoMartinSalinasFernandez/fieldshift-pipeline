@@ -1,14 +1,14 @@
 ---
 id: T053
 titulo: Glosario en inglés de las columnas (CSV para el frontend)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:17
-actualizada: 2026-11-15 04:17
+actualizada: 2026-11-15 04:28
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ El CSV y el script en un PR, con una prueba chica en `tests/` que controle que c
 está en el glosario.
 
 ## Notas
+- 2026-11-15 04:28 · pro-5: tomada
