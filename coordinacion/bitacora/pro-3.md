@@ -45,3 +45,4 @@
 - 07:22 T098: tomada por el trabajador
 - 07:24 T098: terminada, PR #95
 - 07:39 T105: tomada por el trabajador
+- 07:49 T105: terminada, PR #98
