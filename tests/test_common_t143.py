@@ -61,7 +61,8 @@ class AsegurarManifestIgual(unittest.TestCase):
             r = csv.DictReader(f)
             self.assertEqual(r.fieldnames, CAMPOS_MANIFEST)
             self.assertEqual(list(r), [])
-        self.assertTrue(b.endswith(b"\n") and b"\r" not in b)
+        # write_text usa el fin de línea del sistema (CRLF en Windows), igual que la función vieja
+        self.assertTrue(b.endswith(b"\n"))
 
     def test_manifest_vacio(self):
         self.comparar(b"")
