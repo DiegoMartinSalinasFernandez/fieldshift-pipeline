@@ -500,3 +500,49 @@ data card con `python src/cultivos/data_card.py` después de correr `process.py`
 | fenologia_estado.csv | doy_50_sembrado_otono | Trigo de invierno: día del año (de anio − 1) del 50 % sembrado en otoño | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) |  |  |  |  |
 | fenologia_estado.csv | doy_50_emergido_otono | Trigo de invierno: día del año (de anio − 1) del 50 % emergido en otoño | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) |  |  |  |  |
 | fenologia_estado.csv | flag_hueco_50 | Etapas (separadas por ;) cuyo 50 % se interpoló entre semanas separadas por más de 14 días | texto | Derivada de NASS Quick Stats |  |  |  |  |
+## Sorgo granífero como clase de rotación en Kansas (T137, retenido hasta el OK de `para_decidir` #11)
+
+Código en `src/cultivos/sorgo.py`; se corre después de `process.py`
+(`.venv/bin/python -X utf8 src/cultivos/sorgo.py`). Agrega columnas **al final** de `rotacion_anual.csv` y
+`rotacion_secuencia.csv`; las columnas que ya existen no cambian. El sorgo **no** entra en
+`produccion_anual.csv` (`docs/research/sorgo.md`: NASS publica su rendimiento en pocos condados de Kansas).
+Solo se calcula para los condados de Kansas (FIPS 20); en los demás estados las columnas quedan vacías y, si la
+máquina no tiene Kansas, el script no hace nada. Si las columnas ya están, se reemplazan (idempotente).
+
+| Archivo | Columna | Descripción | Unidad | Fuente | ID catálogo |
+|---|---|---|---|---|---|
+| rotacion_anual.csv | pct_sorgo | % del área agrícola del condado con sorgo, solo o en doble cultivo con trigo de invierno (CDL 4 y 236) | % | USDA NASS Cropland Data Layer 30 m | R04 |
+| rotacion_anual.csv | pct_doble_trigo_sorgo | % del área agrícola con doble cultivo trigo de invierno/sorgo (CDL 236) | % | Cropland Data Layer | R09 |
+| rotacion_anual.csv | pct_sorgo_tras_trigo | % de los píxeles de sorgo (4, 236) del anio que tenían trigo de invierno (24, 26) en anio−1 | % | Cropland Data Layer | R03 |
+| rotacion_anual.csv | pct_sorgo_tras_sorgo | % de los píxeles de sorgo del anio que tenían sorgo en anio−1 | % | Cropland Data Layer | R03 |
+| rotacion_anual.csv | pct_barbecho_tras_sorgo | % de los píxeles de barbecho (61) del anio que tenían sorgo en anio−1 | % | Cropland Data Layer | R03 |
+| rotacion_anual.csv | pct_trigo_tras_barbecho | % de los píxeles de trigo de invierno (24, 26) del anio que tenían barbecho en anio−1 | % | Cropland Data Layer | R03 |
+| rotacion_secuencia.csv | pct_trigo_sorgo_barbecho | % de los píxeles agrícolas en los 8 años de la ventana con la secuencia trigo–sorgo–barbecho en tres años seguidos al menos una vez | % | Cropland Data Layer | R13 |
+| rotacion_secuencia.csv | pct_rotacion_sorgo | % de los píxeles agrícolas en los 8 años de la ventana con sorgo en algún año | % | Cropland Data Layer | R13 |
+
+Los IDs del catálogo son los de las columnas parecidas de maíz y soja (R03 transiciones, R04 % por cultivo,
+R09 doble cultivo, R13 secuencia); el catálogo no tiene IDs propios del sorgo.
+
+**Supuestos**
+- Sorgo = CDL 4 (Sorghum) y 236 (Dbl Crop WinWht/Sorghum). Trigo = 24 y 26, como `pct_trigo`: el 236 no cuenta
+  como trigo, así que `pct_trigo` no cambia y un 236 seguido de sorgo cuenta como sorgo tras sorgo. No se usan
+  234 (durum/sorgo) ni 235 (cebada/sorgo): no son trigo de invierno.
+- Denominador de las transiciones: píxeles de la clase del año actual que en anio−1 tenían una clase agrícola
+  (incluye el barbecho 61), igual que las transiciones maíz–soja. Sin píxeles en el denominador, celda vacía.
+- Primer año completo de la serie: transiciones vacías (no hay año anterior).
+- La secuencia trigo–sorgo–barbecho se busca en años calendario del CDL: el trigo se cosecha en julio del año
+  t, el sorgo se siembra en junio de t+1 y el barbecho dura hasta la siembra del trigo en septiembre de t+2,
+  así que la secuencia esperada es 24 → 4 → 61 en tres CDL seguidos.
+
+**Problemas conocidos**
+- Precisión del sorgo en el CDL de Kansas: 76–84 % del productor y 82–86 % del usuario (2021–2023), unos
+  8 puntos menos que maíz, soja y trigo; el 236 tiene 32 % y 57 % en 2023 (`docs/research/sorgo.md`).
+- En los años de transición entre CDL de 30 m y de 10 m remuestreado (2024) puede haber más cambios de clase
+  en bordes de lote: lo absorbe el denominador agrícola, como en las demás transiciones.
+
+**Prueba con un recorte real de Kansas** (2026-11-15): 4 teselas de 90 km del CDL 2010–2021 de Planetary
+Computer, bajadas fuera del repo, con Greeley (20071), Hamilton (20075), Wallace (20199) y Wichita (20203),
+oeste de Kansas. Corrió en 20 s. Medias 2010–2021: `pct_sorgo` 11–15 %, `pct_sorgo_tras_trigo` 45–78 %,
+`pct_trigo_tras_barbecho` 72–82 %; `pct_trigo_sorgo_barbecho` 21–49 % según condado y ventana (Greeley
+38–45 %). Muestra la rotación de secano trigo–sorgo–barbecho que describe el research. No se corrió sobre todo
+Kansas: esta máquina solo tiene el CDL 2017 en `data/raw/`.
