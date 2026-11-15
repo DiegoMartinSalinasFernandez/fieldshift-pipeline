@@ -1,14 +1,14 @@
 ---
 id: T051
 titulo: Actualizar estructura_csv.md y guia_tablas.md a 7 estados
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:17
-actualizada: 2026-11-15 04:17
+actualizada: 2026-11-15 04:24
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ Solo documentación. No inventes cifras: si un número no está en el repo, no v
 Los dos documentos en un PR.
 
 ## Notas
+- 2026-11-15 04:24 · pro-5: tomada
