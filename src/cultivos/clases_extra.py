@@ -103,8 +103,23 @@ def efecto(cuenta: np.ndarray) -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 
-def efecto_tifs(rutas: list[Path]) -> pd.DataFrame:
-    """Efecto en recortes del CDL (GeoTIFF EPSG:5070) con los condados de condados.gpkg."""
+def _tabla(cuenta: np.ndarray, fips: np.ndarray, archivo: str) -> pd.DataFrame:
+    d = efecto(cuenta)
+    ids = d["id"].to_numpy()
+    d.insert(0, "archivo", archivo)
+    d.insert(1, "fips", fips[ids - 1])
+    # px de cada clase extra, para leer la tabla sin abrir el raster
+    for k in GRUPOS_EXTRA:
+        d[f"px_clase_{k}"] = cuenta[ids, k]
+    return d.drop(columns="id")
+
+
+def efecto_tifs(rutas: list[Path], sumar: bool = False) -> pd.DataFrame:
+    """Efecto en recortes del CDL (GeoTIFF EPSG:5070) con los condados de condados.gpkg.
+
+    Con `sumar=True` junta los conteos de todos los recortes (por ejemplo, las teselas de un
+    año) antes de calcular, así los condados que corta una tesela quedan completos.
+    """
     import geopandas as gpd
     import rasterio
     from rasterio.features import rasterize
@@ -112,6 +127,7 @@ def efecto_tifs(rutas: list[Path]) -> pd.DataFrame:
     cond = gpd.read_file(REPO / "data" / "reference" / "condados.gpkg").to_crs(5070)
     fips = cond["fips"].astype(str).str.zfill(5).to_numpy()
     formas = [(g, i + 1) for i, g in enumerate(cond.geometry)]
+    total = np.zeros((len(fips) + 1, 256), np.int64)
     salida = []
     for ruta in rutas:
         with rasterio.open(ruta) as src:
@@ -119,13 +135,12 @@ def efecto_tifs(rutas: list[Path]) -> pd.DataFrame:
             ids = rasterize(formas, out_shape=a.shape, transform=src.transform, fill=0,
                             dtype="int32")
         cuenta = conteo_por_condado(a, ids, len(fips))
-        d = efecto(cuenta)
-        d.insert(0, "archivo", Path(ruta).name)
-        d.insert(1, "fips", fips[d["id"].to_numpy() - 1])
-        # px de cada clase extra, para leer la tabla sin abrir el raster
-        for k in GRUPOS_EXTRA:
-            d[f"px_clase_{k}"] = cuenta[d["id"].to_numpy(), k]
-        salida.append(d.drop(columns="id"))
+        if sumar:
+            total += cuenta
+        else:
+            salida.append(_tabla(cuenta, fips, Path(ruta).name))
+    if sumar:
+        return _tabla(total, fips, f"{len(rutas)} recortes sumados")
     return pd.concat(salida, ignore_index=True)
 
 
@@ -133,6 +148,8 @@ def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--escribir", action="store_true", help="reescribe clases_cdl.csv")
     ap.add_argument("--efecto", nargs="+", type=Path, help="recortes del CDL a medir")
+    ap.add_argument("--sumar", action="store_true",
+                    help="suma los conteos de todos los recortes antes de calcular")
     ap.add_argument("--salida", type=Path, help="CSV para la tabla del efecto")
     a = ap.parse_args(argv)
     if a.escribir:
@@ -140,7 +157,7 @@ def main(argv: list[str] | None = None) -> None:
         df.to_csv(CLASES, index=False, encoding="utf-8", lineterminator="\n")
         print(f"clases_cdl.csv: grupos de {sorted(GRUPOS_EXTRA)} actualizados", flush=True)
     if a.efecto:
-        df = efecto_tifs(a.efecto)
+        df = efecto_tifs(a.efecto, sumar=a.sumar)
         if a.salida:
             df.to_csv(a.salida, index=False, encoding="utf-8")
         else:
