@@ -86,7 +86,7 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
   por NASS (`metadata_wa23.htm`, el único archivo de metadatos por estado accesible en la
   página de NASS al momento de bajar; la tabla de clases es nacional). `grupo` es la
   clasificación del proyecto (maiz, soja, trigo_invierno, doble_trigo_soja, avena, alfalfa,
-  heno, barbecho, pastizal; el resto `otro`).
+  heno, barbecho, pastizal, centeno, trebol y sin_dato para el 0; el resto `otro`).
 
 - **CDL anual** (`rotacion_anual.csv`): CropScape no respondió y la descarga nacional pesa
   ~1,8 GB por año, así que se usan las teselas COG de 90 km × 90 km (EPSG:5070, 30 m) de la
@@ -570,3 +570,55 @@ Kansas: esta máquina solo tiene el CDL 2017 en `data/raw/`.
 - Con el release `datos-oh-ne-mn` (268 condados, 26 años, 6 cultivos): de 23.016 filas pasa a 41.808
   (18.792 completadas: OH 6.893, NE 5.786, MN 6.113). Por año, las completadas van de 439 (2013) a 1.248
   (2024). `validar_csv()` pasa sin errores.
+## Clases 0, 27 y 58 del CDL (T139, para_decidir #19)
+
+`docs/research/cdl_csb.md` propone grupos propios para tres clases que en `clases_cdl.csv` estaban en `otro`.
+Los nombres oficiales son los de los metadatos del CDL que ya tenía la tabla:
+
+| Código | Nombre oficial | Grupo antes | Grupo ahora |
+|---|---|---|---|
+| 0 | Background | otro | `sin_dato` |
+| 27 | Rye | otro | `centeno` |
+| 58 | Clover/Wildflowers | otro | `trebol` |
+
+Los grupos también están en `GRUPOS_CDL` de `src/cultivos/process.py`, así no se pierden si `process.py` vuelve a
+generar la tabla desde los metadatos. `python -m src.cultivos.clases_extra --escribir` aplica los grupos sin
+cambiar nada más: conserva el fin de línea CRLF del archivo y falla si falta un código o si el nombre no coincide.
+
+**Qué cambia en los productos:**
+- `rotacion_anual.csv`, máscaras (`mascara_agricola.tif`, `mascara_maiz_<anio>.tif`, `mascara_soja_<anio>.tif`) y
+  `rotacion_secuencia.csv`: **nada**. Usan listas de códigos (`AGRICOLA`, `PCT_CLASES`, 1 y 5) o la Cultivated Layer,
+  no la columna `grupo`. 27 y 58 ya cuentan como área agrícola (códigos 1–61) y el 0 nunca entró al denominador.
+- `lotes` (`cultivo_px_anual.csv` y el resumen anual por lote): **sí**. La columna `cultivo` sale de `grupo`, así
+  que los píxeles de centeno o trébol pasan de `otro` a `centeno` o `trebol`, y `cultivo_principal` puede cambiar en
+  un lote donde el centeno era mayoría dentro de `otro`. El 0 ya iba vacío. Esta máquina no tiene datos de `lotes`
+  para medirlo; hay que volver a correr `src/lotes/process.py` después de unir.
+
+**Efecto medido** con `python -m src.cultivos.clases_extra --efecto data/raw/cultivos/cdl/teselas/*.tif --sumar`:
+las 69 teselas del CDL 2017 de KS y NE (198 condados completos, 459 millones de píxeles). Escenarios:
+- `actual`: como hoy.
+- `A_grupos` (la propuesta): solo cambia `grupo`. Las columnas nuevas `pct_centeno`, `pct_trebol` y
+  `frac_pixeles_validos` se calculan aparte y **no** se agregan a `rotacion_anual.csv` sin el OK del humano (es un
+  cambio de esquema).
+- `B_cobertura` (alternativa): 27 y 58 salen del área agrícola, como cultivos de cobertura o forraje.
+
+Resultados:
+- **Clase 0:** ningún píxel dentro de los condados (el fondo solo aparece fuera de EE.UU.). Por eso
+  `frac_pixeles_validos` = 1 en los 198 condados, y que el 0 deje de contar como válido no cambia nada.
+- **Escenario A:** todos los `pct_*` quedan **idénticos** (diferencia 0 en los 198 condados).
+- **Centeno (27):** 0,32 % del área agrícola en KS y 0,16 % en NE (mediana por condado 0,02 %). Llega a 13,3 % en
+  Thomas (NE), 9,1 % en Arthur (NE), 7,1 % en Kiowa (KS) y 6,9 % en Stafford (KS): son zonas de Sandhills o de
+  trigo, donde el centeno es más forraje que cobertura.
+- **Trébol (58):** casi nulo (0,009 % en KS y 0,001 % en NE; máximo por condado 0,4 %).
+- **Escenario B:** los `pct_*` suben porque el denominador es menor. La mediana del cambio por columna no pasa de 0,01 puntos;
+  el máximo es 4,3 puntos de `pct_maiz` (Arthur, NE, de 42,6 a 46,9 %), 8,1 de `pct_alfalfa` y 3,0 de `pct_trigo`.
+  Solo 14 combinaciones de condado y columna `pct_*` cambian más de 1 punto (7 de `pct_maiz`, 4 de `pct_trigo`,
+  2 de `pct_alfalfa` y 1 de `pct_barbecho`).
+
+**Supuestos:**
+- 2017 es el único año con teselas en esta máquina. El centeno varía de un año a otro y podría pesar más en IA, IL e
+  IN, donde se usa como cultivo de cobertura. Para repetir la medición con otro año o estado, correr el comando de
+  arriba con sus teselas.
+- El CDL clasifica el cultivo principal del año. El centeno de cobertura sembrado en otoño, que se mata antes del
+  maíz o la soja, casi nunca aparece como clase 27. Por eso `centeno` en el CDL no mide la práctica de cobertura;
+  para eso está `pct_cobertura` del Censo (`practicas_censo.csv`).
