@@ -12,3 +12,4 @@
 - 03:04 T032: terminada, PR #27
 - 03:04 T034: tomada por el trabajador
 - 03:15 T034: terminada, PR #28
+- 03:15 T036: tomada por el trabajador
