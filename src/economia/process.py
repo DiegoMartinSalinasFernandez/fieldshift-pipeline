@@ -4,13 +4,21 @@ Entradas:
 - data/raw/cultivos/nass/qs.crops_*.txt.gz (volcado público de Quick Stats que bajó el paquete
   cultivos; se lee desde ahí, sin copiarlo): PRICE RECEIVED, MARKETING YEAR, nivel estado.
 - data/raw/economia/ers/{corn,soybeans,wheat,oats}.csv (USDA ERS Commodity Costs and Returns),
-  región Heartland, dólares por acre sembrado. El mismo valor para todos los estados.
+  por Farm Resource Region, dólares por acre sembrado.
+- data/raw/economia/ers/reglink.xls (ERS): Farm Resource Region de cada condado (FIPS).
+- Del mismo volcado de Quick Stats: ACRES PLANTED por condado, para ponderar las regiones.
+
+Costos por estado: ERS no publica costos por estado. Cada estado recibe el promedio de los
+valores regionales de ERS ponderado por la participación de cada región en el área sembrada
+del cultivo en el estado (suma de ACRES PLANTED de sus condados en el período). En IA, IL e IN
+todos los condados son Heartland y el resultado es exactamente el valor de Heartland.
 
 Salidas (data/processed/economia/):
 - economia_anual.csv: fips_estado, anio, cultivo, precio_usd_bu, valor_produccion_usd_ac,
   costo_operativo_usd_ac, costo_total_usd_ac, margen_operativo_usd_ac, flag_nass
 - economia_forrajes_anual.csv: fips_estado, anio, cultivo, precio_usd_ton, flag_nass
-- docs/datasets/economia.md (tabla de columnas generada desde los CSV)
+- docs/datasets/economia.md (tabla de columnas y de pesos por región, generadas)
+- data/interim/economia/pesos_region_ers.csv: fips_estado, cultivo, region_ers, acres, peso
 
 El escaneo del volcado (1,1 GB comprimido) se cachea en data/interim/economia/ (regenerable:
 se rehace si cambia el nombre o el tamaño del volcado).
@@ -47,7 +55,20 @@ FORRAJES = {
     "heno": "HAY, (EXCL ALFALFA) - PRICE RECEIVED, MEASURED IN $ / TON",
 }
 ERS = {"maiz": "corn.csv", "soja": "soybeans.csv", "trigo_invierno": "wheat.csv", "avena": "oats.csv"}
-REGION = "Heartland"
+REGLINK = ERS_DIR / "reglink.xls"
+# códigos de reglink.xls ("Key to ERS regions" de la misma planilla)
+REGIONES = {1: "Heartland", 2: "Northern Crescent", 3: "Northern Great Plains",
+            4: "Prairie Gateway", 5: "Eastern Uplands", 6: "Southern Seaboard",
+            7: "Fruitful Rim", 8: "Basin and Range", 9: "Mississippi Portal"}
+# área sembrada por condado (NASS SURVEY) con la que se pondera cada región
+AREA = {
+    "maiz": "CORN - ACRES PLANTED",
+    "soja": "SOYBEANS - ACRES PLANTED",
+    "trigo_invierno": "WHEAT, WINTER - ACRES PLANTED",
+    "avena": "OATS - ACRES PLANTED",
+}
+# mínimo del peso del estado que debe tener dato ERS en el año; si no, queda vacío
+COBERTURA_MIN = 0.5
 ITEMS = {
     "Total, gross value of production": "valor_produccion_usd_ac",
     "Total, operating costs": "costo_operativo_usd_ac",
@@ -116,22 +137,114 @@ def precios(estados: dict, anios: range, mapa: dict, col: str) -> pd.DataFrame:
     return out
 
 
-def costos_ers(anios: range) -> pd.DataFrame:
+def escanear_area(estados: list[str]) -> pd.DataFrame:
+    """Filas ACRES PLANTED anuales por condado (encuesta) de los cultivos de AREA."""
+    src = volcado()
+    cache = INTERIM / f"area_condado_{src.name.split('.txt')[0]}_{src.stat().st_size}.csv"
+    if cache.exists():
+        df = pd.read_csv(cache, dtype=str, keep_default_na=False)
+        if set(estados) <= set(df["STATE_ALPHA"]):
+            return df[df["STATE_ALPHA"].isin(estados)].reset_index(drop=True)
+    buscados = set(AREA.values())
+    filas = []
+    with gzip.open(src, "rt", encoding="utf-8", errors="replace") as f:
+        h = f.readline().rstrip("\n").split("\t")
+        ix = {c: i for i, c in enumerate(h)}
+        for line in f:
+            if "ACRES PLANTED" not in line:
+                continue
+            r = line.rstrip("\n").split("\t")
+            if (r[ix["SHORT_DESC"]] in buscados and r[ix["SOURCE_DESC"]] == "SURVEY"
+                    and r[ix["AGG_LEVEL_DESC"]] == "COUNTY" and r[ix["STATE_ALPHA"]] in estados
+                    and r[ix["FREQ_DESC"]] == "ANNUAL" and r[ix["REFERENCE_PERIOD_DESC"]] == "YEAR"
+                    and r[ix["DOMAIN_DESC"]] == "TOTAL"):
+                filas.append({k: r[ix[k]] for k in ("STATE_ALPHA", "STATE_FIPS_CODE", "COUNTY_ANSI",
+                                                     "YEAR", "SHORT_DESC", "VALUE")})
+    df = pd.DataFrame(filas, columns=["STATE_ALPHA", "STATE_FIPS_CODE", "COUNTY_ANSI", "YEAR",
+                                      "SHORT_DESC", "VALUE"])
+    df = df.sort_values(["STATE_ALPHA", "SHORT_DESC", "COUNTY_ANSI", "YEAR"]).reset_index(drop=True)
+    INTERIM.mkdir(parents=True, exist_ok=True)
+    tmp = cache.with_suffix(".part")
+    df.to_csv(tmp, index=False)
+    tmp.replace(cache)
+    return df
+
+
+def regiones_condado() -> pd.DataFrame:
+    """fips_condado (5 dígitos) -> region_ers, de reglink.xls de ERS."""
+    if not REGLINK.exists():
+        raise SystemExit(f"falta {REGLINK}: correr src/economia/download.py")
+    r = pd.read_excel(REGLINK, header=None, usecols=[0, 1], names=["fips", "codigo"])
+    r = r[pd.to_numeric(r["fips"], errors="coerce").notna()
+          & pd.to_numeric(r["codigo"], errors="coerce").notna()]
+    r = r.astype(int)
+    r["fips_condado"] = r["fips"].astype(str).str.zfill(5)
+    r["region_ers"] = r["codigo"].map(REGIONES)
+    if r["region_ers"].isna().any() or r["fips_condado"].duplicated().any():
+        raise SystemExit(f"{REGLINK.name}: códigos de región desconocidos o condados duplicados")
+    return r[["fips_condado", "region_ers"]]
+
+
+def pesos_region(estados: dict, anios: range) -> pd.DataFrame:
+    """Peso de cada región ERS por estado y cultivo: participación en el ACRES PLANTED del período."""
+    a = escanear_area(list(estados))
+    a = a[a["YEAR"].astype(int).isin(list(anios)) & (a["COUNTY_ANSI"] != "")].copy()
+    a["acres"] = pd.to_numeric(a["VALUE"].str.strip().str.replace(",", "", regex=False),
+                               errors="coerce")
+    a["cultivo"] = a["SHORT_DESC"].map({v: k for k, v in AREA.items()})
+    a["fips_estado"] = a["STATE_FIPS_CODE"].str.zfill(2)
+    a["fips_condado"] = a["fips_estado"] + a["COUNTY_ANSI"].str.zfill(3)
+    a = a.merge(regiones_condado(), on="fips_condado", how="left")
+    sin = a[a["region_ers"].isna()]["fips_condado"].unique()
+    if len(sin):
+        raise SystemExit(f"condados de NASS sin región en {REGLINK.name}: {sorted(sin)}")
+    p = a.groupby(["fips_estado", "cultivo", "region_ers"], as_index=False)["acres"].sum()
+    p = p[p["acres"] > 0]
+    p["peso"] = p["acres"] / p.groupby(["fips_estado", "cultivo"])["acres"].transform("sum")
+    p = p.sort_values(["fips_estado", "cultivo", "peso"], ascending=[True, True, False])
+    INTERIM.mkdir(parents=True, exist_ok=True)
+    p.round({"peso": 4}).to_csv(INTERIM / "pesos_region_ers.csv", index=False, lineterminator="\n")
+    return p.reset_index(drop=True)
+
+
+def costos_region(anios: range) -> pd.DataFrame:
+    """anio, cultivo, region_ers y los ítems de ITEMS, en dólares por acre sembrado."""
     partes = []
     for cultivo, archivo in ERS.items():
         d = pd.read_csv(ERS_DIR / archivo)
-        d = d[(d["Region"] == REGION) & d["Item"].isin(ITEMS)
+        d = d[d["Region"].isin(REGIONES.values()) & d["Item"].isin(ITEMS)
               & (d["Units"] == "dollars per planted acre")].copy()
         d["anio"] = pd.to_numeric(d["Year"], errors="coerce")
         d = d[d["anio"].isin(list(anios))]
-        dup = d.duplicated(["anio", "Item"], keep=False)
+        dup = d.duplicated(["Region", "anio", "Item"], keep=False)
         if dup.any():
-            raise SystemExit(f"{archivo}: ítems duplicados por año en {REGION}")
-        w = d.pivot(index="anio", columns="Item", values="Value").rename(columns=ITEMS)
-        w = w.apply(pd.to_numeric, errors="coerce").reset_index()
+            raise SystemExit(f"{archivo}: ítems duplicados por región y año")
+        w = d.pivot(index=["Region", "anio"], columns="Item", values="Value").rename(columns=ITEMS)
+        w = w.apply(pd.to_numeric, errors="coerce").reset_index().rename(columns={"Region": "region_ers"})
         w["cultivo"] = cultivo
         partes.append(w)
     return pd.concat(partes, ignore_index=True)
+
+
+def costos_ers(estados: dict, anios: range) -> pd.DataFrame:
+    """Costos ERS por estado: promedio de las regiones ponderado por pesos_region.
+
+    Si una región del estado no tiene dato ese año, se repondera entre las que sí tienen,
+    siempre que cubran al menos COBERTURA_MIN del peso; si no, el año queda vacío.
+    """
+    pesos = pesos_region(estados, anios)
+    reg = costos_region(anios)
+    cols = list(ITEMS.values())
+    m = pesos.merge(reg, on=["cultivo", "region_ers"], how="inner")
+    m = m.dropna(subset=cols, how="any")
+    for c in cols:
+        m[c] = m[c] * m["peso"]
+    g = m.groupby(["fips_estado", "anio", "cultivo"], as_index=False)[cols + ["peso"]].sum()
+    for c in cols:
+        g[c] = g[c] / g["peso"]
+    g.loc[g["peso"] < COBERTURA_MIN, cols] = float("nan")
+    g["anio"] = g["anio"].astype(int)
+    return g.drop(columns="peso")
 
 
 def fmt(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
@@ -145,9 +258,9 @@ def fmt(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
 TEXTO = """# Data card — economia
 
 Precios recibidos por el productor (USDA NASS) y costos y retornos por acre sembrado (USDA ERS)
-por estado, año de cosecha y cultivo, para comparar rotaciones en el Corn Belt (IA, IL, IN).
-Paquete sumado por el humano (recursos del desafío); research de base en
-`docs/research/precios_margenes.md`.
+por estado, año de cosecha y cultivo, para comparar rotaciones en el Corn Belt (los estados de
+`config/config.yaml`). Paquete sumado por el humano (recursos del desafío); research de base en
+`docs/research/precios_margenes.md` y, para las regiones de ERS, `docs/research/regiones_ers.md`.
 
 ## Archivos
 
@@ -173,11 +286,21 @@ Los datos solo existen por estado (NASS) o por región (ERS): la clave es `fips_
   RECEIVED, MEASURED IN $ / TON`.
 - **USDA ERS Commodity Costs and Returns**
   (https://www.ers.usda.gov/data-products/commodity-costs-and-returns), CSV por cultivo en
-  `data/raw/economia/ers/` (corn, soybeans, wheat, oats). Región `Heartland`, unidad
-  `dollars per planted acre`. Ítems: `Total, gross value of production` →
+  `data/raw/economia/ers/` (corn, soybeans, wheat, oats). Farm Resource Regions `Heartland`,
+  `Northern Crescent`, `Northern Great Plains`, `Prairie Gateway` y `Eastern Uplands` (las que
+  tocan los estados de la zona), unidad `dollars per planted acre`. Ítems: `Total, gross value of production` →
   `valor_produccion_usd_ac`; `Total, operating costs` → `costo_operativo_usd_ac`;
   `Total, costs listed` → `costo_total_usd_ac`; `Value of production less operating costs` →
-  `margen_operativo_usd_ac` (tal como lo publica ERS, no recalculado).
+  `margen_operativo_usd_ac` (tal como lo publica ERS para cada región; el promedio ponderado de
+  los márgenes regionales es igual a la diferencia de los promedios ponderados).
+- **USDA ERS Farm Resource Regions**, `data/raw/economia/ers/reglink.xls`
+  (https://www.ers.usda.gov/sites/default/files/images/reglink.xls, enlazada desde
+  https://www.ers.usda.gov/data-products/commodity-costs-and-returns/documentation): región de
+  cada condado por FIPS (códigos 1 a 9, con la clave en la misma planilla).
+- **NASS Quick Stats**, mismo volcado, área sembrada por condado para los pesos: `SOURCE_DESC=SURVEY`,
+  `AGG_LEVEL_DESC=COUNTY`, `FREQ_DESC=ANNUAL`, `REFERENCE_PERIOD_DESC=YEAR`, `DOMAIN_DESC=TOTAL`;
+  `short_desc` `CORN - ACRES PLANTED`, `SOYBEANS - ACRES PLANTED`, `WHEAT, WINTER - ACRES
+  PLANTED`, `OATS - ACRES PLANTED`.
 
 ## Diccionario de columnas
 
@@ -187,6 +310,15 @@ Los datos solo existen por estado (NASS) o por región (ERS): la clave es `fips_
 
 `desde`, `hasta` y `faltantes_pct` se calculan de los CSV al final de `process.py`.
 
+## Pesos de las regiones ERS por estado
+
+Participación de cada región en el área sembrada del cultivo en el estado (suma de ACRES PLANTED
+por condado en el período). Se guardan también en `data/interim/economia/pesos_region_ers.csv`.
+
+| fips_estado | cultivo | region_ers | acres | peso |
+|---|---|---|---|---|
+{pesos}
+
 ## Supuestos
 
 - **Precio del año comercial.** Se usa la fila `MARKETING YEAR` del `anio` de cosecha (para maíz
@@ -194,14 +326,23 @@ Los datos solo existen por estado (NASS) o por región (ERS): la clave es `fips_
   no se entregan; cuál precio usar en el modelo lo decide el equipo de ML.
 - **Unidad original.** Granos en USD por bushel y forrajes en USD por tonelada corta (2000 lb),
   como los publica NASS. No se convierte a USD/t métrica.
-- **Región Heartland para los tres estados.** ERS no publica costos por estado: IA, IL e IN
-  reciben el mismo valor de la región Heartland (Farm Resource Regions del ERS, que se definen por
-  condado). Algunos condados de los bordes de los tres estados pueden caer en otras regiones ERS;
-  no se verificó condado por condado y se usa Heartland para todo el estado.
+- **Costos ponderados por región.** ERS no publica costos por estado ni por condado, sino por
+  Farm Resource Region, que se definen por condado (`reglink.xls`). Cada estado recibe el
+  promedio de los valores regionales ponderado por la participación de cada región en el área
+  sembrada del cultivo en el estado, sumando `ACRES PLANTED` de NASS por condado en todo el
+  período (pesos fijos, no cambian por año, para que un condado suprimido un año no mueva el
+  costo). IA, IL e IN son 100 % Heartland y KS 100 % Prairie Gateway; OH, NE y MN se reparten
+  entre varias regiones (tabla de pesos arriba).
+- **Regiones sin dato.** Si una región del estado no tiene serie ERS ese año (Eastern Uplands no
+  tiene trigo y su avena empieza en 2023; la avena de Prairie Gateway termina en 2022), se
+  repondera entre las regiones con dato, siempre que cubran al menos el 50 % del peso del
+  estado; si no, los costos del año quedan vacíos.
+- **Condados combinados.** Las filas de NASS de `OTHER (COMBINED) COUNTIES` no tienen condado
+  y no entran en los pesos. Los códigos `(D)` y similares cuentan como sin dato.
 - **Trigo.** ERS publica costos de trigo en general (no separa el de invierno). Se asignan a
   `trigo_invierno`, que es el trigo que se siembra en el Corn Belt. El precio sí es el de
   `WHEAT, WINTER`.
-- **Avena.** La serie de ERS de avena (región Heartland) empieza en 2005: 2000–2004 quedan vacíos.
+- **Avena.** La serie de ERS de avena empieza en 2005 en todas las regiones: 2000–2004 quedan vacíos.
 - **Costos de forrajes.** ERS no tiene costos y retornos de alfalfa ni de heno: el archivo de
   forrajes solo trae el precio.
 - **Ventana.** 2000–2025, de `config/config.yaml`. Los pronósticos ERS 2026F–2027F (solo total
@@ -219,7 +360,9 @@ Los datos solo existen por estado (NASS) o por región (ERS): la clave es `fips_
   en Indiana después de 2015: esas celdas quedan vacías (con `(NA)` en `flag_nass` cuando NASS
   publica el código).
 - Los costos de ERS son estimaciones regionales de la encuesta ARMS (años base de encuesta
-  distintos por cultivo); no reflejan diferencias entre estados ni entre rotaciones. Los
+  distintos por cultivo); la ponderación por área solo refleja en qué regiones se siembra cada
+  cultivo, no diferencias dentro de una región ni entre rotaciones. En NE no separa riego y
+  secano (ver T004). Los
   presupuestos de farmdoc por rotación (ver research) no se incorporaron.
 - USDA AMS Market News (opcional) no se incorporó.
 """
@@ -227,10 +370,10 @@ Los datos solo existen por estado (NASS) o por región (ERS): la clave es `fips_
 DESC = {
     "economia_anual.csv": [
         ("precio_usd_bu", "Precio recibido por el productor, promedio del año comercial (NASS PRICE RECEIVED, MARKETING YEAR, estado)", "USD/bu", "USDA NASS Quick Stats (volcado qs.crops)", "MK01"),
-        ("valor_produccion_usd_ac", "Valor bruto de la producción por acre sembrado (ERS 'Total, gross value of production', Heartland)", "USD/ac", "USDA ERS Commodity Costs and Returns", ""),
-        ("costo_operativo_usd_ac", "Costos operativos por acre sembrado (ERS 'Total, operating costs', Heartland)", "USD/ac", "USDA ERS Commodity Costs and Returns", "MK03"),
-        ("costo_total_usd_ac", "Costos totales listados por acre sembrado (ERS 'Total, costs listed', Heartland)", "USD/ac", "USDA ERS Commodity Costs and Returns", "MK03"),
-        ("margen_operativo_usd_ac", "Valor de la producción menos costos operativos (ERS 'Value of production less operating costs', Heartland)", "USD/ac", "USDA ERS Commodity Costs and Returns", "MK02"),
+        ("valor_produccion_usd_ac", "Valor bruto de la producción por acre sembrado (ERS 'Total, gross value of production', regiones ponderadas por área sembrada)", "USD/ac", "USDA ERS Commodity Costs and Returns", ""),
+        ("costo_operativo_usd_ac", "Costos operativos por acre sembrado (ERS 'Total, operating costs', regiones ponderadas por área sembrada)", "USD/ac", "USDA ERS Commodity Costs and Returns", "MK03"),
+        ("costo_total_usd_ac", "Costos totales listados por acre sembrado (ERS 'Total, costs listed', regiones ponderadas por área sembrada)", "USD/ac", "USDA ERS Commodity Costs and Returns", "MK03"),
+        ("margen_operativo_usd_ac", "Valor de la producción menos costos operativos (ERS 'Value of production less operating costs', regiones ponderadas por área sembrada)", "USD/ac", "USDA ERS Commodity Costs and Returns", "MK02"),
         ("flag_nass", "Código original de NASS cuando el precio no se publica ((D), (S), (NA)); vacío si hay valor", "texto", "USDA NASS Quick Stats (volcado qs.crops)", ""),
     ],
     "economia_forrajes_anual.csv": [
@@ -252,8 +395,12 @@ def data_card() -> None:
             desde = llenos.min() if len(llenos) else ""
             hasta = llenos.max() if len(llenos) else ""
             filas.append(f"| {archivo} | {nombre} | {desc} | {unidad} | {fuente} | {cid} | {desde} | {hasta} | {falt:.1f} |")
+    p = pd.read_csv(INTERIM / "pesos_region_ers.csv", dtype={"fips_estado": str})
+    tabla_pesos = [f"| {r.fips_estado} | {r.cultivo} | {r.region_ers} | {r.acres:,.0f} | {r.peso:.3f} |"
+                   for r in p.itertuples()]
     CARD.parent.mkdir(parents=True, exist_ok=True)
-    CARD.write_text(TEXTO.replace("{tabla}", "\n".join(filas)), encoding="utf-8", newline="\n")
+    texto = TEXTO.replace("{tabla}", "\n".join(filas)).replace("{pesos}", "\n".join(tabla_pesos))
+    CARD.write_text(texto, encoding="utf-8", newline="\n")
 
 
 def main() -> None:
@@ -265,8 +412,8 @@ def main() -> None:
 
     granos = precios(estados, anios, GRANOS, "precio_usd_bu")
     print(f"precios granos: {granos['precio_usd_bu'].notna().sum()} valores ({time.time() - t0:.0f} s)")
-    costos = costos_ers(anios)
-    anual = granos.merge(costos, on=["anio", "cultivo"], how="left")
+    costos = costos_ers(estados, anios)
+    anual = granos.merge(costos, on=["fips_estado", "anio", "cultivo"], how="left")
     cols = ["precio_usd_bu", "valor_produccion_usd_ac", "costo_operativo_usd_ac",
             "costo_total_usd_ac", "margen_operativo_usd_ac"]
     anual = fmt(anual, cols)[["fips_estado", "anio", "cultivo"] + cols + ["flag_nass"]]
