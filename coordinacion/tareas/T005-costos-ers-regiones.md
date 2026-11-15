@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-14 23:59
-actualizada: 2026-11-15 00:37
+actualizada: 2026-11-15 00:39
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ Research con la región de cada estado (o condado) y la fuente oficial; cambio e
 
 ## Notas
 - 2026-11-15 00:37 · pro-2: tomada
+- 2026-11-15 00:39 · pro-2: reglink.xls de ERS (condado→región): IA/IL/IN 100% Heartland; KS 100% Prairie Gateway; OH 48 HL/22 NC/18 EU; NE 37 PG/29 HL/27 NGP; MN 41 HL/35 NC/11 NGP condados. Propuesta: ponderar costos ERS por área sembrada de cada condado (NASS).
