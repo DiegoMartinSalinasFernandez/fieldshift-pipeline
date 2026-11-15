@@ -18,6 +18,8 @@ CARD = REPO / "docs" / "datasets" / "clima.md"
 
 P = "NASA POWER daily (AG)"
 D = "Derivada de NASA POWER"
+CP = "NASS Crop Progress (Quick Stats, nivel estado)"
+DV = "Derivada de NASA POWER y NASS Crop Progress"
 IM = "GPM IMERG vía NASA POWER (IMERG_PRECTOT, 0,1°)"
 
 COLS = {
@@ -77,6 +79,19 @@ COLS = {
         ("deficit_temporada_mm", "Suma abril-septiembre de prec_power_mm − eto_pm_mm", "mm", D, "D04"),
         ("tend_prec_mm_decada", "Pendiente MCO de la lluvia anual en los 30 años que terminan en anio (mín. 20)", "mm/década", D, "D24"),
         ("tend_tmed_c_decada", "Pendiente MCO de la temperatura media anual en los 30 años que terminan en anio (mín. 20)", "°C/década", D, "D24"),
+        # T128: ventanas por estado y año (src/clima/ventanas.py)
+        ("doy_ini_floracion_maiz", "Día del año del 25 % de silking del maíz en el estado (Crop Progress, interpolado y redondeado)", "día del año", CP, "CT05"),
+        ("doy_fin_floracion_maiz", "Día del año del 75 % de silking del maíz en el estado", "día del año", CP, "CT05"),
+        ("prec_floracion_maiz_mm", "Lluvia de doy_ini a doy_fin de floración del maíz, ambos inclusive", "mm", DV, "D19"),
+        ("tmax_floracion_maiz_c", "Media de la tmax diaria en la floración del maíz", "°C", DV, "D10"),
+        ("dias_tmax_gt30_floracion_maiz", "Días con tmax > 30 °C en la floración del maíz", "días", DV, "D10"),
+        ("dias_tmax_gt35_floracion_maiz", "Días con tmax > 35 °C en la floración del maíz", "días", DV, "D10"),
+        ("doy_ini_llenado_soja", "Día del año del 50 % de setting pods de la soja en el estado", "día del año", CP, "CT05"),
+        ("doy_fin_llenado_soja", "Día del año del 25 % de dropping leaves de la soja en el estado", "día del año", CP, "CT05"),
+        ("prec_llenado_soja_mm", "Lluvia de doy_ini a doy_fin del llenado de la soja, ambos inclusive", "mm", DV, "D19"),
+        ("tmax_llenado_soja_c", "Media de la tmax diaria en el llenado de la soja", "°C", DV, "D10"),
+        ("deficit_llenado_soja_mm", "Suma de prec_power_mm − eto_pm_mm en el llenado de la soja", "mm", DV, "D04"),
+        ("prec_ago_sep15_mm", "Lluvia del 1 de agosto al 15 de septiembre (sin fenología)", "mm", D, "D19"),
     ],
 }
 TIEMPO = {"clima_diario.csv": "fecha", "clima_mensual.csv": "mes", "clima_anual.csv": "anio"}
@@ -163,6 +178,24 @@ Los CSV procesados cubren el período de `config.yaml` (2000-2025);
   valor real como −99 se escribe `-99.000` y no se confunde con un código de relleno.
 - Ventanas anuales según `config.yaml`: temporada abril-septiembre, invierno previo
   noviembre del anio−1 a marzo del anio, julio y agosto.
+- **Ventanas por estado y año (T128, propuesta de T038; `src/clima/ventanas.py`).** Floración del maíz:
+  del 25 % al 75 % de *silking*; llenado de la soja: del 50 % de *setting pods* al 25 % de *dropping
+  leaves* (supuesto de `docs/research/ventanas_por_estado.md`: incluye R3-R4 y termina en el comienzo de
+  R7). El día de cada cruce se interpola linealmente entre las dos semanas de Crop Progress que lo rodean
+  (semana fechada en su domingo de cierre) y se redondea al entero (mitades al par, como `round` de
+  pandas); los días de la ventana van de `doy_ini` a `doy_fin`, ambos inclusive. La ventana es la del
+  **estado** (Crop Progress no tiene condados) y se aplica a todos sus condados.
+- Si el primer reporte del año ya está en el porcentaje buscado o más, o nunca se llega, ese estado-año no
+  tiene cruce: las columnas de esa ventana quedan vacías. Nunca se usa la ventana de otro año ni la mediana.
+  Si a la ventana le falta algún día de lluvia (o de tmax, o de ETo para el déficit), esa columna queda vacía.
+- Fuente de los cruces: la base completa de Quick Stats (`data/raw/cultivos/nass/qs.crops_*.txt.gz`,
+  `PCT SILKING`, `PCT SETTING PODS`, `PCT DROPPING LEAVES`) si está bajada; si no, los cruces de
+  `docs/research/ventanas_por_estado.csv` (reportes de ESMIS, **solo 2008-2025**: antes de 2008 las columnas
+  quedan vacías). La copia usada queda en `data/interim/clima/ventanas_estado.csv`, con la columna `fuente`.
+- **Fuga de información:** la ventana del mismo año se conoce recién cuando termina. Para pronosticar
+  dentro de la temporada, ML debería usar la mediana de los años anteriores (lo decide ML).
+- `prec_ago_sep15_mm` (1 ago - 15 sep) es la versión mínima sin fenología: suma el llenado activo de la
+  primera quincena de septiembre que `prec_ago_mm` no cubre. Vacía si falta algún día.
 
 ## Problemas conocidos
 
