@@ -29,6 +29,6 @@ El workflow en un PR, con la corrida de Actions del PR en verde en los dos siste
 
 ## Notas
 - 2026-11-15 08:03 · pro-3: tomada
-- 2026-11-15 08:05 · pro-3: bloqueada: el trabajo quedó en la rama tarea/T112-auto pero push falló: To https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline.git
+- 2026-11-15 08:05 · pro-3: bloqueada: el trabajo quedó en la rama tarea/T112-auto pero push falló: To <remoto origin>
  ! [remote rejected] tarea/T112-auto -> tarea/T112-auto (refusing to allow a Personal Access Token to create or update workflow `.github/workflows/pruebas.yml` without `workflow` scope)
 error: falló el empuje de algunas refere
