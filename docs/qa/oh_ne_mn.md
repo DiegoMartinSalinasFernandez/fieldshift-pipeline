@@ -17,7 +17,7 @@ git). Los números de este informe salen de `docs/qa/oh_ne_mn_qa.py` (solo lee):
 |---|---|---|---|
 | `agua` | APTO | señales de 2021 (MN) y 2022 (NE) en `sm_rootzone_anom_z`; sin problemas | **APTO** |
 | `clima` | APTO | eventos visibles; sin outliers entre vecinos; rangos dentro del spec | **APTO** (con una nota sobre heladas) |
-| `cultivos` | APTO | ver problemas 1 y 2 | **APTO con observaciones** |
+| `cultivos` | APTO | eventos y rendimientos de estado coherentes; superficie cierra con NASS sumando la fila 998; ver problemas 1 y 2 | **APTO con observaciones** |
 | `economia` | APTO | no se controló el contenido (no hay referencia en las fuentes de la tarea) | **APTO** (solo formato) |
 | `nldas` | APTO | `sm_0_100cm_anom_z` reproduce 2002, 2012, 2021 y 2022 | **APTO** |
 | `paisaje` | APTO | no se controló el contenido | **APTO** (solo formato) |
@@ -119,15 +119,35 @@ Solo las columnas donde algún estado nuevo supera en más de 15 puntos al `falt
 
 ## 6. Superficie sembrada: suma de condados contra NASS a nivel estado
 
-(Se completa abajo con la base completa de Quick Stats.)
+Con la base completa de Quick Stats (`qs.crops_20261114.txt.gz`, bajada a `data/entregas/nass_qa/`, fuera de
+git). `AREA PLANTED`, SURVEY, `ALL PRODUCTION PRACTICES`, año completo.
+
+| estado | cultivo | % mín (año) | % mediana 2000–2025 | % máx |
+|---|---|---|---|---|
+| MN | maíz | 78,7 (2024) | 98,9 | 100,0 |
+| MN | soja | 70,8 (2024) | 98,3 | 100,0 |
+| NE | maíz | 54,1 (2025) | 98,9 | 100,0 |
+| NE | soja | 52,4 (2025) | 98,8 | 100,0 |
+| OH | maíz | 81,1 (2025) | 99,0 | 100,0 |
+| OH | soja | 76,3 (2025) | 98,7 | 100,0 |
+
+- **Sumando la fila "OTHER (COMBINED) COUNTIES" (county_code 998), el total cierra en todos los años:** MN maíz
+  99,6–100,0 %, MN soja 99,0–100,0, NE maíz 100,0–100,5, NE soja 96,2–100,0, OH 100,0. El proceso de `cultivos`
+  no pierde nada: lo que falta es lo que NASS juntó en 998, que se deja afuera a propósito (CLAUDE.md §6.2).
+- El número de condados publicados por NASS en cada año coincide con el de `produccion_anual.csv` (por ejemplo
+  NE maíz 2021: 55; NE soja 2025: 36).
+- Años con la suma de condados por debajo de 85 % del estado (19): MN maíz 2024–2025 y soja 2018, 2019,
+  2023–2025; NE maíz 2021, 2023–2025 y soja 2019, 2021, 2024, 2025 (NE 2025: 54 % maíz y 52 % soja); OH maíz y
+  soja 2024–2025. Es la reducción del programa de estimaciones de condado de NASS en los últimos años.
 
 ## Problemas
 
 1. **Cobertura de condados de NASS que baja en los últimos años, sobre todo en NE.** Condados con
    `sup_sembrada_ac` de maíz: NE 91 (2000) → 55 (2021) → 46 (2025); soja de NE: 79 → 36 (2025). MN maíz: 58 en
    2018 y 60 en 2019 (contra 71–77 los otros años). La suma de condados de maíz de NE en 2021 es 5,9 M ac
-   (9,9 M en 2020). Es NASS el que no publica esos condados (los junta en "OTHER (COMBINED) COUNTIES", que el
-   proceso deja afuera como pide CLAUDE.md), no el proceso. Consecuencia: cualquier total o promedio por estado
+   (9,9 M en 2020; NASS de estado: 9,9 M en 2021). **Confirmado con la base completa (sección 6):** es NASS el que
+   no publica esos condados (los junta en "OTHER (COMBINED) COUNTIES", que el proceso deja afuera como pide
+   CLAUDE.md); con la fila 998 el total de estado cierra al 96–100,5 %. Consecuencia: cualquier total o promedio por estado
    hecho con los condados (rendimiento implícito, superficie) está sesgado en esos años, y `rotacion_anual.csv`
    (CDL) es la referencia de superficie. → tarea nueva para documentarlo en el data card de `cultivos` con la
    tabla de condados por año.
