@@ -346,6 +346,10 @@ def hacer_tarea(claude: str, tid: str, meta: dict, texto_tarea: str, maquina: st
                       + (res["texto"] or "(ninguno)"))
         donde = abrir_pr(tid, meta.get("titulo", ""), rama, cuerpo, maquina, a.sin_pr)
         log(f"{tid}: {donde}")
+        if "falló" in donde:
+            anotar(tid, maquina, "bloqueada", f"bloqueada: el trabajo quedó en la rama {rama} pero {donde}")
+            bitacora(maquina, f"{tid}: no pude publicar ({donde[:120]})")
+            return
         if incompleta:
             primera = cuerpo.splitlines()[0][:300]
             anotar(tid, maquina, "libre", f"soltada: quedó a medias, {donde}. {primera}")
