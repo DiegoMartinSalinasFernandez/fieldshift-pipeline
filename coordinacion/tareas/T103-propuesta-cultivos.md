@@ -1,14 +1,14 @@
 ---
 id: T103
 titulo: 'Propuesta: sumar cultivos al esquema (trigo de primavera, durum, girasol, canola, cebada, maíz para silo)'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-4
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T07:25
-actualizada: 2026-11-15 07:34
+actualizada: 2026-11-15 08:12
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ La propuesta en un PR.
 
 ## Notas
 - 2026-11-15 07:34 · pro-4: tomada
+- 2026-11-15 08:12 · pro-4: terminada por el trabajador: PR #104, falta la revisión de max-1
