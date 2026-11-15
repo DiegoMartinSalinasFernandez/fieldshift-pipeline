@@ -57,17 +57,20 @@ def leer_quickstats(ruta: Path) -> pd.DataFrame:
                 continue
             filas.append({
                 "estado": c[i["STATE_ALPHA"]], "cultivo": CULTIVOS[c[i["SHORT_DESC"]]], "anio": anio,
-                "nivel": nivel, "county_code": c[i["COUNTY_CODE"]], "valor": numero(c[i["VALUE"]]),
+                "nivel": nivel, "asd_code": c[i["ASD_CODE"]], "county_code": c[i["COUNTY_CODE"]],
+                "valor": numero(c[i["VALUE"]]),
                 "crudo": c[i["VALUE"]].strip(),
             })
-    return pd.DataFrame(filas).drop_duplicates(["estado", "cultivo", "anio", "nivel", "county_code"])
+    return pd.DataFrame(filas).drop_duplicates(
+        ["estado", "cultivo", "anio", "nivel", "asd_code", "county_code"])
 
 
 def resumen(qs: pd.DataFrame, csvs: list[Path]) -> pd.DataFrame:
     cond = qs[qs.nivel == "COUNTY"]
     est = qs[qs.nivel == "STATE"].set_index(["estado", "cultivo", "anio"])["valor"]
     pub = cond[(cond.county_code != "998") & cond.valor.notna()]
-    otros = cond[cond.county_code == "998"].set_index(["estado", "cultivo", "anio"])["valor"]
+    # La fila 998 viene una vez por distrito agrícola (ASD): se suman las del estado.
+    otros = cond[cond.county_code == "998"].groupby(["estado", "cultivo", "anio"]).valor.sum(min_count=1)
     g = pub.groupby(["estado", "cultivo", "anio"])
     r = pd.DataFrame({"n_condados_qs": g.size(), "suma_condados_ac": g.valor.sum()})
     ocultos = cond[(cond.county_code != "998") & cond.valor.isna()].groupby(["estado", "cultivo", "anio"]).size()
@@ -78,6 +81,7 @@ def resumen(qs: pd.DataFrame, csvs: list[Path]) -> pd.DataFrame:
     r["otros_998_ac"] = otros.reindex(r.index)
     r["pct_998"] = 100 * r.otros_998_ac.fillna(0) / r.estado_ac
     r["pct_suma_condados"] = 100 * r.suma_condados_ac / r.estado_ac
+    r["pct_cierre"] = r.pct_suma_condados + r.pct_998.fillna(0)  # condados + 998 contra el estado
     if csvs:
         fips_a_estado = {v: k for k, v in ESTADOS.items()}
         p = pd.concat(pd.read_csv(c, dtype={"fips": str}) for c in csvs)
@@ -124,6 +128,8 @@ def main() -> None:
         print(f"\nfilas con distinto número de condados entre el CSV y Quick Stats: {len(d)}")
         if len(d):
             print(d.to_string(index=False))
+    print("\n% condados + 998 / estado (mín y máx, 2000-2025):")
+    print(r.groupby(["estado", "cultivo"]).pct_cierre.agg(["min", "max"]).round(1).unstack().to_string())
     print("\nmín. % suma de condados / estado, 2018-2025:")
     print(r[r.anio >= 2018].groupby(["estado", "cultivo"]).pct_suma_condados.min().round(1).unstack().to_string())
 
