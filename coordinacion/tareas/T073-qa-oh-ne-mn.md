@@ -1,7 +1,7 @@
 ---
 id: T073
 titulo: Control de calidad de OH, NE y MN con el release publicado
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 05:59
-actualizada: 2026-11-15 06:04
+actualizada: 2026-11-15 06:20
 ---
 
 ## Qué hacer
@@ -37,3 +37,4 @@ El informe en un PR.
 
 ## Notas
 - 2026-11-15 06:04 · pro-1: tomada
+- 2026-11-15 06:20 · pro-1: terminada por el trabajador: PR #72, falta la revisión de max-1
