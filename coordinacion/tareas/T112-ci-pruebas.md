@@ -1,14 +1,14 @@
 ---
 id: T112
 titulo: 'CI: correr las pruebas en GitHub Actions (Windows y Linux)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T08:00
-actualizada: 2026-11-15T08:00
+actualizada: 2026-11-15 08:03
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ Antes del PR, comprobá en tu máquina que `pytest -q tests` pasa con un venv nu
 El workflow en un PR, con la corrida de Actions del PR en verde en los dos sistemas.
 
 ## Notas
+- 2026-11-15 08:03 · pro-3: tomada
