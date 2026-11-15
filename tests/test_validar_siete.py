@@ -94,7 +94,7 @@ def test_fips_estado_acepta_los_7_estados(repo_falso, fips_estado):
     assert validar_csv(p) == []
 
 
-@pytest.mark.parametrize("fips_estado", ["29", "55", "08", "46"])
+@pytest.mark.parametrize("fips_estado", ["08", "48", "06", "40"])   # Colorado, Texas, California, Oklahoma
 def test_fips_estado_rechaza_otros_estados(repo_falso, fips_estado):
     p = _csv(repo_falso, "fips_estado,anio,cultivo,doy_50_sembrado\n"
                          f"{fips_estado},2023,maiz,125\n", "fenologia_estado.csv")

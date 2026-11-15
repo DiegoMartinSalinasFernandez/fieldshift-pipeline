@@ -16,6 +16,10 @@ zona:
     NE: {fips: "31", nombre: Nebraska, condados: 93}
     MN: {fips: "27", nombre: Minnesota, condados: 87}
     KS: {fips: "20", nombre: Kansas, condados: 105}
+    # Tercera tanda, aprobada por el humano el 2026-11-15 ("si tenemos más estados de Estados Unidos, mejor")
+    MO: {fips: "29", nombre: Missouri, condados: 115}
+    WI: {fips: "55", nombre: Wisconsin, condados: 72}
+    SD: {fips: "46", nombre: South Dakota, condados: 66}
   condados: todos
 
 unidad_espacial: condado
