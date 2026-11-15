@@ -93,6 +93,7 @@ cultivos,produccion_anual.csv,rend_kgha,rend_bu_ac × conversion factor from con
 cultivos,produccion_anual.csv,sup_sembrada_ha,sup_sembrada_ac × 0.4047 (acres_a_ha),ha,Derived from NASS Quick Stats,Y01
 cultivos,produccion_anual.csv,ratio_cosechada,sup_cosechada_ac / sup_sembrada_ac (harvested/planted ratio),fraction,Derived from NASS Quick Stats,Y05
 cultivos,produccion_anual.csv,flag_nass,"Original NASS code when the value is withheld: (D), (Z), (NA)… (separated by ;)",text,"USDA NASS Quick Stats (SURVEY, county)",
+cultivos,produccion_anual.csv,fila_nass,"1 = row comes from NASS; 0 = NASS did not publish that county, year and crop, and the row was added empty (T138)",0/1,Derived from NASS Quick Stats,
 cultivos,fenologia_estado.csv,doy_50_sembrado,"Day of year when 50 % planted is reached (PCT PLANTED, interpolated)",day of year,"USDA NASS Quick Stats Crop Progress (SURVEY, state)",CT03
 cultivos,fenologia_estado.csv,doy_50_emergido,Day of year when 50 % emerged is reached (PCT EMERGED),day of year,"USDA NASS Quick Stats Crop Progress (SURVEY, state)",
 cultivos,fenologia_estado.csv,doy_50_floracion,"Day of year of 50 % flowering (corn PCT SILKING, soybeans PCT BLOOMING)",day of year,"USDA NASS Quick Stats Crop Progress (SURVEY, state)",CT05

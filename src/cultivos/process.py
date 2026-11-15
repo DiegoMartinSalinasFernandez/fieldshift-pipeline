@@ -26,6 +26,7 @@ sys.path.insert(0, str(REPO))
 from src.common.config import cargar_config, estados_config  # noqa: E402
 from src.common.conversiones import acres_a_ha, bu_ac_a_kgha  # noqa: E402
 from src.cultivos.fenologia import fenologia_estado  # noqa: E402
+from src.cultivos.grilla import completar_desde_config  # noqa: E402
 
 RAW = REPO / "data" / "raw" / "cultivos" / "nass"
 INTERIM = REPO / "data" / "interim" / "cultivos"
@@ -546,7 +547,7 @@ def main() -> None:
     crops_raw = sorted(RAW.glob("qs.crops_*.txt.gz"))
     if crops_raw:
         crops = filtrar(crops_raw[-1])
-        prod = produccion(crops)
+        prod = completar_desde_config(produccion(crops))  # grilla completa (T138)
         from src.cultivos.riego_nass import agregar_riego, chequear_coherencia  # T134
         prod = agregar_riego(prod, crops)
         incoherentes = chequear_coherencia(prod)

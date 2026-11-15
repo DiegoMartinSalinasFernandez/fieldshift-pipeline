@@ -337,6 +337,8 @@ DESCRIPCIONES = {
     "sup_cosechada_ac / sup_sembrada_ac": "sup_cosechada_ac / sup_sembrada_ac (harvested/planted ratio)",
     "Código original de NASS cuando el valor está oculto: (D), (Z), (NA)… (separados por ;)":
         "Original NASS code when the value is withheld: (D), (Z), (NA)… (separated by ;)",
+    "1 = la fila viene de NASS; 0 = NASS no publicó ese condado, año y cultivo y la fila se completó vacía (T138)":
+        "1 = row comes from NASS; 0 = NASS did not publish that county, year and crop, and the row was added empty (T138)",
     "Día del año en que se cruza el 50 % sembrado (PCT PLANTED, interpolado)":
         "Day of year when 50 % planted is reached (PCT PLANTED, interpolated)",
     "Día del año en que se cruza el 50 % emergido (PCT EMERGED)":
