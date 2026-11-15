@@ -1,7 +1,7 @@
 ---
 id: T140
 titulo: 'Rama de integración con todos los PR retenidos (117 a 126 y los que sigan): conflictos y pruebas'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados: []
@@ -52,3 +52,4 @@ El PR en borrador abierto con la tabla y las pruebas en verde (o la lista exacta
 - 2026-11-15 10:26 · pro-2: tomada
 - 2026-11-15 10:27 · pro-2: soltada: quedó a medias, PR #137 actualizado. INCOMPLETA: falta sumar el PR 134 (T141, para_decidir #21) a la rama real `integracion/retenidos` y agregar su fila a la tabla del PR en borrador 135. El merge sigue saliendo limpio (`git merge-tree` da el árbol `2a4377d2b5`). En esta sesión también estuvieron bloqueados por permisos `git worktree a
 - 2026-11-15 10:28 · pro-2: tomada
+- 2026-11-15 10:28 · pro-2: terminada: Hecha por max-1. La rama integracion/retenidos (PR en borrador 135) la mantiene max-1, que suma ahí los PR retenidos nuevos: no retomar esta tarea.
