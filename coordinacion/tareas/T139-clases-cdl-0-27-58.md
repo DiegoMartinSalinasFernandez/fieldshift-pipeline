@@ -1,14 +1,14 @@
 ---
 id: T139
 titulo: Sumar las clases 0, 27 y 58 del CDL a `clases_cdl.csv` (código listo, espera OK)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:51
-actualizada: 2026-11-15T09:51
+actualizada: 2026-11-15 10:00
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ T135): trabajá en tu propia función o módulo y agregá tu sección al final d
 El código, las pruebas sin red y la documentación en un PR con CI en verde, retenido como dice arriba.
 
 ## Notas
+- 2026-11-15 10:00 · pro-5: tomada
