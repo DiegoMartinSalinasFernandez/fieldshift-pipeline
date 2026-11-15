@@ -23,7 +23,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 from src.common.config import cargar_config, estados_config  # noqa: E402
-from src.common.conversiones import acres_a_ha, bu_ac_a_kgha  # noqa: E402
+from src.common.conversiones import COLUMNA_RENDIMIENTO, acres_a_ha, rend_a_kgha  # noqa: E402
 
 RAW = REPO / "data" / "raw" / "cultivos" / "nass"
 INTERIM = REPO / "data" / "interim" / "cultivos"
@@ -42,7 +42,41 @@ NASS_CULTIVOS = {
     "avena": ("OATS", "ALL CLASSES", "ALL UTILIZATION PRACTICES"),
     "alfalfa": ("HAY", "ALFALFA", "ALL UTILIZATION PRACTICES"),
     "heno": ("HAY", "(EXCL ALFALFA)", "ALL UTILIZATION PRACTICES"),
+    # Cultivos del norte y de la lechería (T147; docs/research/propuesta_cultivos.md, T103)
+    "maiz_silo": ("CORN", "ALL CLASSES", "SILAGE"),
+    "trigo_primavera": ("WHEAT", "SPRING, (EXCL DURUM)", "ALL UTILIZATION PRACTICES"),
+    "trigo_durum": ("WHEAT", "SPRING, DURUM", "ALL UTILIZATION PRACTICES"),
+    "cebada": ("BARLEY", "ALL CLASSES", "ALL UTILIZATION PRACTICES"),
+    # ALL CLASSES (aceitero + confitero) solo tiene condado hasta 2008: se usa el aceitero
+    "girasol": ("SUNFLOWER", "OIL TYPE", "ALL UTILIZATION PRACTICES"),
+    "canola": ("CANOLA", "ALL CLASSES", "ALL UTILIZATION PRACTICES"),
+    # NASS cambió el Data Item en 2019; si un año tuviera las dos, gana la primera clase
+    "frijol_seco": ("BEANS", ("DRY EDIBLE, (EXCL CHICKPEAS)", "DRY EDIBLE, INCL CHICKPEAS"),
+                    "ALL UTILIZATION PRACTICES"),
 }
+# Columnas de produccion_anual.csv. (STATISTICCAT_DESC, UNIT_DESC, usa util de cosecha)
+VARIABLES = {
+    "sup_sembrada_ac": ("AREA PLANTED", "ACRES", False),
+    "sup_cosechada_ac": ("AREA HARVESTED", "ACRES", True),
+    "produccion_bu": ("PRODUCTION", "BU", True),
+    "rend_bu_ac": ("YIELD", "BU / ACRE", True),
+    "produccion_lb": ("PRODUCTION", "LB", True),
+    "produccion_cwt": ("PRODUCTION", "CWT", True),
+    "rend_lb_ac": ("YIELD", "LB / ACRE", True),
+    "produccion_ton": ("PRODUCTION", "TONS", True),
+    "rend_ton_ac": ("YIELD", "TONS / ACRE", True),
+}
+# Unidades de producción y rendimiento de cada cultivo (las de NASS). Las demás quedan vacías:
+# así el heno y la alfalfa (TONS en NASS) salen igual que antes de T147.
+UNIDADES = {
+    "maiz": "bu", "soja": "bu", "trigo_invierno": "bu", "avena": "bu", "alfalfa": None, "heno": None,
+    "maiz_silo": "ton", "trigo_primavera": "bu", "trigo_durum": "bu", "cebada": "bu",
+    "girasol": "lb", "canola": "lb", "frijol_seco": "lb",
+}
+COLS_UNIDAD = {"bu": {"produccion_bu", "rend_bu_ac"}, "lb": {"produccion_lb", "produccion_cwt", "rend_lb_ac"},
+               "ton": {"produccion_ton", "rend_ton_ac"}}
+# El maíz para silo no tiene superficie sembrada propia en NASS (solo la del maíz para todos los usos)
+SIN_SEMBRADA = {"maiz_silo"}
 CODIGOS_OCULTOS = {"(D)", "(Z)", "(NA)", "(X)", "(S)", "(L)", "(H)"}
 
 
@@ -84,44 +118,50 @@ def produccion(crops: pd.DataFrame) -> pd.DataFrame:
               & (crops["COUNTY_CODE"] != "998") & (crops["COUNTY_CODE"] != "")]
     d = d.assign(anio=pd.to_numeric(d["YEAR"]))
     d = d[(d["anio"] >= cfg["anio_inicio"]) & (d["anio"] <= cfg["anio_fin"])]
-    variables = {  # (STATISTICCAT_DESC, UNIT_DESC, usa util de cosecha)
-        "sup_sembrada_ac": ("AREA PLANTED", "ACRES", False),
-        "sup_cosechada_ac": ("AREA HARVESTED", "ACRES", True),
-        "produccion_bu": ("PRODUCTION", "BU", True),
-        "rend_bu_ac": ("YIELD", "BU / ACRE", True),
-    }
     filas = []
-    for cultivo, (com, clase, util_cos) in NASS_CULTIVOS.items():
-        dc = d[(d["COMMODITY_DESC"] == com) & (d["CLASS_DESC"] == clase)]
-        for var, (stat, unidad, cos) in variables.items():
-            util = util_cos if cos else "ALL UTILIZATION PRACTICES"
-            dv = dc[(dc["STATISTICCAT_DESC"] == stat) & (dc["UNIT_DESC"] == unidad)
-                    & (dc["UTIL_PRACTICE_DESC"] == util)]
-            if dv.empty:
-                continue
-            num, flag = valor(dv["VALUE"])
-            filas.append(pd.DataFrame({
-                "fips": dv["STATE_FIPS_CODE"].str.zfill(2) + dv["COUNTY_CODE"].str.zfill(3),
-                "anio": dv["anio"].astype(int), "cultivo": cultivo, "variable": var,
-                "valor": num.values, "flag": flag.values}))
+    for cultivo, (com, clases, util_cos) in NASS_CULTIVOS.items():
+        clases = (clases,) if isinstance(clases, str) else clases
+        unidad = UNIDADES[cultivo]
+        for prioridad, clase in enumerate(clases):
+            dc = d[(d["COMMODITY_DESC"] == com) & (d["CLASS_DESC"] == clase)]
+            for var, (stat, unidad_nass, cos) in VARIABLES.items():
+                if var.startswith(("produccion_", "rend_")) and var not in COLS_UNIDAD.get(unidad, ()):
+                    continue
+                if var == "sup_sembrada_ac" and cultivo in SIN_SEMBRADA:
+                    continue
+                util = util_cos if cos else "ALL UTILIZATION PRACTICES"
+                dv = dc[(dc["STATISTICCAT_DESC"] == stat) & (dc["UNIT_DESC"] == unidad_nass)
+                        & (dc["UTIL_PRACTICE_DESC"] == util)]
+                if dv.empty:
+                    continue
+                num, flag = valor(dv["VALUE"])
+                filas.append(pd.DataFrame({
+                    "fips": dv["STATE_FIPS_CODE"].str.zfill(2) + dv["COUNTY_CODE"].str.zfill(3),
+                    "anio": dv["anio"].astype(int), "cultivo": cultivo, "variable": var,
+                    "valor": num.values, "flag": flag.values, "prioridad": prioridad}))
     largo = pd.concat(filas, ignore_index=True)
-    largo = largo.drop_duplicates(["fips", "anio", "cultivo", "variable"])
+    largo = (largo.sort_values("prioridad", kind="stable")
+             .drop_duplicates(["fips", "anio", "cultivo", "variable"]))
     ancho = largo.pivot(index=["fips", "anio", "cultivo"], columns="variable", values="valor")
     flags = (largo[largo["flag"] != ""].sort_values("variable")
              .groupby(["fips", "anio", "cultivo"])["flag"]
              .agg(lambda x: ";".join(sorted(set(x)))))
-    ancho = ancho.reindex(columns=list(variables)).join(flags.rename("flag_nass"))
+    ancho = ancho.reindex(columns=list(VARIABLES)).join(flags.rename("flag_nass"))
     ancho = ancho.reset_index()
     ancho["rend_kgha"] = np.nan
-    for cultivo in ("maiz", "soja", "trigo_invierno", "avena"):
-        m = ancho["cultivo"] == cultivo
-        ancho.loc[m, "rend_kgha"] = (ancho.loc[m, "rend_bu_ac"] * bu_ac_a_kgha(cultivo)).round(1)
+    for unidad_nass, col in COLUMNA_RENDIMIENTO.items():
+        for cultivo in ancho["cultivo"].unique():
+            m = (ancho["cultivo"] == cultivo) & ancho[col].notna()
+            if m.any():
+                ancho.loc[m, "rend_kgha"] = (ancho.loc[m, col] * rend_a_kgha(cultivo, unidad_nass)).round(1)
     ancho["sup_sembrada_ha"] = acres_a_ha(ancho["sup_sembrada_ac"]).round(1)
     ancho["ratio_cosechada"] = (ancho["sup_cosechada_ac"] / ancho["sup_sembrada_ac"]).round(4)
     fips_ok = set(pd.read_csv(REPO / "data" / "reference" / "condados.csv", dtype={"fips": str})["fips"])
     ancho = ancho[ancho["fips"].isin(fips_ok)]
     cols = ["fips", "anio", "cultivo", "sup_sembrada_ac", "sup_cosechada_ac", "produccion_bu",
-            "rend_bu_ac", "rend_kgha", "sup_sembrada_ha", "ratio_cosechada", "flag_nass"]
+            "rend_bu_ac", "rend_kgha", "sup_sembrada_ha", "ratio_cosechada", "flag_nass",
+            # T147: columnas nuevas al final, para que las de antes queden en el mismo lugar
+            "rend_lb_ac", "produccion_lb", "produccion_cwt", "rend_ton_ac", "produccion_ton"]
     return ancho[cols].sort_values(["fips", "anio", "cultivo"]).reset_index(drop=True)
 
 
@@ -242,8 +282,11 @@ def mascara_agricola(zip_cdl: Path) -> None:
 
 CLASES = REPO / "data" / "reference" / "clases_cdl.csv"
 # grupo de cada clase del CDL que usa el proyecto (§6.2 del plan); el resto: otro
-GRUPOS_CDL = {1: "maiz", 5: "soja", 24: "trigo_invierno", 26: "doble_trigo_soja", 28: "avena",
-              36: "alfalfa", 37: "heno", 61: "barbecho", 176: "pastizal"}
+# (T147: girasol 6, cebada 21, durum 22, trigo de primavera 23, canola 31 y frijol seco 42; el maíz para
+# silo no tiene clase propia y va dentro de maíz 1; los dobles cultivos con cebada siguen como otro)
+GRUPOS_CDL = {1: "maiz", 5: "soja", 6: "girasol", 21: "cebada", 22: "trigo_durum", 23: "trigo_primavera",
+              24: "trigo_invierno", 26: "doble_trigo_soja", 28: "avena", 31: "canola", 36: "alfalfa",
+              37: "heno", 42: "frijol_seco", 61: "barbecho", 176: "pastizal"}
 
 
 def clases_cdl(meta: Path) -> None:
@@ -269,6 +312,10 @@ RAW_TESELAS = RAW_CDL / "teselas"
 AGRICOLA = list(range(1, 62)) + list(range(66, 78)) + list(range(204, 255))
 PCT_CLASES = {"pct_maiz": [1], "pct_soja": [5], "pct_trigo": [24, 26], "pct_alfalfa": [36],
               "pct_heno": [37], "pct_doble_trigo_soja": [26], "pct_barbecho": [61]}
+# T147: cultivos del norte, columnas al final de rotacion_anual.csv (después de las transiciones), para que
+# las de antes no cambien de lugar. pct_trigo sigue siendo trigo de invierno solo o en doble cultivo.
+PCT_CLASES_NORTE = {"pct_trigo_primavera": [23], "pct_trigo_durum": [22], "pct_cebada": [21],
+                    "pct_girasol": [6], "pct_canola": [31], "pct_frijol_seco": [42]}
 TRANSICIONES = {"pct_maiz_tras_soja": (5, 1), "pct_maiz_tras_maiz": (1, 1),
                 "pct_soja_tras_maiz": (1, 5), "pct_soja_tras_soja": (5, 5)}
 
@@ -368,6 +415,8 @@ def rotacion_anual() -> pd.DataFrame | None:
             total = b[:, int(ahora == 5)]  # píxeles del cultivo actual que en anio − 1 eran agrícolas
             val = 100 * t[:, 2 * (antes == 5) + (ahora == 5)] / np.maximum(total, 1)
             fila[col] = np.where((total > 0) & ((a - 1) in completos), val, np.nan)
+        for col, cls in PCT_CLASES_NORTE.items():
+            fila[col] = np.where(agr > 0, 100 * c[:, cls].sum(axis=1) / np.maximum(agr, 1), np.nan)
         filas.append(pd.DataFrame(fila))
     df = pd.concat(filas, ignore_index=True)
     num = df.columns[2:]
