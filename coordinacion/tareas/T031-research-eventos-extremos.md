@@ -1,9 +1,9 @@
 ---
 id: T031
 titulo: 'Research: eventos extremos 2000–2025 en los 7 estados (para control de calidad)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 03:00
-actualizada: 2026-11-15 03:00
+actualizada: 2026-11-15 02:53
 ---
 
 ## Qué hacer
@@ -38,3 +38,4 @@ Escribí `docs/research/eventos_extremos.md`, con una tabla por evento.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 02:53 · pro-3: tomada
