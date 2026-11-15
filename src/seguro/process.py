@@ -258,6 +258,7 @@ def armar_mensual(col: pd.DataFrame, anios: list[int]) -> tuple[pd.DataFrame, di
     lejos = ~sin_mes & ((anio_p - c["anio"]).abs() > 1)
     descartes = {
         "filas_sin_mes": int(sin_mes.sum()),
+        "anios_sin_anio_perdida": sorted(int(a) for a, g in anio_p.isna().groupby(c["anio"]) if g.all()),
         "indem_sin_mes_usd": float(c.loc[sin_mes, "indem"].sum()),
         "filas_anio_perdida_lejano": int(lejos.sum()),
         "indem_anio_perdida_lejano_usd": float(c.loc[lejos, "indem"].sum()),

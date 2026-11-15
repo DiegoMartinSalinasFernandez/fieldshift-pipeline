@@ -173,7 +173,10 @@ Lo descartado en esta corrida:
 - `anio` (anual) = Commodity Year de RMA, el año de cosecha de la póliza.
 - En `seguro_mensual.csv`, `mes` = Year of Loss + Month of Loss y `anio` es el año de ese mes. Si
   un mes recibe pérdidas de dos años de cosecha (trigo de invierno dañado en otoño), se suman. Se
-  descartaron las filas sin mes válido ({sin_mes} filas, {indem_sin_mes} USD) y las que tienen un
+  descartaron las filas sin mes o sin año de pérdida válidos ({sin_mes} filas, {indem_sin_mes}
+  USD). En los años de cosecha {anios_sin_anio} el archivo de RMA trae el mes pero deja vacío el
+  Year of Loss en todas las filas: esos años no tienen filas en el mensual (no se adivina el año
+  de un mes que puede ser del otoño anterior). También se descartaron las que tienen un
   año de pérdida a más de un año del de cosecha ({lejanas} filas, {indem_lejanas} USD; p. ej.
   trigo de 2023 con pérdida en 2003, errores evidentes de carga). En el anual sí cuentan.
 - La superficie asegurada suma todos los planes; los endosos y planes de área (SCO, ECO, MP...)
@@ -221,7 +224,10 @@ def escribir(anual, mensual, col_fuera, sob_fuera, descartes, faltan, col_ok, so
     from src.seguro.process import grupo_causa, _num  # noqa: E402
     if len(col_ok):
         cd = col_ok.assign(indem=_num(col_ok["indemnizacion"]))
-        cd = cd.groupby(["cod_causa", "causa"]).agg(filas=("indem", "size"), indem=("indem", "sum")).reset_index()
+        cd["causa"] = cd["causa"].str.replace('"', "", regex=False).str.replace("`", "", regex=False)
+        cd = cd.groupby("cod_causa").agg(
+            causa=("causa", lambda x: "; ".join(sorted({v for v in x if v}))),
+            filas=("indem", "size"), indem=("indem", "sum")).reset_index()
         causas_datos = "\n".join(f"| {r.cod_causa} | {r.causa} | {grupo_causa(r.cod_causa)} | {r.filas} | {_fmt_usd(r.indem)} |"
                                  for r in cd.itertuples())
     else:
@@ -260,8 +266,9 @@ def escribir(anual, mensual, col_fuera, sob_fuera, descartes, faltan, col_ok, so
              .replace("{cobertura}", "\n".join(tabla_cob) or "| | |")
              .replace("{indem_sob}", _fmt_usd(indem_sob) + " USD")
              .replace("{indem_col}", _fmt_usd(indem_col) + " USD")
-             .replace("{fuera}", "\n".join(fuera) or "| | | | | |")
+             .replace("{fuera}", "\n".join(fuera) or "| — | — | ninguna fila descartada en esta corrida | 0 | 0 |")
              .replace("{sin_mes}", str(descartes["filas_sin_mes"]))
+             .replace("{anios_sin_anio}", ", ".join(map(str, descartes["anios_sin_anio_perdida"])) or "(ninguno)")
              .replace("{indem_sin_mes}", _fmt_usd(descartes["indem_sin_mes_usd"]))
              .replace("{lejanas}", str(descartes["filas_anio_perdida_lejano"]))
              .replace("{indem_lejanas}", _fmt_usd(descartes["indem_anio_perdida_lejano_usd"])))
