@@ -249,9 +249,15 @@ def grupos_archivos(archivos: list[Path], gdf: gpd.GeoDataFrame) -> list[tuple[g
     por_sufijo: dict[str, list[Path]] = {}
     for p in archivos:
         por_sufijo.setdefault(p.stem.rsplit("_", 1)[1], []).append(p)
+    # Si conviven "_zona.nc" (bajada vieja, un solo grupo) y recortes por estado (bajada nueva), cada estado se
+    # toma de su recorte y "_zona" queda solo para los estados que no tienen uno: si no, los meses se duplican.
+    con_recorte = {e for suf in por_sufijo if suf != "zona" for e in suf.split("-")}
     out = []
     for suf, arch in sorted(por_sufijo.items()):
-        sub = gdf if suf == "zona" else gdf[gdf["estado"].isin(suf.split("-"))]
+        if suf == "zona":
+            sub = gdf[~gdf["estado"].isin(con_recorte)]
+        else:
+            sub = gdf[gdf["estado"].isin(suf.split("-"))]
         if len(sub):
             out.append((sub.reset_index(drop=True), arch))
     return out
