@@ -9,3 +9,4 @@
 - 02:19 T014: tomada por el trabajador
 - 02:21 T014: terminada, PR #7
 - 02:21 T016: tomada por el trabajador
+- 02:27 T016: terminada, PR #10
