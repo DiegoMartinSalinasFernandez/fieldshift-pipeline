@@ -405,6 +405,16 @@ DESCRIPCIONES = {
         "Value of production less operating costs (ERS 'Value of production less operating costs', regions weighted by planted area)",
     "Código original de NASS cuando el precio no se publica ((D), (S), (NA)); vacío si hay valor":
         "Original NASS code when the price is not published ((D), (S), (NA)); empty when there is a value",
+    "Farm Resource Region de ERS del condado (reglink.xls)":
+        "ERS Farm Resource Region of the county (reglink.xls)",
+    "Valor bruto de la producción por acre sembrado de la región ERS del condado ('Total, gross value of production')":
+        "Gross value of production per planted acre of the county's ERS region ('Total, gross value of production')",
+    "Costos operativos por acre sembrado de la región ERS del condado ('Total, operating costs')":
+        "Operating costs per planted acre of the county's ERS region ('Total, operating costs')",
+    "Costos totales listados por acre sembrado de la región ERS del condado ('Total, costs listed')":
+        "Total listed costs per planted acre of the county's ERS region ('Total, costs listed')",
+    "Valor de la producción menos costos operativos de la región ERS del condado ('Value of production less operating costs')":
+        "Value of production less operating costs of the county's ERS region ('Value of production less operating costs')",
     # ecostress
     "Temperatura de superficie (ECO_L2T_LSTE.002 capa LST) media del mes: promedio de las pasadas con datos, cada una la media de los píxeles agrícolas de buena calidad y sin nube de la ventana de 2,24 km del condado":
         "Monthly mean land surface temperature (ECO_L2T_LSTE.002, LST layer): average over overpasses with data, each the mean of good-quality, cloud-free cropland pixels in the county's 2.24 km window",
