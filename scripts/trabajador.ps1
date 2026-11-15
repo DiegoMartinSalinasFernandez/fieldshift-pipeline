@@ -38,6 +38,7 @@ if ($Accion -eq "estado") {
 }
 
 if ($Accion -eq "parar") {
+    if (-not (Test-Path (Join-Path $trab ".git"))) { Write-Host "El trabajador todavia no se instalo: no hay nada que parar."; exit 0 }
     New-Item -ItemType Directory -Force $dir | Out-Null
     Set-Content -Path (Join-Path $dir "STOP") -Value "parado a mano" -Encoding utf8
     if ($Ya) {
@@ -58,6 +59,12 @@ if ((Test-Path $pidf) -and (Get-Process -Id (Get-Content $pidf) -ErrorAction Sil
     throw "Ya hay un trabajador corriendo (pid $(Get-Content $pidf)). Usa 'parar' primero."
 }
 if (-not (Test-Path (Join-Path $trab ".git"))) {
+    # una carpeta sin .git que solo tiene .trabajador\ (quedo de un 'parar' viejo) se puede reemplazar
+    if (Test-Path $trab) {
+        Remove-Item -Recurse -Force -ErrorAction SilentlyContinue (Join-Path $trab ".trabajador")
+        if (Get-ChildItem -Force $trab) { throw "Ya existe $trab y no es la copia del trabajador: movela o borrala." }
+        Remove-Item -Force $trab
+    }
     $url = (git -C $repo remote get-url origin).Trim()
     Paso "Creo la copia del trabajador en $trab"
     git clone -q $url $trab

@@ -28,6 +28,7 @@ case "$accion" in
     "$py" -X utf8 "$trab/scripts/trabajador.py" estado
     ;;
   parar)
+    if [ ! -d "$trab/.git" ]; then echo "El trabajador todavía no se instaló: no hay nada que parar."; exit 0; fi
     mkdir -p "$dir"; echo "parado a mano" > "$dir/STOP"
     if [ "${2:-}" = "ya" ] && corriendo; then
       kill -TERM -- "-$(cat "$pidf")" 2>/dev/null || kill -TERM "$(cat "$pidf")"
@@ -42,6 +43,11 @@ case "$accion" in
     : "${FIELDSHIFT_ESTADOS:?Falta FIELDSHIFT_ESTADOS (ver MAQUINAS.md, sección 1)}"
     if corriendo; then echo "Ya hay un trabajador corriendo (pid $(cat "$pidf")). Usá 'parar' primero."; exit 1; fi
     if [ ! -d "$trab/.git" ]; then
+      # una carpeta sin .git que solo tiene .trabajador/ (quedó de un 'parar' viejo) se puede reemplazar
+      if [ -d "$trab" ]; then
+        rm -rf "$trab/.trabajador"
+        rmdir "$trab" 2>/dev/null || { echo "Ya existe $trab y no es la copia del trabajador: movela o borrala."; exit 1; }
+      fi
       echo "-> Creo la copia del trabajador en $trab"
       git clone -q "$(git -C "$repo" remote get-url origin)" "$trab"
     fi
