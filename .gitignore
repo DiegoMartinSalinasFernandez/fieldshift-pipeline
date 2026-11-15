@@ -40,3 +40,5 @@ manifest.csv
 
 # Trabajador automático: logs y estado (scripts/trabajador.py)
 .trabajador/
+# Zips y CSV bajados de los releases para analizar: son datos, no van en git
+data/releases/
