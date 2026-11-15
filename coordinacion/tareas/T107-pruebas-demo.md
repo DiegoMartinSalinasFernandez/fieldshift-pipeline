@@ -1,14 +1,14 @@
 ---
 id: T107
 titulo: Pruebas sin red de los scripts de la demo (coverage, user_story, figuras)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T07:32
-actualizada: 2026-11-15T07:32
+actualizada: 2026-11-15 07:51
 ---
 
 ## Qué hacer
@@ -24,3 +24,4 @@ coincide. Si para probarlos hace falta separar una función, hacelo sin cambiar 
 Las pruebas en un PR, que pasen en Windows y en Linux.
 
 ## Notas
+- 2026-11-15 07:51 · pro-3: tomada
