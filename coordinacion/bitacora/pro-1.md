@@ -4,3 +4,4 @@
 - 00:37 T006: calendario de siembra y cosecha de OH, NE, MN y KS (Handbook 628) en PR #1. Sin dato por estado: siembra de alfalfa, heno, centeno y trébol. Propuesta abierta: archivo de fechas por estado.
 - 02:07 T009: tomada por el trabajador
 - 02:10 T009: terminada, PR #3
+- 02:10 T010: tomada por el trabajador
