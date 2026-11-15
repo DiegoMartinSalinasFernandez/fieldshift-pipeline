@@ -26,3 +26,4 @@
 - 06:08 T072: tomada por el trabajador
 - 06:09 T072: terminada, PR #67
 - 06:10 T075: tomada por el trabajador
+- 06:16 T075: terminada, PR #71
