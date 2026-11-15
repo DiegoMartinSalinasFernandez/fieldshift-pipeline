@@ -27,3 +27,4 @@ El documento en un PR.
 
 ## Notas
 - 2026-11-15 04:11 · pro-1: tomada
+- 2026-11-15 04:11 · pro-1: corte por el límite de uso de Claude; 0 commits guardados en tarea/T045-auto. El trabajador sigue cuando se renueve.
