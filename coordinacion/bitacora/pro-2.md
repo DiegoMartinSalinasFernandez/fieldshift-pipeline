@@ -23,3 +23,4 @@
 - 03:16 T039: tomada por el trabajador
 - 03:24 T039: terminada, PR #32
 - 03:24 T040: tomada por el trabajador
+- 03:25 T040: a medias, PR #33
