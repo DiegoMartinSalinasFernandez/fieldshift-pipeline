@@ -1,9 +1,9 @@
 ---
 id: T027
 titulo: 'Research: dosis de N y crédito de la soja por estado (MRTN y guías de extensión)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 02:50
-actualizada: 2026-11-15 02:50
+actualizada: 2026-11-15 02:45
 ---
 
 ## Qué hacer
@@ -38,3 +38,4 @@ Escribí `docs/research/nitrogeno.md`, con una tabla por estado.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 02:45 · pro-2: tomada
