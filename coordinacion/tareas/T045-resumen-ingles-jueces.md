@@ -1,14 +1,14 @@
 ---
 id: T045
 titulo: Resumen en inglés de los datos para la entrega de Space Apps
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:05
-actualizada: 2026-11-15 04:05
+actualizada: 2026-11-15 04:11
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ No inventes columnas ni cifras: si un número no está en los data cards, no va.
 El documento en un PR.
 
 ## Notas
+- 2026-11-15 04:11 · pro-1: tomada
