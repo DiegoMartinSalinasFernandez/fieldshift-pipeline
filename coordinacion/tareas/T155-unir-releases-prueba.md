@@ -1,14 +1,14 @@
 ---
 id: T155
 titulo: Prueba real de `scripts/unir_estados.py` con `datos-oh-ne-mn` y `datos-mo-wi-sd` (fuera de git)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: max-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T14:14Z
-actualizada: 2026-11-15T14:14Z
+actualizada: 2026-11-15 12:03
 ---
 
 ## Qué hacer
@@ -31,3 +31,4 @@ que sea de los datos. Esto prepara T008, que va a juntar todos los estados para 
 PR con CI en verde y lo que se encontró en el cuerpo del PR.
 
 ## Notas
+- 2026-11-15 12:03 · max-1: tomada
