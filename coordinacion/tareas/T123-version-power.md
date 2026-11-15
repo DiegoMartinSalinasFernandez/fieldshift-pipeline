@@ -1,14 +1,14 @@
 ---
 id: T123
 titulo: Registrar la versión real de la API de NASA POWER en manifest.csv
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T08:55
-actualizada: 2026-11-15 09:05
+actualizada: 2026-11-15 09:08
 ---
 
 ## Qué hacer
@@ -30,3 +30,4 @@ El research, el cambio y la prueba en un PR, con CI en verde.
 
 ## Notas
 - 2026-11-15 09:05 · pro-5: tomada
+- 2026-11-15 09:08 · pro-5: terminada por el trabajador: PR #115, falta la revisión de max-1
