@@ -9,13 +9,22 @@ Arma un zip por paquete con:
 y lo sube al release `datos-<estados>` (por ejemplo `datos-ks` o `datos-oh-ne-mn`), reemplazando la versión
 anterior del mismo paquete. Cada zip lleva al lado su .sha256.
 
+Además arma `<etiqueta>_base.zip` (también con su .sha256), con la referencia común a todos los paquetes:
+  data/reference/condados.gpkg      polígonos de los condados (EPSG:4326, capa `condados`, de src/base/process.py),
+                                    filtrado a los estados del release si trae más
+  data/reference/condados.csv       las mismas filas, con centroides y área
+  data/reference/anios.csv
+  README.md                         qué trae el zip
+Si falta data/reference/condados.gpkg, avisa y sigue sin el zip de base. Los zips de paquete no cambian.
+
 Las notas del release se reescriben en cada entrega: la lista de paquetes que tiene el release y la declaración
 de uso de IA en inglés y en castellano, leída del README.md en ese momento (secciones "## Use of AI" y
 "## Uso de IA"), para que no se desincronice.
 
 Uso:
   python scripts/entregar.py                     # todos los paquetes de data/processed/
-  python scripts/entregar.py cultivos clima      # solo esos
+  python scripts/entregar.py cultivos clima      # solo esos (y el zip de base)
+  python scripts/entregar.py base                # solo el zip de base
   python scripts/entregar.py --solo-zip          # arma los zips en data/entregas/ sin subir nada
 Los estados salen de FIELDSHIFT_ESTADOS (obligatoria).
 """
@@ -96,8 +105,86 @@ def armar_zip(paquete: str, etiqueta: str) -> Path:
             zf.write(p, p.relative_to(REPO).as_posix())
         if manifest is not None:
             zf.writestr("manifest.csv", manifest.encode("utf-8"))
-    (z.with_suffix(".zip.sha256")).write_text(f"{sha256(z)}  {z.name}\n", encoding="utf-8", newline="\n")  # LF: sha256sum -c de Linux rechaza el CR
+    _escribir_sha(z)  # LF: sha256sum -c de Linux rechaza el CR
     print(f"{z.relative_to(REPO)}: {z.stat().st_size / 1e6:.1f} MB, {len(archivos)} archivos de datos")
+    return z
+
+
+BASE = "base"   # nombre del asset de referencia: <etiqueta>_base.zip (no es un paquete de data/processed/)
+
+README_BASE = """# {etiqueta}_base.zip
+
+Reference files shared by every package of the release `{etiqueta}` ({estados}) / Referencia común a todos
+los paquetes del release `{etiqueta}` ({estados}).
+
+- `data/reference/condados.gpkg`: county polygons, layer `condados`, EPSG:4326 / polígonos de los condados,
+  capa `condados`, EPSG:4326. Columns / columnas: fips, estado, condado, lat_centroide, lon_centroide,
+  area_km2, geometry. Source / fuente: U.S. Census Bureau Cartographic Boundary Files 2024, 1:500k
+  (`src/base/process.py`).
+- `data/reference/condados.csv`: the same counties without geometry / los mismos condados sin geometría
+  ({n} counties / condados).
+- `data/reference/anios.csv`: season and previous-winter windows per year / ventanas de temporada e invierno
+  previo por año.
+
+Published with `scripts/entregar.py` (see `MAQUINAS.md`) / publicado con `scripts/entregar.py`.
+"""
+
+
+def _escribir_sha(z: Path) -> None:
+    (z.with_suffix(".zip.sha256")).write_text(f"{sha256(z)}  {z.name}\n", encoding="utf-8", newline="\n")
+
+
+def armar_zip_base(etiqueta: str, estados: list[str]) -> Path | None:
+    """`<etiqueta>_base.zip`: condados.gpkg y condados.csv de los estados del release, anios.csv y un README.
+
+    None (con aviso) si falta condados.gpkg o condados.csv: los zips de paquete se entregan igual.
+    """
+    ref = REPO / "data" / "reference"
+    gpkg, ccsv, anios = ref / "condados.gpkg", ref / "condados.csv", ref / "anios.csv"
+    faltan = [p.name for p in (gpkg, ccsv) if not p.exists()]
+    if faltan:
+        print(f"aviso: falta data/reference/{', '.join(faltan)}; no se arma {etiqueta}_{BASE}.zip "
+              "(correr src/base/process.py)", file=sys.stderr)
+        return None
+    import geopandas as gpd
+    import pandas as pd
+
+    pedidos = {e.upper() for e in estados}
+    g = gpd.read_file(gpkg, layer="condados")
+    if "estado" not in g.columns or "fips" not in g.columns:
+        sys.exit("data/reference/condados.gpkg: faltan las columnas fips y estado (correr src/base/process.py)")
+    if g.crs is None or g.crs.to_epsg() != 4326:
+        sys.exit(f"data/reference/condados.gpkg: tiene que estar en EPSG:4326 (está en {g.crs})")
+    sin = sorted(pedidos - set(g["estado"]))
+    if sin:
+        sys.exit(f"data/reference/condados.gpkg no tiene condados de {', '.join(sin)}")
+    tabla = pd.read_csv(ccsv, dtype={"fips": str}, keep_default_na=False)
+    if "estado" not in tabla.columns:
+        sys.exit("data/reference/condados.csv: falta la columna estado")
+    SALIDA.mkdir(parents=True, exist_ok=True)
+    z = SALIDA / f"{etiqueta}_{BASE}.zip"
+    with zipfile.ZipFile(z, "w", zipfile.ZIP_DEFLATED) as zf:
+        if set(g["estado"]) <= pedidos:
+            zf.write(gpkg, "data/reference/condados.gpkg")           # ya trae solo estos estados: tal cual
+        else:
+            tmp = SALIDA / f".{etiqueta}_condados.gpkg"
+            tmp.unlink(missing_ok=True)
+            g[g["estado"].isin(pedidos)].reset_index(drop=True).to_file(tmp, layer="condados", driver="GPKG")
+            zf.write(tmp, "data/reference/condados.gpkg")
+            tmp.unlink()
+        if set(tabla["estado"]) <= pedidos:
+            zf.write(ccsv, "data/reference/condados.csv")
+            n = len(tabla)
+        else:
+            sub = tabla[tabla["estado"].isin(pedidos)]
+            zf.writestr("data/reference/condados.csv", sub.to_csv(index=False, lineterminator="\n").encode("utf-8"))
+            n = len(sub)
+        if anios.exists():
+            zf.write(anios, "data/reference/anios.csv")
+        zf.writestr("README.md", README_BASE.format(etiqueta=etiqueta, estados=", ".join(estados), n=n)
+                    .encode("utf-8"))
+    _escribir_sha(z)
+    print(f"{z.relative_to(REPO)}: {z.stat().st_size / 1e6:.1f} MB, {n} condados")
     return z
 
 
@@ -127,13 +214,24 @@ def seccion_readme(texto: str, titulo: str) -> str:
 
 
 def paquetes_de_assets(etiqueta: str, nombres: list[str]) -> list[str]:
-    """Paquetes de un release a partir de los nombres de sus assets (`<etiqueta>_<paquete>.zip`)."""
+    """Paquetes de un release a partir de los nombres de sus assets (`<etiqueta>_<paquete>.zip`).
+
+    `<etiqueta>_base.zip` no es un paquete: queda afuera (ver `tiene_base`).
+    """
     pre = f"{etiqueta}_"
-    return sorted({n[len(pre):-len(".zip")] for n in nombres if n.startswith(pre) and n.endswith(".zip")})
+    return sorted({n[len(pre):-len(".zip")] for n in nombres if n.startswith(pre) and n.endswith(".zip")}
+                  - {BASE})
 
 
-def notas_release(estados: list[str], paquetes: list[str], readme: str) -> str:
-    """Notas del release en inglés y castellano: paquetes y declaración de uso de IA tomada del README."""
+def tiene_base(etiqueta: str, nombres: list[str]) -> bool:
+    return f"{etiqueta}_{BASE}.zip" in nombres
+
+
+def notas_release(estados: list[str], paquetes: list[str], readme: str, base: str | None = None) -> str:
+    """Notas del release en inglés y castellano: paquetes y declaración de uso de IA tomada del README.
+
+    `base`: nombre del asset `<etiqueta>_base.zip` si el release lo tiene.
+    """
     ia_en = seccion_readme(readme, SECCIONES_IA["en"])
     ia_es = seccion_readme(readme, SECCIONES_IA["es"])
     lista = "\n".join(f"- `{p}`" for p in sorted(paquetes)) or "- (none yet / ninguno todavía)"
@@ -141,6 +239,9 @@ def notas_release(estados: list[str], paquetes: list[str], readme: str) -> str:
     return (f"Processed CSVs by package for {est}, published with `scripts/entregar.py` (see `MAQUINAS.md`).\n"
             f"CSV procesados por paquete de {est}, publicados con `scripts/entregar.py` (ver `MAQUINAS.md`).\n\n"
             f"## Packages / Paquetes\n\n{lista}\n\n"
+            + (f"## Reference / Referencia\n\n`{base}`: county polygons (`condados.gpkg`, EPSG:4326), "
+               f"`condados.csv` and `anios.csv` / polígonos de los condados, `condados.csv` y `anios.csv`.\n\n"
+               if base else "") +
             f"## Use of AI\n\n{ia_en}\n\n"
             f"## Uso de IA\n\n{ia_es}\n")
 
@@ -152,10 +253,12 @@ def gh(*args: str, check: bool = True) -> subprocess.CompletedProcess:
 def subir(etiqueta: str, zips: list[Path], estados: list[str]) -> None:
     readme = (REPO / "README.md").read_text(encoding="utf-8")
     notas_release(estados, [], readme)  # corta antes de subir si al README le falta la declaración de IA
-    nuevos = [z.name[len(etiqueta) + 1:-len(".zip")] for z in zips]
+    nombres = [z.name for z in zips]
+    nuevos = paquetes_de_assets(etiqueta, nombres)
+    base = f"{etiqueta}_{BASE}.zip"
     if gh("release", "view", etiqueta, check=False).returncode != 0:
         gh("release", "create", etiqueta, "--title", f"Datos procesados: {', '.join(estados)}",
-           "--notes", notas_release(estados, nuevos, readme))
+           "--notes", notas_release(estados, nuevos, readme, base if tiene_base(etiqueta, nombres) else None))
     rutas = [str(p) for z in zips for p in (z, z.with_suffix(".zip.sha256"))]
     r = gh("release", "upload", etiqueta, *rutas, "--clobber", check=False)
     if r.returncode != 0:
@@ -163,8 +266,11 @@ def subir(etiqueta: str, zips: list[Path], estados: list[str]) -> None:
     print(f"subido al release {etiqueta}: {', '.join(z.name for z in zips)}")
     # Notas al día con todos los paquetes del release (también los de entregas anteriores).
     v = gh("release", "view", etiqueta, "--json", "assets", "--jq", ".assets[].name", check=False)
-    paquetes = paquetes_de_assets(etiqueta, v.stdout.split()) if v.returncode == 0 else []
-    r = gh("release", "edit", etiqueta, "--notes", notas_release(estados, sorted(set(paquetes) | set(nuevos)), readme),
+    assets = v.stdout.split() if v.returncode == 0 else []
+    paquetes = paquetes_de_assets(etiqueta, assets)
+    con_base = tiene_base(etiqueta, assets) or tiene_base(etiqueta, nombres)
+    r = gh("release", "edit", etiqueta, "--notes",
+           notas_release(estados, sorted(set(paquetes) | set(nuevos)), readme, base if con_base else None),
            check=False)
     if r.returncode != 0:
         print(f"aviso: no se pudieron actualizar las notas del release:\n{r.stderr.strip()}", file=sys.stderr)
@@ -180,7 +286,12 @@ def main() -> None:
         sys.exit("Definí FIELDSHIFT_ESTADOS con los estados de esta máquina (por ejemplo KS o OH,NE,MN).")
     etiqueta = "datos-" + "-".join(s.lower() for s in estados)
     paquetes = a.paquetes or sorted(p.name for p in PROC.iterdir() if p.is_dir())
-    zips = [armar_zip(p, etiqueta) for p in paquetes]
+    zips = [armar_zip(p, etiqueta) for p in paquetes if p != BASE]
+    zb = armar_zip_base(etiqueta, estados)
+    if zb is not None:
+        zips.append(zb)
+    if not zips:
+        sys.exit("no hay nada para entregar")
     if not a.solo_zip:
         subir(etiqueta, zips, estados)
 
