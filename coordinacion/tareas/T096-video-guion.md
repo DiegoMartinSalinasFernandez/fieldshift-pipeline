@@ -1,14 +1,14 @@
 ---
 id: T096
 titulo: Guion del video de 30 segundos (inglés) con las figuras reales
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T06:55
-actualizada: 2026-11-15T06:55
+actualizada: 2026-11-15 07:10
 ---
 
 ## Qué hacer
@@ -24,3 +24,4 @@ resultados de modelos: eso lo pone el equipo de ML; dejá un cuadro marcado **[M
 El guion en un PR.
 
 ## Notas
+- 2026-11-15 07:10 · pro-2: tomada
