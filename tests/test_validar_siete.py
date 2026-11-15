@@ -4,6 +4,7 @@ No cambian src/common/: usan un condados.csv inventado de dos estados nuevos (Ne
 y CSV chicos inventados. Los valores son de prueba, no son datos reales.
 
 Lo que no sirve para los estados nuevos se marca `xfail` (expectedFailure) y se explica en la prueba.
+La prueba de la columna toda con (D)/(Z) dejó de ser xfail en T144 (cambio en src/common/validacion.py).
 """
 from __future__ import annotations
 
@@ -213,10 +214,30 @@ def test_decimal_con_coma_se_rechaza(repo_falso):
     assert _hay(validar_csv(p), "decimales con coma")
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "Si TODOS los valores de una columna numérica son (D) o (Z) (un archivo chico de un estado con "
-    "todos los condados ocultos), validar_csv() la toma por columna de texto y no avisa. "
-    "Ver 'Para decidir' en el PR de T046."))
 def test_columna_numerica_toda_con_codigo_nass_se_rechaza(repo_falso):
+    # Antes era xfail: si TODOS los valores eran (D)/(Z), validar_csv() la tomaba por columna de
+    # texto. Desde T144 (para_decidir #25) las columnas numéricas se reconocen por el nombre.
     p = _csv(repo_falso, PROD + "20055,2023,avena,(D),(D)\n20161,2023,avena,(D),(D)\n")
-    assert _hay(validar_csv(p), "rend_bu_ac")
+    errores = validar_csv(p)
+    assert _hay(errores, "rend_bu_ac: hay valores no numéricos (es numérica por su nombre)")
+
+
+@pytest.mark.parametrize("col", ["rend_bu_ac", "sup_cosechada_ac", "produccion_bu", "prec_jul_mm",
+                                 "tmax_c", "pct_maiz", "doy_pico", "dias_tmax_gt35", "precio_usd_bu",
+                                 "sm_rootzone_m3m3", "elevacion_media_m", "rend_kgha"])
+def test_columna_numerica_por_nombre_con_texto_avisa(repo_falso, col):
+    p = _csv(repo_falso, f"fips,anio,{col}\n20055,2023,(Z)\n20161,2023,sin dato\n")
+    assert _hay(validar_csv(p), f"{col}: hay valores no numéricos")
+
+
+@pytest.mark.parametrize("col", ["rend_bu_ac", "tmax_c", "prec_jul_mm"])
+def test_columna_numerica_toda_vacia_pasa(repo_falso, col):
+    # (D)/(Z) bien convertidos a vacío: la columna entera vacía no es un error.
+    p = _csv(repo_falso, f"fips,anio,{col}\n20055,2023,\n20161,2023,\n")
+    assert validar_csv(p) == []
+
+
+@pytest.mark.parametrize("col", ["clase_textural_usda", "drenaje_dominante", "grupo_hidrologico", "fuente"])
+def test_columna_de_texto_sigue_pasando(repo_falso, col):
+    p = _csv(repo_falso, f"fips,{col}\n20055,franco\n20161,A/D\n")
+    assert validar_csv(p) == []
