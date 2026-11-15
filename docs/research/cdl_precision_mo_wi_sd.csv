@@ -64,7 +64,7 @@ MO,2010,soja,5,1685833,95.48,95.57,92.43,0.8763,metadatos_fgdc_html
 MO,2010,trigo_invierno,24,5804,37.19,61.95,92.43,0.8763,metadatos_fgdc_html
 MO,2010,doble_trigo_soja,26,77378,84.61,82.38,92.43,0.8763,metadatos_fgdc_html
 MO,2010,avena,28,12,0.87,42.86,92.43,0.8763,metadatos_fgdc_html
-MO,2010,alfalfa,36,,,,92.43,0.8763,metadatos_fgdc_html
+MO,2010,alfalfa,36,0,0.0,,92.43,0.8763,metadatos_fgdc_html
 MO,2010,otro_heno,37,,,,92.43,0.8763,metadatos_fgdc_html
 MO,2010,barbecho,61,601,5.79,57.13,92.43,0.8763,metadatos_fgdc_html
 MO,2010,pastura_pasto,62,,,,92.43,0.8763,metadatos_fgdc_html
@@ -147,7 +147,7 @@ SD,2012,avena,28,22425,32.27,59.09,74.7,0.695,metadatos_fgdc_html
 SD,2012,alfalfa,36,216663,53.97,65.26,74.7,0.695,metadatos_fgdc_html
 SD,2012,otro_heno,37,715978,53.07,33.75,74.7,0.695,metadatos_fgdc_html
 SD,2012,barbecho,61,147019,65.84,74.46,74.7,0.695,metadatos_fgdc_html
-SD,2012,pastura_pasto,62,,,,74.7,0.695,metadatos_fgdc_html
+SD,2012,pastura_pasto,62,0,0.0,,74.7,0.695,metadatos_fgdc_html
 SD,2012,pastizal_pastura,176,,,,74.7,0.695,metadatos_fgdc_html
 MO,2013,maiz,1,1640100,95.77,97.57,90.5,0.865,metadatos_fgdc_html
 MO,2013,soja,5,2374280,96.77,95.74,90.5,0.865,metadatos_fgdc_html
@@ -232,7 +232,7 @@ WI,2015,pastizal_pastura,176,,,,90.9,0.867,metadatos_fgdc_html
 SD,2015,maiz,1,179192,97.24,97.24,88.3,0.854,metadatos_fgdc_html
 SD,2015,soja,5,166721,97.55,97.61,88.3,0.854,metadatos_fgdc_html
 SD,2015,trigo_invierno,24,32771,85.92,87.53,88.3,0.854,metadatos_fgdc_html
-SD,2015,doble_trigo_soja,26,,,,88.3,0.854,metadatos_fgdc_html
+SD,2015,doble_trigo_soja,26,0,0.0,,88.3,0.854,metadatos_fgdc_html
 SD,2015,avena,28,4358,50.38,67.79,88.3,0.854,metadatos_fgdc_html
 SD,2015,alfalfa,36,16746,72.87,78.49,88.3,0.854,metadatos_fgdc_html
 SD,2015,otro_heno,37,41705,71.4,79.98,88.3,0.854,metadatos_fgdc_html
@@ -352,7 +352,7 @@ WI,2019,pastizal_pastura,176,,,,77.9,0.703,metadatos_fgdc_html
 SD,2019,maiz,1,105606,90.4,92.7,80.4,0.771,metadatos_fgdc_html
 SD,2019,soja,5,83972,89.7,93.7,80.4,0.771,metadatos_fgdc_html
 SD,2019,trigo_invierno,24,36156,88.5,90.8,80.4,0.771,metadatos_fgdc_html
-SD,2019,doble_trigo_soja,26,,,,80.4,0.771,metadatos_fgdc_html
+SD,2019,doble_trigo_soja,26,0,0.0,,80.4,0.771,metadatos_fgdc_html
 SD,2019,avena,28,3678,49.0,63.1,80.4,0.771,metadatos_fgdc_html
 SD,2019,alfalfa,36,29579,72.4,79.1,80.4,0.771,metadatos_fgdc_html
 SD,2019,otro_heno,37,51643,64.4,72.3,80.4,0.771,metadatos_fgdc_html
@@ -472,7 +472,7 @@ WI,2023,pastizal_pastura,176,29548,66.5,47.5,82.1,0.74,metadatos_fgdc_html
 SD,2023,maiz,1,191311,93.7,94.0,82.2,0.777,metadatos_fgdc_html
 SD,2023,soja,5,155037,93.9,94.0,82.2,0.777,metadatos_fgdc_html
 SD,2023,trigo_invierno,24,25663,85.1,86.8,82.2,0.777,metadatos_fgdc_html
-SD,2023,doble_trigo_soja,26,,,,82.2,0.777,metadatos_fgdc_html
+SD,2023,doble_trigo_soja,26,0,0.0,,82.2,0.777,metadatos_fgdc_html
 SD,2023,avena,28,4269,47.7,64.4,82.2,0.777,metadatos_fgdc_html
 SD,2023,alfalfa,36,29725,71.5,74.6,82.2,0.777,metadatos_fgdc_html
 SD,2023,otro_heno,37,41126,62.6,68.2,82.2,0.777,metadatos_fgdc_html

@@ -10,6 +10,7 @@ Uso:
 """
 import csv
 import importlib.util
+import re
 import sys
 import zipfile
 from pathlib import Path
@@ -25,6 +26,26 @@ base.CULTIVOS = {1: "maiz", 5: "soja", 24: "trigo_invierno", 26: "doble_trigo_so
 URL_WI13 = ("https://www.nass.usda.gov/sites/default/files/Research_and_Science/Cropland/metadata/"
             "metadata_wi13.htm")
 SALIDA = Path(__file__).with_name("cdl_precision_mo_wi_sd.csv")
+
+# Como `base.FILA`, pero acepta "n/a" en la precisión del usuario (clase sin píxeles clasificados).
+FILA = re.compile(r"^\s*([A-Za-z][A-Za-z/ .&-]*?)\s+(\d+)\s+([\d,]+)\s+([\d.]+)%\s+([\d.]+)%\s+([\d.]+|n/a)"
+                  r"\s+(?:([\d.]+)%|n/a)\s+(?:([\d.]+)%|n/a)")
+
+
+def de_html(st, anio, d):
+    ruta = base.bajar(base.URL_HTML.format(st=st.lower(), aa=anio % 100),
+                      d / f"metadata-{st.lower()}{anio % 100:02d}.html")
+    filas, glob = {}, None
+    for l in base.texto_html(ruta):
+        m = base.GLOBAL.match(l)
+        if m and glob is None:
+            glob = (float(m.group(3)), float(m.group(5)))
+            continue
+        m = FILA.match(l)
+        if m and int(m.group(2)) in base.CULTIVOS and int(m.group(2)) not in filas:
+            usu = float(m.group(7)) if m.group(7) else None
+            filas[int(m.group(2))] = (int(m.group(3).replace(",", "")), float(m.group(4)), usu)
+    return glob, filas
 
 
 def _pct(v):
@@ -56,7 +77,7 @@ def main():
     salida = []
     for anio in list(base.ANIOS_HTML) + base.ANIOS_XLSX:
         for st in base.ESTADOS:
-            glob, filas = (base.de_html if anio < 2024 else de_xlsx)(st, anio, d)
+            glob, filas = (de_html if anio < 2024 else de_xlsx)(st, anio, d)
             for cod, cultivo in base.CULTIVOS.items():
                 px, prod, usu = filas.get(cod, (None, None, None))
                 salida.append({"estado": st, "anio": anio, "cultivo": cultivo, "codigo_cdl": cod,
