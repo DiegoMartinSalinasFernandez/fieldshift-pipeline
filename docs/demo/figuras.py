@@ -1,6 +1,6 @@
 """Figuras simples para la demo de Space Apps, hechas solo con los datos publicados en los Releases.
 
-Baja con `gh release download` los zips de `datos-ia-il-in` (y de `datos-ks` / `datos-oh-ne-mn` si ya
+Baja con `gh release download` (o, si `gh` no está o no tiene permiso, por la URL pública del release) los zips de `datos-ia-il-in` (y de `datos-ks` / `datos-oh-ne-mn` si ya
 existen), los lee sin descomprimir a disco y guarda PNG en `docs/demo/fig/`:
 
   fig1_corn_yield_july_rain.png      rendimiento de maíz vs lluvia de julio, 2012 resaltado
@@ -55,16 +55,58 @@ def aviso(msg: str) -> None:
 
 # --------------------------------------------------------------------------- descarga y lectura
 
+PAQUETES = ["clima", "cultivos", "vegetacion", "agua"]   # los zips que usan las figuras
+
+
+def repo_github() -> str | None:
+    """`dueño/repo` del remoto origin, para bajar por HTTPS si `gh` no está o no tiene permiso."""
+    r = subprocess.run(["git", "-C", str(REPO), "remote", "get-url", "origin"], capture_output=True, text=True)
+    url = r.stdout.strip()
+    if r.returncode != 0 or "github.com" not in url:
+        return None
+    slug = url.split("github.com", 1)[1].lstrip(":/")
+    return slug.removesuffix(".git") or None
+
+
+def bajar_https(et: str, d: Path) -> int:
+    """Plan B sin `gh`: baja `<et>_<paquete>.zip` de la URL pública del release (solo si el repo es público)."""
+    import urllib.error
+    import urllib.request
+
+    slug = repo_github()
+    if not slug:
+        return 0
+    n = 0
+    for paq in PAQUETES:
+        nombre = f"{et}_{paq}.zip"
+        z = d / nombre
+        if z.exists():
+            n += 1
+            continue
+        url = f"https://github.com/{slug}/releases/download/{et}/{nombre}"
+        try:
+            with urllib.request.urlopen(url, timeout=60) as resp:
+                z.write_bytes(resp.read())
+            n += 1
+        except (urllib.error.URLError, TimeoutError) as e:
+            aviso(f"HTTPS: no se pudo bajar {url}: {e}")
+    return n
+
+
 def bajar(etiquetas: list[str], destino: Path) -> None:
     for et in etiquetas:
         d = destino / et
         d.mkdir(parents=True, exist_ok=True)
-        r = subprocess.run(["gh", "release", "download", et, "--pattern", "*.zip", "--dir", str(d),
-                            "--skip-existing"], capture_output=True, text=True)
-        if r.returncode != 0:
-            aviso(f"no se pudo bajar el release {et}: {r.stderr.strip() or r.stdout.strip()}")
-        else:
-            print(f"{et}: {len(list(d.glob('*.zip')))} zips en {d}")
+        try:
+            r = subprocess.run(["gh", "release", "download", et, "--pattern", "*.zip", "--dir", str(d),
+                                "--skip-existing"], capture_output=True, text=True)
+            ok, err = r.returncode == 0, r.stderr.strip() or r.stdout.strip()
+        except FileNotFoundError:
+            ok, err = False, "gh no está instalado"
+        if not ok:
+            aviso(f"gh no pudo bajar el release {et} ({err}); pruebo por HTTPS")
+            bajar_https(et, d)
+        print(f"{et}: {len(list(d.glob('*.zip')))} zips en {d}")
 
 
 def leer(zips: Path, archivo: str) -> pd.DataFrame | None:
