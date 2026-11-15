@@ -186,6 +186,15 @@ def seccion(slug: str, releases: list[dict], resumenes: dict) -> str:
     return "\n".join(lin)
 
 
+def reemplazar(pagina: str, texto: str) -> str:
+    """`pagina` con lo que está entre INICIO y FIN (marcas incluidas) cambiado por `texto`."""
+    if INICIO not in pagina or FIN not in pagina:
+        sys.exit(f"{PAGINA.name}: faltan las marcas {INICIO} / {FIN}")
+    antes, resto = pagina.split(INICIO, 1)
+    despues = resto.split(FIN, 1)[1]
+    return antes + texto + despues
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--sin-bajar", action="store_true", help="no baja nada; usa los zips que ya están")
@@ -204,12 +213,7 @@ def main() -> None:
     if args.imprimir:
         print(texto)
         return
-    pagina = PAGINA.read_text(encoding="utf-8")
-    if INICIO not in pagina or FIN not in pagina:
-        sys.exit(f"{PAGINA.name}: faltan las marcas {INICIO} / {FIN}")
-    antes, resto = pagina.split(INICIO, 1)
-    despues = resto.split(FIN, 1)[1]
-    PAGINA.write_text(antes + texto + despues, encoding="utf-8")
+    PAGINA.write_text(reemplazar(PAGINA.read_text(encoding="utf-8"), texto), encoding="utf-8")
     print(f"actualizado {PAGINA.relative_to(REPO)}", file=sys.stderr)
 
 
