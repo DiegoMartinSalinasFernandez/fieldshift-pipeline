@@ -107,19 +107,39 @@ PC_TOKEN = "https://planetarycomputer.microsoft.com/api/sas/v1/token/landcoverda
 RAW_TESELAS = RAW_CDL / "teselas"
 
 
-def teselas_cdl(anio: int) -> list[tuple[str, str]]:
-    """(id, href) de las teselas `cropland` del CDL en Planetary Computer que tocan los condados."""
+def buscar_stac(cuerpo: dict) -> list[dict]:
+    """Todos los items de una búsqueda STAC, siguiendo el link `next` (no depende de `limit`)."""
+    items, url, cuerpo = [], PC_STAC, dict(cuerpo)
+    while url:
+        r = requests.post(url, json=cuerpo, timeout=120)
+        r.raise_for_status()
+        j = r.json()
+        items += j["features"]
+        nxt = [l for l in j.get("links", []) if l.get("rel") == "next"]
+        url, cuerpo = (nxt[0]["href"], nxt[0].get("body", cuerpo)) if nxt else (None, cuerpo)
+    return items
+
+
+def teselas_cdl(anio: int, gpkg: Path | None = None) -> list[tuple[str, str]]:
+    """(id, href) de las teselas `cropland` del CDL en Planetary Computer que tocan los condados.
+
+    Una búsqueda por estado (bbox de sus condados), sin repetir teselas. El bbox solo preselecciona:
+    la tesela se queda si toca algún condado, así que con un estado o con todos juntos el resultado
+    es el mismo conjunto (el de antes de T023 para IA, IL e IN).
+    """
     import geopandas as gpd
     from shapely.geometry import shape
 
-    cond = gpd.read_file(REPO / "data" / "reference" / "condados.gpkg").to_crs(4326)
+    cond = gpd.read_file(gpkg or REPO / "data" / "reference" / "condados.gpkg").to_crs(4326)
     zona = cond.union_all() if hasattr(cond, "union_all") else cond.unary_union
-    cuerpo = {"collections": ["usda-cdl"], "bbox": list(cond.total_bounds),
-              "datetime": f"{anio}-01-01T00:00:00Z/{anio}-12-31T23:59:59Z", "limit": 500}
-    r = requests.post(PC_STAC, json=cuerpo, timeout=120)
-    r.raise_for_status()
+    por_id = {}
+    for _, sub in sorted(cond.groupby(cond["fips"].astype(str).str.zfill(5).str[:2])):
+        cuerpo = {"collections": ["usda-cdl"], "bbox": [float(v) for v in sub.total_bounds],
+                  "datetime": f"{anio}-01-01T00:00:00Z/{anio}-12-31T23:59:59Z", "limit": 500}
+        for it in buscar_stac(cuerpo):
+            por_id.setdefault(it["id"], it)
     out = []
-    for it in r.json()["features"]:
+    for it in por_id.values():
         a = it["assets"].get("cropland")
         if a and shape(it["geometry"]).intersects(zona):
             out.append((it["id"], a["href"]))
