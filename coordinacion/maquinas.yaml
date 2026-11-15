@@ -20,7 +20,6 @@ maquinas:
   pro-2:
     plan: pro
     rol: research y código chico (T005 hecha, PR 2)
-    pausada: true   # sin cuota semanal de Claude hasta el 16/11 9:00; sacar esta línea para reactivarla
     estados: [NE, KS]   # preferencia: riego, trigo de invierno
   pro-3:
     plan: pro
