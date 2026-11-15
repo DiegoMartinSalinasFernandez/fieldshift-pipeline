@@ -219,12 +219,28 @@ def seccion_nass(base: Path, qs: Path) -> None:
     print("## Superficie sembrada: suma de condados contra NASS a nivel estado\n")
     pa = leer(base, "cultivos", "produccion_anual.csv")
     est = {}
+    otros = {}    # (estado, cultivo, anio) -> acres de "OTHER (COMBINED) COUNTIES" (county_code 998)
+    n_cond = {}   # (estado, cultivo, anio) -> condados publicados por NASS (sin 998)
     comm = {"CORN": "maiz", "SOYBEANS": "soja"}
     with gzip.open(qs, "rt", encoding="utf-8", errors="replace") as fh:
         lec = csv.reader(fh, delimiter="\t")
         cab = next(lec)
         i = {c: k for k, c in enumerate(cab)}
         for f in lec:
+            if (f[i["AGG_LEVEL_DESC"]] == "COUNTY" and f[i["SOURCE_DESC"]] == "SURVEY"
+                    and f[i["STATE_ALPHA"]] in ("OH", "NE", "MN") and f[i["COMMODITY_DESC"]] in comm
+                    and f[i["STATISTICCAT_DESC"]] == "AREA PLANTED" and f[i["UNIT_DESC"]] == "ACRES"
+                    and f[i["REFERENCE_PERIOD_DESC"]] == "YEAR" and f[i["CLASS_DESC"]] == "ALL CLASSES"
+                    and f[i["PRODN_PRACTICE_DESC"]] == "ALL PRODUCTION PRACTICES"
+                    and f[i["UTIL_PRACTICE_DESC"]] == "ALL UTILIZATION PRACTICES"):
+                k = (f[i["STATE_ALPHA"]], comm[f[i["COMMODITY_DESC"]]], int(f[i["YEAR"]]))
+                v = re.sub(r"[,\s]", "", f[i["VALUE"]])
+                if f[i["COUNTY_CODE"]] == "998":
+                    if v.replace(".", "").isdigit():
+                        otros[k] = otros.get(k, 0) + float(v)
+                else:
+                    n_cond[k] = n_cond.get(k, 0) + 1
+                continue
             if (f[i["AGG_LEVEL_DESC"]] != "STATE" or f[i["SOURCE_DESC"]] != "SURVEY"
                     or f[i["STATE_ALPHA"]] not in ("OH", "NE", "MN") or f[i["COMMODITY_DESC"]] not in comm
                     or f[i["STATISTICCAT_DESC"]] != "AREA PLANTED" or f[i["UNIT_DESC"]] != "ACRES"
@@ -242,6 +258,9 @@ def seccion_nass(base: Path, qs: Path) -> None:
             filas.append((e, c, a, v, suma[(e, c, a)]))
     df = pd.DataFrame(filas, columns=["estado", "cultivo", "anio", "nass_estado", "suma_condados"])
     df["pct"] = df.suma_condados / df.nass_estado * 100
+    df["otros_998"] = [otros.get(k, 0.0) for k in zip(df.estado, df.cultivo, df.anio)]
+    df["n_cond_nass"] = [n_cond.get(k, 0) for k in zip(df.estado, df.cultivo, df.anio)]
+    df["pct_con_998"] = (df.suma_condados + df.otros_998) / df.nass_estado * 100
     print("| estado | cultivo | n años | % mín (año) | % mediana | % máx (año) |")
     print("|---|---|---|---|---|---|")
     for (e, c), d in df.groupby(["estado", "cultivo"]):
@@ -253,7 +272,11 @@ def seccion_nass(base: Path, qs: Path) -> None:
     print(f"Años con la suma de condados fuera de 85–101 % del total de estado: {len(malos)}\n")
     for r in malos.itertuples():
         print(f"- {r.estado} {r.cultivo} {r.anio}: {r.suma_condados:,.0f} de {r.nass_estado:,.0f} ac "
-              f"({r.pct:.1f} %)")
+              f"({r.pct:.1f} %); con OTHER (COMBINED) {r.pct_con_998:.1f} %; condados en NASS {r.n_cond_nass}")
+    print()
+    print("Suma de condados + OTHER (COMBINED) COUNTIES contra el total de estado (% mín–máx): "
+          + "; ".join(f"{e} {c} {d.pct_con_998.min():.1f}–{d.pct_con_998.max():.1f}"
+                      for (e, c), d in df.groupby(["estado", "cultivo"])))
     print()
 
 
