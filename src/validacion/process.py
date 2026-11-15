@@ -16,6 +16,7 @@ import pandas as pd
 
 RAIZ = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(RAIZ))
+from src.common.atribuciones import poner_en_card  # noqa: E402
 from src.common.config import cargar_config  # noqa: E402
 
 RAW = RAIZ / "data" / "raw" / "validacion"
@@ -229,6 +230,7 @@ del paquete `clima`: PRISM (Oregon State University) y CoCoRaHS (red de pluvióm
 - POWER es un valor puntual en el centroide (grilla de 0,5°), PRISM una media areal a 4 km y CoCoRaHS la media de
   pocos pluviómetros: las diferencias mezclan error de cada fuente y de representatividad espacial.
 """
+    txt = poner_en_card(txt, "validacion")
     CARD.parent.mkdir(parents=True, exist_ok=True)
     CARD.write_text(txt, encoding="utf-8", newline="\n")
 

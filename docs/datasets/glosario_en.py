@@ -145,6 +145,8 @@ FUENTES = {
     "config/config.yaml (ventanas)": "config/config.yaml (windows)",
     "GPM IMERG vía NASA POWER (IMERG_PRECTOT, 0,1°)": "GPM IMERG via NASA POWER (IMERG_PRECTOT, 0.1°)",
     "Derivada de NASA POWER": "Derived from NASA POWER",
+    "NASS Crop Progress (Quick Stats, nivel estado)": "NASS Crop Progress (Quick Stats, state level)",
+    "Derivada de NASA POWER y NASS Crop Progress": "Derived from NASA POWER and NASS Crop Progress",
     "USDA NASS Quick Stats (SURVEY, condado)": "USDA NASS Quick Stats (SURVEY, county)",
     "Derivada de NASS Quick Stats": "Derived from NASS Quick Stats",
     "USDA NASS Quick Stats Crop Progress (SURVEY, estado)": "USDA NASS Quick Stats Crop Progress (SURVEY, state)",
@@ -184,6 +186,14 @@ FUENTES = {
 # Descripciones: castellano del data card -> inglés
 # ---------------------------------------------------------------------------------------------------
 DESCRIPCIONES = {
+    "Avena y trigo de invierno: día del año del 50 % espigado (PCT HEADED)":
+        "Oats and winter wheat: day of year of 50 % headed (PCT HEADED)",
+    "Trigo de invierno: día del año (de anio − 1) del 50 % sembrado en otoño":
+        "Winter wheat: day of year (of anio − 1) of 50 % planted in the fall",
+    "Trigo de invierno: día del año (de anio − 1) del 50 % emergido en otoño":
+        "Winter wheat: day of year (of anio − 1) of 50 % emerged in the fall",
+    "Etapas (separadas por ;) cuyo 50 % se interpoló entre semanas separadas por más de 14 días":
+        "Stages (separated by ;) whose 50 % crossing was interpolated between reports more than 14 days apart",
     # agua
     "Humedad volumétrica del suelo superficial (0-5 cm), media del condado ponderada por área":
         "Surface volumetric soil moisture (0-5 cm), area-weighted county mean",
@@ -199,6 +209,10 @@ DESCRIPCIONES = {
         "(month's sm_rootzone − calendar-month mean) / standard deviation, per county, 2015-2025",
     "Días del mes con sm_rootzone diaria del condado >= 0,40 m3/m3":
         "Days in the month with daily county sm_rootzone >= 0.40 m3/m3",
+    "Fracción del área del condado con dato SMAP cuyas celdas de 9 km descarta el filtro 0-0,60 m3/m3 de la capa SUB "
+    "(turberas, suelos orgánicos); media sobre los días":
+        "Fraction of the county area with SMAP data whose 9 km cells are dropped by the 0-0.60 m3/m3 filter on the "
+        "SUB (root-zone) layer (peatlands, organic soils); mean over days",
     "Percentil de almacenamiento de agua subterránea (media ponderada por área del condado)":
         "Groundwater storage percentile (area-weighted county mean)",
     "Percentil de humedad del suelo en la zona radicular (media ponderada por área)":
@@ -287,6 +301,30 @@ DESCRIPCIONES = {
         "OLS slope of annual precipitation over the 30 years ending in anio (min. 20 years)",
     "Pendiente MCO de la temperatura media anual en los 30 años que terminan en anio (mín. 20)":
         "OLS slope of annual mean temperature over the 30 years ending in anio (min. 20 years)",
+    "Día del año del 25 % de silking del maíz en el estado (Crop Progress, interpolado y redondeado)":
+        "Day of year of 25 % corn silking in the state (Crop Progress, interpolated and rounded)",
+    "Día del año del 75 % de silking del maíz en el estado":
+        "Day of year of 75 % corn silking in the state",
+    "Lluvia de doy_ini a doy_fin de floración del maíz, ambos inclusive":
+        "Precipitation from doy_ini to doy_fin of corn silking, both inclusive",
+    "Media de la tmax diaria en la floración del maíz":
+        "Mean daily tmax during corn silking",
+    "Días con tmax > 30 °C en la floración del maíz":
+        "Days with tmax > 30 °C during corn silking",
+    "Días con tmax > 35 °C en la floración del maíz":
+        "Days with tmax > 35 °C during corn silking",
+    "Día del año del 50 % de setting pods de la soja en el estado":
+        "Day of year of 50 % soybean setting pods in the state",
+    "Día del año del 25 % de dropping leaves de la soja en el estado":
+        "Day of year of 25 % soybean dropping leaves in the state",
+    "Lluvia de doy_ini a doy_fin del llenado de la soja, ambos inclusive":
+        "Precipitation from doy_ini to doy_fin of soybean pod and seed fill, both inclusive",
+    "Media de la tmax diaria en el llenado de la soja":
+        "Mean daily tmax during soybean pod and seed fill",
+    "Suma de prec_power_mm − eto_pm_mm en el llenado de la soja":
+        "Sum of prec_power_mm − eto_pm_mm during soybean pod and seed fill",
+    "Lluvia del 1 de agosto al 15 de septiembre (sin fenología)":
+        "Precipitation from August 1 to September 15 (no phenology)",
     # cultivos
     "Superficie sembrada (AREA PLANTED, todos los usos)": "Planted area (AREA PLANTED, all utilizations)",
     "Superficie cosechada (AREA HARVESTED; maíz: grano)": "Harvested area (AREA HARVESTED; corn: grain)",
@@ -299,6 +337,8 @@ DESCRIPCIONES = {
     "sup_cosechada_ac / sup_sembrada_ac": "sup_cosechada_ac / sup_sembrada_ac (harvested/planted ratio)",
     "Código original de NASS cuando el valor está oculto: (D), (Z), (NA)… (separados por ;)":
         "Original NASS code when the value is withheld: (D), (Z), (NA)… (separated by ;)",
+    "1 = la fila viene de NASS; 0 = NASS no publicó ese condado, año y cultivo y la fila se completó vacía (T138)":
+        "1 = row comes from NASS; 0 = NASS did not publish that county, year and crop, and the row was added empty (T138)",
     "Día del año en que se cruza el 50 % sembrado (PCT PLANTED, interpolado)":
         "Day of year when 50 % planted is reached (PCT PLANTED, interpolated)",
     "Día del año en que se cruza el 50 % emergido (PCT EMERGED)":
@@ -344,6 +384,14 @@ DESCRIPCIONES = {
         "Tile-drained area / cropland × 100 (Census short_desc DRAINED BY TILE / AG LAND, CROPLAND)",
     "AG LAND, IRRIGATED / AG LAND, CROPLAND × 100":
         "Irrigated land / cropland × 100 (Census short_desc AG LAND, IRRIGATED / AG LAND, CROPLAND)",
+    "CORN, GRAIN, IRRIGATED / CORN, GRAIN - ACRES HARVESTED × 100":
+        "Irrigated corn-for-grain harvested area / total corn-for-grain harvested area × 100 (Census short_desc CORN, GRAIN, IRRIGATED / CORN, GRAIN - ACRES HARVESTED)",
+    "SOYBEANS, IRRIGATED / SOYBEANS - ACRES HARVESTED × 100":
+        "Irrigated soybean harvested area / total soybean harvested area × 100 (Census short_desc SOYBEANS, IRRIGATED / SOYBEANS - ACRES HARVESTED)",
+    "AG LAND, CROPLAND, HARVESTED, IRRIGATED / AG LAND, CROPLAND, HARVESTED × 100":
+        "Irrigated harvested cropland / total harvested cropland × 100 (Census short_desc AG LAND, CROPLAND, HARVESTED, IRRIGATED / AG LAND, CROPLAND, HARVESTED)",
+    "Valores ocultos de las tres columnas de riego por cultivo: `columna=(D)` separados por `;` (numerador o denominador)":
+        "Withheld NASS values of the three irrigation-by-crop columns: `column=(D)` separated by `;` (numerator or denominator)",
     # economia
     "Precio recibido por el productor, promedio del año comercial (NASS PRICE RECEIVED, MARKETING YEAR, estado)":
         "Price received by farmers, marketing-year average (NASS PRICE RECEIVED, MARKETING YEAR, state level)",
@@ -357,6 +405,16 @@ DESCRIPCIONES = {
         "Value of production less operating costs (ERS 'Value of production less operating costs', regions weighted by planted area)",
     "Código original de NASS cuando el precio no se publica ((D), (S), (NA)); vacío si hay valor":
         "Original NASS code when the price is not published ((D), (S), (NA)); empty when there is a value",
+    "Farm Resource Region de ERS del condado (reglink.xls)":
+        "ERS Farm Resource Region of the county (reglink.xls)",
+    "Valor bruto de la producción por acre sembrado de la región ERS del condado ('Total, gross value of production')":
+        "Gross value of production per planted acre of the county's ERS region ('Total, gross value of production')",
+    "Costos operativos por acre sembrado de la región ERS del condado ('Total, operating costs')":
+        "Operating costs per planted acre of the county's ERS region ('Total, operating costs')",
+    "Costos totales listados por acre sembrado de la región ERS del condado ('Total, costs listed')":
+        "Total listed costs per planted acre of the county's ERS region ('Total, costs listed')",
+    "Valor de la producción menos costos operativos de la región ERS del condado ('Value of production less operating costs')":
+        "Value of production less operating costs of the county's ERS region ('Value of production less operating costs')",
     # ecostress
     "Temperatura de superficie (ECO_L2T_LSTE.002 capa LST) media del mes: promedio de las pasadas con datos, cada una la media de los píxeles agrícolas de buena calidad y sin nube de la ventana de 2,24 km del condado":
         "Monthly mean land surface temperature (ECO_L2T_LSTE.002, LST layer): average over overpasses with data, each the mean of good-quality, cloud-free cropland pixels in the county's 2.24 km window",
@@ -548,6 +606,10 @@ DESCRIPCIONES = {
         "SMAP root-zone soil moisture, April-September mean, 9 km cell containing the centroid",
     "1 si la celda AgTile-US que contiene el centro del píxel está drenada con caños":
         "1 if the AgTile-US cell containing the pixel center is tile-drained",
+    "probabilidad de drenaje con caños de la celda SEETileDrain (2017, ~30 m, EPSG:4326) que contiene el centro del píxel":
+        "tile drainage probability of the SEETileDrain cell (2017, ~30 m, EPSG:4326) containing the pixel center",
+    "clase publicada de SEETileDrain (1 = drenado con caños) de la celda que contiene el centro del píxel":
+        "published SEETileDrain class (1 = tile-drained) of the cell containing the pixel center",
     # nldas
     "Humedad volumétrica 0-10 cm: SoilM_0_10cm (kg m-2) / 100 mm, media ponderada del condado":
         "Volumetric soil moisture 0-10 cm: SoilM_0_10cm (kg m-2) / 100 mm, weighted county mean",
@@ -642,6 +704,14 @@ DESCRIPCIONES = {
     "Media de los compuestos de 16 días que empiezan en el mes": "Mean of the 16-day composites starting in the month",
     "Media mensual del NDVI de maíz (CDL >= 75 %)": "Monthly mean corn NDVI (CDL >= 75 %)",
     "Media mensual del NDVI de soja (CDL >= 75 %)": "Monthly mean soybean NDVI (CDL >= 75 %)",
+    "Como ndvi_maiz, con umbral de pureza de 50 %: píxeles con >= 50 % de maíz (CDL del año)":
+        "Like ndvi_maiz, with a 50 % purity threshold: pixels with >= 50 % corn (same-year CDL)",
+    "Como ndvi_soja, con umbral de pureza de 50 %: píxeles con >= 50 % de soja (CDL del año)":
+        "Like ndvi_soja, with a 50 % purity threshold: pixels with >= 50 % soybeans (same-year CDL)",
+    "Media mensual del NDVI de maíz (CDL >= 50 %)": "Monthly mean corn NDVI (CDL >= 50 %)",
+    "Media mensual del NDVI de soja (CDL >= 50 %)": "Monthly mean soybean NDVI (CDL >= 50 %)",
+    "Como ndvi_max_maiz, desde ndvi_maiz_p50 (CDL >= 50 %)": "Like ndvi_max_maiz, from ndvi_maiz_p50 (CDL >= 50 %)",
+    "Como ndvi_max_soja, desde ndvi_soja_p50 (CDL >= 50 %)": "Like ndvi_max_soja, from ndvi_soja_p50 (CDL >= 50 %)",
     "LST diurna media (compuestos de 8 días que empiezan en el mes)":
         "Mean daytime land surface temperature (8-day composites starting in the month)",
     "LST nocturna media": "Mean nighttime land surface temperature",

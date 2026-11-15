@@ -223,32 +223,111 @@ class TestDuplicados(BaseMerge):
             merge.tabla_anual()
 
 
-class TestPaquetesNoListados(BaseMerge):
-    """CLAUDE.md §7: merge.py une *todos* los *_anual.csv, *_estatico.csv y *_mensual.csv (salvo lotes).
+NUEVOS = {
+    **ARCHIVOS,
+    # Economía, por estado: granos y forrajes en dos archivos con flag_nass cada uno (choca con produccion).
+    "economia/economia_anual.csv": (
+        "fips_estado,anio,cultivo,precio_usd_bu,flag_nass\n"
+        "31,2020,maiz,4.50,\n31,2021,maiz,5.00,(D)\n20,2020,maiz,4.40,\n20,2020,soja,10.10,\n"
+    ),
+    "economia/economia_forrajes_anual.csv": "fips_estado,anio,cultivo,precio_usd_ton,flag_nass\n31,2020,alfalfa,180,(D)\n",
+    "paisaje/paisaje_anual.csv": "fips,anio,pct_bosque_nlcd\n" + "".join(f"{f},{a},5.0\n" for f in FIPS for a in ANIOS),
+    # Teledetección trae frac_pixeles_validos: nombre genérico, lleva siempre el prefijo del paquete.
+    "teledeteccion/teledeteccion_anual.csv": "fips,anio,ndvi_max_30m,frac_pixeles_validos\n31001,2020,0.85,0.9\n",
+    # Censo: 31001 tiene 2017 y 2022 → 2020 y 2021 toman 2017. 20001 solo 2022 → 2020/2021 vacíos.
+    "cultivos/practicas_censo.csv": (
+        "fips,anio_censo,pct_cobertura,pct_riego\n31001,2017,3.0,40.0\n31001,2022,4.0,41.0\n"
+        "31001,2012,1.0,30.0\n20001,2022,2.0,10.0\n"
+    ),
+    # Rotación por ventanas de 8 años: queda afuera (merge_faltantes.md §3).
+    "cultivos/rotacion_secuencia.csv": "fips,ventana,pct_maiz_continuo\n31001,2013-2020,12.0\n",
+    "nldas/nldas_mensual.csv": "fips,anio,mes,et_nldas_mm\n" + "".join(f"{f},2020,2020-07,90.0\n" for f in FIPS),
+    # ECOSTRESS: frac_pixeles_validos también es genérico acá; tmax_c choca con clima → ecostress_tmax_c.
+    "ecostress/ecostress_mensual.csv": "fips,anio,mes,lst_ecostress_c,tmax_c,frac_pixeles_validos\n31001,2020,2020-07,31.0,99,0.5\n",
+}
 
-    merge.py tiene la lista de archivos fija (ANUALES, MENSUALES) y deja afuera los paquetes nuevos que ya
-    tienen entregable en loop/spec/entregables.yaml (paisaje_anual, teledeteccion_anual, aptitud_estatico,
-    nldas_mensual, ecostress_mensual, hidrologia_mensual, validacion_mensual...). Ver "Para decidir" del PR.
-    """
 
-    archivos = {
-        **ARCHIVOS,
-        "paisaje/paisaje_anual.csv": "fips,anio,pct_bosque\n" + "".join(f"{f},{a},5\n" for f in FIPS for a in ANIOS),
-        "aptitud/aptitud_estatico.csv": "fips,aptitud_maiz\n" + "".join(f"{f},0.7\n" for f in FIPS),
-        "nldas/nldas_mensual.csv": "fips,anio,mes,tmax_nldas_c\n"
-        + "".join(f"{f},2020,2020-07,29.0\n" for f in FIPS),
-    }
+class TestPaquetesNuevos(BaseMerge):
+    """T136: economía, paisaje, teledetección, censo (as-of), NLDAS y ECOSTRESS."""
 
-    @unittest.expectedFailure
-    def test_anual_y_estatico_de_paquetes_nuevos(self) -> None:
-        _, _, cols, _ = self.correr()
-        self.assertIn("pct_bosque", cols)
-        self.assertIn("aptitud_maiz", cols)
+    archivos = NUEVOS
 
-    @unittest.expectedFailure
-    def test_mensual_de_paquetes_nuevos(self) -> None:
-        _, _, _, cols = self.correr()
-        self.assertIn("tmax_nldas_c", cols)
+    def setUp(self) -> None:
+        super().setUp()
+        self.anual, self.mensual, self.cols_a, self.cols_m = self.correr()
+        self.pa = {(r["fips"], r["anio"], r["cultivo"]): r for r in self.anual}
+        self.pm = {(r["fips"], r["anio"], r["mes"]): r for r in self.mensual}
+
+    def test_columnas_viejas_no_cambian(self) -> None:
+        # Mismas columnas y en el mismo orden que sin los paquetes nuevos, y después las nuevas.
+        self.assertEqual(self.cols_a[:9], ["fips", "anio", "cultivo", "rend_bu_ac", "flag_nass",
+                                           "prec_temporada_mm", "pct_maiz", "ndvi_max",
+                                           "vegetacion_prec_temporada_mm"])
+        self.assertEqual(self.cols_m[:6], ["fips", "anio", "mes", "tmax_c", "ndvi", "sm_rootzone_m3m3"])
+        self.assertEqual(len(self.anual), 15)
+
+    def test_economia_un_solo_flag_y_por_estado(self) -> None:
+        self.assertIn("economia_flag_nass", self.cols_a)
+        self.assertFalse([c for c in self.cols_a if c.endswith(("_x", "_y"))])
+        for f in NE:
+            self.assertEqual(self.pa[(f, "2021", "maiz")]["precio_usd_bu"], "5.00")
+            self.assertEqual(self.pa[(f, "2021", "maiz")]["economia_flag_nass"], "(D)")
+        self.assertEqual(self.pa[("20003", "2020", "soja")]["precio_usd_bu"], "10.10")
+        self.assertEqual(self.pa[("31001", "2020", "soja")]["precio_usd_bu"], "")
+        self.assertIn("precio_usd_ton", self.cols_a)
+
+    def test_paisaje_y_teledeteccion(self) -> None:
+        self.assertEqual(self.pa[("20003", "2021", "maiz")]["pct_bosque_nlcd"], "5.0")
+        self.assertIn("teledeteccion_frac_pixeles_validos", self.cols_a)
+        self.assertNotIn("frac_pixeles_validos", self.cols_a)
+        self.assertEqual(self.pa[("31001", "2020", "soja")]["teledeteccion_frac_pixeles_validos"], "0.9")
+        self.assertEqual(self.pa[("31003", "2020", "maiz")]["ndvi_max_30m"], "")
+
+    def test_censo_ultimo_menor_o_igual(self) -> None:
+        r = self.pa[("31001", "2020", "maiz")]
+        self.assertEqual((r["anio_censo_ref"], r["pct_riego"], r["pct_cobertura"]), ("2017", "40.0", "3.0"))
+        self.assertEqual(self.pa[("31001", "2021", "soja")]["anio_censo_ref"], "2017")
+        # Sin censo anterior: vacío (no se usa el de 2022, sería del futuro).
+        r = self.pa[("20001", "2020", "maiz")]
+        self.assertEqual((r["anio_censo_ref"], r["pct_riego"]), ("", ""))
+        self.assertEqual(self.pa[("31003", "2020", "maiz")]["anio_censo_ref"], "")
+        self.assertNotIn("anio_censo", self.cols_a)
+
+    def test_rotacion_secuencia_queda_afuera(self) -> None:
+        self.assertNotIn("ventana", self.cols_a)
+        self.assertNotIn("pct_maiz_continuo", self.cols_a)
+
+    def test_mensuales_nuevos(self) -> None:
+        self.assertEqual(self.pm[("20003", "2020", "2020-07")]["et_nldas_mm"], "90.0")
+        r = self.pm[("31001", "2020", "2020-07")]
+        self.assertEqual((r["tmax_c"], r["ecostress_tmax_c"]), ("30.5", "99"))
+        self.assertEqual(r["ecostress_frac_pixeles_validos"], "0.5")
+        self.assertEqual(self.pm[("31001", "2020", "2020-08")]["lst_ecostress_c"], "")
+
+    def test_orden_de_filas(self) -> None:
+        claves = [(r["fips"], int(r["anio"]), r["cultivo"]) for r in self.anual]
+        self.assertEqual(claves, sorted(claves))
+
+
+class TestFaltanPaquetesNuevos(BaseMerge):
+    """Sin los archivos nuevos, merge.py avisa y da las mismas tablas que antes."""
+
+    def test_aviso_y_misma_salida(self) -> None:
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            merge.main()
+        for rel in ("economia/economia_anual.csv", "nldas/nldas_mensual.csv", "cultivos/practicas_censo.csv"):
+            self.assertIn(f"falta {rel}", buf.getvalue())
+        with open(self.proc / "tabla_anual.csv", encoding="utf-8") as f:
+            self.assertEqual(f.readline().strip().split(",")[-1], "aws0_100")
+
+
+class TestChoqueSinNombreLibre(unittest.TestCase):
+    def test_error_en_vez_de_x_y(self) -> None:
+        import pandas as pd
+        df = pd.DataFrame({"fips": ["1"], "a": ["1"]})
+        with redirect_stdout(io.StringIO()), self.assertRaises(SystemExit):
+            merge.renombrar_colisiones(df, ["fips"], {"a", "p_a", "arch_a"}, "p", "arch")
 
 
 if __name__ == "__main__":

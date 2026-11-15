@@ -11,6 +11,8 @@ Paquete `vegetacion` de Field Shift (CLAUDE.md §6.3): MODIS por condado del Cor
 | vegetacion_16d.csv | ndvi_maiz | NDVI medio de los píxeles con >= 75 % de maíz (CDL del año) | adim. | MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC) | M01 | 2008-01-01 | 2025-12-19 | 43.4 |
 | vegetacion_16d.csv | ndvi_soja | NDVI medio de los píxeles con >= 75 % de soja (CDL del año) | adim. | MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC) | M01 | 2008-01-01 | 2025-12-19 | 43.7 |
 | vegetacion_16d.csv | frac_pixeles_validos | Píxeles que pasan el filtro de calidad sobre los píxeles del condado | 0-1 | MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC) | M03 | 2000-02-18 | 2025-12-19 | 0.0 |
+| vegetacion_16d.csv | ndvi_maiz_p50 | Como ndvi_maiz, con umbral de pureza de 50 %: píxeles con >= 50 % de maíz (CDL del año) | adim. | MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC) | M01 |  |  | (sin medir: falta correr process.py con las columnas nuevas) |
+| vegetacion_16d.csv | ndvi_soja_p50 | Como ndvi_soja, con umbral de pureza de 50 %: píxeles con >= 50 % de soja (CDL del año) | adim. | MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC) | M01 |  |  | (sin medir: falta correr process.py con las columnas nuevas) |
 | vegetacion_mensual.csv | ndvi | Media de los compuestos de 16 días que empiezan en el mes | adim. | MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC) | M01 | 2000-02 | 2025-12 | 2.2 |
 | vegetacion_mensual.csv | evi | Media de los compuestos de 16 días que empiezan en el mes | adim. | MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC) | M02 | 2000-02 | 2025-12 | 2.2 |
 | vegetacion_mensual.csv | ndvi_maiz | Media mensual del NDVI de maíz (CDL >= 75 %) | adim. | MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC) | M01 | 2008-01 | 2025-12 | 40.7 |
@@ -24,6 +26,8 @@ Paquete `vegetacion` de Field Shift (CLAUDE.md §6.3): MODIS por condado del Cor
 | vegetacion_mensual.csv | vci | VCI = 100 (ndvi − mín) / (máx − mín) del mes calendario, por condado | 0-100 | Derivada de MOD13Q1 | F11 | 2000-02 | 2025-12 | 2.2 |
 | vegetacion_mensual.csv | tci | TCI = 100 (máx − lst_dia_c) / (máx − mín) del mes calendario, por condado | 0-100 | Derivada de MOD11A2 + MOD13Q1 | F12 | 2000-02 | 2025-12 | 0.0 |
 | vegetacion_mensual.csv | vhi | VHI = 0,5 VCI + 0,5 TCI | 0-100 | Derivada de MOD11A2 + MOD13Q1 | F13 | 2000-02 | 2025-12 | 2.3 |
+| vegetacion_mensual.csv | ndvi_maiz_p50 | Media mensual del NDVI de maíz (CDL >= 50 %) | adim. | MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC) | M01 |  |  | (sin medir: falta correr process.py con las columnas nuevas) |
+| vegetacion_mensual.csv | ndvi_soja_p50 | Media mensual del NDVI de soja (CDL >= 50 %) | adim. | MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC) | M01 |  |  | (sin medir: falta correr process.py con las columnas nuevas) |
 | fenologia_anual.csv | doy_inicio | Día del año en que el NDVI suavizado sube al 50 % de la amplitud del año | DOY | Derivada de MOD13Q1 | F01 | 2000 | 2025 | 2.0 |
 | fenologia_anual.csv | doy_pico | Día del año del máximo NDVI suavizado (inicio del compuesto + 8 días) | DOY | Derivada de MOD13Q1 | F02 | 2000 | 2025 | 2.0 |
 | fenologia_anual.csv | doy_fin | Día del año en que el NDVI suavizado baja al 50 % de la amplitud | DOY | Derivada de MOD13Q1 | F04 | 2000 | 2025 | 2.1 |
@@ -34,6 +38,8 @@ Paquete `vegetacion` de Field Shift (CLAUDE.md §6.3): MODIS por condado del Cor
 | fenologia_anual.csv | ndvi_max_maiz | Máximo NDVI de maíz del año (compuestos de 16 días) | adim. | Derivada de MOD13Q1 | F03 | 2008 | 2025 | 38.5 |
 | fenologia_anual.csv | ndvi_max_soja | Máximo NDVI de soja del año (compuestos de 16 días) | adim. | Derivada de MOD13Q1 | F03 | 2008 | 2025 | 38.6 |
 | fenologia_anual.csv | dias_ndvi_lt03_invierno | Días con NDVI diario interpolado < 0,3 entre 1-nov (anio−1) y 31-mar | días | Derivada de MOD13Q1 | F09 | 2001 | 2025 | 3.8 |
+| fenologia_anual.csv | ndvi_max_maiz_p50 | Como ndvi_max_maiz, desde ndvi_maiz_p50 (CDL >= 50 %) | adim. | Derivada de MOD13Q1 | F03 |  |  | (sin medir: falta correr process.py con las columnas nuevas) |
+| fenologia_anual.csv | ndvi_max_soja_p50 | Como ndvi_max_soja, desde ndvi_soja_p50 (CDL >= 50 %) | adim. | Derivada de MOD13Q1 | F03 |  |  | (sin medir: falta correr process.py con las columnas nuevas) |
 
 ## Fuentes y acceso
 
@@ -86,6 +92,12 @@ Paquete `vegetacion` de Field Shift (CLAUDE.md §6.3): MODIS por condado del Cor
   promedio a la grilla MODIS de cada tesela. Un píxel MODIS cuenta si >= 75 % de su área es del
   cultivo de ese año (umbral pedido para 250 m, aplicado al píxel del overview de ~927 m). Cache en
   `data/interim/vegetacion/frac_cultivos/` (se regenera si falta).
+- **Columnas `*_p50` (T130, esperan el OK de `para_decidir.md` #32):** `ndvi_maiz_p50`, `ndvi_soja_p50` y
+  `ndvi_max_maiz_p50`, `ndvi_max_soja_p50` repiten el mismo cálculo con umbral de pureza de 50 %
+  (`UMBRAL_CULTIVO_P50` en `src/vegetacion/process.py`). Se agregan **además** de las de 75 %, al final de
+  cada archivo, sin cambiar las que ya existen. Con 50 % la señal mezcla hasta la mitad de otros usos del
+  suelo (otros cultivos, pastura, monte): ganan cobertura (sobre todo en OH) a costa de pureza. No mezclar
+  las dos versiones como si fueran la misma variable.
 - `ndvi_max_maiz`/`ndvi_max_soja`: máximo de los compuestos del año que pasan el filtro (sin
   suavizar), solo si hay >= 10 compuestos con dato en el año.
 - `anio` es el año calendario de la fecha (16d) o del mes (mensual). La fecha del compuesto es su
@@ -211,7 +223,9 @@ cultivo dentro del píxel. Pasa lo siguiente:
 No es un error: es el efecto del umbral documentado. Pero el modelo va a tener mucho menos `ndvi_maiz`
 en OH que en IA. Si se usa el NDVI por cultivo como variable, conviene filtrar o ponderar por estado.
 
-**Propuesta, sin aplicar: umbral del 50 %.** No se pudo medir cuántos condado-fechas se ganarían:
+**Umbral del 50 %: código listo en T130, espera el OK de `para_decidir.md` #32.** `process.py` ya escribe
+`ndvi_maiz_p50`, `ndvi_soja_p50`, `ndvi_max_maiz_p50` y `ndvi_max_soja_p50` (ver Supuestos), pero los CSV
+publicados todavía no las tienen y la ganancia de cobertura sigue sin medirse. No se pudo medir cuántos condado-fechas se ganarían:
 esta máquina no tiene las máscaras del CDL de OH, NE ni MN (`data/reference/mascara_<cultivo>_<anio>.tif`)
 ni los compuestos de MOD13Q1 de esos estados. Para medirlo, en la máquina que tenga esos datos:
 

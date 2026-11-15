@@ -4,6 +4,7 @@ No cambian src/common/: usan un condados.csv inventado de dos estados nuevos (Ne
 y CSV chicos inventados. Los valores son de prueba, no son datos reales.
 
 Lo que no sirve para los estados nuevos se marca `xfail` (expectedFailure) y se explica en la prueba.
+La prueba de la columna toda con (D)/(Z) dejó de ser xfail en T144 (cambio en src/common/validacion.py).
 """
 from __future__ import annotations
 
@@ -147,8 +148,9 @@ PROD = "fips,anio,cultivo,rend_bu_ac,flag_nass\n"
 
 
 @pytest.mark.parametrize("cultivo,rend", [
-    ("maiz", "20"), ("maiz", "20.0"), ("maiz", "300"), ("maiz", "300.0"),
-    ("soja", "5"), ("soja", "5.0"), ("soja", "100"), ("soja", "100.0"),
+    ("maiz", "2"), ("maiz", "2.0"), ("maiz", "300"), ("maiz", "300.0"),
+    ("soja", "2"), ("soja", "2.0"), ("soja", "100"), ("soja", "100.0"),
+    ("trigo_invierno", "5"), ("trigo_invierno", "130.0"), ("avena", "2"), ("avena", "200.0"),
 ])
 def test_rendimiento_en_el_borde_se_acepta(repo_falso, cultivo, rend):
     p = _csv(repo_falso, PROD + f"20055,2023,{cultivo},{rend},\n")
@@ -156,7 +158,8 @@ def test_rendimiento_en_el_borde_se_acepta(repo_falso, cultivo, rend):
 
 
 @pytest.mark.parametrize("cultivo,rend", [
-    ("maiz", "19.9"), ("maiz", "300.1"), ("soja", "4.9"), ("soja", "100.1"),
+    ("maiz", "1.9"), ("maiz", "300.1"), ("soja", "1.9"), ("soja", "100.1"),
+    ("trigo_invierno", "4.9"), ("trigo_invierno", "130.1"), ("avena", "1.9"), ("avena", "200.1"),
 ])
 def test_rendimiento_fuera_del_borde_se_rechaza(repo_falso, cultivo, rend):
     p = _csv(repo_falso, PROD + f"31109,2023,{cultivo},{rend},\n")
@@ -175,9 +178,45 @@ def test_rendimientos_de_kansas_secano_y_nebraska_riego(repo_falso):
 
 
 def test_rango_solo_se_aplica_al_cultivo_que_corresponde(repo_falso):
-    # 3 bu/ac no es válido para soja, pero el trigo no tiene rango en validar_csv: no se marca.
-    p = _csv(repo_falso, PROD + "20055,2023,trigo_invierno,3.0,\n")
+    # 3 bu/ac no es válido para trigo, pero sí para soja; 250 no es válido para soja, sí para maíz.
+    p = _csv(repo_falso, PROD + "20055,2023,soja,3.0,\n20055,2023,maiz,250.0,\n")
     assert validar_csv(p) == []
+    p = _csv(repo_falso, PROD + "20055,2023,trigo_invierno,3.0,\n")
+    assert _hay(validar_csv(p), "rend_bu_ac de trigo_invierno: 1 valores fuera")
+
+
+# Valores reales de la encuesta NASS por condado (qs.crops_20261114, T145).
+@pytest.mark.parametrize("cultivo,rend", [
+    ("maiz", "4.5"),             # Pennington SD 2002
+    ("soja", "2.9"),             # Pennington SD 2003
+    ("trigo_invierno", "8.7"),   # Kimball NE 2022
+    ("avena", "5.0"),            # Dundy NE 2000
+    ("maiz", "253.6"), ("soja", "80.4"), ("trigo_invierno", "117.8"), ("avena", "133.6"),
+])
+def test_extremos_reales_de_nass_se_aceptan(repo_falso, cultivo, rend):
+    p = _csv(repo_falso, PROD + f"31109,2002,{cultivo},{rend},\n")
+    assert validar_csv(p) == []
+
+
+SIN = "fips,anio,cultivo,sup_cosechada_ac,produccion_bu,rend_bu_ac,flag_nass\n"
+
+
+def test_rendimiento_cero_sin_cosecha_se_acepta(repo_falso):
+    # NASS publica 0 bu/ac en condados de SD sin cosecha de grano (Lawrence 2000-2006).
+    p = _csv(repo_falso, SIN + "31109,2003,maiz,,,0,\n31109,2003,avena,0,0,0.0,\n")
+    assert validar_csv(p) == []
+
+
+def test_rendimiento_cero_con_cosecha_se_rechaza(repo_falso):
+    p = _csv(repo_falso, SIN + "31109,2003,maiz,1200,,0,\n31109,2003,avena,,500,0,\n")
+    errores = validar_csv(p)
+    assert _hay(errores, "rend_bu_ac de maiz: 1 valores fuera")
+    assert _hay(errores, "rend_bu_ac de avena: 1 valores fuera")
+
+
+def test_rendimiento_cero_sin_columnas_de_cosecha_se_rechaza(repo_falso):
+    p = _csv(repo_falso, PROD + "31109,2003,maiz,0,\n")
+    assert _hay(validar_csv(p), "rend_bu_ac de maiz: 1 valores fuera")
 
 
 # ---------------------------------------------------------------- faltantes y flag_nass
@@ -213,10 +252,30 @@ def test_decimal_con_coma_se_rechaza(repo_falso):
     assert _hay(validar_csv(p), "decimales con coma")
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "Si TODOS los valores de una columna numérica son (D) o (Z) (un archivo chico de un estado con "
-    "todos los condados ocultos), validar_csv() la toma por columna de texto y no avisa. "
-    "Ver 'Para decidir' en el PR de T046."))
 def test_columna_numerica_toda_con_codigo_nass_se_rechaza(repo_falso):
+    # Antes era xfail: si TODOS los valores eran (D)/(Z), validar_csv() la tomaba por columna de
+    # texto. Desde T144 (para_decidir #25) las columnas numéricas se reconocen por el nombre.
     p = _csv(repo_falso, PROD + "20055,2023,avena,(D),(D)\n20161,2023,avena,(D),(D)\n")
-    assert _hay(validar_csv(p), "rend_bu_ac")
+    errores = validar_csv(p)
+    assert _hay(errores, "rend_bu_ac: hay valores no numéricos (es numérica por su nombre)")
+
+
+@pytest.mark.parametrize("col", ["rend_bu_ac", "sup_cosechada_ac", "produccion_bu", "prec_jul_mm",
+                                 "tmax_c", "pct_maiz", "doy_pico", "dias_tmax_gt35", "precio_usd_bu",
+                                 "sm_rootzone_m3m3", "elevacion_media_m", "rend_kgha"])
+def test_columna_numerica_por_nombre_con_texto_avisa(repo_falso, col):
+    p = _csv(repo_falso, f"fips,anio,{col}\n20055,2023,(Z)\n20161,2023,sin dato\n")
+    assert _hay(validar_csv(p), f"{col}: hay valores no numéricos")
+
+
+@pytest.mark.parametrize("col", ["rend_bu_ac", "tmax_c", "prec_jul_mm"])
+def test_columna_numerica_toda_vacia_pasa(repo_falso, col):
+    # (D)/(Z) bien convertidos a vacío: la columna entera vacía no es un error.
+    p = _csv(repo_falso, f"fips,anio,{col}\n20055,2023,\n20161,2023,\n")
+    assert validar_csv(p) == []
+
+
+@pytest.mark.parametrize("col", ["clase_textural_usda", "drenaje_dominante", "grupo_hidrologico", "fuente"])
+def test_columna_de_texto_sigue_pasando(repo_falso, col):
+    p = _csv(repo_falso, f"fips,{col}\n20055,franco\n20161,A/D\n")
+    assert validar_csv(p) == []

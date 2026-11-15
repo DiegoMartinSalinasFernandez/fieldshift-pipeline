@@ -2,8 +2,9 @@
 
 Salidas (data/processed/cultivos/):
 - produccion_anual.csv  (fips, anio, cultivo, ...) — encuesta por condado.
-- fenologia_estado.csv  (fips_estado, anio, cultivo, doy_50_*) — Crop Progress por estado.
-- practicas_censo.csv   (fips, anio_censo, pct_*) — Censo Agropecuario 2012/2017/2022.
+- fenologia_estado.csv  (fips_estado, anio, cultivo, doy_50_*, flag_hueco_50) — Crop Progress por estado
+  (maíz, soja, avena y trigo de invierno; ver src/cultivos/fenologia.py).
+- practicas_censo.csv   (fips, anio_censo, pct_*, flag_nass) — Censo Agropecuario 2012/2017/2022.
 
 Paso intermedio: cada archivo de raw se filtra una vez a los estados de config.yaml y se guarda
 en data/interim/cultivos/<archivo>.filtrado.tsv (se reusa si ya existe; es determinístico).
@@ -24,6 +25,8 @@ sys.path.insert(0, str(REPO))
 
 from src.common.config import cargar_config, estados_config  # noqa: E402
 from src.common.conversiones import acres_a_ha, bu_ac_a_kgha  # noqa: E402
+from src.cultivos.fenologia import fenologia_estado  # noqa: E402
+from src.cultivos.grilla import completar_desde_config  # noqa: E402
 
 RAW = REPO / "data" / "raw" / "cultivos" / "nass"
 INTERIM = REPO / "data" / "interim" / "cultivos"
@@ -125,51 +128,10 @@ def produccion(crops: pd.DataFrame) -> pd.DataFrame:
     return ancho[cols].sort_values(["fips", "anio", "cultivo"]).reset_index(drop=True)
 
 
-def doy_cruce_50(g: pd.DataFrame) -> float:
-    """Día del año en que el % acumulado cruza 50 (interpolación lineal entre semanas)."""
-    g = g.sort_values("doy")
-    x, y = g["doy"].to_numpy(float), g["pct"].to_numpy(float)
-    if len(y) == 0 or y.max() < 50:
-        return np.nan
-    i = int(np.argmax(y >= 50))
-    if i == 0:
-        return float(x[0]) if y[0] == 50 else np.nan
-    return round(float(x[i - 1] + (50 - y[i - 1]) * (x[i] - x[i - 1]) / (y[i] - y[i - 1])), 1)
-
-
 def fenologia(crops: pd.DataFrame) -> pd.DataFrame:
+    """fenologia_estado.csv: la lógica está en src/cultivos/fenologia.py (T135)."""
     cfg = cargar_config()["periodo"]
-    d = crops[(crops["SOURCE_DESC"] == "SURVEY") & (crops["AGG_LEVEL_DESC"] == "STATE")
-              & (crops["STATISTICCAT_DESC"] == "PROGRESS") & (crops["DOMAIN_DESC"] == "TOTAL")
-              & (crops["WEEK_ENDING"] != "")]
-    etapas = {  # columna -> {cultivo: (COMMODITY, UNIT_DESC)}
-        "doy_50_sembrado": {"maiz": ("CORN", "PCT PLANTED"), "soja": ("SOYBEANS", "PCT PLANTED")},
-        "doy_50_emergido": {"maiz": ("CORN", "PCT EMERGED"), "soja": ("SOYBEANS", "PCT EMERGED")},
-        "doy_50_floracion": {"maiz": ("CORN", "PCT SILKING"), "soja": ("SOYBEANS", "PCT BLOOMING")},
-        "doy_50_cosechado": {"maiz": ("CORN", "PCT HARVESTED"), "soja": ("SOYBEANS", "PCT HARVESTED")},
-    }
-    # el maíz se cosecha para grano o silaje: el % cosechado es el de grano
-    util = {("CORN", "PCT HARVESTED"): "GRAIN"}
-    filas = []
-    for col, por_cultivo in etapas.items():
-        for cultivo, (com, unidad) in por_cultivo.items():
-            dv = d[(d["COMMODITY_DESC"] == com) & (d["UNIT_DESC"] == unidad)
-                   & (d["UTIL_PRACTICE_DESC"] == util.get((com, unidad), "ALL UTILIZATION PRACTICES"))].copy()
-            if dv.empty:
-                continue
-            fecha = pd.to_datetime(dv["WEEK_ENDING"].str[:10])
-            dv["anio"] = fecha.dt.year
-            dv["doy"] = fecha.dt.day_of_year
-            dv["pct"] = valor(dv["VALUE"])[0]
-            dv = dv.dropna(subset=["pct"]).drop_duplicates(["STATE_FIPS_CODE", "anio", "doy"])
-            dv = dv[(dv["anio"] >= cfg["anio_inicio"]) & (dv["anio"] <= cfg["anio_fin"])]
-            for (est, anio), g in dv.groupby(["STATE_FIPS_CODE", "anio"]):
-                filas.append({"fips_estado": est.zfill(2), "anio": int(anio), "cultivo": cultivo,
-                              "col": col, "doy": doy_cruce_50(g)})
-    largo = pd.DataFrame(filas)
-    ancho = largo.pivot(index=["fips_estado", "anio", "cultivo"], columns="col", values="doy")
-    ancho = ancho.reindex(columns=list(etapas)).reset_index()
-    return ancho.sort_values(["fips_estado", "anio", "cultivo"]).reset_index(drop=True)
+    return fenologia_estado(crops, cfg["anio_inicio"], cfg["anio_fin"])
 
 
 # Censo: columna -> SHORT_DESC del numerador (acres). Denominador: tierra de cultivo total.
@@ -181,6 +143,30 @@ CENSO_NUM = {
     "pct_riego": ["AG LAND, IRRIGATED - ACRES"],
 }
 CENSO_DEN = "AG LAND, CROPLAND - ACRES"
+# Riego por cultivo (para_decidir #2, research censo_agropecuario.md): columna -> (numerador, denominador).
+CENSO_RIEGO = {
+    "pct_maiz_regado": ("CORN, GRAIN, IRRIGATED - ACRES HARVESTED", "CORN, GRAIN - ACRES HARVESTED"),
+    "pct_soja_regada": ("SOYBEANS, IRRIGATED - ACRES HARVESTED", "SOYBEANS - ACRES HARVESTED"),
+    "pct_cosechado_regado": ("AG LAND, CROPLAND, HARVESTED, IRRIGATED - ACRES",
+                             "AG LAND, CROPLAND, HARVESTED - ACRES"),
+}
+
+
+def _por_fips(c: pd.DataFrame, desc: str, campo: str) -> pd.Series:
+    return c[c["SHORT_DESC"] == desc].drop_duplicates("fips").set_index("fips")[campo]
+
+
+def flags_riego(c: pd.DataFrame, indice: list[str]) -> pd.Series:
+    """flag_nass de las columnas de riego por cultivo: `col=(D)` por cada valor oculto (numerador o
+    denominador), separados por `;`. Vacío si no hay ninguno."""
+    partes = pd.Series([[] for _ in indice], index=indice, dtype=object)
+    for col, (num, den) in CENSO_RIEGO.items():
+        fn = _por_fips(c, num, "flag").reindex(indice).fillna("")
+        fd = _por_fips(c, den, "flag").reindex(indice).fillna("")
+        cod = fn.where(fn != "", fd)
+        for f in cod[cod != ""].index:
+            partes[f].append(f"{col}={cod[f]}")
+    return partes.map(";".join)
 
 
 def practicas(censos: list[tuple[int, pd.DataFrame]]) -> pd.DataFrame:
@@ -189,8 +175,9 @@ def practicas(censos: list[tuple[int, pd.DataFrame]]) -> pd.DataFrame:
     for anio, c in censos:
         c = c[(c["AGG_LEVEL_DESC"] == "COUNTY") & (c["DOMAIN_DESC"] == "TOTAL")
               & (c["COUNTY_CODE"] != "998") & (c["YEAR"] == str(anio))]
+        num, flag = valor(c["VALUE"])
         c = c.assign(fips=c["STATE_FIPS_CODE"].str.zfill(2) + c["COUNTY_CODE"].str.zfill(3),
-                     num=valor(c["VALUE"])[0])
+                     num=num, flag=flag)
         den = c[c["SHORT_DESC"] == CENSO_DEN].drop_duplicates("fips").set_index("fips")["num"]
         res = pd.DataFrame(index=sorted(fips_ok))
         for col, descs in CENSO_NUM.items():
@@ -199,7 +186,12 @@ def practicas(censos: list[tuple[int, pd.DataFrame]]) -> pd.DataFrame:
                 if len(n):
                     break
             res[col] = (100 * n / den).reindex(res.index).round(2)
+        for col, (num_desc, den_desc) in CENSO_RIEGO.items():
+            n = _por_fips(c, num_desc, "num")
+            d = _por_fips(c, den_desc, "num")
+            res[col] = (100 * n / d).reindex(res.index).round(2)
         res = res.where((res >= 0) & (res <= 100))
+        res["flag_nass"] = flags_riego(c, list(res.index))
         res.insert(0, "anio_censo", anio)
         filas.append(res.rename_axis("fips").reset_index())
     return pd.concat(filas, ignore_index=True).sort_values(["fips", "anio_censo"]).reset_index(drop=True)
@@ -241,9 +233,11 @@ def mascara_agricola(zip_cdl: Path) -> None:
 
 
 CLASES = REPO / "data" / "reference" / "clases_cdl.csv"
-# grupo de cada clase del CDL que usa el proyecto (§6.2 del plan); el resto: otro
-GRUPOS_CDL = {1: "maiz", 5: "soja", 24: "trigo_invierno", 26: "doble_trigo_soja", 28: "avena",
-              36: "alfalfa", 37: "heno", 61: "barbecho", 176: "pastizal"}
+# grupo de cada clase del CDL que usa el proyecto (§6.2 del plan); el resto: otro.
+# 0, 27 y 58: T139 (docs/research/cdl_csb.md, para_decidir #19)
+GRUPOS_CDL = {0: "sin_dato", 1: "maiz", 5: "soja", 24: "trigo_invierno", 26: "doble_trigo_soja",
+              27: "centeno", 28: "avena", 36: "alfalfa", 37: "heno", 58: "trebol", 61: "barbecho",
+              176: "pastizal"}
 
 
 def clases_cdl(meta: Path) -> None:
@@ -555,7 +549,13 @@ def main() -> None:
     crops_raw = sorted(RAW.glob("qs.crops_*.txt.gz"))
     if crops_raw:
         crops = filtrar(crops_raw[-1])
-        produccion(crops).to_csv(OUT / "produccion_anual.csv", index=False, encoding="utf-8")
+        prod = completar_desde_config(produccion(crops))  # grilla completa (T138)
+        from src.cultivos.riego_nass import agregar_riego, chequear_coherencia  # T134
+        prod = agregar_riego(prod, crops)
+        incoherentes = chequear_coherencia(prod)
+        if len(incoherentes):
+            print(f"aviso: {len(incoherentes)} filas con riego + secano != sembrada total (> 1 %)")
+        prod.to_csv(OUT / "produccion_anual.csv", index=False, encoding="utf-8")
         fenologia(crops).to_csv(OUT / "fenologia_estado.csv", index=False, encoding="utf-8")
         print("produccion_anual.csv y fenologia_estado.csv listos")
     censos = []

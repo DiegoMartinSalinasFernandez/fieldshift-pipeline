@@ -1,0 +1,6 @@
+codigo_fsa,nombre_fsa,fips,condado_census,fuente,confianza
+19156,West Pottawattamie,19155,Pottawattamie,docs/research/siembra_prevenida.md §4 (archivo FSA 2025),media
+27112,West Otter Tail,27111,Otter Tail,docs/research/siembra_prevenida.md §4 (archivo FSA 2025),media
+27120,West Polk,27119,Polk,docs/research/siembra_prevenida.md §4 (archivo FSA 2025),media
+27138,South St. Louis,27137,St. Louis,docs/research/siembra_prevenida.md §4 (archivo FSA 2025),media
+39094,East Lucas,39095,Lucas,docs/research/siembra_prevenida.md §4 (archivo FSA 2025),media

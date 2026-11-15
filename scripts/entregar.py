@@ -14,12 +14,16 @@ Además arma `<etiqueta>_base.zip` (también con su .sha256), con la referencia 
                                     filtrado a los estados del release si trae más
   data/reference/condados.csv       las mismas filas, con centroides y área
   data/reference/anios.csv
+  data/reference/cdl_precision.csv  precisión del CDL por estado, año y clase, solo los estados del release
+                                    (si existe; la arma src/cultivos/precision_cdl.py)
   README.md                         qué trae el zip
 Si falta data/reference/condados.gpkg, avisa y sigue sin el zip de base. Los zips de paquete no cambian.
 
 Las notas del release se reescriben en cada entrega: la lista de paquetes que tiene el release y la declaración
 de uso de IA en inglés y en castellano, leída del README.md en ese momento (secciones "## Use of AI" y
-"## Uso de IA"), para que no se desincronice.
+"## Uso de IA"), para que no se desincronice. Si algún paquete del release tiene una atribución obligatoria
+(Copernicus en `lotes`, CC BY 4.0 de CoCoRaHS en `validacion`), las notas suman la sección "## Attribution /
+Atribución" con el texto de `src/common/atribuciones.py`, el mismo que va en el data card.
 
 Uso:
   python scripts/entregar.py                     # todos los paquetes de data/processed/
@@ -42,6 +46,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
+from src.common.atribuciones import seccion_release  # noqa: E402
 from src.common.config import estados_elegidos  # noqa: E402
 
 PROC = REPO / "data" / "processed"
@@ -125,7 +130,7 @@ los paquetes del release `{etiqueta}` ({estados}).
   ({n} counties / condados).
 - `data/reference/anios.csv`: season and previous-winter windows per year / ventanas de temporada e invierno
   previo por año.
-
+{precision}
 Published with `scripts/entregar.py` (see `MAQUINAS.md`) / publicado con `scripts/entregar.py`.
 """
 
@@ -181,11 +186,28 @@ def armar_zip_base(etiqueta: str, estados: list[str]) -> Path | None:
             n = len(sub)
         if anios.exists():
             zf.write(anios, "data/reference/anios.csv")
-        zf.writestr("README.md", README_BASE.format(etiqueta=etiqueta, estados=", ".join(estados), n=n)
-                    .encode("utf-8"))
+        precision = ""
+        prec = ref / "cdl_precision.csv"
+        if prec.exists():                                            # T133: opcional, filtrada a los estados
+            tp = pd.read_csv(prec, dtype=str, keep_default_na=False)
+            if "estado" not in tp.columns:
+                sys.exit("data/reference/cdl_precision.csv: falta la columna estado")
+            tp = tp[tp["estado"].isin(pedidos)]
+            zf.writestr("data/reference/cdl_precision.csv",
+                        tp.to_csv(index=False, lineterminator="\n").encode("utf-8"))
+            precision = README_PRECISION.format(n_prec=len(tp))
+        zf.writestr("README.md", README_BASE.format(etiqueta=etiqueta, estados=", ".join(estados), n=n,
+                                                    precision=precision).encode("utf-8"))
     _escribir_sha(z)
     print(f"{z.relative_to(REPO)}: {z.stat().st_size / 1e6:.1f} MB, {n} condados")
     return z
+
+
+README_PRECISION = """- `data/reference/cdl_precision.csv`: Cropland Data Layer accuracy (producer's and user's, %) by state, year
+  and CDL class, from the NASS accuracy assessments / precisión del CDL (del productor y del usuario, %) por
+  estado, año y clase, de las evaluaciones de NASS ({n_prec} rows / filas; `src/cultivos/precision_cdl.py`,
+  `docs/datasets/cultivos.md`).
+"""
 
 
 SECCIONES_IA = {"en": "## Use of AI", "es": "## Uso de IA"}
@@ -228,7 +250,7 @@ def tiene_base(etiqueta: str, nombres: list[str]) -> bool:
 
 
 def notas_release(estados: list[str], paquetes: list[str], readme: str, base: str | None = None) -> str:
-    """Notas del release en inglés y castellano: paquetes y declaración de uso de IA tomada del README.
+    """Notas del release en inglés y castellano: paquetes, atribuciones obligatorias y declaración de uso de IA.
 
     `base`: nombre del asset `<etiqueta>_base.zip` si el release lo tiene.
     """
@@ -242,6 +264,7 @@ def notas_release(estados: list[str], paquetes: list[str], readme: str, base: st
             + (f"## Reference / Referencia\n\n`{base}`: county polygons (`condados.gpkg`, EPSG:4326), "
                f"`condados.csv` and `anios.csv` / polígonos de los condados, `condados.csv` y `anios.csv`.\n\n"
                if base else "") +
+            seccion_release(paquetes) +
             f"## Use of AI\n\n{ia_en}\n\n"
             f"## Uso de IA\n\n{ia_es}\n")
 

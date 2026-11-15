@@ -7,6 +7,8 @@ polígonos de los condados candidatos a data/raw/lotes/csb/ (filtro espacial en 
 GeoParquet que sugiere el plan). El zip completo no entra en raw: es una caché regenerable.
 
 Uso: python src/lotes/download.py [csb]
+     python src/lotes/download.py seetiledrain       # recortes de SEETileDrain por rangos HTTP (T131)
+     python src/lotes/download.py seetiledrain_zip   # idem, bajando antes el zip entero (3,1 GB)
 """
 from __future__ import annotations
 
@@ -20,6 +22,8 @@ from pathlib import Path
 import requests
 
 RAIZ = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(RAIZ))
+from src.common.manifest import asegurar_manifest  # noqa: E402
 INTERIM = RAIZ / "data" / "interim" / "lotes"
 RAW = RAIZ / "data" / "raw" / "lotes"
 MANIFEST = RAIZ / "manifest.csv"
@@ -42,12 +46,6 @@ def log(msg: str) -> None:
     print(linea, flush=True)
     with open(INTERIM / "download.log", "a", encoding="utf-8") as f:
         f.write(linea + "\n")
-
-
-def asegurar_manifest(man: Path) -> None:
-    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
-    if not man.exists() or man.stat().st_size == 0:
-        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
 
 
 def upsert_manifest(filas: list[dict]) -> None:
@@ -294,7 +292,22 @@ def bajar_agtile() -> None:
                       "fecha_descarga": dt.date.today().isoformat(), "consulta_o_url": AGTILE_URL}])
 
 
+def bajar_seetiledrain(completo: bool = False) -> None:
+    """SEETileDrain (T131, para_decidir #5): recortes por lote a data/raw/lotes/seetiledrain/. No corre por
+    defecto: hay que pedir el paso `seetiledrain` (rangos HTTP) o `seetiledrain_zip` (zip entero, 3,1 GB).
+    Necesita data/processed/lotes/lotes.gpkg (los lotes los elige process.py)."""
+    import drenaje
+    gp = RAIZ / "data" / "processed" / "lotes" / "lotes.gpkg"
+    if not gp.exists():
+        log("SEETileDrain: falta lotes.gpkg; correr antes process.py")
+        return
+    drenaje.bajar(upsert_manifest, drenaje.recuadros_lotes(gp), completo=completo, log=log)
+
+
 def main(pasos: list[str]) -> None:
+    if "seetiledrain" in pasos or "seetiledrain_zip" in pasos:
+        bajar_seetiledrain(completo="seetiledrain_zip" in pasos)
+        return
     if not pasos or "drenaje" in pasos:
         bajar_agtile()
         if pasos == ["drenaje"]:

@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
+import yaml
 
 REPO = Path(__file__).resolve().parents[1]
 if str(REPO) not in sys.path:
@@ -226,7 +227,7 @@ def test_validar_csv_fuera_de_rango(repo_falso, col, valor):
     assert any(col in e and "rango" in e for e in errores), errores
 
 
-@pytest.mark.parametrize("cultivo, rend", [("maiz", "15"), ("maiz", "310"), ("soja", "4"), ("soja", "101")])
+@pytest.mark.parametrize("cultivo, rend", [("maiz", "1.5"), ("maiz", "310"), ("soja", "1"), ("soja", "101")])
 def test_validar_csv_rendimiento_fuera_de_rango(repo_falso, cultivo, rend):
     p = _csv(repo_falso, f"fips,anio,cultivo,rend_bu_ac\n39049,2022,{cultivo},{rend}\n")
     errores = validar_csv(p)
@@ -295,18 +296,33 @@ def test_cargar_config_estado_desconocido(monkeypatch):
         cargar_config()
 
 
-def test_cargar_config_cache_ignora_cambio_de_variable(monkeypatch):
-    """cargar_config() está cacheada: cambiar FIELDSHIFT_ESTADOS en el mismo proceso no la recarga.
+def test_cargar_config_recarga_si_cambia_la_variable(monkeypatch):
+    """FIELDSHIFT_ESTADOS es parte de la clave de la caché (para_decidir #14, tarea T144).
 
-    No es un error para los scripts (leen la variable una sola vez), pero quien cambie la variable
-    en un mismo proceso (pruebas, notebooks) tiene que llamar a cargar_config.cache_clear().
+    Cambiar la variable dentro de un mismo proceso (un notebook) recarga la configuración sin
+    llamar a cache_clear(). Sin red: solo lee config/config.yaml.
     """
     monkeypatch.setenv(VAR_ESTADOS, "OH")
     assert list(cargar_config()["zona"]["estados"]) == ["OH"]
     monkeypatch.setenv(VAR_ESTADOS, "MN")
-    assert list(cargar_config()["zona"]["estados"]) == ["OH"]
-    cargar_config.cache_clear()
     assert list(cargar_config()["zona"]["estados"]) == ["MN"]
+    monkeypatch.setenv(VAR_ESTADOS, "oh")   # mismas letras en minúscula: misma clave
+    assert list(cargar_config()["zona"]["estados"]) == ["OH"]
+    monkeypatch.delenv(VAR_ESTADOS)
+    with open(cfg_mod.CONFIG, encoding="utf-8") as f:
+        todos = yaml.safe_load(f)["zona"]["estados"]
+    assert list(cargar_config()["zona"]["estados"]) == list(todos)
+    assert list(estados_config()) == list(cargar_config()["zona"]["estados"])
+
+
+def test_cargar_config_sigue_cacheada(monkeypatch):
+    """Con la misma variable devuelve el mismo objeto, y cache_clear() fuerza la relectura."""
+    monkeypatch.setenv(VAR_ESTADOS, "OH,MN")
+    a = cargar_config()
+    assert cargar_config() is a
+    cargar_config.cache_clear()
+    b = cargar_config()
+    assert b is not a and b == a
 
 
 def test_ruta_config_es_del_repo():

@@ -11,7 +11,8 @@ import pandas as pd
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-from src.zona_texto import lista_estados  # noqa: E402
+from src.cultivos.riego_nass import COLS_DATA_CARD as RIEGO_COLS, SECCION_DATA_CARD as RIEGO_SECCION  # noqa: E402  T134
+from src.common.zona_texto import lista_estados  # noqa: E402
 OUT = REPO / "data" / "processed" / "cultivos"
 CARD = REPO / "docs" / "datasets" / "cultivos.md"
 
@@ -19,6 +20,7 @@ QS = "USDA NASS Quick Stats (SURVEY, condado)"
 CP = "USDA NASS Quick Stats Crop Progress (SURVEY, estado)"
 CE = "USDA NASS Censo Agropecuario (Quick Stats CENSUS)"
 D = "Derivada de NASS Quick Stats"
+LANID = "LANID (Xie y Lark, Zenodo v3.0; USGS 2018-20)"
 CDL = "USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025)"
 
 COLS = {
@@ -31,12 +33,17 @@ COLS = {
         ("sup_sembrada_ha", "sup_sembrada_ac × 0,4047 (acres_a_ha)", "ha", D, "Y01"),
         ("ratio_cosechada", "sup_cosechada_ac / sup_sembrada_ac", "fracción", D, "Y05"),
         ("flag_nass", "Código original de NASS cuando el valor está oculto: (D), (Z), (NA)… (separados por ;)", "texto", QS, ""),
+        ("fila_nass", "1 = la fila viene de NASS; 0 = NASS no publicó ese condado, año y cultivo y la fila se completó vacía (T138)", "0/1", D, ""),
     ],
     "fenologia_estado.csv": [
         ("doy_50_sembrado", "Día del año en que se cruza el 50 % sembrado (PCT PLANTED, interpolado)", "día del año", CP, "CT03"),
         ("doy_50_emergido", "Día del año en que se cruza el 50 % emergido (PCT EMERGED)", "día del año", CP, ""),
         ("doy_50_floracion", "Día del año del 50 % en floración (maíz PCT SILKING, soja PCT BLOOMING)", "día del año", CP, "CT05"),
         ("doy_50_cosechado", "Día del año del 50 % cosechado (maíz: grano)", "día del año", CP, "CT04"),
+        ("doy_50_espigado", "Avena y trigo de invierno: día del año del 50 % espigado (PCT HEADED)", "día del año", CP, ""),
+        ("doy_50_sembrado_otono", "Trigo de invierno: día del año (de anio − 1) del 50 % sembrado en otoño", "día del año", CP, ""),
+        ("doy_50_emergido_otono", "Trigo de invierno: día del año (de anio − 1) del 50 % emergido en otoño", "día del año", CP, ""),
+        ("flag_hueco_50", "Etapas (separadas por ;) cuyo 50 % se interpoló entre semanas separadas por más de 14 días", "texto", D, ""),
     ],
     "rotacion_anual.csv": [
         ("pct_maiz", "% del área agrícola del condado con maíz (CDL 1)", "%", CDL, "R04"),
@@ -65,9 +72,19 @@ COLS = {
         ("pct_labranza_cero", "CONSERVATION TILLAGE, NO-TILL / AG LAND, CROPLAND × 100", "%", CE, ""),
         ("pct_drenaje_tile", "DRAINED BY TILE / AG LAND, CROPLAND × 100", "%", CE, ""),
         ("pct_riego", "AG LAND, IRRIGATED / AG LAND, CROPLAND × 100", "%", CE, ""),
+        ("pct_maiz_regado", "CORN, GRAIN, IRRIGATED / CORN, GRAIN - ACRES HARVESTED × 100", "%", CE, ""),
+        ("pct_soja_regada", "SOYBEANS, IRRIGATED / SOYBEANS - ACRES HARVESTED × 100", "%", CE, ""),
+        ("pct_cosechado_regado", "AG LAND, CROPLAND, HARVESTED, IRRIGATED / AG LAND, CROPLAND, HARVESTED × 100", "%", CE, ""),
+        ("flag_nass", "Valores ocultos de las tres columnas de riego por cultivo: `columna=(D)` separados por `;` (numerador o denominador)", "texto", CE, ""),
+    ],
+    "riego_anual.csv": [
+        ("frac_riego_lanid", "Píxeles agrícolas regados según LANID / píxeles agrícolas con dato", "fracción", LANID, ""),
+        ("frac_maiz_regado", "Píxeles de maíz del CDL regados según LANID / con dato", "fracción", LANID, ""),
+        ("frac_soja_regada", "Píxeles de soja del CDL regados según LANID / con dato", "fracción", LANID, ""),
+        ("frac_pixeles_validos", "Píxeles agrícolas con dato de LANID / píxeles agrícolas", "fracción", LANID, ""),
     ],
 }
-TIEMPO = {"produccion_anual.csv": "anio", "fenologia_estado.csv": "anio", "rotacion_anual.csv": "anio",
+TIEMPO = {"riego_anual.csv": "anio", "produccion_anual.csv": "anio", "fenologia_estado.csv": "anio", "rotacion_anual.csv": "anio",
           "rotacion_secuencia.csv": "ventana", "practicas_censo.csv": "anio_censo"}
 
 TEXTO = """# Data card — cultivos
@@ -124,7 +141,7 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
   por NASS (`metadata_wa23.htm`, el único archivo de metadatos por estado accesible en la
   página de NASS al momento de bajar; la tabla de clases es nacional). `grupo` es la
   clasificación del proyecto (maiz, soja, trigo_invierno, doble_trigo_soja, avena, alfalfa,
-  heno, barbecho, pastizal; el resto `otro`).
+  heno, barbecho, pastizal, centeno, trebol y sin_dato para el 0; el resto `otro`).
 
 - **CDL anual** (`rotacion_anual.csv`): CropScape no respondió y la descarga nacional pesa
   ~1,8 GB por año, así que se usan las teselas COG de 90 km × 90 km (EPSG:5070, 30 m) de la
@@ -181,6 +198,75 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
   dentro de los condados. Se arman con las teselas del CDL de raw para los años completos;
   `process.py` no rehace las que ya existen.
 
+## Riego desde LANID (`riego_anual.csv`, T127)
+
+Fuente: **LANID** (Landsat-based Irrigation Dataset; Xie, Gibbs y Lark), mapas binarios de riego de
+30 m para todo EE.UU. (1 = regado, 0 = no regado, según `Metadata.docx`):
+- versión 3.0 de Zenodo (DOI 10.5281/zenodo.5548555, CC BY 4.0): `lanid1997-2003.zip`,
+  `lanid2004-2010.zip`, `lanid2011-2017.zip` (un `lanidYYYY.tif` por año) e `irrFreqAndChange.zip`
+  (`maxIrrExt`: regado al menos una vez en 1997–2017), ~1,7 GB;
+- extensión del USGS (Martin y Brandt, 2024, DOI 10.5066/P9YWR0OJ): `lanid2018.tif`, `lanid2019.tif`,
+  `lanid2020.tif` y `maxIrrExt_0020.tif`, en ScienceBase. ScienceBase responde con un desafío de
+  Cloudflare a los clientes automáticos: si `riego.py bajar` no los puede bajar, avisa y sigue; se
+  bajan a mano a `data/raw/cultivos/lanid/` y se registran con `riego.py registrar`.
+
+Bajada y proceso: `python src/cultivos/riego.py bajar` y `python src/cultivos/riego.py procesar`
+(necesita `data/reference/mascara_agricola.tif`, `condados.gpkg` y, para maíz y soja, las máscaras
+`mascara_maiz_<anio>.tif` / `mascara_soja_<anio>.tif` de `process.py`). Research:
+`docs/research/riego_mascaras.md` (T018) y `docs/research/riego_ne_ks.md`.
+
+| columna | descripcion | unidad | fuente |
+|---|---|---|---|
+| `frac_riego_lanid` | píxeles agrícolas (`mascara_agricola.tif`) regados según LANID del `anio` / píxeles agrícolas con dato de LANID | fracción 0–1 | LANID |
+| `frac_maiz_regado` | lo mismo dentro de `mascara_maiz_<anio>.tif` (maíz del CDL de ese año); vacío si no hay máscara de ese año o el condado no tiene maíz | fracción 0–1 | LANID + CDL |
+| `frac_soja_regada` | lo mismo dentro de `mascara_soja_<anio>.tif` | fracción 0–1 | LANID + CDL |
+| `frac_pixeles_validos` | píxeles agrícolas con dato de LANID / píxeles agrícolas del condado | fracción 0–1 | LANID |
+
+Además: `data/reference/mascara_riego_max.tif` (1 bit, grilla de `mascara_agricola.tif`): 1 = regado
+al menos una vez según `maxIrrExt_0020` (2000–2020) o, si no está, `maxIrrExt` (1997–2017). Es para
+que `vegetacion` calcule `ndvi_secano` en otra tarea.
+
+Supuestos:
+- LANID se lleva a la grilla de `mascara_agricola.tif` (EPSG:5070, 30 m) con vecino más cercano;
+  si ya está alineado, es una copia. LANID se usa tal cual, sin recalibrarlo contra NASS.
+- En LANID el 0 es "no regado": si el TIF declara `nodata = 0`, no se respeta. Fuera de la extensión
+  del raster el píxel no es válido (baja `frac_pixeles_validos`).
+- Solo hay filas para los años que cubre LANID (2000–2017 con Zenodo; 2000–2020 si están los TIF
+  del USGS). Después no hay producto anual: las filas no existen (no son "sin riego"). Para
+  2021–2025 quedan el Censo 2022 (`pct_riego` de `practicas_censo.csv`) o la máscara máxima; lo
+  decide ML.
+- `frac_maiz_regado` y `frac_soja_regada` solo existen desde que hay CDL (2008).
+- Condados sin píxeles agrícolas: sin fila.
+- La máscara máxima como proxy del riego después de 2020 es un supuesto: los pivotes nuevos quedan
+  como secano.
+
+Problemas conocidos:
+- En el oeste LANID fijó sus umbrales de entrenamiento con el área regada del Censo por condado:
+  comparar con el Censo no es un control independiente allí. El control independiente es la
+  superficie sembrada `IRRIGATED / ALL` de NASS por cultivo (2000–2018, NE y KS).
+- `pct_riego` del Censo usa como denominador `AG LAND, CROPLAND` (incluye pasturas en rotación) y
+  como numerador toda la tierra regada (incluye pasturas regadas); `frac_riego_lanid` usa la
+  máscara agrícola del CDL. No son iguales por definición.
+- **Prueba en Nebraska 2017** (T127; recorte con una máscara agrícola provisoria hecha con las
+  clases agrícolas del CDL 2017, no con la Cultivated Layer; 93 condados, 2011–2017 en 37 s):
+  - `frac_maiz_regado` contra NASS: encuesta, maíz sembrado `IRRIGATED / ALL`, n = 49, r = 0,973,
+    sesgo −0,05 y MAE 0,06; Censo 2017, maíz grano cosechado `IRRIGATED / ALL`, n = 87, r = 0,970,
+    sesgo −0,03 y MAE 0,05.
+  - `frac_soja_regada` **sobreestima**: contra la encuesta (n = 22) r = 0,92 pero sesgo +0,20; contra
+    el Censo 2017 (n = 77) r = 0,92 y sesgo +0,16 (mediana 0,81 contra 0,54). Ordena bien los
+    condados, pero el nivel de la soja regada de LANID no es confiable. No se corrigió: ML decide
+    si usarla.
+  - `frac_riego_lanid`: mediana de los condados 0,49 (2012) a 0,60 (2015); `frac_pixeles_validos` = 1
+    en todos (LANID cubre todo el estado y no declara nodata).
+- La grilla de LANID está alineada con la del CDL (EPSG:5070, 30 m; origen −2354955, 3165615, a un
+  número entero de píxeles del origen del CDL), así que el vecino más cercano no mueve píxeles.
+- **Prueba completa con Zenodo en NE** (2000–2017, 93 condados, 1674 filas): mediana de
+  `frac_riego_lanid` entre 0,44 (2002) y 0,60 (2015). `mascara_riego_max.tif` (`maxIrrExt` 1997–2017)
+  se arma en 6 s: marca el 73 % de los píxeles agrícolas de NE como regados alguna vez (es el máximo de
+  21 años, no un año típico), y el 15 % de sus píxeles regados cae fuera de la máscara agrícola
+  (pasturas y heno regados del oeste). La máscara cubre todo el rectángulo de la grilla, también
+  fuera de los condados: hay que cruzarla con `mascara_agricola.tif` al usarla.
+
 ## Problemas conocidos
 
 - **CDL de dos accesos**: 2008-2021 de Planetary Computer y 2022-2025 de CroplandCROS (ver
@@ -195,6 +281,107 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
   Las transiciones lo corrigen con su denominador (ver Supuestos), pero los % de área
   (`pct_maiz`, `pct_soja`, …) y las máscaras `mascara_maiz_<anio>` / `mascara_soja_<anio>`
   de esos años pueden diferir algo de lo que daría un CDL de 30 m.
+
+## Riego por cultivo del Censo (T132)
+
+- `pct_maiz_regado`, `pct_soja_regada` y `pct_cosechado_regado` de `practicas_censo.csv` salen del Censo
+  2012, 2017 y 2022 (`DOMAIN_DESC=TOTAL`, nivel condado), con los `short_desc` de
+  `docs/research/censo_agropecuario.md`: numerador `CORN, GRAIN, IRRIGATED - ACRES HARVESTED`,
+  `SOYBEANS, IRRIGATED - ACRES HARVESTED` y `AG LAND, CROPLAND, HARVESTED, IRRIGATED - ACRES`; denominador, la
+  superficie cosechada total del mismo cultivo (`CORN, GRAIN - ACRES HARVESTED`,
+  `SOYBEANS - ACRES HARVESTED`) o de todo el cropland (`AG LAND, CROPLAND, HARVESTED - ACRES`), del mismo
+  condado y censo. A diferencia del resto de prácticas, estas tres sí existen por condado en 2012.
+- Son superficie **cosechada** regada, no sembrada: el maíz es grano (no incluye silaje).
+- Si el numerador o el denominador es `(D)`, `(Z)` u otro código oculto, la celda va vacía y `flag_nass`
+  guarda `columna=código` (varias separadas por `;`). `flag_nass` solo cubre estas tres columnas; las
+  cuatro anteriores (`pct_cobertura` … `pct_riego`) siguen sin flag, como antes.
+- Un condado sin fila de riego por cultivo queda vacío y sin flag: no se asume 0. En OH, MN, IA, IL e IN
+  faltan muchos condados (poco riego; ver research), en NE y KS casi todos tienen dato.
+- Porcentajes fuera de 0-100 (numerador mayor que el total) quedan vacíos, igual que las otras columnas.
+## Fenología de avena y trigo de invierno (T135)
+
+Pendiente del OK de `coordinacion/para_decidir.md` #8. Código: `src/cultivos/fenologia.py`.
+
+- `fenologia_estado.csv` suma las filas `cultivo = avena` (`OATS`; Crop Progress la informa en
+  OH, NE y MN, y en IA/IL/IN si viene en el archivo) y `cultivo = trigo_invierno` (`WHEAT` /
+  `CLASS_DESC=WINTER`; OH, NE y KS, no MN). Etapas: PLANTED, EMERGED, HEADED y HARVESTED, todas
+  con `UTIL_PRACTICE_DESC=ALL UTILIZATION PRACTICES` (supuesto: no se pudo mirar el archivo crudo
+  al escribir el código; si alguna etapa no aparece, revisar ese filtro).
+- Las filas y columnas de maíz y soja no cambian. Se agregan cuatro columnas al final, vacías
+  donde no corresponden:
+  - `doy_50_espigado`: 50 % espigado (HEADED) de avena y trigo. Para ellos `doy_50_floracion`
+    queda vacía (las dos etapas no son lo mismo).
+  - `doy_50_sembrado_otono` y `doy_50_emergido_otono`: solo trigo de invierno.
+  - `flag_hueco_50`: ver abajo.
+- **Año del trigo de invierno**: `anio` es el año de la **cosecha**, como en el resto del
+  proyecto. Las semanas de siembra y emergencia con `WEEK_ENDING` de agosto a diciembre van al
+  `anio` siguiente; sus días se guardan como día del año calendario del otoño (de `anio − 1`)
+  en las columnas `_otono`, para no mezclarlos con días de primavera ni usar días negativos
+  (el rango 1–366 y la coherencia sembrado ≤ emergido ≤ floración ≤ cosechado del spec siguen
+  valiendo). Para el trigo, `doy_50_sembrado` y `doy_50_emergido` quedan vacías. El año se
+  toma de `WEEK_ENDING` y no de `YEAR`, porque no se verificó qué `YEAR` pone Quick Stats a las
+  filas de otoño. La siembra del otoño de 2025 (cosecha 2026) queda fuera del período.
+- **`flag_hueco_50`**: lista de etapas (`sembrado`, `emergido`, `floracion`, `cosechado`,
+  `espigado`, `sembrado_otono`, `emergido_otono`, separadas por `;`) cuyo cruce del 50 % se
+  interpoló entre dos semanas con dato separadas por más de 14 días. Las semanas `(NA)` cuentan
+  como faltantes. Caso conocido: el cierre del gobierno federal de 2025, sin reportes de las
+  semanas del 5 de octubre al 9 de noviembre (cosecha de maíz y soja, siembra y emergencia del
+  trigo para 2026). Si el 50 % cae justo en una semana con dato, no se marca. Vacía si ninguna.
+- Avena de Nebraska: algunos años el primer reporte ya supera el 50 % (siembra y cosecha), y la
+  celda queda vacía, igual que en maíz y soja.
+- Fuente de las etapas por estado: `docs/research/crop_progress_estados_nuevos.md` (T019).
+## Clases 0, 27 y 58 del CDL (T139, para_decidir #19)
+
+`docs/research/cdl_csb.md` propone grupos propios para tres clases que en `clases_cdl.csv` estaban en `otro`.
+Los nombres oficiales son los de los metadatos del CDL que ya tenía la tabla:
+
+| Código | Nombre oficial | Grupo antes | Grupo ahora |
+|---|---|---|---|
+| 0 | Background | otro | `sin_dato` |
+| 27 | Rye | otro | `centeno` |
+| 58 | Clover/Wildflowers | otro | `trebol` |
+
+Los grupos también están en `GRUPOS_CDL` de `src/cultivos/process.py`, así no se pierden si `process.py` vuelve a
+generar la tabla desde los metadatos. `python -m src.cultivos.clases_extra --escribir` aplica los grupos sin
+cambiar nada más: conserva el fin de línea CRLF del archivo y falla si falta un código o si el nombre no coincide.
+
+**Qué cambia en los productos:**
+- `rotacion_anual.csv`, máscaras (`mascara_agricola.tif`, `mascara_maiz_<anio>.tif`, `mascara_soja_<anio>.tif`) y
+  `rotacion_secuencia.csv`: **nada**. Usan listas de códigos (`AGRICOLA`, `PCT_CLASES`, 1 y 5) o la Cultivated Layer,
+  no la columna `grupo`. 27 y 58 ya cuentan como área agrícola (códigos 1–61) y el 0 nunca entró al denominador.
+- `lotes` (`cultivo_px_anual.csv` y el resumen anual por lote): **sí**. La columna `cultivo` sale de `grupo`, así
+  que los píxeles de centeno o trébol pasan de `otro` a `centeno` o `trebol`, y `cultivo_principal` puede cambiar en
+  un lote donde el centeno era mayoría dentro de `otro`. El 0 ya iba vacío. Esta máquina no tiene datos de `lotes`
+  para medirlo; hay que volver a correr `src/lotes/process.py` después de unir.
+
+**Efecto medido** con `python -m src.cultivos.clases_extra --efecto data/raw/cultivos/cdl/teselas/*.tif --sumar`:
+las 69 teselas del CDL 2017 de KS y NE (198 condados completos, 459 millones de píxeles). Escenarios:
+- `actual`: como hoy.
+- `A_grupos` (la propuesta): solo cambia `grupo`. Las columnas nuevas `pct_centeno`, `pct_trebol` y
+  `frac_pixeles_validos` se calculan aparte y **no** se agregan a `rotacion_anual.csv` sin el OK del humano (es un
+  cambio de esquema).
+- `B_cobertura` (alternativa): 27 y 58 salen del área agrícola, como cultivos de cobertura o forraje.
+
+Resultados:
+- **Clase 0:** ningún píxel dentro de los condados (el fondo solo aparece fuera de EE.UU.). Por eso
+  `frac_pixeles_validos` = 1 en los 198 condados, y que el 0 deje de contar como válido no cambia nada.
+- **Escenario A:** todos los `pct_*` quedan **idénticos** (diferencia 0 en los 198 condados).
+- **Centeno (27):** 0,32 % del área agrícola en KS y 0,16 % en NE (mediana por condado 0,02 %). Llega a 13,3 % en
+  Thomas (NE), 9,1 % en Arthur (NE), 7,1 % en Kiowa (KS) y 6,9 % en Stafford (KS): son zonas de Sandhills o de
+  trigo, donde el centeno es más forraje que cobertura.
+- **Trébol (58):** casi nulo (0,009 % en KS y 0,001 % en NE; máximo por condado 0,4 %).
+- **Escenario B:** los `pct_*` suben porque el denominador es menor. La mediana del cambio por columna no pasa de 0,01 puntos;
+  el máximo es 4,3 puntos de `pct_maiz` (Arthur, NE, de 42,6 a 46,9 %), 8,1 de `pct_alfalfa` y 3,0 de `pct_trigo`.
+  Solo 14 combinaciones de condado y columna `pct_*` cambian más de 1 punto (7 de `pct_maiz`, 4 de `pct_trigo`,
+  2 de `pct_alfalfa` y 1 de `pct_barbecho`).
+
+**Supuestos:**
+- 2017 es el único año con teselas en esta máquina. El centeno varía de un año a otro y podría pesar más en IA, IL e
+  IN, donde se usa como cultivo de cobertura. Para repetir la medición con otro año o estado, correr el comando de
+  arriba con sus teselas.
+- El CDL clasifica el cultivo principal del año. El centeno de cobertura sembrado en otoño, que se mata antes del
+  maíz o la soja, casi nunca aparece como clase 27. Por eso `centeno` en el CDL no mide la práctica de cobertura;
+  para eso está `pct_cobertura` del Censo (`practicas_censo.csv`).
 """
 
 
@@ -206,7 +393,11 @@ def main():
             continue
         df = pd.read_csv(ruta, dtype={"fips": str, "fips_estado": str, "flag_nass": str})
         t = df[TIEMPO[archivo]].astype(str)
+        if archivo == "produccion_anual.csv":  # T134: riego y secano, solo si el CSV ya las tiene
+            cols = cols + [c for c in RIEGO_COLS if c[0] in df.columns]
         for nombre, desc, unidad, fuente, cid in cols:
+            if nombre not in df:  # CSV de antes de T135, sin las columnas nuevas
+                continue
             s = df[nombre]
             falt = 100 * s.isna().mean()
             llenos = t[s.notna()]
@@ -214,7 +405,9 @@ def main():
             hasta = llenos.max() if len(llenos) else ""
             filas.append(f"| {archivo} | {nombre} | {desc} | {unidad} | {fuente} | {cid} | {desde} | {hasta} | {falt:.1f} |")
     CARD.parent.mkdir(parents=True, exist_ok=True)
-    CARD.write_text(TEXTO.replace("{tabla}", "\n".join(filas)).replace("{estados}", lista_estados()), encoding="utf-8", newline="\n")
+    texto = TEXTO.replace("{tabla}", "\n".join(filas)).replace("{estados}", lista_estados())
+    texto = texto.rstrip("\n") + "\n" + RIEGO_SECCION  # T134: sección de riego al final
+    CARD.write_text(texto, encoding="utf-8", newline="\n")
     print(f"escrito {CARD.relative_to(REPO).as_posix()} ({len(filas)} columnas)")
 
 

@@ -426,6 +426,17 @@ class NotasRelease(unittest.TestCase):
         self.assertIn("Anthropic Claude", n.split("## Uso de IA")[0])
         self.assertIn("Anthropic Claude", n.split("## Uso de IA")[1])
 
+    def test_notas_con_atribucion_de_lotes_y_validacion(self):
+        from src.common.atribuciones import COCORAHS_CC_BY, COPERNICUS_HLS
+        n = en.notas_release(["IA"], ["lotes", "validacion", "clima"], self.README)
+        self.assertIn("## Attribution / Atribución", n)
+        self.assertIn(f"- `lotes`: {COPERNICUS_HLS}", n)
+        self.assertIn(f"- `validacion`: {COCORAHS_CC_BY}", n)
+        self.assertLess(n.index("## Attribution"), n.index("## Use of AI"))
+
+    def test_notas_sin_atribucion(self):
+        self.assertNotIn("Attribution", en.notas_release(["KS"], ["clima", "agua"], self.README))
+
     def test_paquetes_de_assets(self):
         nombres = ["datos-oh-ne-mn_clima.zip", "datos-oh-ne-mn_clima.zip.sha256", "datos-oh-ne-mn_agua.zip",
                    "otro_suelo.zip"]

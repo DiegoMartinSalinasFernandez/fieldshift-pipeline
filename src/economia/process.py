@@ -43,6 +43,9 @@ ERS_DIR = REPO / "data" / "raw" / "economia" / "ers"
 INTERIM = REPO / "data" / "interim" / "economia"
 OUT = REPO / "data" / "processed" / "economia"
 CARD = REPO / "docs" / "datasets" / "economia.md"
+CONDADOS = REPO / "data" / "reference" / "condados.csv"
+GPKG = REPO / "data" / "reference" / "condados.gpkg"
+REF_REGIONES = REPO / "data" / "reference" / "regiones_ers.csv"
 
 GRANOS = {
     "maiz": "CORN, GRAIN - PRICE RECEIVED, MEASURED IN $ / BU",
@@ -280,6 +283,113 @@ def costos_ers(estados: dict, anios: range) -> pd.DataFrame:
     return g.drop(columns="peso")
 
 
+def tabla_regiones(estados: dict) -> pd.DataFrame:
+    """fips, estado, region_ers de cada condado de condados.csv en los estados (de reglink.xls).
+
+    Se guarda en data/reference/regiones_ers.csv (tabla chica, regenerable). Falla si un condado
+    de condados.csv no está en reglink.xls: no se le inventa región.
+    """
+    cond = pd.read_csv(CONDADOS, dtype={"fips": str}, usecols=["fips", "estado"])
+    cond = cond[cond["estado"].isin(list(estados))]
+    reg = regiones_condado().rename(columns={"fips_condado": "fips"})
+    t = cond.merge(reg, on="fips", how="left")
+    sin = sorted(t.loc[t["region_ers"].isna(), "fips"])
+    if sin:
+        raise SystemExit(f"condados de condados.csv sin región en {REGLINK.name}: {sin}")
+    t = t.sort_values("fips").reset_index(drop=True)
+    REF_REGIONES.parent.mkdir(parents=True, exist_ok=True)
+    t.to_csv(REF_REGIONES, index=False, lineterminator="\n")
+    return t
+
+
+def costos_condado(regiones: pd.DataFrame, reg: pd.DataFrame, anios: range) -> pd.DataFrame:
+    """Costos ERS por condado: cada condado toma los valores de su Farm Resource Region.
+
+    `regiones`: fips, region_ers (tabla_regiones). `reg`: salida de costos_region. Sin promedios
+    ni reponderación: si la región del condado no tiene serie ese año, el condado queda vacío.
+    Una fila por fips × anio × cultivo de ERS.
+    """
+    cols = list(ITEMS.values())
+    grilla = pd.MultiIndex.from_product(
+        [sorted(regiones["fips"]), list(anios), list(ERS)],
+        names=["fips", "anio", "cultivo"]).to_frame(index=False)
+    g = grilla.merge(regiones[["fips", "region_ers"]], on="fips", how="left")
+    out = g.merge(reg[["region_ers", "anio", "cultivo"] + cols],
+                  on=["region_ers", "anio", "cultivo"], how="left")
+    if len(out) != len(grilla):
+        raise SystemExit("costos_condado: filas duplicadas al unir con las regiones ERS")
+    out = fmt(out, cols)[["fips", "anio", "cultivo", "region_ers"] + cols]
+    return out.sort_values(["fips", "anio", "cultivo"]).reset_index(drop=True)
+
+
+def escribir_condado(estados: dict, anios: range) -> pd.DataFrame:
+    """Escribe economia_condado_anual.csv (y data/reference/regiones_ers.csv)."""
+    regiones = tabla_regiones(estados)
+    cond = costos_condado(regiones, costos_region(anios), anios)
+    OUT.mkdir(parents=True, exist_ok=True)
+    cond.to_csv(OUT / "economia_condado_anual.csv", index=False, float_format="%.2f",
+                lineterminator="\n")
+    return cond
+
+
+def condados_de_borde(regiones: pd.DataFrame, n: int = 2) -> list[tuple[str, str]]:
+    """Hasta n pares de condados vecinos (comparten borde en condados.gpkg) de regiones ERS
+    distintas, por estado con más de una región. Vacío si no está condados.gpkg."""
+    if not GPKG.exists():
+        return []
+    import geopandas as gpd
+    g = gpd.read_file(GPKG)[["fips", "geometry"]]
+    g["fips"] = g["fips"].astype(str).str.zfill(5)
+    g = g.merge(regiones[["fips", "estado", "region_ers"]], on="fips", how="inner")
+    pares = []
+    for est, sub in g.groupby("estado"):
+        if sub["region_ers"].nunique() < 2:
+            continue
+        # primero los condados de la región con más condados del estado (la que más pesa)
+        n_reg = sub["region_ers"].map(sub["region_ers"].value_counts())
+        sub = sub.assign(_n=-n_reg).sort_values(["_n", "fips"]).reset_index(drop=True)
+        usados: set[str] = set()
+        for i, a in sub.iterrows():
+            if len(usados) >= 2 * n:
+                break
+            if a["fips"] in usados:
+                continue
+            vecinos = sub[(sub["region_ers"] != a["region_ers"])
+                          & ~sub["fips"].isin(usados) & sub.geometry.intersects(a.geometry)]
+            if len(vecinos):
+                b = vecinos.sort_values("fips").iloc[0]
+                pares.append((a["fips"], b["fips"]))
+                usados |= {a["fips"], b["fips"]}
+    return pares
+
+
+def tabla_borde(anual: pd.DataFrame, cond: pd.DataFrame, regiones: pd.DataFrame,
+                pares: list[tuple[str, str]], cultivo: str = "maiz") -> list[str]:
+    """Filas markdown: costo total por condado vs. el valor del estado (método ponderado)."""
+    if not pares:
+        return []
+    c = cond[cond["cultivo"] == cultivo].dropna(subset=["costo_total_usd_ac"])
+    if c.empty:
+        return []
+    anio = int(c["anio"].max())
+    c = c[c["anio"] == anio].set_index("fips")
+    e = anual[(anual["cultivo"] == cultivo) & (anual["anio"] == anio)].set_index("fips_estado")
+    nombres = pd.read_csv(CONDADOS, dtype={"fips": str}).set_index("fips")["condado"]
+    filas = []
+    for par in pares:
+        for f in par:
+            if f not in c.index:
+                continue
+            v = c.at[f, "costo_total_usd_ac"]
+            ve = e["costo_total_usd_ac"].get(f[:2], float("nan"))
+            dif = v - ve if pd.notna(ve) else float("nan")
+            ve_txt = f"{ve:.2f}" if pd.notna(ve) else ""
+            dif_txt = f"{dif:+.2f}" if pd.notna(dif) else ""
+            filas.append(f"| {anio} | {f} | {nombres.get(f, '')} | {c.at[f, 'region_ers']} | "
+                         f"{v:.2f} | {ve_txt} | {dif_txt} |")
+    return filas
+
+
 def fmt(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
     df = df.copy()
     df["anio"] = df["anio"].astype(int)
@@ -302,9 +412,19 @@ por estado, año de cosecha y cultivo, para comparar rotaciones en el Corn Belt 
   flag_nass`. Cultivos: maiz, soja, trigo_invierno, avena. 2000–2025.
 - `data/processed/economia/economia_forrajes_anual.csv`: `fips_estado, anio, cultivo,
   precio_usd_ton, flag_nass`. Cultivos: alfalfa, heno. 2000–2025.
+- `data/processed/economia/economia_condado_anual.csv` (T141, **espera el OK de
+  `para_decidir.md` #21**): `fips, anio, cultivo, region_ers, valor_produccion_usd_ac,
+  costo_operativo_usd_ac, costo_total_usd_ac, margen_operativo_usd_ac`. Los mismos ítems de ERS,
+  pero cada condado toma los valores de su Farm Resource Region (sin ponderar). Cultivos: maiz,
+  soja, trigo_invierno, avena. 2000–2025. Todos los condados de `data/reference/condados.csv` en
+  los estados de la corrida.
+- `data/reference/regiones_ers.csv`: `fips, estado, region_ers`, la región ERS de cada condado
+  (sale de `reglink.xls`; la regenera `process.py`).
 
-Los datos solo existen por estado (NASS) o por región (ERS): la clave es `fips_estado`
-(2 dígitos), como en Crop Progress.
+Los precios solo existen por estado (NASS) y los costos por región (ERS): en `economia_anual.csv`
+y `economia_forrajes_anual.csv` la clave es `fips_estado` (2 dígitos), como en Crop Progress. El
+archivo por condado no reemplaza a `economia_anual.csv`: es una tabla nueva, y sus columnas no
+cambian las de hoy.
 
 ## Fuentes
 
@@ -352,6 +472,22 @@ por condado en el período). Se guardan también en `data/interim/economia/pesos
 |---|---|---|---|---|---|
 {pesos}
 
+## Costos por condado vs. costos por estado (condados de borde)
+
+`economia_condado_anual.csv` asigna a cada condado los costos de su región ERS; `economia_anual.csv`
+da a todos los condados de un estado el promedio ponderado por área. La diferencia solo aparece
+en los estados con más de una región (OH, NE y MN). Ejemplo con pares de condados vecinos de
+regiones distintas (vecinos en `condados.gpkg`), maíz, costo total listado (`costo_total_usd_ac`)
+del último año con dato:
+
+| anio | fips | condado | region_ers | por condado (USD/ac) | estado ponderado (USD/ac) | diferencia |
+|---|---|---|---|---|---|---|
+{borde}
+
+Dos condados vecinos tienen el mismo valor en el archivo por estado, pero en el archivo por
+condado cambian de golpe al cruzar el límite de región: el borde es administrativo (ERS define las
+regiones por condado) y no un gradiente real de costos.
+
 ## Supuestos
 
 - **Precio del año comercial.** Se usa la fila `MARKETING YEAR` del `anio` de cosecha (para maíz
@@ -366,6 +502,11 @@ por condado en el período). Se guardan también en `data/interim/economia/pesos
   período (pesos fijos, no cambian por año, para que un condado suprimido un año no mueva el
   costo). IA, IL e IN son 100 % Heartland y KS 100 % Prairie Gateway; OH, NE y MN se reparten
   entre varias regiones (tabla de pesos arriba).
+- **Costos por condado (T141).** Cada condado toma, sin ponderar, los valores de la Farm
+  Resource Region que le asigna `reglink.xls`. Supone que el costo por acre de un condado es el
+  de su región: ERS no publica nada más fino. A diferencia del archivo por estado, si la región del
+  condado no tiene serie ese año (p. ej. trigo en Eastern Uplands, o avena antes de 2023) el
+  condado queda **vacío**: no se toma el valor de otra región ni se repondera.
 - **Regiones sin dato.** Si una región del estado no tiene serie ERS ese año (Eastern Uplands no
   tiene trigo y su avena empieza en 2023; la avena de Prairie Gateway termina en 2022), se
   repondera entre las regiones con dato, siempre que cubran al menos el 50 % del peso del
@@ -416,6 +557,13 @@ DESC = {
         ("margen_operativo_usd_ac", "Valor de la producción menos costos operativos (ERS 'Value of production less operating costs', regiones ponderadas por área sembrada)", "USD/ac", "USDA ERS Commodity Costs and Returns", "MK02"),
         ("flag_nass", "Código original de NASS cuando el precio no se publica ((D), (S), (NA)); vacío si hay valor", "texto", "USDA NASS Quick Stats (volcado qs.crops)", ""),
     ],
+    "economia_condado_anual.csv": [
+        ("region_ers", "Farm Resource Region de ERS del condado (reglink.xls)", "texto", "USDA ERS Farm Resource Regions (reglink.xls)", ""),
+        ("valor_produccion_usd_ac", "Valor bruto de la producción por acre sembrado de la región ERS del condado ('Total, gross value of production')", "USD/ac", "USDA ERS Commodity Costs and Returns", ""),
+        ("costo_operativo_usd_ac", "Costos operativos por acre sembrado de la región ERS del condado ('Total, operating costs')", "USD/ac", "USDA ERS Commodity Costs and Returns", "MK03"),
+        ("costo_total_usd_ac", "Costos totales listados por acre sembrado de la región ERS del condado ('Total, costs listed')", "USD/ac", "USDA ERS Commodity Costs and Returns", "MK03"),
+        ("margen_operativo_usd_ac", "Valor de la producción menos costos operativos de la región ERS del condado ('Value of production less operating costs')", "USD/ac", "USDA ERS Commodity Costs and Returns", "MK02"),
+    ],
     "economia_forrajes_anual.csv": [
         ("precio_usd_ton", "Precio recibido por el productor, promedio del año comercial (NASS PRICE RECEIVED, MARKETING YEAR, estado)", "USD/ton corta", "USDA NASS Quick Stats (volcado qs.crops)", "MK01"),
         ("flag_nass", "Código original de NASS cuando el precio no se publica ((D), (S), (NA)); vacío si hay valor", "texto", "USDA NASS Quick Stats (volcado qs.crops)", ""),
@@ -426,7 +574,7 @@ DESC = {
 def data_card() -> None:
     filas = []
     for archivo, cols in DESC.items():
-        df = pd.read_csv(OUT / archivo, dtype={"fips_estado": str, "flag_nass": str})
+        df = pd.read_csv(OUT / archivo, dtype={"fips": str, "fips_estado": str, "flag_nass": str})
         t = df["anio"].astype(str)
         for nombre, desc, unidad, fuente, cid in cols:
             s = df[nombre]
@@ -438,8 +586,15 @@ def data_card() -> None:
     p = pd.read_csv(INTERIM / "pesos_region_ers.csv", dtype={"fips_estado": str})
     tabla_pesos = [f"| {r.fips_estado} | {r.cultivo} | {r.region_ers} | {r.acres:,.0f} | {r.base} | {r.peso:.3f} |"
                    for r in p.itertuples()]
+    regiones = pd.read_csv(REF_REGIONES, dtype={"fips": str})
+    cond = pd.read_csv(OUT / "economia_condado_anual.csv", dtype={"fips": str})
+    anual = pd.read_csv(OUT / "economia_anual.csv", dtype={"fips_estado": str})
+    borde = tabla_borde(anual, cond, regiones, condados_de_borde(regiones))
+    if not borde:
+        borde = ["| | | (sin estados con más de una región, o falta condados.gpkg) | | | | |"]
     CARD.parent.mkdir(parents=True, exist_ok=True)
-    texto = TEXTO.replace("{tabla}", "\n".join(filas)).replace("{pesos}", "\n".join(tabla_pesos))
+    texto = (TEXTO.replace("{tabla}", "\n".join(filas)).replace("{pesos}", "\n".join(tabla_pesos))
+             .replace("{borde}", "\n".join(borde)))
     CARD.write_text(texto, encoding="utf-8", newline="\n")
 
 
@@ -449,6 +604,12 @@ def main() -> None:
     estados = cfg["zona"]["estados"]
     anios = range(int(cfg["periodo"]["anio_inicio"]), int(cfg["periodo"]["anio_fin"]) + 1)
     OUT.mkdir(parents=True, exist_ok=True)
+
+    # costos por condado (T141): solo necesita los CSV de ERS y reglink.xls, no el volcado de NASS
+    cond = escribir_condado(estados, anios)
+    print(f"economia_condado_anual.csv: {len(cond)} filas ({time.time() - t0:.0f} s)")
+    if "--solo-condado" in sys.argv:
+        return
 
     granos = precios(estados, anios, GRANOS, "precio_usd_bu")
     print(f"precios granos: {granos['precio_usd_bu'].notna().sum()} valores ({time.time() - t0:.0f} s)")
