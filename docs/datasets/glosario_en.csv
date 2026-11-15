@@ -1,0 +1,344 @@
+paquete,archivo,columna,descripcion_en,unidad,fuente,id_catalogo
+agua,agua_diario.csv,sm_surface_m3m3,"Surface volumetric soil moisture (0-5 cm), area-weighted county mean",m3/m3,"NASA SMAP L4 SPL4SMGP 9 km, Crop-CASMA daily layers (USDA NASS / GMU)",S02
+agua,agua_diario.csv,sm_rootzone_m3m3,"Root-zone volumetric soil moisture (0-100 cm), area-weighted county mean",m3/m3,"NASA SMAP L4 SPL4SMGP 9 km, Crop-CASMA daily layers (USDA NASS / GMU)",S03
+agua,agua_mensual.csv,sm_surface_m3m3,Monthly mean of daily sm_surface (complete months only),m3/m3,"NASA SMAP L4 SPL4SMGP 9 km, Crop-CASMA daily layers (USDA NASS / GMU)",S02
+agua,agua_mensual.csv,sm_rootzone_m3m3,Monthly mean of daily sm_rootzone (complete months only),m3/m3,"NASA SMAP L4 SPL4SMGP 9 km, Crop-CASMA daily layers (USDA NASS / GMU)",S03
+agua,agua_mensual.csv,sm_surface_min_m3m3,Monthly minimum of daily sm_surface,m3/m3,"NASA SMAP L4 SPL4SMGP 9 km, Crop-CASMA daily layers (USDA NASS / GMU)",S02
+agua,agua_mensual.csv,sm_rootzone_min_m3m3,Monthly minimum of daily sm_rootzone,m3/m3,"NASA SMAP L4 SPL4SMGP 9 km, Crop-CASMA daily layers (USDA NASS / GMU)",S03
+agua,agua_mensual.csv,sm_rootzone_anom_z,"(month's sm_rootzone − calendar-month mean) / standard deviation, per county, 2015-2025",dimensionless,Derived from SMAP L4 (Crop-CASMA),D25
+agua,agua_mensual.csv,dias_sm_saturado,Days in the month with daily county sm_rootzone >= 0.40 m3/m3,days,Derived from SMAP L4 (Crop-CASMA),D26
+agua,agua_semanal.csv,gws_pctl,Groundwater storage percentile (area-weighted county mean),percentile 0-100,"GRACE-DA-DM US (GRACEDADM_CLSM0125US_7D v030, nasagrace.unl.edu)",W01
+agua,agua_semanal.csv,rtzsm_pctl,Root-zone soil moisture percentile (area-weighted mean),percentile 0-100,"GRACE-DA-DM US (GRACEDADM_CLSM0125US_7D v030, nasagrace.unl.edu)",W02
+agua,agua_semanal.csv,sfsm_pctl,Surface soil moisture percentile (area-weighted mean),percentile 0-100,"GRACE-DA-DM US (GRACEDADM_CLSM0125US_7D v030, nasagrace.unl.edu)",W03
+base,condados.csv,fips,"County FIPS code: 2 state digits + 3 county digits, text with leading zeros",code,US Census CB 2024 1:500k (STATEFP + COUNTYFP),K01
+base,condados.csv,estado,"Two-letter state postal code, as in config.yaml",code,config/config.yaml + Census STATEFP,K02
+base,condados.csv,condado,County name (Census NAME field),text,US Census CB 2024 1:500k,
+base,condados.csv,lat_centroide,"Latitude of the polygon centroid, computed in EPSG:5070 and converted to EPSG:4326",degrees,US Census CB 2024 1:500k (own calculation),K06
+base,condados.csv,lon_centroide,"Longitude of the polygon centroid, computed in EPSG:5070 and converted to EPSG:4326",degrees,US Census CB 2024 1:500k (own calculation),K06
+base,condados.csv,area_km2,Total polygon area (land + inland water) in Albers CONUS (EPSG:5070),km2,US Census CB 2024 1:500k (own calculation),
+base,anios.csv,anio,Harvest year,year,config/config.yaml (period),K03
+base,anios.csv,inicio_temporada,Start of the growing season (April 1 of anio),date YYYY-MM-DD,config/config.yaml (windows),K04
+base,anios.csv,fin_temporada,End of the growing season (September 30 of anio),date YYYY-MM-DD,config/config.yaml (windows),K04
+base,anios.csv,inicio_invierno_previo,Start of the preceding winter (November 1 of anio − 1),date YYYY-MM-DD,config/config.yaml (windows),K04
+base,anios.csv,fin_invierno_previo,End of the preceding winter (March 31 of anio),date YYYY-MM-DD,config/config.yaml (windows),K04
+clima,clima_diario.csv,tmed_c,Daily mean air temperature at 2 m (T2M),°C,NASA POWER daily (AG),C01
+clima,clima_diario.csv,tmax_c,Daily maximum air temperature at 2 m (T2M_MAX),°C,NASA POWER daily (AG),C02
+clima,clima_diario.csv,tmin_c,Daily minimum air temperature at 2 m (T2M_MIN),°C,NASA POWER daily (AG),C03
+clima,clima_diario.csv,prec_power_mm,Bias-corrected precipitation (PRECTOTCORR),mm/day,NASA POWER daily (AG),C08
+clima,clima_diario.csv,prec_imerg_mm,"Daily IMERG precipitation (UTC day), mean of the county's 0.1° cells",mm/day,"GPM IMERG via NASA POWER (IMERG_PRECTOT, 0.1°)",P01
+clima,clima_diario.csv,hr_pct,Mean relative humidity at 2 m (RH2M),%,NASA POWER daily (AG),C06
+clima,clima_diario.csv,viento_ms,Mean wind speed at 2 m (WS2M),m/s,NASA POWER daily (AG),C07
+clima,clima_diario.csv,rad_mj_m2,All-sky surface shortwave downward solar radiation (ALLSKY_SFC_SW_DWN),MJ/m²/day,NASA POWER daily (AG),C09
+clima,clima_diario.csv,gwettop,Surface soil wetness (GWETTOP),0-1,NASA POWER daily (AG),C11
+clima,clima_diario.csv,gwetroot,Root-zone soil wetness (GWETROOT),0-1,NASA POWER daily (AG),C12
+clima,clima_diario.csv,gwetprof,Profile soil wetness (GWETPROF),0-1,NASA POWER daily (AG),C13
+clima,clima_diario.csv,eto_pm_mm,"FAO-56 Penman-Monteith reference ET (G=0, ea from mean RH)",mm/day,Derived from NASA POWER,D01
+clima,clima_mensual.csv,prec_imerg_mm,IMERG monthly total precipitation (sum of daily values; empty if any day is missing),mm,"GPM IMERG via NASA POWER (IMERG_PRECTOT, 0.1°)",P01
+clima,clima_mensual.csv,prec_power_mm,Monthly total precipitation (sum of daily PRECTOTCORR),mm,NASA POWER daily (AG),C08
+clima,clima_mensual.csv,tmax_c,Monthly mean of daily maximum temperature,°C,NASA POWER daily (AG),C02
+clima,clima_mensual.csv,tmin_c,Monthly mean of daily minimum temperature,°C,NASA POWER daily (AG),C03
+clima,clima_mensual.csv,tmed_c,Monthly mean of T2M,°C,NASA POWER daily (AG),C01
+clima,clima_mensual.csv,rad_mj_m2,Monthly total solar radiation,MJ/m²,NASA POWER daily (AG),C09
+clima,clima_mensual.csv,eto_pm_mm,Monthly total FAO-56 reference ET,mm,Derived from NASA POWER,D01
+clima,clima_mensual.csv,deficit_mm,prec_power_mm − eto_pm_mm (water balance),mm,Derived from NASA POWER,D04
+clima,clima_mensual.csv,dias_tmax_gt30,Days with tmax > 30 °C,days,Derived from NASA POWER,D09
+clima,clima_mensual.csv,dias_tmax_gt35,Days with tmax > 35 °C,days,Derived from NASA POWER,D10
+clima,clima_mensual.csv,dias_tmin_le0,Days with tmin <= 0 °C,days,Derived from NASA POWER,D11
+clima,clima_mensual.csv,dias_tmin_le_m2,Days with tmin <= −2 °C,days,Derived from NASA POWER,D11
+clima,clima_mensual.csv,gdd_10_30,"Growing degree days, corn method (base 10 °C, cap 30 °C; 50/86 °F)",°C·day,Derived from NASA POWER,D08
+clima,clima_mensual.csv,gdd_base0,Growing degree days base 0 °C (T2M),°C·day,Derived from NASA POWER,D08
+clima,clima_mensual.csv,dias_lluvia_ge1,Days with precipitation >= 1 mm,days,Derived from NASA POWER,D18
+clima,clima_mensual.csv,prec_max1d_mm,Maximum 1-day precipitation (Rx1day),mm,Derived from NASA POWER,D16
+clima,clima_mensual.csv,prec_max5d_mm,Maximum 5-consecutive-day precipitation ending in the month (Rx5day),mm,Derived from NASA POWER,D16
+clima,clima_mensual.csv,dias_lluvia_gt50,Days with precipitation > 50 mm,days,Derived from NASA POWER,D15
+clima,clima_mensual.csv,racha_seca_max_dias,Longest run of days with precipitation < 1 mm within the month,days,Derived from NASA POWER,D17
+clima,clima_mensual.csv,spi1,"1-month Standardized Precipitation Index (gamma fit per county and month, POWER 1981-2025)",dimensionless,Derived from NASA POWER,D06
+clima,clima_mensual.csv,spi3,3-month Standardized Precipitation Index,dimensionless,Derived from NASA POWER,D06
+clima,clima_mensual.csv,spi6,6-month Standardized Precipitation Index,dimensionless,Derived from NASA POWER,D06
+clima,clima_mensual.csv,anom_tmed_c,tmed_c minus the 1991-2020 mean of the same month,°C,Derived from NASA POWER,D23
+clima,clima_mensual.csv,gwettop,Monthly mean of GWETTOP,0-1,NASA POWER daily (AG),C11
+clima,clima_mensual.csv,gwetroot,Monthly mean of GWETROOT,0-1,NASA POWER daily (AG),C12
+clima,clima_mensual.csv,gwetprof,Monthly mean of GWETPROF,0-1,NASA POWER daily (AG),C13
+clima,clima_anual.csv,doy_ultima_helada,Last day (Jan-Jul) with tmin <= 0 °C (last spring frost),day of year,Derived from NASA POWER,D12
+clima,clima_anual.csv,doy_primera_helada,First day (Aug-Dec) with tmin <= 0 °C (first fall frost),day of year,Derived from NASA POWER,D13
+clima,clima_anual.csv,periodo_libre_heladas_dias,doy_primera_helada − doy_ultima_helada − 1 (frost-free period),days,Derived from NASA POWER,D14
+clima,clima_anual.csv,prec_temporada_mm,April-September precipitation,mm,Derived from NASA POWER,D19
+clima,clima_anual.csv,gdd_temporada,gdd_10_30 accumulated April-September,°C·day,Derived from NASA POWER,D08
+clima,clima_anual.csv,prec_invierno_previo_mm,Precipitation from November of anio−1 to March of anio,mm,Derived from NASA POWER,D20
+clima,clima_anual.csv,prec_jul_mm,July precipitation,mm,Derived from NASA POWER,D19
+clima,clima_anual.csv,tmax_jul_c,Mean daily tmax in July,°C,Derived from NASA POWER,D10
+clima,clima_anual.csv,dias_tmax_gt30_jul,July days with tmax > 30 °C,days,Derived from NASA POWER,D10
+clima,clima_anual.csv,prec_ago_mm,August precipitation,mm,Derived from NASA POWER,D19
+clima,clima_anual.csv,deficit_temporada_mm,April-September sum of prec_power_mm − eto_pm_mm,mm,Derived from NASA POWER,D04
+clima,clima_anual.csv,tend_prec_mm_decada,OLS slope of annual precipitation over the 30 years ending in anio (min. 20 years),mm/decade,Derived from NASA POWER,D24
+clima,clima_anual.csv,tend_tmed_c_decada,OLS slope of annual mean temperature over the 30 years ending in anio (min. 20 years),°C/decade,Derived from NASA POWER,D24
+cultivos,produccion_anual.csv,sup_sembrada_ac,"Planted area (AREA PLANTED, all utilizations)",acres,"USDA NASS Quick Stats (SURVEY, county)",Y01
+cultivos,produccion_anual.csv,sup_cosechada_ac,Harvested area (AREA HARVESTED; corn: grain),acres,"USDA NASS Quick Stats (SURVEY, county)",Y02
+cultivos,produccion_anual.csv,produccion_bu,"Production (PRODUCTION in BU; corn: grain). Empty for alfalfa and hay, which are measured in tons",bu,"USDA NASS Quick Stats (SURVEY, county)",Y03
+cultivos,produccion_anual.csv,rend_bu_ac,Yield (YIELD in BU / ACRE; corn: grain). Empty for alfalfa and hay,bu/ac,"USDA NASS Quick Stats (SURVEY, county)",Y04
+cultivos,produccion_anual.csv,rend_kgha,rend_bu_ac × conversion factor from config.yaml (bu_ac_a_kgha),kg/ha,Derived from NASS Quick Stats,Y04
+cultivos,produccion_anual.csv,sup_sembrada_ha,sup_sembrada_ac × 0.4047 (acres_a_ha),ha,Derived from NASS Quick Stats,Y01
+cultivos,produccion_anual.csv,ratio_cosechada,sup_cosechada_ac / sup_sembrada_ac (harvested/planted ratio),fraction,Derived from NASS Quick Stats,Y05
+cultivos,produccion_anual.csv,flag_nass,"Original NASS code when the value is withheld: (D), (Z), (NA)… (separated by ;)",text,"USDA NASS Quick Stats (SURVEY, county)",
+cultivos,fenologia_estado.csv,doy_50_sembrado,"Day of year when 50 % planted is reached (PCT PLANTED, interpolated)",day of year,"USDA NASS Quick Stats Crop Progress (SURVEY, state)",CT03
+cultivos,fenologia_estado.csv,doy_50_emergido,Day of year when 50 % emerged is reached (PCT EMERGED),day of year,"USDA NASS Quick Stats Crop Progress (SURVEY, state)",
+cultivos,fenologia_estado.csv,doy_50_floracion,"Day of year of 50 % flowering (corn PCT SILKING, soybeans PCT BLOOMING)",day of year,"USDA NASS Quick Stats Crop Progress (SURVEY, state)",CT05
+cultivos,fenologia_estado.csv,doy_50_cosechado,Day of year of 50 % harvested (corn: grain),day of year,"USDA NASS Quick Stats Crop Progress (SURVEY, state)",CT04
+cultivos,rotacion_anual.csv,pct_maiz,% of the county's cropland in corn (CDL 1),%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R04
+cultivos,rotacion_anual.csv,pct_soja,% of cropland in soybeans (CDL 5),%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R04
+cultivos,rotacion_anual.csv,pct_trigo,"% of cropland in winter wheat, alone or double-cropped with soybeans (CDL 24 and 26)",%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R04
+cultivos,rotacion_anual.csv,pct_alfalfa,% of cropland in alfalfa (CDL 36),%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R04
+cultivos,rotacion_anual.csv,pct_heno,% of cropland in other hay (CDL 37),%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R04
+cultivos,rotacion_anual.csv,pct_doble_trigo_soja,% of cropland in double-crop wheat/soybeans (CDL 26),%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R09
+cultivos,rotacion_anual.csv,pct_barbecho,% of cropland in fallow (CDL 61),%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R14
+cultivos,rotacion_anual.csv,pct_maiz_tras_soja,% of anio corn pixels that were soybeans in anio−1 (out of those with a crop class in anio−1),%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R03
+cultivos,rotacion_anual.csv,pct_maiz_tras_maiz,% of anio corn pixels that were corn in anio−1 (out of those with a crop class in anio−1),%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R03
+cultivos,rotacion_anual.csv,pct_soja_tras_maiz,% of anio soybean pixels that were corn in anio−1 (out of those with a crop class in anio−1),%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R03
+cultivos,rotacion_anual.csv,pct_soja_tras_soja,% of anio soybean pixels that were soybeans in anio−1 (out of those with a crop class in anio−1),%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R03
+cultivos,rotacion_secuencia.csv,pct_maiz_soja_alternado,% of pixels cropped all 8 years with corn and soybeans alternating every year,%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),
+cultivos,rotacion_secuencia.csv,pct_maiz_continuo,% of pixels cropped all 8 years with corn 3 or more years in a row,%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R13
+cultivos,rotacion_secuencia.csv,pct_soja_continua,% of pixels cropped all 8 years with soybeans 3 or more years in a row,%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R13
+cultivos,rotacion_secuencia.csv,pct_rotacion_trigo,% of pixels cropped all 8 years with wheat (alone or double-cropped) in at least one year,%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),
+cultivos,rotacion_secuencia.csv,pct_rotacion_alfalfa,% of pixels cropped all 8 years with alfalfa (CDL 36) in at least one year,%,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R10
+cultivos,rotacion_secuencia.csv,cultivos_por_anio,"Number of crops in the sequence / 8 years (double crop = 2, fallow = 0), pixel mean",crops/year,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R05
+cultivos,rotacion_secuencia.csv,diversidad_shannon,"Shannon index (ln) over the CDL classes of the 8-year sequence, pixel mean",index,USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025),R11
+cultivos,practicas_censo.csv,pct_cobertura,"Cover crop planted area (excl. CRP) / cropland × 100 (Census short_desc COVER CROP PLANTED, (EXCL CRP) / AG LAND, CROPLAND)",%,USDA NASS Census of Agriculture (Quick Stats CENSUS),
+cultivos,practicas_censo.csv,pct_labranza_cero,"No-till area / cropland × 100 (Census short_desc CONSERVATION TILLAGE, NO-TILL / AG LAND, CROPLAND)",%,USDA NASS Census of Agriculture (Quick Stats CENSUS),
+cultivos,practicas_censo.csv,pct_drenaje_tile,"Tile-drained area / cropland × 100 (Census short_desc DRAINED BY TILE / AG LAND, CROPLAND)",%,USDA NASS Census of Agriculture (Quick Stats CENSUS),
+cultivos,practicas_censo.csv,pct_riego,"Irrigated land / cropland × 100 (Census short_desc AG LAND, IRRIGATED / AG LAND, CROPLAND)",%,USDA NASS Census of Agriculture (Quick Stats CENSUS),
+economia,economia_anual.csv,precio_usd_bu,"Price received by farmers, marketing-year average (NASS PRICE RECEIVED, MARKETING YEAR, state level)",USD/bu,USDA NASS Quick Stats (qs.crops bulk file),MK01
+economia,economia_anual.csv,valor_produccion_usd_ac,"Gross value of production per planted acre (ERS 'Total, gross value of production', regions weighted by planted area)",USD/ac,USDA ERS Commodity Costs and Returns,
+economia,economia_anual.csv,costo_operativo_usd_ac,"Operating costs per planted acre (ERS 'Total, operating costs', regions weighted by planted area)",USD/ac,USDA ERS Commodity Costs and Returns,MK03
+economia,economia_anual.csv,costo_total_usd_ac,"Total listed costs per planted acre (ERS 'Total, costs listed', regions weighted by planted area)",USD/ac,USDA ERS Commodity Costs and Returns,MK03
+economia,economia_anual.csv,margen_operativo_usd_ac,"Value of production less operating costs (ERS 'Value of production less operating costs', regions weighted by planted area)",USD/ac,USDA ERS Commodity Costs and Returns,MK02
+economia,economia_anual.csv,flag_nass,"Original NASS code when the price is not published ((D), (S), (NA)); empty when there is a value",text,USDA NASS Quick Stats (qs.crops bulk file),
+economia,economia_forrajes_anual.csv,precio_usd_ton,"Price received by farmers, marketing-year average (NASS PRICE RECEIVED, MARKETING YEAR, state level)",USD/short ton,USDA NASS Quick Stats (qs.crops bulk file),MK01
+economia,economia_forrajes_anual.csv,flag_nass,"Original NASS code when the price is not published ((D), (S), (NA)); empty when there is a value",text,USDA NASS Quick Stats (qs.crops bulk file),
+ecostress,ecostress_mensual.csv,lst_ecostress_c,"Monthly mean land surface temperature (ECO_L2T_LSTE.002, LST layer): average over overpasses with data, each the mean of good-quality, cloud-free cropland pixels in the county's 2.24 km window",°C,"NASA JPL ECOSTRESS Collection 2 (LP DAAC), 70 m, ECO_L2T_LSTE.002",X01
+ecostress,ecostress_mensual.csv,et_ecostress_mm_dia,"Monthly mean daily evapotranspiration (ECO_L3T_JET.002, ETdaily layer), same overpasses and pixels as the LST",mm/day,"NASA JPL ECOSTRESS Collection 2 (LP DAAC), 70 m, ECO_L3T_JET.002",X02
+ecostress,ecostress_mensual.csv,esi_ecostress,"Monthly mean Evaporative Stress Index (ECO_L4T_ESI.002, ESI layer, ET/PET), same overpasses and pixels as the LST",dimensionless,"NASA JPL ECOSTRESS Collection 2 (LP DAAC), 70 m, ECO_L4T_ESI.002",X03
+ecostress,ecostress_mensual.csv,n_pasadas_ecostress,"Daytime overpasses in the month with at least 10 valid cropland LST pixels in the county window (0 if all cloudy, no data or no overpass over the window)",overpasses,"NASA JPL ECOSTRESS Collection 2 (LP DAAC), 70 m",
+lotes,lotes.csv,paisaje,"Landscape stratum from the sampling plan (depresiones = depressions, lomas_loess = loess hills, llanura_control = control plain, indiana)",dimensionless,CLAUDE.md §6.6,
+lotes,lotes.csv,csb_ventana,8-year CSB window the polygon comes from,dimensionless,USDA NASS CSB,
+lotes,lotes.csv,area_ha,Polygon area (EPSG:5070),ha,USDA NASS CSB,
+lotes,lotes.csv,area_ac,Polygon area,ac,USDA NASS CSB,
+lotes,lotes.csv,lat_centroide,Centroid latitude,degrees,USDA NASS CSB,
+lotes,lotes.csv,lon_centroide,Centroid longitude,degrees,USDA NASS CSB,
+lotes,lotes.csv,compacidad,Polsby-Popper compactness 4πA/P²,dimensionless,USDA NASS CSB,
+lotes,lotes.csv,n_px,30 m pixels whose center falls inside the field,pixels,mascara_agricola.tif grid,
+lotes,lotes.csv,n_px_interior,Pixels whose center falls inside the field shrunk inward by 30 m,pixels,mascara_agricola.tif grid,
+lotes,lotes.csv,n_anios_maiz_soja,Years of the CSB window with corn or soybeans (CSB CDL<year> fields),years,USDA NASS CSB,
+lotes,lotes.csv,pct_riego_condado,"% of cropland irrigated, most recent Census",%,USDA NASS Census of Agriculture (practicas_censo.csv),
+lotes,lotes.csv,relieve_3dep_m,Maximum minus minimum elevacion_3dep_m over the field's pixels,m,USGS 3DEP,
+lotes,lotes.csv,relieve_m,Maximum minus minimum NASADEM elevation (bilinear on the 30 m grid) within the field,m,NASA NASADEM,
+lotes,lotes.csv,motivo,[UNCLEAR] Selection rule and rank of the field (why it was chosen),dimensionless,this package,
+lotes,lotes.csv,n_candidatos,Polygons that met all selection criteria in that landscape,fields,USDA NASS CSB,
+lotes,pixeles.csv,x_m,x of the pixel center (EPSG:5070),m,mascara_agricola.tif grid,
+lotes,pixeles.csv,y_m,y of the pixel center (EPSG:5070),m,mascara_agricola.tif grid,
+lotes,pixeles.csv,lon,Longitude of the pixel center,degrees,mascara_agricola.tif grid,
+lotes,pixeles.csv,lat,Latitude of the pixel center,degrees,mascara_agricola.tif grid,
+lotes,pixeles.csv,dist_borde_m,Distance from the pixel center to the polygon edge,m,USDA NASS CSB,
+lotes,pixeles.csv,interior,1 if the pixel center falls inside the field shrunk inward by 30 m,dimensionless,USDA NASS CSB,
+lotes,pixeles.csv,frac_en_lote,Fraction of the 30 m pixel inside the polygon,dimensionless,USDA NASS CSB,
+lotes,terreno_px.csv,elevacion_m,"NASADEM elevation (unsmoothed), bilinear to 30 m",m,NASA NASADEM,
+lotes,terreno_px.csv,pendiente_pct,"Slope on the smoothed DEM (Gaussian, sigma 1 cell)",%,NASA NASADEM,
+lotes,terreno_px.csv,aspecto_grados,"Direction of steepest descent, clockwise from north; empty where slope is 0",degrees,NASA NASADEM,
+lotes,terreno_px.csv,curv_plan,Plan curvature (Zevenbergen and Thorne),1/m,NASA NASADEM,
+lotes,terreno_px.csv,curv_perfil,Profile curvature (Zevenbergen and Thorne),1/m,NASA NASADEM,
+lotes,terreno_px.csv,tpi_90m_m,Elevation minus mean elevation within a 90 m radius (TPI),m,NASA NASADEM,
+lotes,terreno_px.csv,tpi_300m_m,Elevation minus mean elevation within a 300 m radius (TPI),m,NASA NASADEM,
+lotes,terreno_px.csv,twi,"Topographic wetness index ln(specific catchment area / tan slope), D8 over the field window + 2.5 km",dimensionless,NASA NASADEM,
+lotes,terreno_px.csv,elevacion_3dep_m,"USGS 3DEP elevation (10 m, mean of 3 × 3 cells within the 30 m pixel)",m,USGS 3DEP,
+lotes,terreno_px.csv,pendiente_3dep_pct,"3DEP slope at 10 m (Gaussian, sigma 10 m), mean within the 30 m pixel",%,USGS 3DEP,
+lotes,terreno_px.csv,tpi_90m_3dep_m,"Elevation minus mean elevation within <= 90 m (TPI), 3DEP 10 m, mean within the pixel",m,USGS 3DEP,
+lotes,terreno_px.csv,twi_3dep,"D8 topographic wetness index on 3DEP 10 m over the field window + 2.52 km, mean within the pixel",dimensionless,USGS 3DEP,
+lotes,terreno_px.csv,prof_depresion_3dep_m,"Priority-flood filled DEM minus DEM (depression depth), 3DEP 10 m, mean within the pixel",m,USGS 3DEP,
+lotes,terreno_px.csv,prof_depresion_m,Depression-filled DEM (priority-flood) minus DEM (depression depth),m,NASA NASADEM,
+lotes,lotes_anual.csv,cultivo_principal,Most frequent crop group among interior pixels,dimensionless,USDA NASS CDL,
+lotes,lotes_anual.csv,cdl_clase_principal,Most frequent CDL class within the main crop group,code,USDA NASS CDL,
+lotes,lotes_anual.csv,pct_px_cultivo_principal,% of interior pixels in the main crop group,%,USDA NASS CDL,
+lotes,lotes_anual.csv,lote_partido,1 if pct_px_cultivo_principal < 90 (split field),dimensionless,USDA NASS CDL,
+lotes,lotes_anual.csv,cultivo_csb,Crop group the CSB assigns to the field that year (2018-2025 only),dimensionless,USDA NASS CSB,
+lotes,lotes_anual.csv,pct_px_igual_csb,% of interior pixels whose CDL class matches the CSB class,%,USDA NASS CDL and CSB,
+lotes,cultivo_px_anual.csv,cdl_clase,CDL class of the pixel (30 m tiles from data/raw/cultivos),code,USDA NASS CDL,
+lotes,cultivo_px_anual.csv,cultivo,Crop group of the class according to data/reference/clases_cdl.csv,dimensionless,USDA NASS CDL,
+lotes,cultivo_px_anual.csv,frac_clase,"Fraction of the pixel covered by the majority class (10 m CDL, 2024-2025)",dimensionless,USDA NASS CDL 10 m,
+lotes,suelo_px.csv,frac_mukey,Fraction of the pixel's 9 sub-cells of 10 m with that mukey (rasterized SSURGO polygons),dimensionless,USDA NRCS SSURGO (SDA),
+lotes,suelo_mukey.csv,muname,Map unit name,dimensionless,USDA NRCS SSURGO mapunit,
+lotes,suelo_mukey.csv,aws0_100_mm,Available water storage 0-100 cm (aws0100wta × 10),mm,USDA NRCS SSURGO muaggatt,
+lotes,suelo_mukey.csv,aws0_150_mm,Available water storage 0-150 cm (aws0150wta × 10),mm,USDA NRCS SSURGO muaggatt,
+lotes,suelo_mukey.csv,soc0_30_gm2,"Soil organic carbon 0-30 cm: Σ thickness · OM · 0.58 · bulk density · (1 − rock fragments), weighted by comppct_r",g C/m²,USDA NRCS SSURGO chorizon,
+lotes,suelo_mukey.csv,nccpi_general,"NCCPI v3 overall, weighted by comppct_r",dimensionless,USDA NRCS SSURGO cointerp,
+lotes,suelo_mukey.csv,nccpi_maiz,"NCCPI corn submodel, weighted by comppct_r",dimensionless,USDA NRCS SSURGO cointerp,
+lotes,suelo_mukey.csv,nccpi_soja,"NCCPI soybean submodel, weighted by comppct_r",dimensionless,USDA NRCS SSURGO cointerp,
+lotes,suelo_mukey.csv,clase_drenaje,Drainage class of the dominant component (drclassdcd),dimensionless,USDA NRCS SSURGO muaggatt,
+lotes,suelo_mukey.csv,clase_drenaje_mas_humeda,Wettest drainage class (drclasswettest),dimensionless,USDA NRCS SSURGO muaggatt,
+lotes,suelo_mukey.csv,grupo_hidrologico,Dominant hydrologic soil group (hydgrpdcd),dimensionless,USDA NRCS SSURGO muaggatt,
+lotes,suelo_mukey.csv,pct_componentes_hidricos,% of hydric components (hydclprs),%,USDA NRCS SSURGO muaggatt,
+lotes,suelo_mukey.csv,pct_encharcamiento,% of components with ponding (pondfreqprs),%,USDA NRCS SSURGO muaggatt,
+lotes,suelo_mukey.csv,frec_inundacion,"Dominant flooding frequency (flodfreqdcd, translated)",dimensionless,USDA NRCS SSURGO muaggatt,
+lotes,suelo_mukey.csv,napa_min_cm,Annual minimum water table depth (wtdepannmin),cm,USDA NRCS SSURGO muaggatt,
+lotes,suelo_mukey.csv,pendiente_dcd_pct,Slope of the dominant component (slopegraddcp),%,USDA NRCS SSURGO muaggatt,
+lotes,suelo_mukey.csv,pendiente_comp_pct,Component-weighted mean slope (slopegradwta),%,USDA NRCS SSURGO muaggatt,
+lotes,suelo_mukey.csv,clase_erosion,Erosion class (erocl) of the dominant component,dimensionless,USDA NRCS SSURGO component,
+lotes,suelo_mukey.csv,pct_comp_dominante,comppct_r of the dominant component (its % of the map unit),%,USDA NRCS SSURGO component,
+lotes,suelo_mukey.csv,materia_organica_pct,Organic matter 0-30 cm (weighted by thickness and comppct_r),%,USDA NRCS SSURGO chorizon,
+lotes,suelo_mukey.csv,arcilla_pct,Clay 0-30 cm,%,USDA NRCS SSURGO chorizon,
+lotes,suelo_mukey.csv,arena_pct,Sand 0-30 cm,%,USDA NRCS SSURGO chorizon,
+lotes,suelo_mukey.csv,limo_pct,Silt 0-30 cm,%,USDA NRCS SSURGO chorizon,
+lotes,suelo_mukey.csv,ph_agua,pH 1:1 in water 0-30 cm,pH,USDA NRCS SSURGO chorizon,
+lotes,suelo_mukey.csv,factor_k_rusle,K factor (kwfact) of the surface horizon,t·ha·h/(ha·MJ·mm),USDA NRCS SSURGO chorizon,
+lotes,vegetacion_px_obs.csv,producto,landsat_c2_l2 or hls_s30,dimensionless,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_obs.csv,sensor,"L5, L7, L8, L9, S2A, S2B or S2C",dimensionless,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_obs.csv,refl_blue,Blue surface reflectance,reflectance,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_obs.csv,refl_green,Green surface reflectance,reflectance,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_obs.csv,refl_red,Red surface reflectance,reflectance,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_obs.csv,refl_nir,"NIR surface reflectance (Landsat nir08, HLS B8A)",reflectance,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_obs.csv,refl_swir1,SWIR 1.6 µm surface reflectance,reflectance,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_obs.csv,refl_swir2,SWIR 2.2 µm surface reflectance,reflectance,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_obs.csv,ndvi,NDVI = (nir − red) / (nir + red),dimensionless,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_obs.csv,evi2,EVI2 = 2.5 (nir − red) / (nir + 2.4 red + 1),dimensionless,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_obs.csv,gcvi,GCVI = nir / green − 1,dimensionless,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_obs.csv,ndmi,NDMI = (nir − swir1) / (nir + swir1),dimensionless,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_obs.csv,slc_off,1 if Landsat 7 from 2003-05-31 on (SLC-off),dimensionless,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_obs.csv,qa_valor,Raw QA_PIXEL (Landsat) or Fmask (HLS) value,dimensionless,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_anual.csv,ndvi_max,"Annual maximum NDVI (Landsat, Mar-Nov)",dimensionless,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_anual.csv,doy_ndvi_max,Day of year of maximum NDVI,day,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_anual.csv,evi2_max,Annual maximum EVI2 (Landsat),dimensionless,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_anual.csv,doy_evi2_max,Day of year of maximum EVI2,day,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_anual.csv,ndvi_media_jul_ago,Mean NDVI of July-August observations (Landsat),dimensionless,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_anual.csv,n_obs_mar_nov,Clear Landsat observations from March to November,observations,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_anual.csv,n_obs_may_jun,Clear Landsat observations in May-June,observations,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_anual.csv,n_obs_jul_ago,Clear Landsat observations in July-August,observations,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_anual.csv,ndvi_max_s2,Annual maximum NDVI from HLS S30,dimensionless,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,vegetacion_px_anual.csv,n_obs_jul_ago_s2,Clear HLS S30 observations in July-August,observations,USGS/NASA Landsat C2 L2 and NASA HLS v2 S30 (Planetary Computer),
+lotes,suelo_desnudo_px.csv,refl_blue_mar_may,"Median refl_blue of observations with NDVI < 0.25, Mar 15-May 15 (Landsat; bare soil)",reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px.csv,refl_red_mar_may,"Median refl_red of observations with NDVI < 0.25, Mar 15-May 15 (Landsat; bare soil)",reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px.csv,refl_nir_mar_may,"Median refl_nir of observations with NDVI < 0.25, Mar 15-May 15 (Landsat; bare soil)",reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px.csv,refl_swir1_mar_may,"Median refl_swir1 of observations with NDVI < 0.25, Mar 15-May 15 (Landsat; bare soil)",reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px.csv,refl_swir2_mar_may,"Median refl_swir2 of observations with NDVI < 0.25, Mar 15-May 15 (Landsat; bare soil)",reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px.csv,nbr2_mar_may,"NBR2 = (swir1 − swir2)/(swir1 + swir2) of the medians, Mar 15-May 15",dimensionless,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px.csv,n_obs_mar_may,"Observations with NDVI < 0.25, Mar 15-May 15",observations,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px.csv,refl_blue_oct_nov,"Median refl_blue of observations with NDVI < 0.25, Oct-Nov (Landsat; bare soil)",reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px.csv,refl_red_oct_nov,"Median refl_red of observations with NDVI < 0.25, Oct-Nov (Landsat; bare soil)",reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px.csv,refl_nir_oct_nov,"Median refl_nir of observations with NDVI < 0.25, Oct-Nov (Landsat; bare soil)",reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px.csv,refl_swir1_oct_nov,"Median refl_swir1 of observations with NDVI < 0.25, Oct-Nov (Landsat; bare soil)",reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px.csv,refl_swir2_oct_nov,"Median refl_swir2 of observations with NDVI < 0.25, Oct-Nov (Landsat; bare soil)",reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px.csv,nbr2_oct_nov,"NBR2 = (swir1 − swir2)/(swir1 + swir2) of the medians, Oct-Nov",dimensionless,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px.csv,n_obs_oct_nov,"Observations with NDVI < 0.25, Oct-Nov",observations,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px_compuesto.csv,refl_blue,Multi-year median (all years) of refl_blue with NDVI < 0.25 in both windows,reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px_compuesto.csv,refl_red,Multi-year median (all years) of refl_red with NDVI < 0.25 in both windows,reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px_compuesto.csv,refl_nir,Multi-year median (all years) of refl_nir with NDVI < 0.25 in both windows,reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px_compuesto.csv,refl_swir1,Multi-year median (all years) of refl_swir1 with NDVI < 0.25 in both windows,reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px_compuesto.csv,refl_swir2,Multi-year median (all years) of refl_swir2 with NDVI < 0.25 in both windows,reflectance,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px_compuesto.csv,nbr2,NBR2 of the multi-year medians,dimensionless,USGS/NASA Landsat C2 L2,
+lotes,suelo_desnudo_px_compuesto.csv,n_obs,Bare-soil observations across all years,observations,USGS/NASA Landsat C2 L2,
+lotes,clima_lote_diario.csv,prec_power_mm,Precipitation (PRECTOTCORR),mm,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_diario.csv,tmax_c,Maximum air temperature at 2 m,°C,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_diario.csv,tmin_c,Minimum air temperature at 2 m,°C,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_diario.csv,tmed_c,Mean air temperature at 2 m,°C,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_diario.csv,hr_pct,Relative humidity at 2 m,%,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_diario.csv,viento_ms,Wind speed at 2 m,m/s,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_diario.csv,rad_mj_m2,All-sky surface shortwave radiation (ALLSKY_SFC_SW_DWN),MJ/m²/day,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_diario.csv,eto_pm_mm,FAO-56 Penman-Monteith reference ET,mm,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_diario.csv,deficit_mm,prec_power_mm − eto_pm_mm (water balance),mm,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_diario.csv,prec_imerg_mm,IMERG precipitation of the 0.1° cell containing the centroid,mm,GPM IMERG Final via POWER (IMERG_PRECTOT),
+lotes,clima_lote_diario.csv,sm_rootzone_m3m3,"SMAP L4 root-zone soil moisture, 9 km cell containing the centroid",m³/m³,NASA SMAP L4 via USDA Crop-CASMA (agua package),
+lotes,clima_lote_diario.csv,sm_surface_m3m3,"SMAP L4 surface soil moisture, 9 km cell containing the centroid",m³/m³,NASA SMAP L4 via USDA Crop-CASMA (agua package),
+lotes,clima_lote_anual.csv,prec_temporada_mm,April-September precipitation,mm,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_anual.csv,prec_abr_mm,April precipitation,mm,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_anual.csv,prec_may_mm,May precipitation,mm,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_anual.csv,prec_jul_mm,July precipitation,mm,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_anual.csv,prec_ago_mm,August precipitation,mm,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_anual.csv,deficit_temporada_mm,Σ (precipitation − ETo) April-September,mm,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_anual.csv,dias_tmax_gt30_jul,July days with tmax > 30 °C,days,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_anual.csv,tmax_jul_c,Mean July tmax,°C,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_anual.csv,gdd_temporada,"Growing degree days 10/30 °C, April-September",°C·day,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_anual.csv,prec_invierno_previo_mm,Precipitation from November of the previous year to March,mm,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_anual.csv,dias_lluvia_gt50_abr_may,April-May days with precipitation > 50 mm,days,"NASA POWER (AG), at the field centroid",
+lotes,clima_lote_anual.csv,prec_temporada_imerg_mm,"IMERG precipitation, April-September",mm,GPM IMERG Final via POWER (IMERG_PRECTOT),
+lotes,clima_lote_anual.csv,prec_abr_imerg_mm,"IMERG precipitation, April",mm,GPM IMERG Final via POWER (IMERG_PRECTOT),
+lotes,clima_lote_anual.csv,prec_may_imerg_mm,"IMERG precipitation, May",mm,GPM IMERG Final via POWER (IMERG_PRECTOT),
+lotes,clima_lote_anual.csv,prec_jul_imerg_mm,"IMERG precipitation, July",mm,GPM IMERG Final via POWER (IMERG_PRECTOT),
+lotes,clima_lote_anual.csv,prec_ago_imerg_mm,"IMERG precipitation, August",mm,GPM IMERG Final via POWER (IMERG_PRECTOT),
+lotes,clima_lote_anual.csv,dias_lluvia_gt50_abr_may_imerg,April-May days with IMERG precipitation > 50 mm,days,GPM IMERG Final via POWER (IMERG_PRECTOT),
+lotes,clima_lote_anual.csv,sm_rootzone_temporada_m3m3,"SMAP root-zone soil moisture, April-September mean, 9 km cell containing the centroid",m³/m³,NASA SMAP L4 via USDA Crop-CASMA (agua package),
+lotes,drenaje_px.csv,drenado_canos,1 if the AgTile-US cell containing the pixel center is tile-drained,dimensionless,Valayamkunnath et al. 2020 (AgTile-US),
+nldas,nldas_mensual.csv,sm_0_10cm_m3m3,"Volumetric soil moisture 0-10 cm: SoilM_0_10cm (kg m-2) / 100 mm, weighted county mean",m3/m3,"NLDAS-2 Noah monthly v2.0 (NLDAS_NOAH0125_M, NASA GES DISC via Harmony)",G01
+nldas,nldas_mensual.csv,sm_0_100cm_m3m3,"Volumetric soil moisture 0-100 cm: SoilM_0_100cm (kg m-2) / 1000 mm, weighted county mean",m3/m3,"NLDAS-2 Noah monthly v2.0 (NLDAS_NOAH0125_M, NASA GES DISC via Harmony)",G02
+nldas,nldas_mensual.csv,sm_0_100cm_anom_z,"z-score anomaly of sm_0_100cm_m3m3 per county and calendar month, 1991-2020 baseline",dimensionless,"NLDAS-2 Noah monthly v2.0 (NLDAS_NOAH0125_M, NASA GES DISC via Harmony)",
+nldas,nldas_mensual.csv,et_nldas_mm,"Monthly total evapotranspiration (Evap, monthly sum)",mm,"NLDAS-2 Noah monthly v2.0 (NLDAS_NOAH0125_M, NASA GES DISC via Harmony)",G03
+nldas,nldas_mensual.csv,escorrentia_nldas_mm,Monthly total runoff: surface (Qs) + subsurface (Qsb),mm,"NLDAS-2 Noah monthly v2.0 (NLDAS_NOAH0125_M, NASA GES DISC via Harmony)",G04
+nldas,nldas_mensual.csv,swe_nldas_mm,"Snow water equivalent, monthly mean (SWE)",mm,"NLDAS-2 Noah monthly v2.0 (NLDAS_NOAH0125_M, NASA GES DISC via Harmony)",
+paisaje,paisaje_anual.csv,pct_cultivos_nlcd,% of county area in Cultivated Crops (NLCD class 82),%,USGS Annual NLCD C1V1 LndCov (30 m),
+paisaje,paisaje_anual.csv,pct_pasturas_heno_nlcd,% of county area in Pasture/Hay (NLCD class 81),%,USGS Annual NLCD C1V1 LndCov (30 m),
+paisaje,paisaje_anual.csv,pct_bosque_nlcd,"% of county area in forest (NLCD classes 41, 42 and 43)",%,USGS Annual NLCD C1V1 LndCov (30 m),
+paisaje,paisaje_anual.csv,pct_humedales_nlcd,% of county area in wetlands (NLCD classes 90 and 95),%,USGS Annual NLCD C1V1 LndCov (30 m),
+paisaje,paisaje_anual.csv,pct_urbano_nlcd,% of county area in developed land (NLCD classes 21 to 24),%,USGS Annual NLCD C1V1 LndCov (30 m),
+paisaje,paisaje_anual.csv,pct_agua_nlcd,% of county area in open water (NLCD class 11),%,USGS Annual NLCD C1V1 LndCov (30 m),
+paisaje,paisaje_anual.csv,impermeable_pct,"Mean county impervious surface (mean of Annual NLCD FctImp, 0-100 % per pixel)",%,USGS Annual NLCD C1V1 FctImp (30 m),
+suelo_terreno,suelo_terreno_estatico.csv,aws0_100_mm,"Available water storage 0–100 cm (muaggatt.aws0100wta × 10), area-weighted mean",mm,SSURGO muaggatt via Soil Data Access,L12
+suelo_terreno,suelo_terreno_estatico.csv,aws0_150_mm,Available water storage 0–150 cm (muaggatt.aws0150wta × 10),mm,SSURGO muaggatt via Soil Data Access,L12
+suelo_terreno,suelo_terreno_estatico.csv,soc0_30_gm2,Soil organic carbon 0–30 cm: Σ thickness · OM · 0.58 · bulk density · (1 − rock fragments),g C/m²,SSURGO chorizon via Soil Data Access,L10
+suelo_terreno,suelo_terreno_estatico.csv,soc0_100_gm2,Soil organic carbon 0–100 cm (same calculation),g C/m²,SSURGO chorizon via Soil Data Access,L04
+suelo_terreno,suelo_terreno_estatico.csv,nccpi_general,NCCPI 3.0 overall (cointerp.interphr),0-1,SSURGO cointerp (NCCPI 3.0) via Soil Data Access,L15
+suelo_terreno,suelo_terreno_estatico.csv,nccpi_maiz,"NCCPI 3.0, corn submodel (Corn Submodel I)",0-1,SSURGO cointerp (NCCPI 3.0) via Soil Data Access,L15
+suelo_terreno,suelo_terreno_estatico.csv,nccpi_soja,"NCCPI 3.0, soybean submodel (Soybeans Submodel I)",0-1,SSURGO cointerp (NCCPI 3.0) via Soil Data Access,L15
+suelo_terreno,suelo_terreno_estatico.csv,prof_raices_cm,"Rooting depth: min(root-restrictive layer, bottom of profile, 150 cm)",cm,SSURGO via Soil Data Access (USDA NRCS),
+suelo_terreno,suelo_terreno_estatico.csv,clase_drenaje,Drainage class of the dominant component (muaggatt.drclassdcd) covering the largest area in the county,class,SSURGO muaggatt via Soil Data Access,L17
+suelo_terreno,suelo_terreno_estatico.csv,grupo_hidrologico,Dominant hydrologic soil group (muaggatt.hydgrpdcd) covering the largest area,class,SSURGO muaggatt via Soil Data Access,
+suelo_terreno,suelo_terreno_estatico.csv,napa_min_cm,"Annual minimum water table depth (muaggatt.wtdepannmin), mean over map units with water table < 200 cm",cm,SSURGO muaggatt via Soil Data Access,
+suelo_terreno,suelo_terreno_estatico.csv,arcilla_pct,"Total clay 0–30 cm (claytotal_r), weighted by thickness, component and area",%,SSURGO chorizon via Soil Data Access,L01
+suelo_terreno,suelo_terreno_estatico.csv,arena_pct,Total sand 0–30 cm (sandtotal_r),%,SSURGO chorizon via Soil Data Access,L02
+suelo_terreno,suelo_terreno_estatico.csv,limo_pct,Total silt 0–30 cm (silttotal_r),%,SSURGO chorizon via Soil Data Access,L03
+suelo_terreno,suelo_terreno_estatico.csv,materia_organica_pct,Organic matter 0–30 cm (om_r),%,SSURGO chorizon via Soil Data Access,L04
+suelo_terreno,suelo_terreno_estatico.csv,ph_agua,"pH in water 1:1, 0–30 cm (ph1to1h2o_r)",pH,SSURGO chorizon via Soil Data Access,L06
+suelo_terreno,suelo_terreno_estatico.csv,clase_textural_usda,USDA texture class of the county's mean sand/silt/clay,class,SSURGO chorizon via Soil Data Access,L11
+suelo_terreno,suelo_terreno_estatico.csv,factor_k_rusle,K factor (kwfact) of the surface horizon,t·ha·h/(ha·MJ·mm) (dimensionless in NRCS),SSURGO chorizon via Soil Data Access,L13
+suelo_terreno,suelo_terreno_estatico.csv,elevacion_media_m,"Mean elevation of the county's 1"" pixels",m,NASADEM v001 (Planetary Computer),T01
+suelo_terreno,suelo_terreno_estatico.csv,elevacion_desvio_m,Standard deviation of elevation,m,NASADEM v001 (Planetary Computer),T01
+suelo_terreno,suelo_terreno_estatico.csv,pendiente_media_pct,"Mean slope at 3"" (~90 m, mean of 3 × 3 pixels), central differences",%,NASADEM v001 (Planetary Computer),T02
+suelo_terreno,suelo_terreno_estatico.csv,pendiente_gt2_pct,"% of 3"" pixels with slope > 2 %",%,NASADEM v001 (Planetary Computer),T02
+suelo_terreno,suelo_terreno_estatico.csv,twi_medio,"Topographic wetness index ln(a / tan β) at 3"" (~90 m), mean",dimensionless,NASADEM v001 (Planetary Computer),T06
+suelo_terreno,suelo_terreno_estatico.csv,twi_decil_sup_pct,% of area with TWI in the top decile of the whole study area,%,NASADEM v001 (Planetary Computer),T06
+teledeteccion,teledeteccion_anual.csv,pct_suelo_desnudo_abr_may,% of sampled cropland pixels with median NDVI < 0.25 in April–May (bare soil),%,Landsat C2 L2 (USGS/NASA) via Planetary Computer,F08
+teledeteccion,teledeteccion_anual.csv,pct_suelo_desnudo_oct_nov,% of sampled cropland pixels with median NDVI < 0.25 in October–November (bare soil),%,Landsat C2 L2 (USGS/NASA) via Planetary Computer,F08
+teledeteccion,teledeteccion_anual.csv,pct_cobertura_verde_mar_abr,% of sampled cropland pixels with median NDVI >= 0.3 from Mar 15 to Apr 30 (green cover),%,Landsat C2 L2 (USGS/NASA) via Planetary Computer,
+teledeteccion,teledeteccion_anual.csv,bsi_abr_may,Mean of the per-pixel median Bare Soil Index in April–May,dimensionless,Landsat C2 L2 (USGS/NASA) via Planetary Computer,H05
+teledeteccion,teledeteccion_anual.csv,ndvi_max_30m,Pixel mean of the April–September maximum NDVI (30 m),dimensionless,Landsat C2 L2 (USGS/NASA) via Planetary Computer,H02
+teledeteccion,teledeteccion_anual.csv,n_escenas_validas,Scenes read with at least 10 % of the sampled cropland pixels clear,scenes,Landsat C2 L2 (USGS/NASA) via Planetary Computer,
+teledeteccion,teledeteccion_anual.csv,frac_pixeles_validos,Clear observations / cropland pixel observations read in the year,fraction,Landsat C2 L2 (USGS/NASA) via Planetary Computer,H06
+validacion,validacion_mensual.csv,prec_prism_mm,"Monthly total precipitation, mean of the 4 km PRISM cells whose center falls in the county",mm,PRISM AN monthly 4 km (Oregon State University),
+validacion,validacion_mensual.csv,tmax_prism_c,"Monthly mean maximum temperature, county mean",°C,PRISM AN monthly 4 km (Oregon State University),
+validacion,validacion_mensual.csv,tmin_prism_c,"Monthly mean minimum temperature, county mean",°C,PRISM AN monthly 4 km (Oregon State University),
+validacion,validacion_mensual.csv,tmed_prism_c,"Monthly mean temperature (PRISM tmean = (tmax + tmin) / 2), county mean",°C,PRISM AN monthly 4 km (Oregon State University),
+validacion,validacion_mensual.csv,prec_cocorahs_mm,"Monthly precipitation: mean over the county's stations with at least 25 daily reports in the month (sum of reported days, inches × 25.4)",mm,CoCoRaHS daily reports (public export),
+validacion,validacion_mensual.csv,n_estaciones_cocorahs,County CoCoRaHS stations with at least 25 daily reports in the month (0 = none; empty before 2008),stations,CoCoRaHS daily reports (public export),
+vegetacion,vegetacion_16d.csv,ndvi,County mean NDVI (16-day composite; fecha = composite start date),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M01
+vegetacion,vegetacion_16d.csv,evi,County mean EVI,dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M02
+vegetacion,vegetacion_16d.csv,ndvi_maiz,Mean NDVI of pixels with >= 75 % corn (same-year CDL),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M01
+vegetacion,vegetacion_16d.csv,ndvi_soja,Mean NDVI of pixels with >= 75 % soybeans (same-year CDL),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M01
+vegetacion,vegetacion_16d.csv,frac_pixeles_validos,Pixels passing the quality filter / all county pixels,0-1,MODIS MOD13Q1 v061 (Planetary Computer),M03
+vegetacion,vegetacion_mensual.csv,ndvi,Mean of the 16-day composites starting in the month,dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M01
+vegetacion,vegetacion_mensual.csv,evi,Mean of the 16-day composites starting in the month,dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M02
+vegetacion,vegetacion_mensual.csv,ndvi_maiz,Monthly mean corn NDVI (CDL >= 75 %),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M01
+vegetacion,vegetacion_mensual.csv,ndvi_soja,Monthly mean soybean NDVI (CDL >= 75 %),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M01
+vegetacion,vegetacion_mensual.csv,lst_dia_c,Mean daytime land surface temperature (8-day composites starting in the month),°C,MODIS MOD11A2 v061 (Planetary Computer),M04
+vegetacion,vegetacion_mensual.csv,lst_noche_c,Mean nighttime land surface temperature,°C,MODIS MOD11A2 v061 (Planetary Computer),M05
+vegetacion,vegetacion_mensual.csv,et_mm,"Monthly total actual ET (NLDAS-2 Noah Evap, weighted county mean)",mm,"NLDAS-2 Noah monthly v2.0 (NASA GES DISC, replaces MOD16A2)",M06
+vegetacion,vegetacion_mensual.csv,pet_mm,"Monthly total potential ET (NLDAS-2 Noah PotEvap, W m-2 × 86400 × days / 2.501e6)",mm,"NLDAS-2 Noah monthly v2.0 (NASA GES DISC, replaces MOD16A2)",M07
+vegetacion,vegetacion_mensual.csv,et_pet_ratio,et_mm / pet_mm (actual/potential ET ratio),dimensionless,"NLDAS-2 Noah monthly v2.0 (NASA GES DISC, replaces MOD16A2)",
+vegetacion,vegetacion_mensual.csv,ndvi_anom_z,"(ndvi − calendar-month mean) / standard deviation, per county, all years",dimensionless,Derived from MOD13Q1,F10
+vegetacion,vegetacion_mensual.csv,vci,"Vegetation Condition Index VCI = 100 (ndvi − min) / (max − min) for the calendar month, per county",0-100,Derived from MOD13Q1,F11
+vegetacion,vegetacion_mensual.csv,tci,"Temperature Condition Index TCI = 100 (max − lst_dia_c) / (max − min) for the calendar month, per county",0-100,Derived from MOD11A2 + MOD13Q1,F12
+vegetacion,vegetacion_mensual.csv,vhi,Vegetation Health Index VHI = 0.5 VCI + 0.5 TCI,0-100,Derived from MOD11A2 + MOD13Q1,F13
+vegetacion,fenologia_anual.csv,doy_inicio,Day of year when smoothed NDVI rises to 50 % of the year's amplitude (start of season),DOY,Derived from MOD13Q1,F01
+vegetacion,fenologia_anual.csv,doy_pico,Day of year of maximum smoothed NDVI (composite start + 8 days),DOY,Derived from MOD13Q1,F02
+vegetacion,fenologia_anual.csv,doy_fin,Day of year when smoothed NDVI falls to 50 % of the amplitude (end of season),DOY,Derived from MOD13Q1,F04
+vegetacion,fenologia_anual.csv,ndvi_max,Annual maximum of smoothed NDVI,dimensionless,Derived from MOD13Q1,F03
+vegetacion,fenologia_anual.csv,duracion_dias,doy_fin − doy_inicio (season length),days,Derived from MOD13Q1,F05
+vegetacion,fenologia_anual.csv,ndvi_integral,Integral of smoothed NDVI between doy_inicio and doy_fin,NDVI·day,Derived from MOD13Q1,F06
+vegetacion,fenologia_anual.csv,n_ciclos,Peaks of smoothed NDVI with prominence >= 0.1 (growth cycles),n,Derived from MOD13Q1,F07
+vegetacion,fenologia_anual.csv,ndvi_max_maiz,Annual maximum corn NDVI (16-day composites),dimensionless,Derived from MOD13Q1,F03
+vegetacion,fenologia_anual.csv,ndvi_max_soja,Annual maximum soybean NDVI (16-day composites),dimensionless,Derived from MOD13Q1,F03
+vegetacion,fenologia_anual.csv,dias_ndvi_lt03_invierno,Days with interpolated daily NDVI < 0.3 between Nov 1 (anio−1) and Mar 31,days,Derived from MOD13Q1,F09
