@@ -36,3 +36,4 @@
 - 09:01 T114: terminada, PR #111
 - 09:01 T120: tomada por el trabajador
 - 09:06 T120: terminada, PR #114
+- 09:21 T124: tomada por el trabajador
