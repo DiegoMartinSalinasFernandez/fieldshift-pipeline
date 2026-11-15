@@ -1,14 +1,14 @@
 ---
 id: T141
 titulo: Costos del ERS asignados por condado con `reglink.xls` (código listo, espera OK)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:59
-actualizada: 2026-11-15T09:59
+actualizada: 2026-11-15 10:12
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ condados de borde entre regiones.
 El código, las pruebas y el data card en un PR con CI en verde, retenido como dice arriba.
 
 ## Notas
+- 2026-11-15 10:12 · pro-1: tomada
