@@ -7,7 +7,9 @@ Consultas chicas a SDA (agregadas en el servidor, como src/suelo_terreno/downloa
    la misma cuenta con laoverlap ('County or Parish') para ver si las áreas coinciden con los condados.
 4. Dato en las columnas de muaggatt, Valu1 y chorizon que usa suelo_terreno: % de mukeys (y de acres)
    con valor no nulo.
-5. NASADEM: HEAD de las teselas de 1° que tocan KY (misma regla que src/suelo_terreno/download.py),
+5. Qué condados toca cada área (laoverlap), NCCPI y componentes mayores sin horizontes ponderados por
+   área (KY y KS como referencia).
+6. NASADEM: HEAD de las teselas de 1° que tocan KY (misma regla que src/suelo_terreno/download.py),
    con el shapefile de condados del Census pasado como argumento.
 
 Uso: .venv/bin/python -X utf8 docs/research/suelo_ky_sda.py [carpeta_con_cb_2023_us_county_500k.shp]
@@ -80,6 +82,37 @@ CONSULTAS = {
         "FROM component c INNER JOIN mapunit m ON m.mukey = c.mukey INNER JOIN legend l ON l.lkey = m.lkey "
         "LEFT JOIN (SELECT DISTINCT cokey FROM chorizon) hz ON hz.cokey = c.cokey "
         "WHERE l.areasymbol LIKE 'KY%' AND c.majcompflag = 'Yes'"),
+    "areas_condados": (
+        "SELECT l.areasymbol, lo.areasymbol AS condado FROM laoverlap lo INNER JOIN legend l ON l.lkey = lo.lkey "
+        "WHERE l.areasymbol LIKE 'KY%' AND lo.areatypename = 'County or Parish' ORDER BY l.areasymbol"),
+    "nccpi_y_horiz_area_KY": (
+        "SELECT SUM(CASE WHEN i.interphr IS NOT NULL THEN CAST(c.comppct_r AS FLOAT) * m.muacres ELSE 0 END) "
+        "/ SUM(CAST(c.comppct_r AS FLOAT) * m.muacres) AS frac_ac_nccpi, "
+        "SUM(CASE WHEN hz.cokey IS NULL THEN CAST(c.comppct_r AS FLOAT) * m.muacres ELSE 0 END) "
+        "/ SUM(CAST(c.comppct_r AS FLOAT) * m.muacres) AS frac_ac_sin_horiz "
+        "FROM component c INNER JOIN mapunit m ON m.mukey = c.mukey INNER JOIN legend l ON l.lkey = m.lkey "
+        "LEFT JOIN cointerp i ON i.cokey = c.cokey "
+        "AND i.mrulename = 'NCCPI - National Commodity Crop Productivity Index (Ver 3.0)' "
+        "AND i.rulename = 'NCCPI - National Commodity Crop Productivity Index (Ver 3.0)' "
+        "LEFT JOIN (SELECT DISTINCT cokey FROM chorizon) hz ON hz.cokey = c.cokey "
+        "WHERE l.areasymbol LIKE 'KY%' AND c.majcompflag = 'Yes'"),
+    "nccpi_y_horiz_area_KS": (
+        "SELECT SUM(CASE WHEN i.interphr IS NOT NULL THEN CAST(c.comppct_r AS FLOAT) * m.muacres ELSE 0 END) "
+        "/ SUM(CAST(c.comppct_r AS FLOAT) * m.muacres) AS frac_ac_nccpi, "
+        "SUM(CASE WHEN hz.cokey IS NULL THEN CAST(c.comppct_r AS FLOAT) * m.muacres ELSE 0 END) "
+        "/ SUM(CAST(c.comppct_r AS FLOAT) * m.muacres) AS frac_ac_sin_horiz "
+        "FROM component c INNER JOIN mapunit m ON m.mukey = c.mukey INNER JOIN legend l ON l.lkey = m.lkey "
+        "LEFT JOIN cointerp i ON i.cokey = c.cokey "
+        "AND i.mrulename = 'NCCPI - National Commodity Crop Productivity Index (Ver 3.0)' "
+        "AND i.rulename = 'NCCPI - National Commodity Crop Productivity Index (Ver 3.0)' "
+        "LEFT JOIN (SELECT DISTINCT cokey FROM chorizon) hz ON hz.cokey = c.cokey "
+        "WHERE l.areasymbol LIKE 'KS%' AND c.majcompflag = 'Yes'"),
+    "sin_horiz_nombres": (
+        "SELECT TOP 15 c.compname, SUM(c.comppct_r * m.muacres) / 100 AS acres FROM component c "
+        "INNER JOIN mapunit m ON m.mukey = c.mukey INNER JOIN legend l ON l.lkey = m.lkey "
+        "LEFT JOIN (SELECT DISTINCT cokey FROM chorizon) hz ON hz.cokey = c.cokey "
+        "WHERE l.areasymbol LIKE 'KY%' AND c.majcompflag = 'Yes' AND hz.cokey IS NULL "
+        "GROUP BY c.compname ORDER BY acres DESC"),
     "nccpi": (
         "SELECT i.rulename, COUNT(*) AS n, SUM(CASE WHEN i.interphr IS NOT NULL THEN 1 ELSE 0 END) AS n_valor "
         "FROM cointerp i INNER JOIN component c ON c.cokey = i.cokey "
