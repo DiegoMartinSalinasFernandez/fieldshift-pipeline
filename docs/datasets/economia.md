@@ -12,9 +12,19 @@ por estado, año de cosecha y cultivo, para comparar rotaciones en el Corn Belt 
   flag_nass`. Cultivos: maiz, soja, trigo_invierno, avena. 2000–2025.
 - `data/processed/economia/economia_forrajes_anual.csv`: `fips_estado, anio, cultivo,
   precio_usd_ton, flag_nass`. Cultivos: alfalfa, heno. 2000–2025.
+- `data/processed/economia/economia_condado_anual.csv` (T141, **espera el OK de
+  `para_decidir.md` #21**): `fips, anio, cultivo, region_ers, valor_produccion_usd_ac,
+  costo_operativo_usd_ac, costo_total_usd_ac, margen_operativo_usd_ac`. Los mismos ítems de ERS,
+  pero cada condado toma los valores de su Farm Resource Region (sin ponderar). Cultivos: maiz,
+  soja, trigo_invierno, avena. 2000–2025. Todos los condados de `data/reference/condados.csv` en
+  los estados de la corrida.
+- `data/reference/regiones_ers.csv`: `fips, estado, region_ers`, la región ERS de cada condado
+  (sale de `reglink.xls`; la regenera `process.py`).
 
-Los datos solo existen por estado (NASS) o por región (ERS): la clave es `fips_estado`
-(2 dígitos), como en Crop Progress.
+Los precios solo existen por estado (NASS) y los costos por región (ERS): en `economia_anual.csv`
+y `economia_forrajes_anual.csv` la clave es `fips_estado` (2 dígitos), como en Crop Progress. El
+archivo por condado no reemplaza a `economia_anual.csv`: es una tabla nueva, y sus columnas no
+cambian las de hoy.
 
 ## Fuentes
 
@@ -55,10 +65,17 @@ Los datos solo existen por estado (NASS) o por región (ERS): la clave es `fips_
 | economia_anual.csv | costo_total_usd_ac | Costos totales listados por acre sembrado (ERS 'Total, costs listed', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK03 | 2000 | 2025 | 5.2 |
 | economia_anual.csv | margen_operativo_usd_ac | Valor de la producción menos costos operativos (ERS 'Value of production less operating costs', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK02 | 2000 | 2025 | 5.2 |
 | economia_anual.csv | flag_nass | Código original de NASS cuando el precio no se publica ((D), (S), (NA)); vacío si hay valor | texto | USDA NASS Quick Stats (volcado qs.crops) |  | 2019 | 2019 | 99.7 |
+| economia_condado_anual.csv | region_ers | Farm Resource Region de ERS del condado (reglink.xls) | texto | USDA ERS Farm Resource Regions (reglink.xls) |  | 2000 | 2025 | 0.0 |
+| economia_condado_anual.csv | valor_produccion_usd_ac | Valor bruto de la producción por acre sembrado de la región ERS del condado ('Total, gross value of production') | USD/ac | USDA ERS Commodity Costs and Returns |  | 2000 | 2025 | 9.2 |
+| economia_condado_anual.csv | costo_operativo_usd_ac | Costos operativos por acre sembrado de la región ERS del condado ('Total, operating costs') | USD/ac | USDA ERS Commodity Costs and Returns | MK03 | 2000 | 2025 | 9.2 |
+| economia_condado_anual.csv | costo_total_usd_ac | Costos totales listados por acre sembrado de la región ERS del condado ('Total, costs listed') | USD/ac | USDA ERS Commodity Costs and Returns | MK03 | 2000 | 2025 | 9.2 |
+| economia_condado_anual.csv | margen_operativo_usd_ac | Valor de la producción menos costos operativos de la región ERS del condado ('Value of production less operating costs') | USD/ac | USDA ERS Commodity Costs and Returns | MK02 | 2000 | 2025 | 9.2 |
 | economia_forrajes_anual.csv | precio_usd_ton | Precio recibido por el productor, promedio del año comercial (NASS PRICE RECEIVED, MARKETING YEAR, estado) | USD/ton corta | USDA NASS Quick Stats (volcado qs.crops) | MK01 | 2000 | 2025 | 0.0 |
 | economia_forrajes_anual.csv | flag_nass | Código original de NASS cuando el precio no se publica ((D), (S), (NA)); vacío si hay valor | texto | USDA NASS Quick Stats (volcado qs.crops) |  |  |  | 100.0 |
 
-`desde`, `hasta` y `faltantes_pct` se calculan de los CSV al final de `process.py`.
+`desde`, `hasta` y `faltantes_pct` se calculan de los CSV al final de `process.py`. Las filas de
+`economia_condado_anual.csv` se calcularon en pro-1 con OH y MN (175 condados); se recalculan con
+todos los estados en la próxima corrida completa.
 
 ## Pesos de las regiones ERS por estado
 
@@ -120,6 +137,33 @@ por condado en el período). Se guardan también en `data/interim/economia/pesos
 | 39 | trigo_invierno | Northern Crescent | 4,337,500 | acres_sembrados | 0.251 |
 | 39 | trigo_invierno | Eastern Uplands | 290,800 | acres_sembrados | 0.017 |
 
+## Costos por condado vs. costos por estado (condados de borde)
+
+`economia_condado_anual.csv` asigna a cada condado los costos de su región ERS; `economia_anual.csv`
+da a todos los condados de un estado el promedio ponderado por área. La diferencia solo aparece
+en los estados con más de una región (OH, NE y MN). Ejemplo con pares de condados vecinos de
+regiones distintas (vecinos en `condados.gpkg`), maíz, costo total listado (`costo_total_usd_ac`)
+del último año con dato:
+
+(En esta versión, generada en pro-1 sin el volcado de NASS, la columna del estado se calculó a mano con
+la tabla de pesos de arriba y los valores regionales de ERS 2025; `process.py` la toma de
+`economia_anual.csv` al regenerar el card.)
+
+| anio | fips | condado | region_ers | por condado (USD/ac) | estado ponderado (USD/ac) | diferencia |
+|---|---|---|---|---|---|---|
+| 2025 | 27015 | Brown | Heartland | 963.43 | 941.02 | +22.41 |
+| 2025 | 27129 | Renville | Northern Crescent | 896.82 | 941.02 | -44.20 |
+| 2025 | 27023 | Chippewa | Heartland | 963.43 | 941.02 | +22.41 |
+| 2025 | 27067 | Kandiyohi | Northern Crescent | 896.82 | 941.02 | -44.20 |
+| 2025 | 39045 | Fairfield | Heartland | 963.43 | 945.86 | +17.57 |
+| 2025 | 39073 | Hocking | Eastern Uplands | 875.40 | 945.86 | -70.46 |
+| 2025 | 39053 | Gallia | Heartland | 963.43 | 945.86 | +17.57 |
+| 2025 | 39105 | Meigs | Eastern Uplands | 875.40 | 945.86 | -70.46 |
+
+Dos condados vecinos tienen el mismo valor en el archivo por estado, pero en el archivo por
+condado cambian de golpe al cruzar el límite de región: el borde es administrativo (ERS define las
+regiones por condado) y no un gradiente real de costos.
+
 ## Supuestos
 
 - **Precio del año comercial.** Se usa la fila `MARKETING YEAR` del `anio` de cosecha (para maíz
@@ -134,6 +178,11 @@ por condado en el período). Se guardan también en `data/interim/economia/pesos
   período (pesos fijos, no cambian por año, para que un condado suprimido un año no mueva el
   costo). IA, IL e IN son 100 % Heartland y KS 100 % Prairie Gateway; OH, NE y MN se reparten
   entre varias regiones (tabla de pesos arriba).
+- **Costos por condado (T141).** Cada condado toma, sin ponderar, los valores de la Farm
+  Resource Region que le asigna `reglink.xls`. Supone que el costo por acre de un condado es el
+  de su región: ERS no publica nada más fino. A diferencia del archivo por estado, si la región del
+  condado no tiene serie ese año (p. ej. trigo en Eastern Uplands, o avena antes de 2023) el
+  condado queda **vacío**: no se toma el valor de otra región ni se repondera.
 - **Regiones sin dato.** Si una región del estado no tiene serie ERS ese año (Eastern Uplands no
   tiene trigo y su avena empieza en 2023; la avena de Prairie Gateway termina en 2022), se
   repondera entre las regiones con dato, siempre que cubran al menos el 50 % del peso del
