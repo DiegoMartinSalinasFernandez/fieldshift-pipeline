@@ -287,6 +287,47 @@ class TestFiguras(Base):
         self.assertIn("se saltea (falta el archivo)", err.getvalue())
         self.assertFalse(salida.exists())
 
+    def test_serie_de_un_condado(self):
+        import pandas as pd
+        meses = [f"{a}-{m:02d}" for a in (2020, 2021, 2022) for m in range(1, 13)]
+        agua = pd.DataFrame({"fips": "91001", "mes": meses, "sm_rootzone_m3m3": [0.2 + 0.001 * i for i in range(36)]})
+        clima_m = pd.DataFrame({"fips": "91001", "mes": meses, "prec_imerg_mm": [50.0 + i for i in range(36)]})
+        salida = self.tmp / "fig"
+        with contextlib.redirect_stdout(io.StringIO()):
+            fig.fig_serie_condado(agua, clima_m, salida, fips="91001", evento=("2021-05", "2021-08", "evento"),
+                                  desde="2020-01", hasta="2022-12", nombre_condado="C91001")
+        self.assertEqual([p.name for p in salida.iterdir()], ["fig8_county_monthly_smap_imerg.png"])
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            fig.fig_serie_condado(agua, clima_m, self.tmp / "otra", fips="92001")
+        self.assertIn("el condado 92001 no tiene SMAP o IMERG", err.getvalue())
+        self.assertFalse((self.tmp / "otra").exists())
+
+    def test_nombre_de_condado_sale_del_zip(self):
+        d = self.tmp / "datos-xa-xb"
+        release(d)
+        self.assertEqual(fig.nombre_de_condado([d], "92001"), "C92001")
+        self.assertIsNone(fig.nombre_de_condado([d], "99999"))
+
+    def test_mapas_por_condado_con_poligonos_inventados(self):
+        import geopandas as gpd
+        import pandas as pd
+        from shapely.geometry import box
+        pol = gpd.GeoDataFrame({"fips": FIPS}, geometry=[box(i, 0, i + 1, 1) for i in range(len(FIPS))],
+                               crs=5070)
+        rot = pd.DataFrame({"fips": FIPS, "anio": 2013, "pct_maiz_tras_maiz": [10.0, None, 60.0]})
+        clima_m = pd.DataFrame({"fips": FIPS, "mes": "2013-07", "prec_imerg_mm": [80.0, 95.0, 120.0]})
+        salida = self.tmp / "fig"
+        with contextlib.redirect_stdout(io.StringIO()):
+            fig.fig_mapas_condado(rot, clima_m, pol, salida)
+        self.assertEqual([p.name for p in salida.iterdir()], ["fig7_county_maps_corn_after_corn_imerg.png"])
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            fig.fig_mapas_condado(rot, clima_m.assign(mes="2013-06"), pol, self.tmp / "otra")
+        self.assertIn("no hay prec_imerg_mm de 2013-07", err.getvalue())
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            fig.fig_mapas_condado(rot, clima_m, None, self.tmp / "otra")
+        self.assertIn("no hay polígonos", err.getvalue())
+        self.assertFalse((self.tmp / "otra").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

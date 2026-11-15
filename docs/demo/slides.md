@@ -93,12 +93,16 @@ published, hatched = release in progress.
 
 **Figure:** `docs/demo/fig/fig4_corn_after_soy_vs_corn_oh_ne_mn.png` (real, T074): corn after soybean vs corn
 after corn by county, 2024→2025, OH/NE/MN.
-- Still to make (optional): county maps of `pct_maiz_tras_maiz` and of a NASA layer for the same counties (July
-  `ndvi_maiz` from MODIS MOD13Q1, or `sm_rootzone_anom_z` from SMAP L4), so Relevance does not rest only on USDA
-  data. **[TBD: no map PNG exists yet.]** Until then, pair this slide with fig2 (MODIS NDVI, see slide 4).
+- `docs/demo/fig/fig7_county_maps_corn_after_corn_imerg_oh_ne_mn.png` (real, T121): two county maps of the
+  same 268 counties, 2025. Left: `pct_maiz_tras_maiz` (2024→2025 CDL, fixed 0–100 % scale). Right: July 2025
+  rainfall from NASA GPM IMERG, county median **127.5 mm**, from **52.4** to **201.8 mm**. Caption: "Corn after
+  corn (USDA CDL) and July rainfall (NASA GPM IMERG), by county, Ohio, Nebraska and Minnesota, 2025. Grey = no
+  value." `[src: release datos-oh-ne-mn, rotacion_anual.csv anio = 2025 and clima_mensual.csv mes = 2025-07;
+  county polygons: U.S. Census Cartographic Boundary 2024, 1:500k]` This is the slide's NASA layer, so Relevance
+  does not rest only on USDA data; the two maps sit side by side, they are not a model or a correlation.
 
-**Data credit:** USDA NASS Cropland Data Layer and Crop Sequence Boundaries · NASA MODIS MOD13Q1 V061
-(doi:10.5067/MODIS/MOD13Q1.061) *or* NASA SMAP L4 V8 (doi:10.5067/T5RUATAQREF8).
+**Data credit:** USDA NASS Cropland Data Layer and Crop Sequence Boundaries · NASA GPM IMERG V07
+(doi:10.5067/GPM/IMERGDF/DAY/07), via the POWER API · U.S. Census Bureau Cartographic Boundary Files.
 
 ---
 
@@ -190,8 +194,13 @@ SSURGO · USDA NASS CSB and CDL.
 - Satellites see every county every day; gauges are points. We show both, and their difference.
 
 **Figure:**
-- Left: `fig3_smap_may_vs_planting_oh_ne_mn.png` (real). Optional alternative, not made yet: a monthly time
-  series for one published county (`sm_rootzone_m3m3`, `prec_imerg_mm`), July shaded. **[TBD]**
+- Left: `fig3_smap_may_vs_planting_oh_ne_mn.png` (real). Alternative (real, T121):
+  `fig8_county_monthly_smap_imerg_oh_ne_mn.png`, monthly IMERG rainfall (bars) and SMAP root-zone soil moisture
+  (line) for Stearns County, Minnesota (FIPS 27145), 2019–2023, with May–August 2021 shaded as the 2021
+  Minnesota drought. SMAP root-zone moisture falls from **0.240** m³/m³ (April 2021) to **0.148** (August 2021),
+  below the county's own same-month mean for 2015–2025 (dotted line). Caption: "One county, five years: NASA
+  rainfall and soil moisture through the 2021 drought, Stearns County, Minnesota." `[src: release
+  datos-oh-ne-mn, agua_mensual.csv and clima_mensual.csv, fips 27145; event from docs/qa/oh_ne_mn.md]`
 - Right: `docs/demo/fig/fig6_lluvia_oh_ne_mn.png` (real, T095): monthly `prec_imerg_mm` vs `prec_power_mm`,
   one point per county-month, one panel per state (OH, NE, MN), 1:1 line, ratio of totals and r in each
   title. Caption: "GPM IMERG vs NASA POWER monthly rainfall by county, Ohio, Nebraska and Minnesota,
@@ -287,6 +296,7 @@ private window.
 | Median county corn yield 138.4 bu/ac (2012) vs 160.6 bu/ac (other years), 5,987 county-years | release `datos-oh-ne-mn`, `produccion_anual.csv` |
 | 8 NASA products in the published release | data cards inside the `datos-oh-ne-mn` zips |
 | Figures fig1–fig5 | `docs/demo/fig/` (T074), from release `datos-oh-ne-mn` |
+| Figures fig7 (county maps) and fig8 (Stearns, MN monthly series); July 2025 IMERG median 127.5 mm, 52.4–201.8 mm | `docs/demo/fig/` (T121), from release `datos-oh-ne-mn` |
 | 10 fields; relief 4.00–31.03 m (NASADEM) | `docs/datasets/lotes.md`, field and relief tables (release not published) |
 | NDVI Landsat − HLS: −0.0173 ± 0.0477, 343,925 pairs | `docs/datasets/lotes.md`, "Coherencia Landsat–Sentinel-2" |
 | Rainfall r and bias (POWER, IMERG vs PRISM: 91,416 county-months; vs CoCoRaHS: 42,798) — IA/IL/IN, not in a published release | `docs/datasets/validacion.md`, validation table |
