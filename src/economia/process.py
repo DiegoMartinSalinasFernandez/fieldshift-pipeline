@@ -43,6 +43,9 @@ ERS_DIR = REPO / "data" / "raw" / "economia" / "ers"
 INTERIM = REPO / "data" / "interim" / "economia"
 OUT = REPO / "data" / "processed" / "economia"
 CARD = REPO / "docs" / "datasets" / "economia.md"
+CONDADOS = REPO / "data" / "reference" / "condados.csv"
+GPKG = REPO / "data" / "reference" / "condados.gpkg"
+REF_REGIONES = REPO / "data" / "reference" / "regiones_ers.csv"
 
 GRANOS = {
     "maiz": "CORN, GRAIN - PRICE RECEIVED, MEASURED IN $ / BU",
@@ -280,6 +283,110 @@ def costos_ers(estados: dict, anios: range) -> pd.DataFrame:
     return g.drop(columns="peso")
 
 
+def tabla_regiones(estados: dict) -> pd.DataFrame:
+    """fips, estado, region_ers de cada condado de condados.csv en los estados (de reglink.xls).
+
+    Se guarda en data/reference/regiones_ers.csv (tabla chica, regenerable). Falla si un condado
+    de condados.csv no está en reglink.xls: no se le inventa región.
+    """
+    cond = pd.read_csv(CONDADOS, dtype={"fips": str}, usecols=["fips", "estado"])
+    cond = cond[cond["estado"].isin(list(estados))]
+    reg = regiones_condado().rename(columns={"fips_condado": "fips"})
+    t = cond.merge(reg, on="fips", how="left")
+    sin = sorted(t.loc[t["region_ers"].isna(), "fips"])
+    if sin:
+        raise SystemExit(f"condados de condados.csv sin región en {REGLINK.name}: {sin}")
+    t = t.sort_values("fips").reset_index(drop=True)
+    REF_REGIONES.parent.mkdir(parents=True, exist_ok=True)
+    t.to_csv(REF_REGIONES, index=False, lineterminator="\n")
+    return t
+
+
+def costos_condado(regiones: pd.DataFrame, reg: pd.DataFrame, anios: range) -> pd.DataFrame:
+    """Costos ERS por condado: cada condado toma los valores de su Farm Resource Region.
+
+    `regiones`: fips, region_ers (tabla_regiones). `reg`: salida de costos_region. Sin promedios
+    ni reponderación: si la región del condado no tiene serie ese año, el condado queda vacío.
+    Una fila por fips × anio × cultivo de ERS.
+    """
+    cols = list(ITEMS.values())
+    grilla = pd.MultiIndex.from_product(
+        [sorted(regiones["fips"]), list(anios), list(ERS)],
+        names=["fips", "anio", "cultivo"]).to_frame(index=False)
+    g = grilla.merge(regiones[["fips", "region_ers"]], on="fips", how="left")
+    out = g.merge(reg[["region_ers", "anio", "cultivo"] + cols],
+                  on=["region_ers", "anio", "cultivo"], how="left")
+    if len(out) != len(grilla):
+        raise SystemExit("costos_condado: filas duplicadas al unir con las regiones ERS")
+    out = fmt(out, cols)[["fips", "anio", "cultivo", "region_ers"] + cols]
+    return out.sort_values(["fips", "anio", "cultivo"]).reset_index(drop=True)
+
+
+def escribir_condado(estados: dict, anios: range) -> pd.DataFrame:
+    """Escribe economia_condado_anual.csv (y data/reference/regiones_ers.csv)."""
+    regiones = tabla_regiones(estados)
+    cond = costos_condado(regiones, costos_region(anios), anios)
+    OUT.mkdir(parents=True, exist_ok=True)
+    cond.to_csv(OUT / "economia_condado_anual.csv", index=False, float_format="%.2f",
+                lineterminator="\n")
+    return cond
+
+
+def condados_de_borde(regiones: pd.DataFrame, n: int = 2) -> list[tuple[str, str]]:
+    """Hasta n pares de condados vecinos (comparten borde en condados.gpkg) de regiones ERS
+    distintas, por estado con más de una región. Vacío si no está condados.gpkg."""
+    if not GPKG.exists():
+        return []
+    import geopandas as gpd
+    g = gpd.read_file(GPKG)[["fips", "geometry"]]
+    g["fips"] = g["fips"].astype(str).str.zfill(5)
+    g = g.merge(regiones[["fips", "estado", "region_ers"]], on="fips", how="inner")
+    pares = []
+    for est, sub in g.groupby("estado"):
+        if sub["region_ers"].nunique() < 2:
+            continue
+        sub = sub.sort_values("fips").reset_index(drop=True)
+        hallados = 0
+        for i, a in sub.iterrows():
+            vecinos = sub[(sub.index > i) & (sub["region_ers"] != a["region_ers"])
+                          & sub.geometry.intersects(a.geometry)]
+            for _, b in vecinos.iterrows():
+                pares.append((a["fips"], b["fips"]))
+                hallados += 1
+                if hallados >= n:
+                    break
+            if hallados >= n:
+                break
+    return pares
+
+
+def tabla_borde(anual: pd.DataFrame, cond: pd.DataFrame, regiones: pd.DataFrame,
+                pares: list[tuple[str, str]], cultivo: str = "maiz") -> list[str]:
+    """Filas markdown: costo total por condado vs. el valor del estado (método ponderado)."""
+    if not pares:
+        return []
+    c = cond[cond["cultivo"] == cultivo].dropna(subset=["costo_total_usd_ac"])
+    if c.empty:
+        return []
+    anio = int(c["anio"].max())
+    c = c[c["anio"] == anio].set_index("fips")
+    e = anual[(anual["cultivo"] == cultivo) & (anual["anio"] == anio)].set_index("fips_estado")
+    nombres = pd.read_csv(CONDADOS, dtype={"fips": str}).set_index("fips")["condado"]
+    filas = []
+    for par in pares:
+        for f in par:
+            if f not in c.index:
+                continue
+            v = c.at[f, "costo_total_usd_ac"]
+            ve = e["costo_total_usd_ac"].get(f[:2], float("nan"))
+            dif = v - ve if pd.notna(ve) else float("nan")
+            ve_txt = f"{ve:.2f}" if pd.notna(ve) else ""
+            dif_txt = f"{dif:+.2f}" if pd.notna(dif) else ""
+            filas.append(f"| {anio} | {f} | {nombres.get(f, '')} | {c.at[f, 'region_ers']} | "
+                         f"{v:.2f} | {ve_txt} | {dif_txt} |")
+    return filas
+
+
 def fmt(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
     df = df.copy()
     df["anio"] = df["anio"].astype(int)
@@ -449,6 +556,12 @@ def main() -> None:
     estados = cfg["zona"]["estados"]
     anios = range(int(cfg["periodo"]["anio_inicio"]), int(cfg["periodo"]["anio_fin"]) + 1)
     OUT.mkdir(parents=True, exist_ok=True)
+
+    # costos por condado (T141): solo necesita los CSV de ERS y reglink.xls, no el volcado de NASS
+    cond = escribir_condado(estados, anios)
+    print(f"economia_condado_anual.csv: {len(cond)} filas ({time.time() - t0:.0f} s)")
+    if "--solo-condado" in sys.argv:
+        return
 
     granos = precios(estados, anios, GRANOS, "precio_usd_bu")
     print(f"precios granos: {granos['precio_usd_bu'].notna().sum()} valores ({time.time() - t0:.0f} s)")
