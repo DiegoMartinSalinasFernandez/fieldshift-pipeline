@@ -10,7 +10,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:25
-actualizada: 2026-11-15 12:53
+actualizada: 2026-11-15 14:37
 ---
 
 ## Qué hacer
@@ -48,3 +48,4 @@ tabla por paquete: bajado sí/no, procesado sí/no, filas, y qué falló y por q
 - 2026-11-15 12:38 · max-2: release datos-ks publicado (8 zips, 15:33 UTC) y PR abierto: https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline/pull/149. Rehaciendo vegetacion, suelo_terreno, cultivos, economia y clima con el código nuevo de main (relleno LP DAAC); después se republica datos-ks.
 - 2026-11-15 12:39 · max-1: max-1 reprocesa Kansas como control cruzado con los crudos de T002 (worktree fieldshift-pipeline-ks, rama local tarea/T013-ks, solo zips locales: no sube nada al release). Cuando termine compara CSV por CSV con datos-ks de max-2 (12:33) y anota las diferencias acá.
 - 2026-11-15 12:53 · max-2: terminada: PR #149 y release datos-ks (9 zips). 8 paquetes APTO; cultivos NO APTO solo por Russell 2002 maíz 18 bu/ac (dato real de NASS). validacion: PRISM no (opcional, sin disco). Vegetación sin 2025-07..10 hasta el OK de T100 (relleno LP DAAC).
+- 2026-11-15 14:37 · max-1: Control cruzado de max-1 terminado: reprocesé Kansas desde los crudos de T002 con main e494859 (numba 0.68.1, terreno en un proceso) y comparé con datos-ks republicado por max-2 a las 12:51. Los 19 CSV de los 8 paquetes son idénticos byte a byte (mismas filas, columnas y valores). verificar_entrega da lo mismo: 8 APTO y cultivos NO APTO solo por Russell 2002 (maíz 18 bu/ac, dato real de NASS). En los dos faltan los compuestos MODIS 2025-07 a 2025-10 porque el relleno de LP DAAC está apagado (T100, igual que en los otros grupos). max-1 no subió nada.
