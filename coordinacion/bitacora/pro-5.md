@@ -48,3 +48,4 @@
 - 09:34 T130: terminada, PR #120
 - 09:34 T134: tomada por el trabajador
 - 09:54 T134: terminada, PR #125
+- 09:54 T136: tomada por el trabajador
