@@ -106,9 +106,17 @@ class TestSEETileDrain(unittest.TestCase):
     def test_varios_recuadros_una_pasada(self):
         rec = {"A": (LON0 + 10 * CELDA, LAT0 - 40 * CELDA, LON0 + 20 * CELDA, LAT0 - 30 * CELDA),
                "B": (LON0 + 300 * CELDA, LAT0 - 250 * CELDA, LON0 + 320 * CELDA, LAT0 - 230 * CELDA),
+               "C": (LON0 + 5 * CELDA, LAT0 - 12 * CELDA, LON0 + 15 * CELDA, LAT0 - 1 * CELDA),
                "fuera": (LON0 - 1, LAT0 + 1, LON0 - 0.9, LAT0 + 1.1)}
-        out = self._recortar(False, "clase", rec)
-        self.assertEqual(sorted(out), ["A", "B"])
+        for capa, ref in (("clase", self.clase), ("prob", self.prob)):
+            out = self._recortar(False, capa, rec)
+            self.assertEqual(sorted(out), ["A", "B", "C"])
+            for k, ruta in out.items():  # "C" toca las filas de nodata, que GDAL escribe al final del archivo
+                with rasterio.open(ruta) as d:
+                    a = d.read(1)
+                    c0 = int(round((d.transform.c - LON0) / CELDA))
+                    f0 = int(round((LAT0 - d.transform.f) / CELDA))
+                np.testing.assert_array_equal(a, ref[f0:f0 + a.shape[0], c0:c0 + a.shape[1]])
 
     def test_muestreo_celda_que_contiene_el_centro(self):
         ruta = self.dir / "prob.tif"
@@ -149,7 +157,10 @@ class TestSEETileDrain(unittest.TestCase):
             b = (self.dir / nombre).read_bytes()
             offs, largos = self.m.tiras_tiff(b)
             self.assertEqual(len(offs), ALTO)
-            self.assertTrue((np.diff(offs) == largos[:-1]).all())
+            self.assertTrue((largos == ANCHO * 4).all())
+            # las tiras cubren un bloque continuo, aunque GDAL escriba al final las que son todo nodata
+            orden = np.sort(offs)
+            self.assertTrue((np.diff(orden) == ANCHO * 4).all())
 
 
 if __name__ == "__main__":

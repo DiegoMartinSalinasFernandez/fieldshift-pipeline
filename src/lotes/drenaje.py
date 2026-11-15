@@ -22,6 +22,7 @@ centro (vecino más cercano, como con AgTile-US).
 """
 from __future__ import annotations
 
+import bisect
 import datetime as dt
 import math
 import struct
@@ -224,20 +225,28 @@ def recortar_miembro(leer: Rangos, tamanio_zip: int, miembro: str,
         # georreferencia desde la cabecera (rasterio lee solo el IFD)
         with rasterio.open(disperso) as ds:
             ventanas = _filas_necesarias(ds.transform, ds.height, recuadros)
-            alto = ds.height
-        ventanas = {k: w for k, w in ventanas.items() if w.row_off < alto and w.row_off + w.height > 0}
+            alto, ancho = ds.height, ds.width
+        ventanas = {k: w for k, w in ventanas.items() if w.row_off < alto and w.row_off + w.height > 0
+                    and w.col_off < ancho and w.col_off + w.width > 0}
         if not ventanas:
             return {}
-        fila_ini = max(0, min(int(w.row_off) for w in ventanas.values()))
-        fila_fin = min(alto - 1, max(int(w.row_off + w.height) - 1 for w in ventanas.values()))
-        ini_b, fin_b = int(offs[fila_ini]), int(offs[fila_fin] + largos[fila_fin])
-        # bytes ya inflados en la cabecera + el resto del flujo, escritos solo dentro de [ini_b, fin_b)
+        # tiras (filas) necesarias, como intervalos de bytes ordenados: GDAL puede escribir las tiras fuera de
+        # orden (por ejemplo, las que son todo nodata, al final), así que no alcanza con [primera, última]
+        filas = sorted({r for w in ventanas.values()
+                        for r in range(max(0, int(w.row_off)), min(alto, int(w.row_off + w.height)))})
+        iv = sorted((int(offs[r]), int(offs[r] + largos[r])) for r in filas if largos[r] > 0)
+        ini_iv = [a for a, _ in iv]
+        fin_b = max(z for _, z in iv)
         with open(disperso, "r+b") as f:
             def escribir(bloque: bytes, inicio: int) -> None:
-                a, z = max(inicio, ini_b), min(inicio + len(bloque), fin_b)
-                if a < z:
-                    f.seek(a)
-                    f.write(bloque[a - inicio:z - inicio])
+                fin = inicio + len(bloque)
+                k = max(0, bisect.bisect_right(ini_iv, inicio) - 1)
+                while k < len(iv) and iv[k][0] < fin:
+                    a, z = max(inicio, iv[k][0]), min(fin, iv[k][1])
+                    if a < z:
+                        f.seek(a)
+                        f.write(bloque[a - inicio:z - inicio])
+                    k += 1
             escribir(bytes(cab), 0)
             pos = len(cab)
             if pos < fin_b:
@@ -248,7 +257,7 @@ def recortar_miembro(leer: Rangos, tamanio_zip: int, miembro: str,
                         break
         flujo.close()
         if pos < fin_b:
-            raise RuntimeError(f"{miembro}: el flujo terminó antes de la fila {fila_fin}")
+            raise RuntimeError(f"{miembro}: el flujo terminó antes de las filas necesarias")
         escritos = {}
         with rasterio.open(disperso) as ds:
             for k, w in ventanas.items():
