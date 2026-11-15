@@ -1,14 +1,14 @@
 ---
 id: T115
 titulo: 'How to add a new state: English guide for judges (scalability)'
-estado: tomada
+estado: libre
 plan_minimo: pro
-maquina: pro-3
+maquina: null
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T08:11
-actualizada: 2026-11-15 08:20
+actualizada: 2026-11-15 08:21
 ---
 
 ## Qué hacer
@@ -30,3 +30,4 @@ La página en un PR.
 ## Notas
 - 2026-11-15 08:20 · pro-3: tomada
 - 2026-11-15 08:20 · pro-3: corte por el límite de uso de Claude; 0 commits guardados en tarea/T115-auto. El trabajador sigue cuando se renueve.
+- 2026-11-15 08:21 · pro-3: soltada: pro-3 sin cuota de Claude hasta 15/11 10:50
