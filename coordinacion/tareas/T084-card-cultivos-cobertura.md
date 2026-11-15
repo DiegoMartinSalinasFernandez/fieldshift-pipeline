@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T06:27
-actualizada: 2026-11-15 06:28
+actualizada: 2026-11-15 06:35
 ---
 
 ## Qué hacer
@@ -36,3 +36,4 @@ El cambio en los data cards en un PR. No cambies código ni esquema.
 
 ## Notas
 - 2026-11-15 06:28 · pro-4: tomada
+- 2026-11-15 06:35 · pro-4: corte por el límite de uso de Claude; 1 commits guardados en tarea/T084-auto. El trabajador sigue cuando se renueve.
