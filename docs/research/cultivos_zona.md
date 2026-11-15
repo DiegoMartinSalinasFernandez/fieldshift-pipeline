@@ -1,12 +1,12 @@
-# Tabla de cultivos para el Corn Belt (IA, IL, IN)
+# Tabla de cultivos para el Corn Belt (IA, IL, IN, OH, NE, MN, KS)
 
 Pregunta: Tabla de cultivos para el Corn Belt → completar config/cultivos.csv: fechas habituales de siembra y cosecha por estado (USDA Agricultural Handbook 628 y Crop Progress), ventana de período crítico, Kc inicial/medio/final y duración de etapas (FAO-56), temperatura base y método de GDD, umbral de daño por calor, sensibilidad a helada, profundidad de raíces, fijación de N, rastrojo y C:N, familia botánica, tolerancia a sequía y a anegamiento, valor forrajero. Incluir cultivos de cobertura (centeno, avena, trébol).
 
-Respuesta corta: `config/cultivos.csv` quedó completo en parte, con 194 celdas respaldadas por una cita textual cada una (`docs/research/cultivos_fuentes.csv`). Las fechas de siembra y cosecha salen del USDA Agricultural Handbook 628 (edición 2010), tomando el rango más amplio entre Iowa, Illinois e Indiana; la siembra de primavera de alfalfa y heno, de Iowa State. Los Kc, la duración de las etapas y la profundidad máxima de raíces salen de FAO-56 (tablas 11, 12 y 22). La temperatura base y el tope de GDD salen de Wikipedia y del Oklahoma Mesonet (alfalfa 5/30 °C, pasto para heno 10/30 °C, soja 10/35 °C, trigo tope 30 °C). El período crítico sale de notas de extensión de Purdue (maíz: fines de junio a fines de julio), Iowa State (soja: fines de julio y principios de agosto) e Illinois (trigo: floración de fines de abril a la cuarta semana de mayo). La helada mortal del maíz y la soja es −2 °C; el rastrojo, 7,5 t/ha en maíz, 4,3 en trigo y 3,1 en soja (sur de Ontario). Los rasgos de los cultivos de cobertura salen de SARE (*Managing Cover Crops Profitably*) y la familia botánica de Wikipedia. La soja fija en promedio 111 kg N/ha (revisión de Salvagiotti et al. 2008) y su rastrojo tiene C:N 65:1 (Manitoba). El centeno sobrevive hasta −25 °C, llega a 2 m de raíz, se siembra hasta octubre y florece en mayo–junio (Yara). Maíz, trigo y heno son gramíneas que no fijan N. Quedan vacíos por falta de una fuente verificable: período crítico de avena, alfalfa, heno y trébol, rastrojo en t/ha de alfalfa, heno y trébol (las fuentes de EE.UU. dan lb/acre), N fijado en kg/ha de los no fijadores (ninguna fuente da "0 kg/ha"), calor de avena, centeno, heno y trébol, y etapas y temperatura base del trébol.
+Respuesta corta: `config/cultivos.csv` quedó completo en parte, con 194 celdas respaldadas por una cita textual cada una (`docs/research/cultivos_fuentes.csv`). Las fechas de siembra y cosecha salen del USDA Agricultural Handbook 628 (edición 2010), tomando el rango más amplio entre los siete estados (Iowa, Illinois, Indiana, Ohio, Nebraska, Minnesota y Kansas; los cuatro últimos se sumaron en T006); la siembra de primavera de alfalfa y heno, de Iowa State. Los Kc, la duración de las etapas y la profundidad máxima de raíces salen de FAO-56 (tablas 11, 12 y 22). La temperatura base y el tope de GDD salen de Wikipedia y del Oklahoma Mesonet (alfalfa 5/30 °C, pasto para heno 10/30 °C, soja 10/35 °C, trigo tope 30 °C). El período crítico sale de notas de extensión de Purdue (maíz: fines de junio a fines de julio), Iowa State (soja: fines de julio y principios de agosto) e Illinois (trigo: floración de fines de abril a la cuarta semana de mayo). La helada mortal del maíz y la soja es −2 °C; el rastrojo, 7,5 t/ha en maíz, 4,3 en trigo y 3,1 en soja (sur de Ontario). Los rasgos de los cultivos de cobertura salen de SARE (*Managing Cover Crops Profitably*) y la familia botánica de Wikipedia. La soja fija en promedio 111 kg N/ha (revisión de Salvagiotti et al. 2008) y su rastrojo tiene C:N 65:1 (Manitoba). El centeno sobrevive hasta −25 °C, llega a 2 m de raíz, se siembra hasta octubre y florece en mayo–junio (Yara). Maíz, trigo y heno son gramíneas que no fijan N. Quedan vacíos por falta de una fuente verificable: período crítico de avena, alfalfa, heno y trébol, rastrojo en t/ha de alfalfa, heno y trébol (las fuentes de EE.UU. dan lb/acre), N fijado en kg/ha de los no fijadores (ninguna fuente da "0 kg/ha"), calor de avena, centeno, heno y trébol, y etapas y temperatura base del trébol.
 
 Detalle:
 
-**Fechas habituales (Handbook 628, NASS, octubre de 2010).** Para cada estado y cultivo la tabla trae el inicio, el período más activo y el fin, tanto de la siembra como de la cosecha. Con el PDF pasado a texto, las tablas por estado quedan por columnas: primero la columna "begin" de todos los cultivos, después "most active" y después "end". En `cultivos.csv` va el inicio más temprano y el fin más tardío de los tres estados.
+**Fechas habituales (Handbook 628, NASS, octubre de 2010).** Para cada estado y cultivo la tabla trae el inicio, el período más activo y el fin, tanto de la siembra como de la cosecha. Con el PDF pasado a texto, las tablas por estado quedan por columnas: primero la columna "begin" de todos los cultivos, después "most active" y después "end". En `cultivos.csv` va el inicio más temprano y el fin más tardío de los siete estados.
 
 | Cultivo | Estado | Siembra inicio | Siembra fin | Cosecha inicio | Cosecha fin |
 |---|---|---|---|---|---|
@@ -24,8 +24,33 @@ Detalle:
 | Avena de primavera | IN | Apr 1 | May 10 | Jul 10 | Aug 10 |
 | Heno de alfalfa | IA / IL / IN | (na) | (na) | May 24 / May 9 / May 15 | Sep 29 / Sep 21 / Sep 20 |
 | Otro heno | IA / IL / IN | (na) | (na) | Jun 5 / May 11 / May 15 | Sep 3 / Jul 17 / Sep 20 |
+| Maíz grano | OH | Apr 18 | May 30 | Sep 27 | Dec 1 |
+| Maíz grano | NE | Apr 19 | May 21 | Sep 18 | Nov 20 |
+| Maíz grano | MN | Apr 22 | May 29 | Sep 27 | Nov 23 |
+| Maíz grano | KS | Apr 5 | May 25 | Sep 1 | Nov 10 |
+| Soja | OH | Apr 26 | Jun 10 | Sep 23 | Nov 12 |
+| Soja | NE | May 5 | Jun 8 | Sep 23 | Nov 2 |
+| Soja | MN | May 2 | Jun 13 | Sep 20 | Oct 31 |
+| Soja | KS | May 5 | Jul 1 | Sep 20 | Nov 15 |
+| Trigo de invierno | OH | Sep 26 | Nov 6 | Jun 28 | Jul 20 |
+| Trigo de invierno | NE | Sep 3 | Oct 12 | Jun 28 | Jul 27 |
+| Trigo de invierno | MN | Aug 25 | Sep 25 | Jul 20 | Sep 10 |
+| Trigo de invierno | KS | Sep 10 | Nov 1 | Jun 15 | Jul 15 |
+| Avena de primavera | OH | Apr 4 | May 13 | Jul 13 | Aug 11 |
+| Avena de primavera | NE | Mar 26 | May 3 | Jul 4 | Aug 7 |
+| Avena de primavera | MN | Apr 11 | May 26 | Jul 21 | Sep 4 |
+| Avena de primavera | KS | Feb 20 | May 1 | Jul 10 | Aug 10 |
+| Heno de alfalfa | OH / NE / MN / KS | (na) | (na) | May 17 / May 19 / May 25 / May 10 | Sep 24 / Oct 15 / Sep 24 / Nov 1 |
+| Otro heno | OH / NE / MN / KS | (na) | (na) | May 20 / Jun 5 / Jun 5 / May 25 | Oct 13 / Sep 20 / Aug 30 / Sep 15 |
 
-Resultado en `cultivos.csv`: maíz 04-14 a 06-10 y 09-14 a 11-25; soja 05-01 a 06-25 y 09-19 a 11-10; trigo de invierno 09-06 a 11-09 y 06-15 a 08-07; avena 03-20 a 05-13 y 07-04 a 08-13; alfalfa (cortes) 05-09 a 09-29; heno 05-11 a 09-20.
+Resultado en `cultivos.csv` con los siete estados: maíz 04-05 a 06-10 y 09-01 a 12-01; soja 04-26 a 07-01 y 09-19 a 11-15; trigo de invierno 08-25 a 11-09 y 06-15 a 09-10; avena 02-20 a 05-26 y 07-04 a 09-04; alfalfa (cortes) 05-09 a 11-01; heno 05-11 a 10-13.
+
+**Estados nuevos (T006, 2026-11-15).** Las tablas de Ohio (pág. 45), Nebraska (42), Minnesota (41) y Kansas (39) del mismo Handbook 628. Con ellas cambian 13 celdas, todas por un extremo de Kansas, Minnesota u Ohio. Antes, con IA/IL/IN, los valores eran: maíz 04-14 a 06-10 y 09-14 a 11-25; soja 05-01 a 06-25 y 09-19 a 11-10; trigo de invierno 09-06 a 11-09 y 06-15 a 08-07; avena 03-20 a 05-13 y 07-04 a 08-13; alfalfa 05-09 a 09-29; heno 05-11 a 09-20. Quién fija cada extremo nuevo:
+- **Kansas** (el más al sur): siembra más temprana de maíz (Apr 5) y avena (Feb 20), cosecha más temprana de maíz (Sep 1), fin de siembra de soja (Jul 1) y fin de cosecha de soja (Nov 15) y de alfalfa (Nov 1).
+- **Minnesota** (el más al norte): el trigo de invierno se siembra antes (Aug 25) y se cosecha más tarde (hasta Sep 10); la avena se siembra y cosecha más tarde (May 26, Sep 4).
+- **Ohio:** fin de cosecha de maíz (Dec 1) y de otro heno (Oct 13), e inicio de siembra de soja (Apr 26).
+
+En la evidencia (`cultivos_fuentes.csv`) cada celda nueva cita la columna de la tabla del estado que la fija (inicio, fin de siembra o de cosecha), como sale del PDF pasado a texto; las 20 citas del Handbook se verificaron con `cita_en_texto` y `numero_en_cita` de `loop/checks/score.py`.
 
 **Kc y etapas (FAO-56).** Tabla 12: maíz grano 0,3 / 1,20 / 0,35 (Kc ini del grupo de cereales; para el Kc final elegí 0,35, el extremo de cosecha seca del rango 0,60–0,35); soja 0,4 / 1,15 / 0,50 (Kc ini del grupo de leguminosas); trigo de invierno con suelo congelado 0,4 / 1,15 / 0,25; avena 0,3 / 1,15 / 0,25; alfalfa para heno (promedio de cortes) 0,40 / 0,95 / 0,90; trébol (berseem para heno) 0,40 / 0,90 / 0,85; heno como raigrás para heno 0,95 / 1,05 / 1,00. Tabla 11 (días ini/des/med/fin): maíz grano 30/40/50/50 (Idaho, EE.UU., la fila de clima templado del norte de EE.UU.); soja 20/30/60/25 (Central USA, y se usó 30 del valor "30/35"); trigo de invierno 160/75/75/25 (Idaho, con dormancia invernal); avena 20/25/60/30 (fila "barley/oats/wheat", siembra marzo/abril a 35–45 °N); alfalfa, primer ciclo de corte, 10/30/25/10 (Idaho). Tabla 22 (máximo del rango de profundidad efectiva de raíces): maíz 1,7 m, soja 1,3 m, trigo de invierno 1,8 m, avena 1,5 m, alfalfa 2,0 m, trébol (berseem) 0,9 m, heno (raigrás) 1,0 m.
 
@@ -62,6 +87,7 @@ Resultado en `cultivos.csv`: maíz 04-14 a 06-10 y 09-14 a 11-25; soja 05-01 a 0
 **Ronda 11 (noche 2).** Avena: la paja estimada en las praderas canadienses (1994–2003) promedia 2,48 t/ha (Sokhansanj et al. 2006, Canadian Biosystems Engineering, tabla 3) → `rastrojo_t_ms_ha` 2.48. Trébol rojo (Kentucky, AGR-33): el primer corte va a ~10 % de floración, "about june 1-15", y el último corte tiene que salir antes del 10–25 de septiembre → `cosecha_inicio` 06-01 y `cosecha_fin` 09-25 (del primer al último corte, como en la alfalfa y el heno); el C:N es "low: 15-20:1" en la tabla de coberturas de Clemson → `rastrojo_cn` 15, el límite inferior. Centeno: la biomasa aérea de la mezcla de cobertura con centeno en primavera, en maíz-soja en Lexington (Illinois), promedió 1,26 Mg/ha en 2015–2018 (Thompson et al. 2020, Agronomy Journal, tabla 4) → `rastrojo_t_ms_ha` 1.26.
 
 **Supuestos.**
+- T006: el rango de siete estados es más ancho que el de tres, y los extremos los ponen estados con poca superficie del cultivo (trigo de invierno de Minnesota, 45 mil acres en 2009; avena de Kansas, 35 mil). Para ventanas por estado conviene la tabla por estado de arriba, que no entra en `cultivos.csv` (una fila por cultivo). Las siembras de alfalfa, heno, centeno y trébol siguen saliendo de Iowa State y otras fuentes de Iowa: no encontré en el Handbook 628 fechas de siembra de esos cultivos para OH, NE, MN ni KS (dice "(NA)" o no los lista), así que esas celdas no cambian y quedan sin dato por estado. Crop Progress no se usó acá: da fechas reales por año y va en `fenologia_estado.csv`.
 - El Handbook 628 es de 2010 (es la última edición). Crop Progress da fechas reales por año: eso va en `fenologia_estado.csv` del paquete `cultivos`, no acá.
 - "Heno" (CDL 37, otro heno) se representa con raigrás para heno (FAO-56), con raigrás perenne (*Lolium perenne*, Wikipedia: familia y valor forrajero) y con la fila "hay, other" del Handbook 628. "Trébol" se representa con berseem en FAO-56 (es el único trébol de la tabla 12) y con trébol rojo en SARE y Wikipedia.
 - Las filas de FAO-56 elegidas para la duración de las etapas son las más parecidas al Corn Belt (Idaho, Central USA, 35–45 °N), no mediciones en IA/IL/IN.
@@ -76,7 +102,7 @@ Resultado en `cultivos.csv`: maíz 04-14 a 06-10 y 09-14 a 11-25; soja 05-01 a 0
 - Ronda 11 (noche 2): la paja de avena es una estimación (producción de grano × relación paja/grano × 0,88) para Alberta, Saskatchewan y Manitoba, no una medición en IA/IL/IN; se tomó el promedio de las praderas. Las fechas de corte del trébol son de Kentucky, al sur del Corn Belt: en Iowa el primer corte puede atrasarse una o dos semanas. El C:N del trébol es una categoría de una tabla de coberturas del sudeste de EE.UU. (rango 15–20:1); se tomó el límite inferior, como en la helada del trébol y el N fijado. El "rastrojo" del centeno es la biomasa aérea de la cobertura al terminarla en primavera (lo que vuelve al suelo), de una mezcla con centeno en un solo sitio de Illinois; varía mucho con la fecha de siembra y de terminación (los ensayos de Iowa dan de 0,2 a casi 9 t/ha).
 
 Fuentes:
-- [Field Crops Usual Planting and Harvesting Dates, Agricultural Handbook 628 (USDA NASS, octubre de 2010)](https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf), consultado 2026-11-14
+- [Field Crops Usual Planting and Harvesting Dates, Agricultural Handbook 628 (USDA NASS, octubre de 2010)](https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf), consultado 2026-11-14 (IA, IL, IN) y 2026-11-15 (OH, NE, MN, KS)
 - [FAO-56 Crop evapotranspiration, cap. 6: ETc - single crop coefficient (tablas 11 y 12)](https://www.fao.org/3/x0490e/x0490e0b.htm), consultado 2026-11-14
 - [FAO-56 Crop evapotranspiration, cap. 8: ETc under soil water stress conditions (tabla 22)](https://www.fao.org/4/x0490e/x0490e0e.htm), consultado 2026-11-14
 - [Growing degree-day (Wikipedia)](https://en.wikipedia.org/wiki/Growing_degree-day), consultado 2026-11-14
