@@ -1,7 +1,7 @@
 ---
 id: T064
 titulo: 'Research: precisión del CDL y clases relevantes en MO, WI y SD'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 04:42
-actualizada: 2026-11-15 04:46
+actualizada: 2026-11-15 04:53
 ---
 
 ## Qué hacer
@@ -31,3 +31,4 @@ El research en un PR.
 
 ## Notas
 - 2026-11-15 04:46 · pro-1: tomada
+- 2026-11-15 04:53 · pro-1: terminada por el trabajador: PR #57, falta la revisión de max-1
