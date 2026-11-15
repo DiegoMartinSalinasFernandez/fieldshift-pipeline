@@ -1,7 +1,7 @@
 ---
 id: T048
 titulo: 'Propuesta: rangos físicos de los checks para los estados nuevos'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 04:05
-actualizada: 2026-11-15 04:04
+actualizada: 2026-11-15 04:11
 ---
 
 ## Qué hacer
@@ -39,3 +39,4 @@ La propuesta en un PR.
 
 ## Notas
 - 2026-11-15 04:04 · pro-1: tomada
+- 2026-11-15 04:11 · pro-1: terminada por el trabajador: PR #38, falta la revisión de max-1
