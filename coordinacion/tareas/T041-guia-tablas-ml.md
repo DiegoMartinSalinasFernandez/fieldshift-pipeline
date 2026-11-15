@@ -1,7 +1,7 @@
 ---
 id: T041
 titulo: Guía de las tablas unidas para el equipo de ML (docs/guia_tablas.md)
-estado: tomada
+estado: bloqueada
 plan_minimo: pro
 maquina: pro-2
 estados: []
@@ -37,3 +37,4 @@ La guía en un PR.
 ## Notas
 - 2026-11-15 03:29 · pro-2: tomada
 - 2026-11-15 03:29 · pro-2: intento sin cambios (You've hit your weekly limit · resets Nov 16, 9am (America/Argentina/Buenos_Aires)); reintento
+- 2026-11-15 03:29 · pro-2: bloqueada: el trabajador no logró cambios en 2 intentos. You've hit your weekly limit · resets Nov 16, 9am (America/Argentina/Buenos_Aires)
