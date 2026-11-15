@@ -149,6 +149,17 @@ def tabla(t, cond, h) -> str:
     return "\n".join(lineas)
 
 
+def reemplazar(texto: str, tablas: dict[str, str], origen: list[str]) -> str:
+    """`texto` con cada tabla entre sus marcadores y la lista de zips entre `<!-- zips -->`."""
+    for k, v in tablas.items():
+        patron = re.compile(rf"(<!-- tabla:{k} -->).*?(<!-- /tabla:{k} -->)", re.S)
+        if not patron.search(texto):
+            sys.exit(f"user_story.md no tiene los marcadores de la tabla {k}")
+        texto = patron.sub(lambda m: m.group(1) + "\n" + v + "\n" + m.group(2), texto)
+    return re.sub(r"(<!-- zips -->).*?(<!-- /zips -->)",
+                  lambda m: m.group(1) + ", ".join(f"`{z}`" for z in origen) + m.group(2), texto, flags=re.S)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--zips", type=Path, default=ZIPS)
@@ -161,15 +172,7 @@ def main() -> None:
     if a.imprimir:
         print("\n\n".join(tablas.values()))
         return
-    texto = HISTORIA.read_text(encoding="utf-8")
-    for k, v in tablas.items():
-        patron = re.compile(rf"(<!-- tabla:{k} -->).*?(<!-- /tabla:{k} -->)", re.S)
-        if not patron.search(texto):
-            sys.exit(f"user_story.md no tiene los marcadores de la tabla {k}")
-        texto = patron.sub(lambda m: m.group(1) + "\n" + v + "\n" + m.group(2), texto)
-    texto = re.sub(r"(<!-- zips -->).*?(<!-- /zips -->)",
-                   lambda m: m.group(1) + ", ".join(f"`{z}`" for z in origen) + m.group(2), texto, flags=re.S)
-    HISTORIA.write_text(texto, encoding="utf-8")
+    HISTORIA.write_text(reemplazar(HISTORIA.read_text(encoding="utf-8"), tablas, origen), encoding="utf-8")
     print(f"actualizado {HISTORIA.relative_to(REPO)}")
 
 
