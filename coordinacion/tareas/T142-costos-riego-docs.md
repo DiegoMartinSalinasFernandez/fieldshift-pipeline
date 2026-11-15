@@ -1,16 +1,16 @@
 ---
 id: T142
 titulo: Tabla de referencia de costos con riego (UNL, K-State) y FINBIN/KFMA en `docs/` (espera OK)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - NE
 - KS
 depende_de: []
 rama: null
 creada: 2026-11-15T09:59
-actualizada: 2026-11-15T09:59
+actualizada: 2026-11-15 09:59
 ---
 
 ## Qué hacer
@@ -30,3 +30,4 @@ números: si un presupuesto no se encuentra, decilo.
 El documento en un PR, retenido como dice arriba.
 
 ## Notas
+- 2026-11-15 09:59 · pro-2: tomada
