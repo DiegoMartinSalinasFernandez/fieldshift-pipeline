@@ -1,14 +1,14 @@
 ---
 id: T058
 titulo: Script de figuras para la demo con los datos publicados
-estado: tomada
+estado: libre
 plan_minimo: pro
-maquina: pro-5
+maquina: null
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:30
-actualizada: 2026-11-15 04:48
+actualizada: 2026-11-15 04:50
 ---
 
 ## Qué hacer
@@ -39,3 +39,4 @@ El script y las figuras en un PR.
 - 2026-11-15 04:45 · pro-5: tomada
 - 2026-11-15 04:48 · pro-5: soltada: quedó a medias, PR #53 actualizado. INCOMPLETA: `docs/demo/figuras.py` está terminado y probado, pero faltan los PNG reales en `docs/demo/fig/`. Los releases `datos-ia-il-in`, `datos-ks` y `datos-oh-ne-mn` no se ven desde afuera, y en pro-5 `gh` sigue denegado (es el tercer intento). Para cerrarla hace falta correr el script en una má
 - 2026-11-15 04:48 · pro-5: tomada
+- 2026-11-15 04:50 · pro-5: soltada: quedó a medias, PR #53 actualizado. INCOMPLETA: `docs/demo/figuras.py` está terminado y probado, pero faltan los PNG reales en `docs/demo/fig/`. Es el cuarto intento en pro-5 y los zips publicados siguen sin poder bajarse: `gh` está denegado en esta máquina y las URLs públicas `https://github.com/<repo>/releases/download/<etiqueta>/<e
