@@ -1,9 +1,9 @@
 ---
 id: T010
 titulo: Sacar del código y los data cards los supuestos de IA, IL e IN
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - OH
 - NE
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:15
-actualizada: 2026-11-15 01:15
+actualizada: 2026-11-15 02:10
 ---
 
 ## Qué hacer
@@ -36,3 +36,4 @@ que dan por hecho esos tres estados (por ejemplo "IA, IL e IN", "IA/IL/IN" o "tr
 Un PR con los arreglos y, en el resultado, la lista de lo que se encontró y lo que queda para T003.
 
 ## Notas
+- 2026-11-15 02:10 · pro-1: tomada
