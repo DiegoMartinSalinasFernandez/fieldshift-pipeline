@@ -1,9 +1,9 @@
 ---
 id: T082
 titulo: 'Research: SMAP de Crop-CASMA en condados con costa de lago (MN, WI, MI, OH)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - MN
 - WI
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T06:18
-actualizada: 2026-11-15T06:18
+actualizada: 2026-11-15 06:20
 ---
 
 ## Qué hacer
@@ -33,3 +33,4 @@ Escribí `docs/research/smap_costas.md` (formato de la sección 8 del CLAUDE.md)
 El research en un PR.
 
 ## Notas
+- 2026-11-15 06:20 · pro-1: tomada
