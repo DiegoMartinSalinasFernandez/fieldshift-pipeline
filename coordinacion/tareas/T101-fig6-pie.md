@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T07:02
-actualizada: 2026-11-15 07:03
+actualizada: 2026-11-15 07:04
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ El PNG y el texto en un PR.
 
 ## Notas
 - 2026-11-15 07:03 · pro-1: tomada
+- 2026-11-15 07:04 · pro-1: corte por el límite de uso de Claude; 2 commits guardados en tarea/T101-auto. El trabajador sigue cuando se renueve.
