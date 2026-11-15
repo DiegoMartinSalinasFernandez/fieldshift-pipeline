@@ -11,3 +11,4 @@
 - 04:33 T056: tomada por el trabajador
 - 04:35 T056: terminada, PR #51
 - 04:35 T057: tomada por el trabajador
+- 04:39 T057: terminada, PR #52
