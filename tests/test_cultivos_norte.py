@@ -186,3 +186,31 @@ def test_validar_csv_rendimiento_nuevos_fuera_de_rango(repo_cultivos, tmp_path, 
     p.write_text(f"fips,anio,cultivo,{col}\n27053,2022,{cultivo},{rend}\n", encoding="utf-8")
     errores = validar_csv(p)
     assert any(col in e and cultivo in e for e in errores), errores
+
+
+# ---------------------------------------------------------------- fenologia()
+
+def _prog(com, clase, unidad, semana, pct, estado="27", util=AU):
+    f = _fila(com, clase, util, "PROGRESS", unidad, str(pct), anio=semana[:4], cond="", estado=estado)
+    f.update({"AGG_LEVEL_DESC": "STATE", "FREQ_DESC": "WEEKLY", "REFERENCE_PERIOD_DESC": "WEEK #00",
+              "WEEK_ENDING": semana})
+    return f
+
+
+def test_fenologia_cultivos_del_norte():
+    filas = [
+        _prog("CORN", "ALL CLASSES", "PCT PLANTED", "2020-05-03", 30),
+        _prog("CORN", "ALL CLASSES", "PCT PLANTED", "2020-05-10", 70),
+        _prog("WHEAT", "SPRING, (EXCL DURUM)", "PCT HEADED", "2020-06-28", 20),
+        _prog("WHEAT", "SPRING, (EXCL DURUM)", "PCT HEADED", "2020-07-05", 80),
+        # el durum del mismo estado no se mezcla con el de primavera
+        _prog("WHEAT", "SPRING, DURUM", "PCT HEADED", "2020-06-28", 60),
+        _prog("WHEAT", "SPRING, DURUM", "PCT HEADED", "2020-07-05", 90),
+        _prog("BEANS", "DRY EDIBLE, INCL CHICKPEAS", "PCT BLOOMING", "2018-07-15", 50),
+    ]
+    df = proc.fenologia(pd.DataFrame(filas)).set_index(["anio", "cultivo"])
+    assert df.loc[(2020, "maiz"), "doy_50_sembrado"] == pytest.approx(124 + 3.5)  # 3 de mayo = doy 124
+    # 28 de junio de 2020 = doy 180; 20 % -> 80 %: el 50 % cae a mitad de semana
+    assert df.loc[(2020, "trigo_primavera"), "doy_50_floracion"] == pytest.approx(183.5)
+    assert pd.isna(df.loc[(2020, "trigo_durum"), "doy_50_floracion"])  # ya estaba en 60 % la 1.ª semana
+    assert df.loc[(2018, "frijol_seco"), "doy_50_floracion"] == pytest.approx(196)

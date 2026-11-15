@@ -40,7 +40,7 @@ COLS = {
     "fenologia_estado.csv": [
         ("doy_50_sembrado", "Día del año en que se cruza el 50 % sembrado (PCT PLANTED, interpolado)", "día del año", CP, "CT03"),
         ("doy_50_emergido", "Día del año en que se cruza el 50 % emergido (PCT EMERGED)", "día del año", CP, ""),
-        ("doy_50_floracion", "Día del año del 50 % en floración (maíz PCT SILKING, soja PCT BLOOMING)", "día del año", CP, "CT05"),
+        ("doy_50_floracion", "Día del año del 50 % en floración (maíz PCT SILKING; soja, girasol, canola y frijol PCT BLOOMING; trigos y cebada: espigado, PCT HEADED)", "día del año", CP, "CT05"),
         ("doy_50_cosechado", "Día del año del 50 % cosechado (maíz: grano)", "día del año", CP, "CT04"),
     ],
     "rotacion_anual.csv": [

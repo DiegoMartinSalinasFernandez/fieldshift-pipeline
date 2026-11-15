@@ -177,6 +177,18 @@ def doy_cruce_50(g: pd.DataFrame) -> float:
     return round(float(x[i - 1] + (50 - y[i - 1]) * (x[i] - x[i - 1]) / (y[i] - y[i - 1])), 1)
 
 
+# Crop Progress de los cultivos del norte (T147; propuesta_cultivos.md): (COMMODITY, clases, etapa de floración).
+# El maíz para silo no tiene Crop Progress propio.
+ETAPAS_NORTE = {
+    "trigo_primavera": ("WHEAT", ("SPRING, (EXCL DURUM)",), "PCT HEADED"),
+    "trigo_durum": ("WHEAT", ("SPRING, DURUM",), "PCT HEADED"),
+    "cebada": ("BARLEY", ("ALL CLASSES",), "PCT HEADED"),
+    "girasol": ("SUNFLOWER", ("ALL CLASSES",), "PCT BLOOMING"),
+    "canola": ("CANOLA", ("ALL CLASSES",), "PCT BLOOMING"),
+    "frijol_seco": ("BEANS", ("DRY EDIBLE, (EXCL CHICKPEAS)", "DRY EDIBLE, INCL CHICKPEAS"), "PCT BLOOMING"),
+}
+
+
 def fenologia(crops: pd.DataFrame) -> pd.DataFrame:
     cfg = cargar_config()["periodo"]
     d = crops[(crops["SOURCE_DESC"] == "SURVEY") & (crops["AGG_LEVEL_DESC"] == "STATE")
@@ -190,11 +202,19 @@ def fenologia(crops: pd.DataFrame) -> pd.DataFrame:
     }
     # el maíz se cosecha para grano o silaje: el % cosechado es el de grano
     util = {("CORN", "PCT HARVESTED"): "GRAIN"}
+    # T147: cultivos del norte, con su CLASS_DESC (en cereales la "floración" es el espigado, HEADED)
+    for cultivo, (com, clases, flor) in ETAPAS_NORTE.items():
+        for col, unidad in zip(etapas, ("PCT PLANTED", "PCT EMERGED", flor, "PCT HARVESTED")):
+            etapas[col][cultivo] = (com, unidad, clases)
     filas = []
     for col, por_cultivo in etapas.items():
-        for cultivo, (com, unidad) in por_cultivo.items():
+        for cultivo, (com, unidad, *clases) in por_cultivo.items():
             dv = d[(d["COMMODITY_DESC"] == com) & (d["UNIT_DESC"] == unidad)
                    & (d["UTIL_PRACTICE_DESC"] == util.get((com, unidad), "ALL UTILIZATION PRACTICES"))].copy()
+            if clases:  # si hay más de una clase (frijol), gana la primera en cada semana
+                orden = {c: i for i, c in enumerate(clases[0])}
+                dv = dv[dv["CLASS_DESC"].isin(orden)]
+                dv = dv.iloc[np.argsort(dv["CLASS_DESC"].map(orden).to_numpy(), kind="stable")]
             if dv.empty:
                 continue
             fecha = pd.to_datetime(dv["WEEK_ENDING"].str[:10])
