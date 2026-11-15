@@ -82,7 +82,14 @@ def bajar(nombre: str, url: str | None = None, raw: Path = RAW) -> Path:
     return destino
 
 
+def asegurar_manifest(man: Path) -> None:
+    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
+    if not man.exists() or man.stat().st_size == 0:
+        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
+
+
 def registrar(ruta: Path, url: str) -> None:
+    asegurar_manifest(MANIFEST)
     rel = ruta.relative_to(REPO).as_posix()
     with open(MANIFEST, encoding="utf-8") as f:
         if any(rel == fila.get("archivo") for fila in csv.DictReader(f)):
@@ -183,6 +190,7 @@ def bajar_teselas_cdl(anios: list[int] | None = None) -> None:
 
 
 def registrar_tesela(ruta: Path, href: str) -> None:
+    asegurar_manifest(MANIFEST)
     rel = ruta.relative_to(REPO).as_posix()
     with open(MANIFEST, "a", encoding="utf-8", newline="") as f:
         csv.writer(f).writerow(["cultivos", rel, "USDA NASS (vía Microsoft Planetary Computer)",
@@ -211,6 +219,7 @@ def bajar_teselas_cros(anios: list[int] | None = None) -> None:
     (lockRaster) y TIFF LZW. Mismo nombre que las teselas de Planetary Computer para que
     process.py las lea igual. Reanudable: las que ya están en raw se saltean.
     """
+    asegurar_manifest(MANIFEST)
     INTERIM.mkdir(parents=True, exist_ok=True)
     claves = sorted({"_".join(p.stem.split("_")[3:]) for p in RAW_TESELAS.glob("2021_30m_cdls_*.tif")})
     rasters = rasters_cros()
@@ -273,6 +282,7 @@ def main() -> None:
     # archivos en raw sin fila en el manifest (corte entre mover y registrar)
     for p in RAW.glob("qs.*.txt.gz"):
         registrar(p, f"{BASE}/sites/default/files/datasets/{p.name}")
+    asegurar_manifest(MANIFEST)
     with open(MANIFEST, encoding="utf-8") as f:
         en_manifest = {fila["archivo"] for fila in csv.DictReader(f)}
     for p in sorted(RAW_TESELAS.glob("*.tif")):

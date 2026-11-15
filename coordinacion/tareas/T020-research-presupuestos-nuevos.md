@@ -1,7 +1,7 @@
 ---
 id: T020
 titulo: 'Research: presupuestos por cultivo de las universidades de OH, NE, MN y KS'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:40
-actualizada: 2026-11-15 02:36
+actualizada: 2026-11-15 02:41
 ---
 
 ## Qué hacer
@@ -38,3 +38,4 @@ El research en un PR, con una recomendación.
 
 ## Notas
 - 2026-11-15 02:36 · pro-1: tomada
+- 2026-11-15 02:41 · pro-1: terminada por el trabajador: PR #15, falta la revisión de max-1

@@ -20,3 +20,11 @@ maquinas:
     plan: pro
     rol: research y código chico (T005 hecha, PR 2)
     estados: [NE, KS]   # preferencia: riego, trigo de invierno
+  pro-3:
+    plan: pro
+    rol: research y código chico (T021, PR 13); activa desde el 2026-11-15
+    estados: [IA, IL, IN]   # preferencia: la primera tanda
+  pro-4:
+    plan: pro
+    rol: research y código chico (T025, PR 11); activa desde el 2026-11-15
+    estados: [IA, IL, IN, OH, NE, MN, KS]   # sin preferencia: toma por orden

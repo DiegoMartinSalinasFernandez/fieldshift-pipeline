@@ -220,8 +220,15 @@ def bajar_escena(anio: int, esc: dict, vs: list[dict], tok: str, m_crs, m_tr) ->
     return "ok"
 
 
+def asegurar_manifest(man: Path) -> None:
+    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
+    if not man.exists() or man.stat().st_size == 0:
+        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
+
+
 def registrar_manifest(anio: int, escenas: dict[str, dict]) -> None:
     man = REPO / "manifest.csv"
+    asegurar_manifest(man)
     filas = list(csv.DictReader(open(man, encoding="utf-8")))
     campos = ["paquete", "archivo", "fuente", "producto", "version", "fecha_descarga", "consulta_o_url"]
     idx = {f["archivo"]: i for i, f in enumerate(filas)}

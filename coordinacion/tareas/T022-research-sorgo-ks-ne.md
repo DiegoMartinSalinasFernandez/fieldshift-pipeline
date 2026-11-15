@@ -1,7 +1,7 @@
 ---
 id: T022
 titulo: 'Research: ¿sumar sorgo granífero para Kansas y Nebraska?'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados:
@@ -10,7 +10,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 02:50
-actualizada: 2026-11-15 02:36
+actualizada: 2026-11-15 02:44
 ---
 
 ## Qué hacer
@@ -39,3 +39,4 @@ El research en un PR, con una recomendación (sumar o no, y por qué). La decisi
 
 ## Notas
 - 2026-11-15 02:36 · pro-2: tomada
+- 2026-11-15 02:44 · pro-2: terminada por el trabajador: PR #16, falta la revisión de max-1

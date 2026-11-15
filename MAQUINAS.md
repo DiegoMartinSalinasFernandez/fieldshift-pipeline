@@ -1,7 +1,7 @@
 # Cómo trabajan juntas las máquinas
 
 Varias computadoras trabajan en este repo al mismo tiempo, cada una con la cuenta de Claude de su dueño: dos
-con plan **Max** y dos con plan **Pro**. Las máquinas no se hablan entre ellas: **el repo es el punto de
+con plan **Max** y cuatro con plan **Pro**. Las máquinas no se hablan entre ellas: **el repo es el punto de
 encuentro**. Todo lo que una máquina necesita saber de otra está acá adentro.
 
 | Qué | Dónde | Quién escribe |
@@ -17,7 +17,7 @@ para el equipo de ML. El humano decide lo que el CLAUDE.md le reserva: estados, 
 5 GB y cambios de esquema de los CSV.
 
 **El repo es público.** No subas credenciales, `.env`, nombres, mails ni usuarios. Las máquinas se llaman
-`max-1`, `max-2`, `pro-1` y `pro-2`.
+`max-1`, `max-2` y `pro-1` a `pro-4`.
 
 ---
 

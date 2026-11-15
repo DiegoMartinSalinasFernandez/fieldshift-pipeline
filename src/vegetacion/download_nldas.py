@@ -73,8 +73,15 @@ def bajar(anio: int, mes: int, bbox: list[float], sufijo: str = "zona") -> None:
     tmp.replace(destino)
 
 
+def asegurar_manifest(man: Path) -> None:
+    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
+    if not man.exists() or man.stat().st_size == 0:
+        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
+
+
 def registrar_manifest(grupos: dict[str, list[float]]) -> None:
     man = REPO / "manifest.csv"
+    asegurar_manifest(man)
     with open(man, encoding="utf-8", newline="") as f:
         filas = list(csv.reader(f))
     presentes = {r[1] for r in filas[1:] if len(r) > 1}

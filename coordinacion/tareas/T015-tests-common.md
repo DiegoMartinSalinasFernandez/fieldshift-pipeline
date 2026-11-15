@@ -1,14 +1,14 @@
 ---
 id: T015
 titulo: Pruebas de src/common (tests/test_common.py)
-estado: libre
+estado: hecha
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 01:40
-actualizada: 2026-11-15 01:40
+actualizada: 2026-11-15 02:57
 ---
 
 ## Qué hacer
@@ -32,3 +32,5 @@ actualizada: 2026-11-15 01:40
 `pytest tests/test_common.py` pasa (o solo falla lo marcado `xfail`), en un PR.
 
 ## Notas
+- 2026-11-15 02:55 · pro-1: tomada
+- 2026-11-15 02:57 · pro-1: terminada por el trabajador: PR #23, falta la revisión de max-1

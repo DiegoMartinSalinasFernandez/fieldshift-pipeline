@@ -380,7 +380,7 @@ def hacer_tarea(claude: str, tid: str, meta: dict, texto_tarea: str, maquina: st
 def correr(a) -> None:
     maquina = os.environ.get("FIELDSHIFT_MAQUINA", "").strip()
     if not maquina:
-        sys.exit("Falta FIELDSHIFT_MAQUINA (max-1, max-2, pro-1, pro-2)")
+        sys.exit("Falta FIELDSHIFT_MAQUINA (max-1, max-2, pro-1 a pro-4)")
     estados = [s.strip().upper() for s in os.environ.get("FIELDSHIFT_ESTADOS", "").split(",") if s.strip()]
     tareas.traer(False)
     plan = tareas.plan_de(maquina) or ("max" if maquina.startswith("max") else "pro")

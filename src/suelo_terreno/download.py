@@ -94,7 +94,14 @@ def areas_estado(alfa: str) -> list[str]:
     return [f[0] for f in t[1:]]
 
 
+def asegurar_manifest(man: Path) -> None:
+    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
+    if not man.exists() or man.stat().st_size == 0:
+        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
+
+
 def registrar(archivo: Path, tabla: str, alfa: str) -> None:
+    asegurar_manifest(MANIFEST)
     rel = archivo.relative_to(REPO).as_posix()
     with open(MANIFEST, encoding="utf-8") as f:
         if any(rel in linea for linea in f):
@@ -156,6 +163,7 @@ def teselas_nasadem() -> list[str]:
 
 
 def registrar_dem(archivo: Path, tesela: str) -> None:
+    asegurar_manifest(MANIFEST)
     rel = archivo.relative_to(REPO).as_posix()
     with open(MANIFEST, encoding="utf-8") as f:
         if any(rel in linea for linea in f):

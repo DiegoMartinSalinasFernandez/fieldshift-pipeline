@@ -1,7 +1,7 @@
 ---
 id: T023
 titulo: Descargas con un bbox por estado (vegetacion, nldas y CDL)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-4
 estados:
@@ -13,7 +13,7 @@ depende_de:
 - T021
 rama: null
 creada: 2026-11-15 02:50
-actualizada: 2026-11-15 02:37
+actualizada: 2026-11-15 02:44
 ---
 
 ## Qué hacer
@@ -38,3 +38,4 @@ Las tres descargas con un bbox por estado y la paginación del CDL, en un PR con
 
 ## Notas
 - 2026-11-15 02:37 · pro-4: tomada
+- 2026-11-15 02:44 · pro-4: terminada por el trabajador: PR #17, falta la revisión de max-1

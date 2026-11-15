@@ -44,7 +44,14 @@ def log(msg: str) -> None:
         f.write(linea + "\n")
 
 
+def asegurar_manifest(man: Path) -> None:
+    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
+    if not man.exists() or man.stat().st_size == 0:
+        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
+
+
 def upsert_manifest(filas: list[dict]) -> None:
+    asegurar_manifest(MANIFEST)
     campos = ["paquete", "archivo", "fuente", "producto", "version", "fecha_descarga", "consulta_o_url"]
     with open(MANIFEST, encoding="utf-8", newline="") as f:
         actuales = list(csv.DictReader(f))

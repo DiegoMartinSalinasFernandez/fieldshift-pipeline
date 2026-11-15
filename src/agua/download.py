@@ -145,7 +145,14 @@ def main_smap(workers: int, reverso: bool = False) -> None:
                 print(f"{hechos}/{len(tareas)}", flush=True)
 
 
+def asegurar_manifest(man: Path) -> None:
+    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
+    if not man.exists() or man.stat().st_size == 0:
+        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
+
+
 def registrar_manifest_smap() -> None:
+    asegurar_manifest(MANIFEST)
     with open(MANIFEST, encoding="utf-8", newline="") as fh:
         ya = {r[1] for r in csv.reader(fh) if len(r) > 1}
     nuevas = []
@@ -166,6 +173,7 @@ def registrar_manifest_smap() -> None:
 
 
 def registrar_manifest() -> None:
+    asegurar_manifest(MANIFEST)
     with open(MANIFEST, encoding="utf-8", newline="") as fh:
         filas = list(csv.reader(fh))
     ya = {r[1] for r in filas[1:] if r}
