@@ -1,14 +1,14 @@
 ---
 id: T042
 titulo: Pruebas de scripts/trabajador.py (orden de tareas y tiempo)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:00
-actualizada: 2026-11-15 04:05
+actualizada: 2026-11-15 03:54
 ---
 
 ## Qué hacer
@@ -37,3 +37,4 @@ Las pruebas en un PR.
 - 2026-11-15 03:42 · max-1: liberada y en pausa (auto: false): pro-2 llegó al límite semanal y el trabajador no lo reconoce, así que bloquea cada tarea que toma. Se reactiva cuando pro-2 pare.
 - 2026-11-15 03:42 · max-1: liberada y en pausa (auto: false): pro-2 llegó al límite semanal y el trabajador no lo reconoce, así que bloquea cada tarea que toma. Se reactiva cuando pro-2 pare.
 - 2026-11-15 04:05 · max-1: reactivada: pro-2 está parada hasta que se renueve su cuota.
+- 2026-11-15 03:54 · pro-3: tomada
