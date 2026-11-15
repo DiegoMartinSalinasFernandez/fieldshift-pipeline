@@ -1,7 +1,7 @@
 ---
 id: T063
 titulo: 'Research: cobertura de NASS y Crop Progress en MO, WI y SD'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-4
 estados:
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 04:42
-actualizada: 2026-11-15 04:45
+actualizada: 2026-11-15 05:11
 ---
 
 ## Qué hacer
@@ -35,3 +35,4 @@ El research en un PR.
 
 ## Notas
 - 2026-11-15 04:45 · pro-4: tomada
+- 2026-11-15 05:11 · pro-4: terminada por el trabajador: PR #60, falta la revisión de max-1
