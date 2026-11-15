@@ -18,3 +18,4 @@
 - 02:51 T024: terminada, PR #20
 - 02:51 T030: tomada por el trabajador
 - 02:55 T030: terminada, PR #22
+- 02:56 T015: tomada por el trabajador
