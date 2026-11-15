@@ -51,6 +51,24 @@ def pesos(gdf: gpd.GeoDataFrame, lat: np.ndarray, lon: np.ndarray) -> np.ndarray
     return w
 
 
+def grupos_archivos(archivos: list[Path], gdf: gpd.GeoDataFrame) -> list[tuple[gpd.GeoDataFrame, list[Path]]]:
+    """Separa los NetCDF por recorte (sufijo del nombre) con los condados que le tocan.
+
+    "_zona.nc" cubre todos los condados (un solo grupo de estados, como IA, IL e IN). Con varios
+    grupos (T023) el sufijo trae los estados, por ejemplo "_KS-NE.nc", y cada grilla se usa solo
+    para los condados de esos estados.
+    """
+    por_sufijo: dict[str, list[Path]] = {}
+    for p in archivos:
+        por_sufijo.setdefault(p.stem.rsplit("_", 1)[1], []).append(p)
+    out = []
+    for suf, arch in sorted(por_sufijo.items()):
+        sub = gdf if suf == "zona" else gdf[gdf["estado"].isin(suf.split("-"))]
+        if len(sub):
+            out.append((sub.reset_index(drop=True), arch))
+    return out
+
+
 def leer(p: Path, lat: np.ndarray, lon: np.ndarray) -> tuple[str, dict]:
     with xr.open_dataset(p) as d:
         mes = pd.Timestamp(d["time"].values[0]).strftime("%Y-%m")
@@ -160,22 +178,24 @@ def main() -> None:
     archivos = sorted(RAW.rglob("*.nc"))
     if not archivos:
         raise SystemExit("no hay archivos en data/raw/nldas/")
-    with xr.open_dataset(archivos[0]) as d0:
-        lat, lon = d0["lat"].values.astype(float), d0["lon"].values.astype(float)
-    w = pesos(gdf, lat, lon)
     fips = gdf["fips"].astype(str).str.zfill(5).values
     partes = []
-    for p in archivos:
-        mes, v = leer(p, lat, lon)
-        q = v["Qs"] + v["Qsb"]
-        partes.append(pd.DataFrame({
-            "fips": fips, "mes": mes,
-            "sm_0_10cm_m3m3": media(w, v["SoilM_0_10cm"]) / 100.0,
-            "sm_0_100cm_m3m3": media(w, v["SoilM_0_100cm"]) / 1000.0,
-            "et_nldas_mm": media(w, v["Evap"]),
-            "escorrentia_nldas_mm": media(w, q),
-            "swe_nldas_mm": media(w, v["SWE"]),
-        }))
+    for sub, arch in grupos_archivos(archivos, gdf):
+        with xr.open_dataset(arch[0]) as d0:
+            lat, lon = d0["lat"].values.astype(float), d0["lon"].values.astype(float)
+        w = pesos(sub, lat, lon)
+        fips_g = sub["fips"].astype(str).str.zfill(5).values
+        for p in arch:
+            mes, v = leer(p, lat, lon)
+            q = v["Qs"] + v["Qsb"]
+            partes.append(pd.DataFrame({
+                "fips": fips_g, "mes": mes,
+                "sm_0_10cm_m3m3": media(w, v["SoilM_0_10cm"]) / 100.0,
+                "sm_0_100cm_m3m3": media(w, v["SoilM_0_100cm"]) / 1000.0,
+                "et_nldas_mm": media(w, v["Evap"]),
+                "escorrentia_nldas_mm": media(w, q),
+                "swe_nldas_mm": media(w, v["SWE"]),
+            }))
     m = pd.concat(partes, ignore_index=True)
     print(f"lectura y medias: {time.time() - t0:.0f}s, {len(archivos)} meses")
     m["anio"] = m["mes"].str[:4].astype(int)

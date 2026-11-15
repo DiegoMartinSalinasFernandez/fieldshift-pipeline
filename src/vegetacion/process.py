@@ -239,6 +239,24 @@ def fenologia(g: pd.DataFrame) -> list[dict]:
     return filas
 
 
+def grupos_archivos(archivos: list[Path], gdf: gpd.GeoDataFrame) -> list[tuple[gpd.GeoDataFrame, list[Path]]]:
+    """Separa los NetCDF por recorte (sufijo del nombre) con los condados que le tocan.
+
+    "_zona.nc" cubre todos los condados (un solo grupo de estados, como IA, IL e IN). Con varios
+    grupos (T023) el sufijo trae los estados, por ejemplo "_KS-NE.nc", y cada grilla se usa solo
+    para los condados de esos estados.
+    """
+    por_sufijo: dict[str, list[Path]] = {}
+    for p in archivos:
+        por_sufijo.setdefault(p.stem.rsplit("_", 1)[1], []).append(p)
+    out = []
+    for suf, arch in sorted(por_sufijo.items()):
+        sub = gdf if suf == "zona" else gdf[gdf["estado"].isin(suf.split("-"))]
+        if len(sub):
+            out.append((sub.reset_index(drop=True), arch))
+    return out
+
+
 def nldas_mensual(gdf: gpd.GeoDataFrame) -> pd.DataFrame:
     """ET y PET mensuales de NLDAS-2 Noah por condado: media ponderada por la fracción de cada
     celda de 0,125° dentro del condado (supermuestreo 10x de la grilla). Sustituye a MOD16A2."""
@@ -248,44 +266,44 @@ def nldas_mensual(gdf: gpd.GeoDataFrame) -> pd.DataFrame:
     archivos = sorted((RAW / "nldas_noah_m").rglob("*.nc"))
     if not archivos:
         return pd.DataFrame(columns=["fips", "mes", "et_mm", "pet_mm"])
-    with xr.open_dataset(archivos[0]) as d0:
-        lat, lon = d0["lat"].values.astype(float), d0["lon"].values.astype(float)
-    ny, nx, k = len(lat), len(lon), 10
-    paso = 0.125
-    tr = from_origin(lon.min() - paso / 2, lat.max() + paso / 2, paso / k, paso / k)
-    g = gdf.to_crs("EPSG:4326")
-    fino = rasterize(((geom, i + 1) for i, geom in enumerate(g.geometry)), out_shape=(ny * k, nx * k),
-                     transform=tr, fill=0, dtype="int32")
-    filas_f, cols_f = np.nonzero(fino)
-    celda = (filas_f // k) * nx + (cols_f // k)   # índice de celda en la grilla norte-arriba
-    zona = fino[filas_f, cols_f] - 1
-    w = np.zeros((len(g), ny * nx))
-    np.add.at(w, (zona, celda), 1.0)
     salida = []
-    for p in archivos:
-        with xr.open_dataset(p) as d:
-            mes = pd.Timestamp(d["time"].values[0]).strftime("%Y-%m")
-            dias = pd.Timestamp(d["time"].values[0]).days_in_month
-            if not np.allclose(d["lat"].values, lat) or not np.allclose(d["lon"].values, lon):
-                raise ValueError(f"grilla distinta en {p.name}")
-            vals = {}
-            for var in ["Evap", "PotEvap"]:
-                a = d[var].values[0].astype(float)
-                a = np.where(np.isfinite(a) & (a > -9000), a, np.nan)
-                if d["lat"].values[0] < d["lat"].values[-1]:
-                    a = a[::-1]                        # a norte-arriba, como el raster fino
-                vals[var] = a.ravel()
-        for var, col, fac in [("Evap", "et_mm", 1.0),                               # kg m-2 (suma del mes) = mm
-                              ("PotEvap", "pet_mm", 86400 * dias / LAMBDA_VAP)]:    # W m-2 (media) -> mm/mes
-            v = vals[var]
-            ok = np.isfinite(v)
-            num = w[:, ok] @ v[ok]
-            den = w[:, ok].sum(axis=1)
-            frac = den / np.maximum(w.sum(axis=1), 1)
-            res = np.where(frac >= 0.5, num / np.maximum(den, 1e-9), np.nan) * fac
-            vals[col] = res
-        salida.append(pd.DataFrame({"fips": g["fips"].values, "mes": mes,
-                                    "et_mm": vals["et_mm"], "pet_mm": vals["pet_mm"]}))
+    for g, arch in grupos_archivos(archivos, gdf.to_crs("EPSG:4326")):
+        with xr.open_dataset(arch[0]) as d0:
+            lat, lon = d0["lat"].values.astype(float), d0["lon"].values.astype(float)
+        ny, nx, k = len(lat), len(lon), 10
+        paso = 0.125
+        tr = from_origin(lon.min() - paso / 2, lat.max() + paso / 2, paso / k, paso / k)
+        fino = rasterize(((geom, i + 1) for i, geom in enumerate(g.geometry)), out_shape=(ny * k, nx * k),
+                         transform=tr, fill=0, dtype="int32")
+        filas_f, cols_f = np.nonzero(fino)
+        celda = (filas_f // k) * nx + (cols_f // k)   # índice de celda en la grilla norte-arriba
+        zona = fino[filas_f, cols_f] - 1
+        w = np.zeros((len(g), ny * nx))
+        np.add.at(w, (zona, celda), 1.0)
+        for p in arch:
+            with xr.open_dataset(p) as d:
+                mes = pd.Timestamp(d["time"].values[0]).strftime("%Y-%m")
+                dias = pd.Timestamp(d["time"].values[0]).days_in_month
+                if not np.allclose(d["lat"].values, lat) or not np.allclose(d["lon"].values, lon):
+                    raise ValueError(f"grilla distinta en {p.name}")
+                vals = {}
+                for var in ["Evap", "PotEvap"]:
+                    a = d[var].values[0].astype(float)
+                    a = np.where(np.isfinite(a) & (a > -9000), a, np.nan)
+                    if d["lat"].values[0] < d["lat"].values[-1]:
+                        a = a[::-1]                        # a norte-arriba, como el raster fino
+                    vals[var] = a.ravel()
+            for var, col, fac in [("Evap", "et_mm", 1.0),                               # kg m-2 (suma del mes) = mm
+                                  ("PotEvap", "pet_mm", 86400 * dias / LAMBDA_VAP)]:    # W m-2 (media) -> mm/mes
+                v = vals[var]
+                ok = np.isfinite(v)
+                num = w[:, ok] @ v[ok]
+                den = w[:, ok].sum(axis=1)
+                frac = den / np.maximum(w.sum(axis=1), 1)
+                res = np.where(frac >= 0.5, num / np.maximum(den, 1e-9), np.nan) * fac
+                vals[col] = res
+            salida.append(pd.DataFrame({"fips": g["fips"].values, "mes": mes,
+                                        "et_mm": vals["et_mm"], "pet_mm": vals["pet_mm"]}))
     return pd.concat(salida, ignore_index=True)
 
 
