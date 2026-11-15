@@ -1,14 +1,14 @@
 ---
 id: T021
 titulo: Que las descargas creen manifest.csv si no existe
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados: []
 depende_de: []
 rama: null
-creada: '2026-11-15 02:35'
-actualizada: '2026-11-15 02:35'
+creada: 2026-11-15 02:35
+actualizada: 2026-11-15 02:29
 ---
 
 ## Qué hacer
@@ -31,3 +31,4 @@ fecha_descarga, consulta_o_url`) antes de leerlo.
 Ningún `registrar` falla sin `manifest.csv`, con la prueba descrita en el PR.
 
 ## Notas
+- 2026-11-15 02:29 · pro-3: tomada
