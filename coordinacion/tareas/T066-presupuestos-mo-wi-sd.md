@@ -1,9 +1,9 @@
 ---
 id: T066
 titulo: 'Research: presupuestos por cultivo y precios en MO, WI y SD'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados:
 - MO
 - WI
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 04:42
-actualizada: 2026-11-15 04:42
+actualizada: 2026-11-15 04:49
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ Escribí `docs/research/presupuestos_mo_wi_sd.md`.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 04:49 · pro-3: tomada
