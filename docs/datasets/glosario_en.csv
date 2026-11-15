@@ -123,6 +123,10 @@ cultivos,practicas_censo.csv,pct_maiz_regado,"Irrigated corn-for-grain harvested
 cultivos,practicas_censo.csv,pct_soja_regada,"Irrigated soybean harvested area / total soybean harvested area × 100 (Census short_desc SOYBEANS, IRRIGATED / SOYBEANS - ACRES HARVESTED)",%,USDA NASS Census of Agriculture (Quick Stats CENSUS),
 cultivos,practicas_censo.csv,pct_cosechado_regado,"Irrigated harvested cropland / total harvested cropland × 100 (Census short_desc AG LAND, CROPLAND, HARVESTED, IRRIGATED / AG LAND, CROPLAND, HARVESTED)",%,USDA NASS Census of Agriculture (Quick Stats CENSUS),
 cultivos,practicas_censo.csv,flag_nass,Withheld NASS values of the three irrigation-by-crop columns: `column=(D)` separated by `;` (numerator or denominator),text,USDA NASS Census of Agriculture (Quick Stats CENSUS),
+cultivos,fenologia_estado.csv,doy_50_espigado,Oats and winter wheat: day of year of 50 % headed (PCT HEADED),day of year,"USDA NASS Quick Stats Crop Progress (SURVEY, state)",
+cultivos,fenologia_estado.csv,doy_50_sembrado_otono,Winter wheat: day of year (of anio − 1) of 50 % planted in the fall,day of year,"USDA NASS Quick Stats Crop Progress (SURVEY, state)",
+cultivos,fenologia_estado.csv,doy_50_emergido_otono,Winter wheat: day of year (of anio − 1) of 50 % emerged in the fall,day of year,"USDA NASS Quick Stats Crop Progress (SURVEY, state)",
+cultivos,fenologia_estado.csv,flag_hueco_50,Stages (separated by ;) whose 50 % crossing was interpolated between reports more than 14 days apart,text,Derived from NASS Quick Stats,
 economia,economia_anual.csv,precio_usd_bu,"Price received by farmers, marketing-year average (NASS PRICE RECEIVED, MARKETING YEAR, state level)",USD/bu,USDA NASS Quick Stats (qs.crops bulk file),MK01
 economia,economia_anual.csv,valor_produccion_usd_ac,"Gross value of production per planted acre (ERS 'Total, gross value of production', regions weighted by planted area)",USD/ac,USDA ERS Commodity Costs and Returns,
 economia,economia_anual.csv,costo_operativo_usd_ac,"Operating costs per planted acre (ERS 'Total, operating costs', regions weighted by planted area)",USD/ac,USDA ERS Commodity Costs and Returns,MK03

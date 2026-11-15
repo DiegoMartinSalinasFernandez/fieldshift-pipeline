@@ -186,6 +186,14 @@ FUENTES = {
 # Descripciones: castellano del data card -> inglés
 # ---------------------------------------------------------------------------------------------------
 DESCRIPCIONES = {
+    "Avena y trigo de invierno: día del año del 50 % espigado (PCT HEADED)":
+        "Oats and winter wheat: day of year of 50 % headed (PCT HEADED)",
+    "Trigo de invierno: día del año (de anio − 1) del 50 % sembrado en otoño":
+        "Winter wheat: day of year (of anio − 1) of 50 % planted in the fall",
+    "Trigo de invierno: día del año (de anio − 1) del 50 % emergido en otoño":
+        "Winter wheat: day of year (of anio − 1) of 50 % emerged in the fall",
+    "Etapas (separadas por ;) cuyo 50 % se interpoló entre semanas separadas por más de 14 días":
+        "Stages (separated by ;) whose 50 % crossing was interpolated between reports more than 14 days apart",
     # agua
     "Humedad volumétrica del suelo superficial (0-5 cm), media del condado ponderada por área":
         "Surface volumetric soil moisture (0-5 cm), area-weighted county mean",
