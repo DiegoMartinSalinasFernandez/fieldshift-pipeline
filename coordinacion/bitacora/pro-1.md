@@ -42,3 +42,4 @@
 - 06:20 trabajador actualizado desde main
 - 06:20 T082: tomada por el trabajador
 - 06:25 T082: terminada, PR #73
+- 06:25 T077: tomada por el trabajador
