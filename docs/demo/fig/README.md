@@ -17,6 +17,22 @@ No incluyen IA, IL, IN ni KS; el pie de cada figura lo aclara. Se regeneran con:
 ## `fig6_lluvia_oh_ne_mn.png` (T095)
 
 Lluvia mensual GPM IMERG contra NASA POWER, un punto por condado-mes (`clima_mensual.csv` de
-`datos-oh-ne-mn`), un panel por estado, con la recta 1:1, la razón de totales IMERG/POWER y la r de Pearson. Se
+`datos-oh-ne-mn`). `prec_imerg_mm` es GPM IMERG Final V07 servido por la API de NASA POWER (`IMERG_PRECTOT`,
+0,1°; Late V07 de 2025-10 a 2025-12), no `GPM_3IMERGDF` de GES DISC (ver `docs/datasets/clima.md`); el pie de
+la figura lo dice. Hay un panel por estado, con la recta 1:1, la razón de totales IMERG/POWER y la r de Pearson. Se
 genera con el mismo comando de arriba (solo necesita el zip `datos-oh-ne-mn_clima.zip`). No es una validación
 contra pluviómetros: esa figura (contra PRISM) espera el release de `validacion`.
+
+## `fig0_mapa.png` (T094)
+
+Mapa de la lámina 1: los condados de todos los estados de `config/config.yaml` (Census Cartographic Boundary
+2024, 1:500k, el mismo zip que `src/base/download.py`), coloreados por grupo (IA/IL/IN, OH/NE/MN, KS, MO/WI/SD;
+paleta Okabe-Ito) y con el estado del release `datos-<estados>`: lleno si está publicado en la página de
+releases (API pública de GitHub, sin token), rayado si está en proceso. No lleva sufijo ni nota. Se regenera con:
+
+```
+.venv/bin/python -X utf8 docs/demo/figuras.py --solo-mapa
+```
+
+Usa el zip de `data/raw/base/` si ya está; si no, lo baja a `data/demo_zips/census_cb/` (fuera de git). Conviene
+correrlo de nuevo cada vez que se publica un release.

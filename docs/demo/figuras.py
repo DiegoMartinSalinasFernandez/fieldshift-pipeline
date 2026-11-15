@@ -9,6 +9,8 @@ existen), los lee sin descomprimir a disco y guarda PNG en `docs/demo/fig/`:
   fig4_corn_after_soy_vs_corn.png    % del maíz tras soja vs % tras maíz, por condado
   fig5_corn_yield_by_year.png        rendimiento de maíz por condado y año (cajas), 2012 resaltado
   fig6_lluvia.png                    lluvia mensual IMERG vs POWER por condado-mes, un panel por estado
+  fig0_mapa.png                      condados de los estados de config.yaml, por grupo y estado del release
+                                     (solo con --mapa: baja el Census CB 1:500k y consulta la API de releases)
 
 No hay modelos, tendencias ni ajustes: cada punto es una fila de un CSV publicado. Si falta un zip, un
 archivo o una columna, esa figura se saltea con un aviso.
@@ -21,6 +23,7 @@ Uso:
       --nota "Only OH, NE and MN (release datos-oh-ne-mn); IA, IL, IN and KS not included."
   .venv/bin/python -X utf8 docs/demo/figuras.py --zips DIR --salida DIR
   .venv/bin/python -X utf8 docs/demo/figuras.py --entrega fieldshift_datos_v1.2.zip   # entrega unida, sin bajar
+  .venv/bin/python -X utf8 docs/demo/figuras.py --mapa --solo-mapa                     # solo fig0_mapa.png
 """
 from __future__ import annotations
 
@@ -52,7 +55,8 @@ SRC_MODIS = "NASA MODIS MOD13Q1 NDVI 250 m (CDL corn/soy pixel masks)"
 SRC_SMAP = "NASA SMAP L4 SPL4SMGP (Crop-CASMA daily layers)"
 SRC_PROG = "USDA NASS Crop Progress (state, weekly)"
 SRC_CDL = "USDA NASS Cropland Data Layer 30 m"
-SRC_IMERG = "NASA GPM IMERG Final V07 daily (county mean)"
+SRC_IMERG = ("GPM IMERG Final V07, served by the NASA POWER API (IMERG_PRECTOT; Late V07 for 2025-10 to "
+             "2025-12), daily, county mean of 0.1° cells")
 ORIGEN = "published release CSVs"             # con --entrega se cambia por el nombre del zip
 NOTA = ""                                     # p. ej. "Only OH, NE and MN"; va en el pie de cada figura
 SUFIJO = ""                                   # se agrega al nombre de cada PNG
@@ -443,6 +447,140 @@ def fig_lluvia_imerg_power(clima_m, salida: Path) -> None:
     guardar(fig, salida, nombre)
 
 
+# --------------------------------------------------------------------------- mapa (lámina 1)
+
+# Grupos de estados = releases `datos-<estados>` (scripts/entregar.py arma la etiqueta igual).
+GRUPOS = [["IA", "IL", "IN"], ["OH", "NE", "MN"], ["KS"], ["MO", "WI", "SD"]]
+# Okabe-Ito (apto para daltónicos): azul, naranja, verde azulado, púrpura rojizo
+COLORES_GRUPO = ["#0072B2", "#E69F00", "#009E73", "#CC79A7"]
+ANIO_CB = 2024                                # el mismo que src/base/download.py
+URL_CB = f"https://www2.census.gov/geo/tiger/GENZ{ANIO_CB}/shp/cb_{ANIO_CB}_us_county_500k.zip"
+URL_CB_ESTADOS = f"https://www2.census.gov/geo/tiger/GENZ{ANIO_CB}/shp/cb_{ANIO_CB}_us_state_500k.zip"
+
+
+def etiqueta_release(estados: list[str]) -> str:
+    return "datos-" + "-".join(e.lower() for e in estados)
+
+
+def releases_publicados() -> tuple[set[str], str] | None:
+    """Etiquetas de los releases publicados (no borradores) según la API pública de GitHub, y la fecha de consulta."""
+    import datetime
+    import json
+    import urllib.error
+
+    slug = repo_github()
+    if not slug:
+        aviso("mapa: el remoto origin no es de GitHub; no sé qué releases hay")
+        return None
+    try:
+        datos = json.loads(_get(f"https://api.github.com/repos/{slug}/releases?per_page=100", timeout=60))
+    except (urllib.error.URLError, TimeoutError, ValueError) as e:
+        aviso(f"mapa: no se pudo leer la página de releases: {e}")
+        return None
+    etiquetas = {r["tag_name"] for r in datos if not r.get("draft") and r.get("assets")}
+    return etiquetas, datetime.date.today().isoformat()
+
+
+def bajar_cb(url: str, carpeta: Path) -> Path | None:
+    """Zip del Census CB. Si src/base ya lo bajó a data/raw/base/, usa ese; si no, lo baja a `carpeta`."""
+    import urllib.error
+
+    nombre = Path(url).name
+    for z in (REPO / "data" / "raw" / "base" / nombre, carpeta / nombre):
+        if z.exists() and zipfile.is_zipfile(z):
+            return z
+    carpeta.mkdir(parents=True, exist_ok=True)
+    z = carpeta / nombre
+    try:
+        tmp = z.with_name(nombre + ".part")
+        tmp.write_bytes(_get(url, timeout=600))
+        tmp.replace(z)
+    except (urllib.error.URLError, TimeoutError) as e:
+        aviso(f"mapa: no se pudo bajar {url}: {e}")
+        return None
+    return z
+
+
+def fig_mapa(carpeta: Path, salida: Path) -> None:
+    """Condados de los estados de config.yaml, coloreados por grupo; relleno lleno = release publicado,
+    rayado claro = en proceso (todavía no está en la página de releases)."""
+    import geopandas as gpd
+    import yaml
+    from matplotlib.patches import Patch
+
+    nombre = "fig0_mapa.png"
+    cfg = yaml.safe_load((REPO / "config" / "config.yaml").read_text(encoding="utf-8"))
+    # Se lee config.yaml directo (no src/common/config.py) para tener todos los estados, sin FIELDSHIFT_ESTADOS.
+    estados_cfg = cfg["zona"]["estados"]
+    fuera = sorted(set(estados_cfg) - {e for g in GRUPOS for e in g})
+    if fuera:
+        aviso(f"{nombre}: estados de config.yaml sin grupo en el mapa: {fuera}")
+    grupos = [[e for e in g if e in estados_cfg] for g in GRUPOS]
+    pub = releases_publicados()
+    if pub is None:
+        aviso(f"{nombre}: se saltea (sin la página de releases no sé qué está publicado)")
+        return
+    publicados, fecha = pub
+    z_cond, z_est = bajar_cb(URL_CB, carpeta), bajar_cb(URL_CB_ESTADOS, carpeta)
+    if z_cond is None:
+        aviso(f"{nombre}: se saltea (falta el zip de condados del Census)")
+        return
+    fips_a_est = {str(v["fips"]).zfill(2): k for k, v in estados_cfg.items()}
+    cond = gpd.read_file(f"zip://{z_cond}")
+    cond = cond[cond["STATEFP"].isin(fips_a_est)].to_crs(5070)
+    cond["estado"] = cond["STATEFP"].map(fips_a_est)
+    est = None
+    if z_est is not None:
+        est = gpd.read_file(f"zip://{z_est}").to_crs(5070)
+
+    fig, ax = plt.subplots(figsize=(13, 7.2))
+    xmin, ymin, xmax, ymax = cond.total_bounds
+    pad = 0.06 * (xmax - xmin)
+    if est is not None:  # contexto: estados vecinos en gris
+        est.plot(ax=ax, color="#f2f2f2", edgecolor="#bdbdbd", linewidth=0.5)
+    handles, n_pub, n_proc = [], 0, 0
+    for g, color in zip(grupos, COLORES_GRUPO):
+        if not g:
+            continue
+        et = etiqueta_release(g)
+        ok = et in publicados
+        sub = cond[cond["estado"].isin(g)]
+        if ok:
+            sub.plot(ax=ax, color=color, edgecolor="white", linewidth=0.25)
+            n_pub += len(sub)
+        else:
+            sub.plot(ax=ax, facecolor=color, alpha=0.35, edgecolor="white", linewidth=0.25)
+            sub.plot(ax=ax, facecolor="none", edgecolor=color, hatch="////", linewidth=0)
+            n_proc += len(sub)
+        txt = f"{', '.join(g)}: {len(sub)} counties — " + ("published" if ok else "in progress")
+        handles.append(Patch(facecolor=color, alpha=1 if ok else 0.35, edgecolor=color,
+                             hatch=None if ok else "////", label=txt))
+    if est is not None:
+        mios = est[est["STATEFP"].isin(fips_a_est)]
+        mios.boundary.plot(ax=ax, color="#222222", linewidth=0.9)
+        for _, r in mios.iterrows():
+            p = r.geometry.representative_point()
+            ax.annotate(fips_a_est[r["STATEFP"]], (p.x, p.y), ha="center", va="center", fontsize=11,
+                        fontweight="bold", color="#111111",
+                        bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="none", alpha=0.75))
+    ax.set_xlim(xmin - pad, xmax + pad)
+    ax.set_ylim(ymin - pad, ymax + pad)
+    ax.set_axis_off()
+    ax.set_title(f"Field Shift study area: {len(cond)} Corn Belt counties in {len(fips_a_est)} states",
+                 fontsize=13)
+    handles += [Patch(facecolor="#888888", label="Solid = data release published"),
+                Patch(facecolor="#888888", alpha=0.35, hatch="////", edgecolor="#888888",
+                      label="Hatched = release in progress")]
+    ax.legend(handles=handles, loc="center left", bbox_to_anchor=(1.0, 0.5), fontsize=9, frameon=True, framealpha=0.9,
+              title="State group (data release status)", title_fontsize=9)
+    fig.subplots_adjust(left=0.01, right=0.70, top=0.94, bottom=0.08)
+    fig.text(0.01, 0.01, f"Source: U.S. Census Bureau, Cartographic Boundary Files {ANIO_CB} (1:500k). "
+             f"Release status from the GitHub releases page, checked {fecha}: {n_pub} counties published, "
+        f"{n_proc} in progress. Albers Equal Area (EPSG:5070).",
+             fontsize=7, color="#555555", ha="left", va="bottom", wrap=True)
+    guardar(fig, salida, nombre)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--zips", type=Path, default=ZIPS, help="carpeta para los zips bajados")
@@ -455,7 +593,15 @@ def main() -> None:
     ap.add_argument("--sufijo", default="", help="sufijo para los nombres de los PNG (p. ej. oh_ne_mn)")
     ap.add_argument("--entrega", type=Path,
                     help="zip de la entrega unida (fieldshift_datos_v1.x.zip); no baja nada")
+    ap.add_argument("--mapa", action="store_true",
+                    help="dibujar también fig0_mapa.png (baja el Census CB 1:500k y consulta los releases)")
+    ap.add_argument("--solo-mapa", action="store_true", help="dibujar solo fig0_mapa.png")
     a = ap.parse_args()
+    if a.mapa or a.solo_mapa:
+        # antes de fijar NOTA y SUFIJO: el mapa cubre todos los estados y no lleva esa nota ni sufijo
+        fig_mapa(a.zips / "census_cb", a.salida)
+        if a.solo_mapa:
+            return
     global NOTA, SUFIJO
     NOTA, SUFIJO = a.nota, a.sufijo
 

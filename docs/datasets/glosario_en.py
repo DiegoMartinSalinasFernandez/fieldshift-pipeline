@@ -23,7 +23,7 @@ COLUMNAS = ["paquete", "archivo", "columna", "descripcion_en", "unidad", "fuente
 SIN_TRADUCCION = "[SIN TRADUCCION]"
 UNCLEAR = "[UNCLEAR]"
 
-ENCABEZADO = re.compile(r"^\|\s*archivo\s*\|\s*columna\s*\|")
+ENCABEZADO = re.compile(r"^\|\s*archivo\s*\|\s*columna\s*\|\s*descripcion\s*\|")  # solo diccionarios, no otras tablas con archivo|columna
 SEPARADOR = re.compile(r"^\|[\s:|-]+\|\s*$")
 
 

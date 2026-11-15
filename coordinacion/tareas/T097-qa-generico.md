@@ -1,14 +1,14 @@
 ---
 id: T097
 titulo: QA genérico para cualquier release (para reusar en KS y MO/WI/SD)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T06:55
-actualizada: 2026-11-15 07:11
+actualizada: 2026-11-15 07:20
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ El script y la prueba en un PR.
 
 ## Notas
 - 2026-11-15 07:11 · pro-3: tomada
+- 2026-11-15 07:20 · pro-3: terminada por el trabajador: PR #93, falta la revisión de max-1

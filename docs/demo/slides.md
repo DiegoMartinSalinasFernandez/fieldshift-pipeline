@@ -39,10 +39,14 @@ Rules for whoever finishes this draft:
 - A decision-support tool that compares crop rotations for U.S. Corn Belt farms using NASA Earth observations,
   soil and crop data.
 
-**Figure:** background map of the Corn Belt counties (outline only) with the study states highlighted.
-- From: `data/reference/condados.gpkg` (US Census Cartographic Boundary Files 2024, 1:500k).
-- **[TBD: not made yet.** No map PNG exists in `docs/demo/fig/`. Highlight the 3 published states (OH, NE, MN)
-  differently from the 4 planned ones (IA, IL, IN, KS).]**
+**Figure:** `docs/demo/fig/fig0_mapa.png` — the 919 counties of the 10 states in `config/config.yaml`, colored by
+state group (IA/IL/IN, OH/NE/MN, KS, MO/WI/SD; Okabe-Ito colorblind-safe palette). Solid fill = data release
+published, hatched = release in progress.
+- From: US Census Cartographic Boundary Files 2024, 1:500k, and the GitHub releases page (checked 2026-11-15:
+  only `datos-oh-ne-mn` published, 268 counties). Built by `docs/demo/figuras.py --solo-mapa` (task T094).
+- **Re-run before the final slides** so the release status is current.
+
+![Field Shift study area](fig/fig0_mapa.png)
 
 **Data credit:** County boundaries: U.S. Census Bureau, Cartographic Boundary Files 2024.
 
@@ -191,14 +195,15 @@ SSURGO · USDA NASS CSB and CDL.
 - Right: `docs/demo/fig/fig6_lluvia_oh_ne_mn.png` (real, T095): monthly `prec_imerg_mm` vs `prec_power_mm`,
   one point per county-month, one panel per state (OH, NE, MN), 1:1 line, ratio of totals and r in each
   title. Caption: "GPM IMERG vs NASA POWER monthly rainfall by county, Ohio, Nebraska and Minnesota,
-  2000–2025. Two NASA products compared with each other, not with rain gauges."
+  2000–2025. Two NASA products compared with each other, not with rain gauges. IMERG: GPM IMERG Final V07,
+  served by the NASA POWER API (IMERG_PRECTOT)."
 - Still to make: the same scatter against `prec_prism_mm` (`validacion_mensual.csv`). **[TBD: needs the
   IA/IL/IN validacion data, which is not in a published release. Until then, give the PRISM r values above as
   text only, and say they are IA/IL/IN.]**
 
 **Data credit:** NASA SMAP L4 V8 (doi:10.5067/T5RUATAQREF8), via USDA NASS Crop-CASMA · NASA ECOSTRESS L4T_ESI
-V002 (doi:10.5067/ECOSTRESS/ECO_L4T_ESI.002) · NASA POWER · NASA GPM IMERG V07 · PRISM Group, Oregon State
-University · CoCoRaHS.
+V002 (doi:10.5067/ECOSTRESS/ECO_L4T_ESI.002) · NASA POWER · NASA GPM IMERG V07 (via the POWER API) · PRISM
+Group, Oregon State University · CoCoRaHS.
 
 ---
 
