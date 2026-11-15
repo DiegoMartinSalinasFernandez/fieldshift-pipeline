@@ -8,7 +8,7 @@ estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T07:02
-actualizada: 2026-11-15T07:02
+actualizada: 2026-11-15 07:51
 ---
 
 ## Qué hacer
@@ -32,3 +32,4 @@ No cambies el esquema de los CSV. Más de 5 GB: preguntá antes (deberían ser ~
 El cambio y la prueba en un PR; después, cada máquina Max reprocesa vegetación de sus estados y republica.
 
 ## Notas
+- 2026-11-15 07:51 · max-1: Ampliar a MOD11A2 (LST) según docs/research/lst_fechas.md (T105, PR 98): 20 compuestos enteros y 3 parciales en 2022–2025, ~0,9 GB para los 10 estados. Mejor calcular CMR − PC por producto, tesela y compuesto en el momento que usar una lista fija.
