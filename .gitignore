@@ -35,3 +35,6 @@ manifest.csv
 
 # Copia de main que usa scripts/tareas.py para el tablero
 .tablero/
+
+# Trabajador automático: logs y estado (scripts/trabajador.py)
+.trabajador/
