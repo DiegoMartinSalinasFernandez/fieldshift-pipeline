@@ -1,14 +1,14 @@
 ---
 id: T083
 titulo: Probar el repo desde un clon limpio, como lo haría un juez de Space Apps
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T06:18
-actualizada: 2026-11-15T06:18
+actualizada: 2026-11-15 06:37
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ No bajes más que el paquete 0, y no subas nada de `data/`.
 El arreglo del README y la lista de problemas en un PR.
 
 ## Notas
+- 2026-11-15 06:37 · pro-3: tomada
