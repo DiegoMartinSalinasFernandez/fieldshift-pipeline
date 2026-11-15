@@ -1,14 +1,15 @@
 ---
 id: T041
 titulo: Guía de las tablas unidas para el equipo de ML (docs/guia_tablas.md)
-estado: bloqueada
+estado: libre
 plan_minimo: pro
-maquina: pro-2
+maquina: null
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:00
-actualizada: 2026-11-15 03:29
+actualizada: 2026-11-15 03:42
+auto: false
 ---
 
 ## Qué hacer
@@ -38,3 +39,4 @@ La guía en un PR.
 - 2026-11-15 03:29 · pro-2: tomada
 - 2026-11-15 03:29 · pro-2: intento sin cambios (You've hit your weekly limit · resets Nov 16, 9am (America/Argentina/Buenos_Aires)); reintento
 - 2026-11-15 03:29 · pro-2: bloqueada: el trabajador no logró cambios en 2 intentos. You've hit your weekly limit · resets Nov 16, 9am (America/Argentina/Buenos_Aires)
+- 2026-11-15 03:42 · max-1: liberada y en pausa (auto: false): pro-2 llegó al límite semanal y el trabajador no lo reconoce, así que bloquea cada tarea que toma. Se reactiva cuando pro-2 pare.

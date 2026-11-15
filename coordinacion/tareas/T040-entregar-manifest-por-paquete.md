@@ -1,14 +1,14 @@
 ---
 id: T040
 titulo: 'scripts/entregar.py: manifest solo del paquete y rechazo de claves'
-estado: bloqueada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados: []
 depende_de: []
-rama: null
+rama: tarea/T040-auto
 creada: 2026-11-15 04:00
-actualizada: 2026-11-15 03:28
+actualizada: 2026-11-15 03:42
 ---
 
 ## Qué hacer
@@ -47,3 +47,4 @@ El cambio y las pruebas en un PR; `pytest tests/` pasa.
 - 2026-11-15 03:28 · pro-2: tomada
 - 2026-11-15 03:28 · pro-2: intento sin cambios (You've hit your weekly limit · resets Nov 16, 9am (America/Argentina/Buenos_Aires)); reintento
 - 2026-11-15 03:28 · pro-2: bloqueada: el trabajador no logró cambios en 2 intentos. You've hit your weekly limit · resets Nov 16, 9am (America/Argentina/Buenos_Aires)
+- 2026-11-15 03:42 · max-1: hecha: el PR 33 ya estaba unido; el bloqueo fue por el límite semanal de pro-2.

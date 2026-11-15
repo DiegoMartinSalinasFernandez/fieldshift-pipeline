@@ -1,9 +1,9 @@
 ---
 id: T044
 titulo: 'Research: candidatos para sumar estados (SD, WI, MO, MI)'
-estado: tomada
+estado: libre
 plan_minimo: pro
-maquina: pro-2
+maquina: null
 estados:
 - SD
 - WI
@@ -12,7 +12,8 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 03:45
-actualizada: 2026-11-15 03:31
+actualizada: 2026-11-15 03:42
+auto: false
 ---
 
 ## Qué hacer
@@ -38,3 +39,4 @@ El research en un PR, con un orden recomendado.
 
 ## Notas
 - 2026-11-15 03:31 · pro-2: tomada
+- 2026-11-15 03:42 · max-1: liberada y en pausa (auto: false): pro-2 llegó al límite semanal y el trabajador no lo reconoce, así que bloquea cada tarea que toma. Se reactiva cuando pro-2 pare.
