@@ -130,7 +130,8 @@ class Comandos(Tablero):
     def test_nueva(self) -> None:
         r = self.tareas("max-1", "nueva", "Riego en Kansas", "--plan", "pro", "--estados", "ks",
                         "--depende", "t001, T002")
-        self.assertIn("coordinacion/tareas/T004-riego-en-kansas.md", r.stdout)
+        # en Windows la ruta sale con barras invertidas
+        self.assertIn("coordinacion/tareas/T004-riego-en-kansas.md", r.stdout.replace("\\", "/"))
         meta, cuerpo = self.en_remoto("T004")
         self.assertEqual(meta["id"], "T004")
         self.assertEqual(meta["titulo"], "Riego en Kansas")
