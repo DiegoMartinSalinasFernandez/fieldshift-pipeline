@@ -1,14 +1,14 @@
 ---
 id: T118
 titulo: Fill the [TBD] placeholders in the submission pages, list what only the human can fill
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T08:24
-actualizada: 2026-11-15T08:24
+actualizada: 2026-11-15 08:46
 ---
 
 ## Qué hacer
@@ -31,3 +31,4 @@ No inventes nada: si dudás, va a la tabla.
 Las páginas completadas y `pendientes_humano.md` en un PR, con `revisar_enlaces.py` sin errores.
 
 ## Notas
+- 2026-11-15 08:46 · pro-5: tomada
