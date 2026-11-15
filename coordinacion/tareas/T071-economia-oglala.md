@@ -1,7 +1,7 @@
 ---
 id: T071
 titulo: 'Arreglo: Oglala Lakota (SD) en las regiones del ERS de economia'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados:
@@ -9,7 +9,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 05:42
-actualizada: 2026-11-15 06:07
+actualizada: 2026-11-15 06:10
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ El arreglo y la prueba en un PR, que pasen en Windows y en Linux.
 
 ## Notas
 - 2026-11-15 06:07 · pro-2: tomada
+- 2026-11-15 06:10 · pro-2: terminada por el trabajador: PR #68, falta la revisión de max-1
