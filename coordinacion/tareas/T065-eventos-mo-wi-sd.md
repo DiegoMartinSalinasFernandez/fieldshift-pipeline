@@ -1,9 +1,9 @@
 ---
 id: T065
 titulo: 'Research: eventos extremos conocidos en MO, WI y SD (2000–2025)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - MO
 - WI
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 04:42
-actualizada: 2026-11-15 04:42
+actualizada: 2026-11-15 04:48
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ Escribí `docs/research/eventos_extremos_mo_wi_sd.md`.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 04:48 · pro-2: tomada
