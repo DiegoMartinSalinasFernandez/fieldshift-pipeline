@@ -1,14 +1,14 @@
 ---
 id: T035
 titulo: Pruebas de src/merge.py con varios estados (tests/test_merge.py)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 03:20
-actualizada: 2026-11-15 03:20
+actualizada: 2026-11-15 03:14
 ---
 
 ## Qué hacer
@@ -32,3 +32,4 @@ Mirá cómo `src/merge.py` encuentra las carpetas (si usa `REPO`, apuntalo a la 
 Las pruebas en un PR.
 
 ## Notas
+- 2026-11-15 03:14 · pro-2: tomada
