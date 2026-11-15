@@ -1,14 +1,14 @@
 ---
 id: T035
 titulo: Pruebas de src/merge.py con varios estados (tests/test_merge.py)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 03:20
-actualizada: 2026-11-15 03:14
+actualizada: 2026-11-15 03:16
 ---
 
 ## Qué hacer
@@ -33,3 +33,4 @@ Las pruebas en un PR.
 
 ## Notas
 - 2026-11-15 03:14 · pro-2: tomada
+- 2026-11-15 03:16 · pro-2: terminada por el trabajador: PR #29, falta la revisión de max-1
