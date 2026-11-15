@@ -241,9 +241,11 @@ def mascara_agricola(zip_cdl: Path) -> None:
 
 
 CLASES = REPO / "data" / "reference" / "clases_cdl.csv"
-# grupo de cada clase del CDL que usa el proyecto (§6.2 del plan); el resto: otro
-GRUPOS_CDL = {1: "maiz", 5: "soja", 24: "trigo_invierno", 26: "doble_trigo_soja", 28: "avena",
-              36: "alfalfa", 37: "heno", 61: "barbecho", 176: "pastizal"}
+# grupo de cada clase del CDL que usa el proyecto (§6.2 del plan); el resto: otro.
+# 0, 27 y 58: T139 (docs/research/cdl_csb.md, para_decidir #19)
+GRUPOS_CDL = {0: "sin_dato", 1: "maiz", 5: "soja", 24: "trigo_invierno", 26: "doble_trigo_soja",
+              27: "centeno", 28: "avena", 36: "alfalfa", 37: "heno", 58: "trebol", 61: "barbecho",
+              176: "pastizal"}
 
 
 def clases_cdl(meta: Path) -> None:

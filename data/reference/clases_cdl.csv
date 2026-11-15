@@ -1,5 +1,5 @@
 codigo,nombre,grupo
-0,Background,otro
+0,Background,sin_dato
 1,Corn,maiz
 2,Cotton,otro
 3,Rice,otro
@@ -17,7 +17,7 @@ codigo,nombre,grupo
 24,Winter Wheat,trigo_invierno
 25,Other Small Grains,otro
 26,Dbl Crop WinWht/Soybeans,doble_trigo_soja
-27,Rye,otro
+27,Rye,centeno
 28,Oats,avena
 29,Millet,otro
 30,Speltz,otro
@@ -47,7 +47,7 @@ codigo,nombre,grupo
 55,Caneberries,otro
 56,Hops,otro
 57,Herbs,otro
-58,Clover/Wildflowers,otro
+58,Clover/Wildflowers,trebol
 59,Sod/Grass Seed,otro
 60,Switchgrass,otro
 61,Fallow/Idle Cropland,barbecho

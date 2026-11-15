@@ -68,6 +68,17 @@ def aplicar_grupos(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def escribir_clases(ruta: Path) -> None:
+    """Reescribe la tabla con los grupos nuevos y conserva el fin de línea del archivo.
+
+    El `.gitattributes` del repo no convierte finales de línea: pasar de CRLF a LF ensuciaría el
+    diff de todas las filas.
+    """
+    fin = "\r\n" if b"\r\n" in ruta.read_bytes()[:200] else "\n"
+    df = aplicar_grupos(pd.read_csv(ruta))
+    df.to_csv(ruta, index=False, encoding="utf-8", lineterminator=fin)
+
+
 def conteo_por_condado(cdl: np.ndarray, ids: np.ndarray, n: int) -> np.ndarray:
     """Matriz (n + 1, 256) de píxeles por id de condado (0 = fuera) y código CDL."""
     x = cdl.ravel().astype(np.int64)
@@ -153,8 +164,7 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--salida", type=Path, help="CSV para la tabla del efecto")
     a = ap.parse_args(argv)
     if a.escribir:
-        df = aplicar_grupos(pd.read_csv(CLASES))
-        df.to_csv(CLASES, index=False, encoding="utf-8", lineterminator="\n")
+        escribir_clases(CLASES)
         print(f"clases_cdl.csv: grupos de {sorted(GRUPOS_EXTRA)} actualizados", flush=True)
     if a.efecto:
         df = efecto_tifs(a.efecto, sumar=a.sumar)
