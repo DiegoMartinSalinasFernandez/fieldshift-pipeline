@@ -32,13 +32,15 @@ FECHA = re.compile(r"([A-Z][a-z]{2})[a-z]*\.? (\d{1,2}),")
 def bajar(carpeta: Path, anio: int) -> None:
     yy = f"{anio % 100:02d}"
     patron = re.compile(r'href="(/sites/default/release-files/\d+/prog\d{2}' + yy + r'\.txt)"')
-    pagina, vistos_viejos = 0, 0
+    pagina, vistos_viejos, vistos = 0, 0, set()
     while vistos_viejos < 2:
         html = requests.get(f"{BASE}/publication/crop-progress", params={"page": pagina}, headers=UA,
                             timeout=120).text
         if "release-files" not in html:
             break
-        enlaces = patron.findall(html)
+        # cada página repite el último reporte en un recuadro lateral: solo cuentan los enlaces nuevos
+        enlaces = [e for e in patron.findall(html) if e not in vistos]
+        vistos.update(enlaces)
         # las páginas van de lo más nuevo a lo más viejo: se corta dos páginas después de la última del año
         vistos_viejos = vistos_viejos + 1 if not enlaces else 0
         for e in enlaces:
