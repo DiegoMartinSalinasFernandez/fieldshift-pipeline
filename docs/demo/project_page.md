@@ -197,10 +197,7 @@ vulnerability maps.]**
 >   carries a visible "AI-generated" watermark.]** No AI was used to create or modify NASA logos or brand
 >   elements.
 >
-> This statement is repeated in the repository README and in the metadata of the published data releases.
-> **[TBD: README — yes, section "Use of AI" (checked 2026-11-15, T118). Release metadata — not yet: the notes
-> that `scripts/entregar.py` writes do not mention AI. Add the statement to the release notes by hand, or drop
-> "and in the metadata of the published data releases".]**
+> This statement is repeated in the repository README and in the notes of the published data releases.
 
 Rules behind this text are in `space_apps_criterios.md` §4: code and data generated with SI "must acknowledge SI
 generation in descriptive text and metadata", images and video need a visible watermark, and SI must not be used

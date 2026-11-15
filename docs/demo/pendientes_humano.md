@@ -26,7 +26,6 @@ exige (sin eso el proyecto no entra a Global Judging), después lo que cambia lo
 |---|---|---|---|---|
 | 8 | `project_page.md` | 219; `slides.md` 228, 181, 149, 277 | Si se publican los releases de IA/IL/IN, `lotes` y `ecostress`. Si no, sacar ECOSTRESS, HLS, los 10 lotes y la validación contra PRISM del formulario y de las láminas | Humano: `coordinacion/para_decidir.md` #33 (publicar `datos-ia-il-in` y `fieldshift_lotes_v1`) |
 | 9 | `project_page.md` | 135 | Publicar `fieldshift_lotes_v1` o sacar el punto 4 ("Field level") | Humano, `para_decidir.md` #33 |
-| 10 | `project_page.md` | 201 | La página dice que la declaración de IA está "en la metadata de los releases". El README la tiene, pero las notas que escribe `scripts/entregar.py` no. Agregarla a mano en las notas de `datos-oh-ne-mn` o sacar esa frase | Humano (editar el release) |
 | 11 | `project_page.md` | 24, 145; `limitations.md` 24, 136; `slides.md` 127, 276 | Modelo, validación, rangos de incertidumbre e interfaz, con números propios | Equipo de ML / frontend |
 | 12 | `project_page.md` | 89, 175, 63 | Link de la herramienta o frontend (si hay), stack de ML/frontend y una frase sobre qué ve el usuario | Equipo de frontend / ML |
 | 13 | `slides.md` | 157 | Mapa de sectores (loma seca / media loma / bajo húmedo) | Equipo de ML (y release `lotes`) |
@@ -62,3 +61,4 @@ de la línea 332 de `project_page.md` explican qué significa `[TBD]`. No son pe
 | `README.md`, `limitations.md` 0.2 | Estado de los releases al 2026-11-15 (solo OH/NE/MN publicado; MO/WI/SD, IA/IL/IN y KS en proceso) | `docs/demo/coverage.md` |
 | `slides.md` | Se sacó de la lista de pendientes el mapa de la lámina 1: `fig/fig0_mapa.png` ya existe (T094) | `docs/demo/fig/README.md` |
 | `slides.md` láminas 3 y 6 | Se sacaron #22 y #23: los mapas por condado (`fig7_county_maps_corn_after_corn_imerg_oh_ne_mn.png`) y la serie mensual de Stearns, MN (`fig8_county_monthly_smap_imerg_oh_ne_mn.png`) ya existen (T121) | `docs/demo/fig/README.md` |
+| `project_page.md` §6, release `datos-oh-ne-mn` | Se sacó #10: las notas del release llevan la declaración de IA en inglés y castellano, leída del README por `scripts/entregar.py` (T122); las de `datos-oh-ne-mn` se actualizaron con `gh release edit` | `scripts/entregar.py`, `README.md` |
