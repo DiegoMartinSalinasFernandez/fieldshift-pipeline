@@ -12,9 +12,9 @@ maquinas:
     estados: []
   pro-1:
     plan: pro
-    rol: sin asignar
-    estados: []
+    rol: research (T006 hecha, PR 1)
+    estados: [OH, NE, MN, KS]   # activa desde el 2026-11-15
   pro-2:
     plan: pro
-    rol: sin asignar
-    estados: []
+    rol: research y código de un paquete (T005 hecha, PR 2)
+    estados: [OH, NE, MN, KS]   # activa desde el 2026-11-15
