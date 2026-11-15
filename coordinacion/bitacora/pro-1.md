@@ -25,3 +25,4 @@
 - 03:16 T037: tomada por el trabajador
 - 03:18 T037: terminada, PR #31
 - 04:04 T048: tomada por el trabajador
+- 04:11 T048: terminada, PR #38
