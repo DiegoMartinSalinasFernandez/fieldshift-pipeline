@@ -18,3 +18,4 @@
 - 04:45 T058: a medias, PR #53 actualizado
 - 04:45 T058: tomada por el trabajador
 - 04:48 T058: a medias, PR #53 actualizado
+- 04:48 T058: tomada por el trabajador
