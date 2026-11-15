@@ -16,6 +16,7 @@ Uso:
   .venv/bin/python -X utf8 docs/demo/figuras.py                 # baja (si hace falta) y dibuja
   .venv/bin/python -X utf8 docs/demo/figuras.py --sin-bajar     # usa los zips que ya están en --zips
   .venv/bin/python -X utf8 docs/demo/figuras.py --zips DIR --salida DIR
+  .venv/bin/python -X utf8 docs/demo/figuras.py --entrega fieldshift_datos_v1.2.zip   # entrega unida, sin bajar
 """
 from __future__ import annotations
 
@@ -47,6 +48,7 @@ SRC_MODIS = "NASA MODIS MOD13Q1 NDVI 250 m (CDL corn/soy pixel masks)"
 SRC_SMAP = "NASA SMAP L4 SPL4SMGP (Crop-CASMA daily layers)"
 SRC_PROG = "USDA NASS Crop Progress (state, weekly)"
 SRC_CDL = "USDA NASS Cropland Data Layer 30 m"
+ORIGEN = "published release CSVs"             # con --entrega se cambia por el nombre del zip
 
 
 def aviso(msg: str) -> None:
@@ -130,6 +132,35 @@ def leer(zips: Path, archivo: str) -> pd.DataFrame | None:
     return df.drop_duplicates(subset=claves, keep="last").drop(columns="origen_zip")
 
 
+def leer_entrega(zip_entrega: Path) -> dict[str, pd.DataFrame | None]:
+    """Plan C: arma los mismos cuadros desde un zip de la entrega unida (`fieldshift_datos_v1.x.zip`).
+
+    Ahí no están los CSV por paquete sino `condado/tabla_anual.csv` (fips × anio × cultivo, con el clima, la
+    rotación, la fenología y la fenología por estado ya unidas) y `condado/tabla_mensual.csv` (fips × mes).
+    Las columnas que no dependen del cultivo se toman una vez por (fips, anio).
+    """
+    with zipfile.ZipFile(zip_entrega) as zf:
+        def una(sufijo: str) -> pd.DataFrame | None:
+            n = [x for x in zf.namelist() if x.endswith(sufijo)]
+            if not n:
+                aviso(f"{sufijo} no está en {zip_entrega.name}")
+                return None
+            return pd.read_csv(io.BytesIO(zf.read(n[0])), dtype={"fips": str})
+        anual, mensual = una("condado/tabla_anual.csv"), una("condado/tabla_mensual.csv")
+    out: dict[str, pd.DataFrame | None] = {"prod": anual, "agua": mensual,
+                                          "clima": None, "fen": None, "rot": None, "fenest": None}
+    if anual is not None:
+        por_condado = anual.drop_duplicates(subset=["fips", "anio"])
+        out["clima"] = out["rot"] = por_condado
+        out["fen"] = por_condado
+        if "doy_50_sembrado" in anual.columns:
+            f = anual[["fips", "anio", "cultivo", "doy_50_sembrado"]].copy()
+            f["fips_estado"] = f["fips"].str.zfill(5).str[:2]
+            out["fenest"] = f.drop(columns="fips").dropna().drop_duplicates(
+                subset=["fips_estado", "anio", "cultivo"])
+    return out
+
+
 def faltan(df: pd.DataFrame | None, columnas: list[str], fig: str) -> bool:
     if df is None:
         aviso(f"{fig}: se saltea (falta el archivo)")
@@ -146,7 +177,7 @@ def estado(fips: pd.Series) -> pd.Series:
 
 
 def pie(fig, fuentes: list[str], extra: str = "") -> None:
-    texto = "Source: " + "; ".join(fuentes) + ". Field Shift data pipeline, published release CSVs."
+    texto = "Source: " + "; ".join(fuentes) + f". Field Shift data pipeline, {ORIGEN}."
     if extra:
         texto += "\n" + extra
     fig.text(0.01, 0.01, texto, fontsize=7, color="#555555", ha="left", va="bottom", wrap=True)
@@ -178,6 +209,7 @@ def fig_lluvia_julio(prod, clima, salida: Path) -> None:
         aviso(f"{nombre}: se saltea (no hay maíz con lluvia de julio en 2012)")
         return
     otros, a12 = m[m["anio"] != 2012], m[m["anio"] == 2012]
+    ests = sorted(estado(m["fips"]).unique())
     fig, ax = plt.subplots(figsize=(8, 5.5))
     ax.scatter(otros["prec_jul_mm"], otros["rend_bu_ac"], s=5, alpha=0.25, color="#9e9e9e",
                edgecolors="none", label=f"Other years ({otros['anio'].min()}–{otros['anio'].max()})")
@@ -190,8 +222,9 @@ def fig_lluvia_julio(prod, clima, salida: Path) -> None:
     ax.grid(alpha=0.3)
     fig.subplots_adjust(bottom=0.16)
     pie(fig, [SRC_NASS, SRC_POWER], f"One point per county-year; n = {len(m)} "
-        f"({len(a12)} in 2012). States: {', '.join(sorted(estado(m['fips']).unique()))}. "
-        "Yields mix irrigated and rainfed corn (large irrigated share in NE and KS).")
+        f"({len(a12)} in 2012). States: {', '.join(ests)}. Yields: ALL PRODUCTION PRACTICES"
+        + (" (mixes irrigated and rainfed corn; large irrigated share in NE and KS)." if {"NE", "KS"} & set(ests)
+           else "."))
     guardar(fig, salida, nombre)
 
 
@@ -316,16 +349,24 @@ def main() -> None:
     ap.add_argument("--salida", type=Path, default=SALIDA, help="carpeta de los PNG")
     ap.add_argument("--sin-bajar", action="store_true", help="no llamar a gh; usar los zips que ya están")
     ap.add_argument("--etiquetas", nargs="+", default=ETIQUETAS)
+    ap.add_argument("--entrega", type=Path,
+                    help="zip de la entrega unida (fieldshift_datos_v1.x.zip); no baja nada")
     a = ap.parse_args()
 
-    if not a.sin_bajar:
-        bajar(a.etiquetas, a.zips)
-    prod = leer(a.zips, "produccion_anual.csv")
-    clima = leer(a.zips, "clima_anual.csv")
-    fen = leer(a.zips, "fenologia_anual.csv")
-    agua = leer(a.zips, "agua_mensual.csv")
-    fenest = leer(a.zips, "fenologia_estado.csv")
-    rot = leer(a.zips, "rotacion_anual.csv")
+    if a.entrega:
+        global ORIGEN
+        ORIGEN = f"data release {a.entrega.stem}"
+        d = leer_entrega(a.entrega)
+        prod, clima, fen, agua, fenest, rot = (d[k] for k in ("prod", "clima", "fen", "agua", "fenest", "rot"))
+    else:
+        if not a.sin_bajar:
+            bajar(a.etiquetas, a.zips)
+        prod = leer(a.zips, "produccion_anual.csv")
+        clima = leer(a.zips, "clima_anual.csv")
+        fen = leer(a.zips, "fenologia_anual.csv")
+        agua = leer(a.zips, "agua_mensual.csv")
+        fenest = leer(a.zips, "fenologia_estado.csv")
+        rot = leer(a.zips, "rotacion_anual.csv")
 
     fig_lluvia_julio(prod, clima, a.salida)
     fig_ndvi_rend(prod, fen, a.salida)
