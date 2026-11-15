@@ -157,6 +157,75 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
   (`pct_maiz`, `pct_soja`, …) y las máscaras `mascara_maiz_<anio>` / `mascara_soja_<anio>`
   de esos años pueden diferir algo de lo que daría un CDL de 30 m.
 
+## Riego desde LANID (`riego_anual.csv`, T127)
+
+Fuente: **LANID** (Landsat-based Irrigation Dataset; Xie, Gibbs y Lark), mapas binarios de riego de
+30 m para todo EE.UU. (1 = regado, 0 = no regado, según `Metadata.docx`):
+- versión 3.0 de Zenodo (DOI 10.5281/zenodo.5548555, CC BY 4.0): `lanid1997-2003.zip`,
+  `lanid2004-2010.zip`, `lanid2011-2017.zip` (un `lanidYYYY.tif` por año) e `irrFreqAndChange.zip`
+  (`maxIrrExt`: regado al menos una vez en 1997–2017), ~1,7 GB;
+- extensión del USGS (Martin y Brandt, 2024, DOI 10.5066/P9YWR0OJ): `lanid2018.tif`, `lanid2019.tif`,
+  `lanid2020.tif` y `maxIrrExt_0020.tif`, en ScienceBase. ScienceBase responde con un desafío de
+  Cloudflare a los clientes automáticos: si `riego.py bajar` no los puede bajar, avisa y sigue; se
+  bajan a mano a `data/raw/cultivos/lanid/` y se registran con `riego.py registrar`.
+
+Bajada y proceso: `python src/cultivos/riego.py bajar` y `python src/cultivos/riego.py procesar`
+(necesita `data/reference/mascara_agricola.tif`, `condados.gpkg` y, para maíz y soja, las máscaras
+`mascara_maiz_<anio>.tif` / `mascara_soja_<anio>.tif` de `process.py`). Research:
+`docs/research/riego_mascaras.md` (T018) y `docs/research/riego_ne_ks.md`.
+
+| columna | descripcion | unidad | fuente |
+|---|---|---|---|
+| `frac_riego_lanid` | píxeles agrícolas (`mascara_agricola.tif`) regados según LANID del `anio` / píxeles agrícolas con dato de LANID | fracción 0–1 | LANID |
+| `frac_maiz_regado` | lo mismo dentro de `mascara_maiz_<anio>.tif` (maíz del CDL de ese año); vacío si no hay máscara de ese año o el condado no tiene maíz | fracción 0–1 | LANID + CDL |
+| `frac_soja_regada` | lo mismo dentro de `mascara_soja_<anio>.tif` | fracción 0–1 | LANID + CDL |
+| `frac_pixeles_validos` | píxeles agrícolas con dato de LANID / píxeles agrícolas del condado | fracción 0–1 | LANID |
+
+Además: `data/reference/mascara_riego_max.tif` (1 bit, grilla de `mascara_agricola.tif`): 1 = regado
+al menos una vez según `maxIrrExt_0020` (2000–2020) o, si no está, `maxIrrExt` (1997–2017). Es para
+que `vegetacion` calcule `ndvi_secano` en otra tarea.
+
+Supuestos:
+- LANID se lleva a la grilla de `mascara_agricola.tif` (EPSG:5070, 30 m) con vecino más cercano;
+  si ya está alineado, es una copia. LANID se usa tal cual, sin recalibrarlo contra NASS.
+- En LANID el 0 es "no regado": si el TIF declara `nodata = 0`, no se respeta. Fuera de la extensión
+  del raster el píxel no es válido (baja `frac_pixeles_validos`).
+- Solo hay filas para los años que cubre LANID (2000–2017 con Zenodo; 2000–2020 si están los TIF
+  del USGS). Después no hay producto anual: las filas no existen (no son "sin riego"). Para
+  2021–2025 quedan el Censo 2022 (`pct_riego` de `practicas_censo.csv`) o la máscara máxima; lo
+  decide ML.
+- `frac_maiz_regado` y `frac_soja_regada` solo existen desde que hay CDL (2008).
+- Condados sin píxeles agrícolas: sin fila.
+- La máscara máxima como proxy del riego después de 2020 es un supuesto: los pivotes nuevos quedan
+  como secano.
+
+Problemas conocidos:
+- En el oeste LANID fijó sus umbrales de entrenamiento con el área regada del Censo por condado:
+  comparar con el Censo no es un control independiente allí. El control independiente es la
+  superficie sembrada `IRRIGATED / ALL` de NASS por cultivo (2000–2018, NE y KS).
+- `pct_riego` del Censo usa como denominador `AG LAND, CROPLAND` (incluye pasturas en rotación) y
+  como numerador toda la tierra regada (incluye pasturas regadas); `frac_riego_lanid` usa la
+  máscara agrícola del CDL. No son iguales por definición.
+- **Prueba en Nebraska 2017** (T127; recorte con una máscara agrícola provisoria hecha con las
+  clases agrícolas del CDL 2017, no con la Cultivated Layer; 93 condados, 2011–2017 en 37 s):
+  - `frac_maiz_regado` contra NASS: encuesta, maíz sembrado `IRRIGATED / ALL`, n = 49, r = 0,973,
+    sesgo −0,05 y MAE 0,06; Censo 2017, maíz grano cosechado `IRRIGATED / ALL`, n = 87, r = 0,970,
+    sesgo −0,03 y MAE 0,05.
+  - `frac_soja_regada` **sobreestima**: contra la encuesta (n = 22) r = 0,92 pero sesgo +0,20; contra
+    el Censo 2017 (n = 77) r = 0,92 y sesgo +0,16 (mediana 0,81 contra 0,54). Ordena bien los
+    condados, pero el nivel de la soja regada de LANID no es confiable. No se corrigió: ML decide
+    si usarla.
+  - `frac_riego_lanid`: mediana de los condados 0,49 (2012) a 0,60 (2015); `frac_pixeles_validos` = 1
+    en todos (LANID cubre todo el estado y no declara nodata).
+- La grilla de LANID está alineada con la del CDL (EPSG:5070, 30 m; origen −2354955, 3165615, a un
+  número entero de píxeles del origen del CDL), así que el vecino más cercano no mueve píxeles.
+- **Prueba completa con Zenodo en NE** (2000–2017, 93 condados, 1674 filas): mediana de
+  `frac_riego_lanid` entre 0,44 (2002) y 0,60 (2015). `mascara_riego_max.tif` (`maxIrrExt` 1997–2017)
+  se arma en 6 s: marca el 73 % de los píxeles agrícolas de NE como regados alguna vez (es el máximo de
+  21 años, no un año típico), y el 15 % de sus píxeles regados cae fuera de la máscara agrícola
+  (pasturas y heno regados del oeste). La máscara cubre todo el rectángulo de la grilla, también
+  fuera de los condados: hay que cruzarla con `mascara_agricola.tif` al usarla.
+
 ## Cobertura de condados de NASS por estado y año
 
 > **Aviso: no hagas totales ni promedios de estado sumando condados de `produccion_anual.csv` en 2018–2025.**
