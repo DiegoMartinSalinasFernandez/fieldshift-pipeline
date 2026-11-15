@@ -28,3 +28,4 @@
 - 08:07 T109: terminada, PR #102
 - 08:22 T115: tomada por el trabajador
 - 08:24 T115: terminada, PR #106
+- 08:24 T116: tomada por el trabajador
