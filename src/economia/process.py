@@ -345,17 +345,19 @@ def condados_de_borde(regiones: pd.DataFrame, n: int = 2) -> list[tuple[str, str
     for est, sub in g.groupby("estado"):
         if sub["region_ers"].nunique() < 2:
             continue
-        sub = sub.sort_values("fips").reset_index(drop=True)
+        # primero los condados de la región con más condados del estado (la que más pesa)
+        n_reg = sub["region_ers"].map(sub["region_ers"].value_counts())
+        sub = sub.assign(_n=-n_reg).sort_values(["_n", "fips"]).reset_index(drop=True)
         usados: set[str] = set()
         for i, a in sub.iterrows():
             if len(usados) >= 2 * n:
                 break
             if a["fips"] in usados:
                 continue
-            vecinos = sub[(sub.index > i) & (sub["region_ers"] != a["region_ers"])
+            vecinos = sub[(sub["region_ers"] != a["region_ers"])
                           & ~sub["fips"].isin(usados) & sub.geometry.intersects(a.geometry)]
             if len(vecinos):
-                b = vecinos.iloc[0]
+                b = vecinos.sort_values("fips").iloc[0]
                 pares.append((a["fips"], b["fips"]))
                 usados |= {a["fips"], b["fips"]}
     return pares
