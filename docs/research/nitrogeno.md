@@ -42,9 +42,16 @@ Detalle: abajo, una sección por estado y la tabla resumen al final.
   pide ubicación, rotación, clima, fecha de siembra y precios. Se presenta como sucesora del MRTN.
   - Fuentes secundarias (no abrí `n-fact.ag`): nota de prensa de Clean Water Iowa (IDALS) y Iowa Soybean
     Association. **Valores de dosis por rotación de N-FACT: no encontrados.**
-- **Último MRTN publicado para Iowa** que vi: solo por resúmenes del buscador de presentaciones de Iowa State
-  de 2022 (137–146 lb N/ac maíz tras soja según la versión). **No abrí el documento**, así que no lo pongo en
-  la tabla.
+- **Último MRTN de Iowa abierto** (Mallarino, Iowa State, "Soil Fertility: Current Topic", 12-abr-2022; la
+  calculadora se actualizó en abril de 2022 con 30 sitios-año nuevos; la anterior era de 2019). Maíz a
+  6,50 USD/bu y anhidro a 1400 USD/t (≈0,85 USD/lb N → relación **≈0,13**, calculada por mí):
+
+  | Región de la calculadora | Maíz tras soja | Maíz tras maíz |
+  |---|---|---|
+  | "Main" (la mayor parte de Iowa) | 137 (127–147) | 180 (171–189) |
+  | Sudeste de Iowa (SEIA) | 146 (137–156) | 196 (183–208) |
+
+  Desde 2025 Iowa ya no figura en la calculadora regional; estos valores son **anteriores a N-FACT**.
 - Crédito de soja: incluido en la dosis MRTN (no se resta aparte).
 - Alfalfa y cultivos de cobertura: no verificado en una fuente de Iowa abierta en esta tarea.
 
@@ -166,7 +173,7 @@ Detalle: abajo, una sección por estado y la tabla resumen al final.
 
 | Estado | Guía vigente (año) | Método | Maíz tras soja (lb N/ac) | Maíz tras maíz (lb N/ac) | Relación N:maíz usada | Crédito soja | Crédito alfalfa | Crédito cobertura | Cambió hace poco |
 |---|---|---|---|---|---|---|---|---|---|
-| IA | N-FACT (feb 2025) | ensayos en campo, por sitio | no encontrado | no encontrado | la ingresa el usuario | incluido | no verificado | no verificado | sí: dejó el MRTN regional |
+| IA | N-FACT (feb 2025); último MRTN abr 2022 | N-FACT: ensayos en campo por sitio; antes MRTN | MRTN 2022: Main 137 (127–147), SE 146 (137–156); N-FACT: no encontrado | MRTN 2022: Main 180 (171–189), SE 196 (183–208) | ≈0,13 (2022); N-FACT: la elige el usuario | incluido | no verificado | no verificado | sí: dejó el MRTN regional en 2025 |
 | IL | MRTN (Handbook 2022; farmdoc mar 2026) | MRTN por región | N 171 / C 181 / S 200 a 0,10 (2022); centro 178 / 172 (2026) | N +35, C +20, S ≈ igual (2022); centro 194 / 186 (2026) | 0,10 (2022); 0,116 / 0,136 (2026) | incluido | −125 a −150 con buen stand | centeno >1 t/ac → usar MRTN maíz/maíz; trébol: −20 a −30 | sí: MRTN sube al sumar ensayos |
 | IN | Purdue (abr 2022) | EONR propia por región | 159–225 según región y precio (central 192 a 0,15) | ≈ +44 sobre maíz/soja (AONR) | 0,10–0,20 en tablas | incluido | no verificado | no verificado | 2022 |
 | OH | MRTN (datos nuevos abr 2025) | MRTN | 160 (146–172) a 0,158; 152 (139–165) a 0,178 | no encontrado | 0,158–0,178 | incluido | no verificado | no verificado | sí: ensayos hasta 2024 agregados en 2025 |
@@ -181,6 +188,7 @@ Fuentes:
 - [Nafziger, Nitrogen Management for Corn, Illinois Agronomy Handbook cap. 9 (PDF abr-2022)](https://extension.illinois.edu/sites/default/files/iah_-_nitrogen_management_for_corn_v4.pdf), consultado 2026-11-15
 - [OSU C.O.R.N. Newsletter 2025-13, MRTN calculator updated](https://agcrops.osu.edu/newsletter/corn-newsletter/2025-13/corn-n-recommendations-maximum-return-n-calculator-updated), consultado 2026-11-15
 - [OSU C.O.R.N. Newsletter 2026-06, Rising nitrogen prices](https://agcrops.osu.edu/newsletter/corn-newsletter/2026-06/rising-nitrogen-prices-and-implications-corn-fertility-decisions), consultado 2026-11-15
+- [Mallarino, Considerations for Spring Preplant N Application for Corn with High Fertilizer Prices, Iowa State, 12-abr-2022](https://www.agronext.iastate.edu/soilfertility/currenttopics/Spring2022Nfertilization4-12-2022.pdf), consultado 2026-11-15
 - [farmdoc daily, "High Fertilizer Prices Suggest Reconsidering Application Rates", 31-mar-2026](https://farmdocdaily.illinois.edu/2026/03/high-fertilizer-prices-suggest-reconsidering-application-rates.html), consultado 2026-11-15
 - [Camberato y Nielsen, Nitrogen Management Guidelines for Corn in Indiana, Purdue, abr-2022](https://www.agry.purdue.edu/Ext/corn/news/timeless/NitrogenMgmt.pdf), consultado 2026-11-15
 - [UMN Crop News, "Updated corn nitrogen rates: what are we...", 26-sep-2025](https://blog-crop-news.extension.umn.edu/2025/09/updated-corn-nitrogen-rates-what-are-we.html), consultado 2026-11-15
@@ -190,7 +198,7 @@ Fuentes:
 - Solo por resultados de búsqueda (no abiertos): [Clean Water Iowa, N-FACT, 4-feb-2025](https://www.cleanwateriowa.org/news-releases/2025/2/6/02-04-2025-secretary-naig-encourages-farmers-to-use-n-fact-tool-to-calculate-optimal-nitrogen-application-rates); [UMN, Fertilizing corn in Minnesota](https://extension.umn.edu/crop-specific-needs/fertilizing-corn-minnesota)
 
 Confianza: alta para KS, IN, IL, MN y la ecuación de NE (documentos abiertos); media para OH (solo maíz tras
-soja, sin maíz tras maíz); baja para IA (sin documento abierto con valores) y para los créditos de alfalfa de
+soja, sin maíz tras maíz); media para IA (MRTN 2022 abierto, pero la guía vigente es N-FACT y no pude ver sus valores) y para los créditos de alfalfa de
 MN y de leguminosas de NE (no leídos en la fuente).
 
 Impacto: `config/cultivos.csv` (columna de fijación de N / crédito al cultivo siguiente) y el modelo de
