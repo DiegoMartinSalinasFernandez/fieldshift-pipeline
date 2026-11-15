@@ -1,9 +1,9 @@
 ---
 id: T012
 titulo: 'Research: prácticas del Censo Agropecuario en los estados nuevos'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - OH
 - NE
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:15
-actualizada: 2026-11-15 01:15
+actualizada: 2026-11-15 02:17
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ cultivo. Actualizar `docs/research/censo_agropecuario.md` con una sección por e
 El research actualizado en un PR, con lo que T003 tiene que tener en cuenta.
 
 ## Notas
+- 2026-11-15 02:17 · pro-1: tomada
