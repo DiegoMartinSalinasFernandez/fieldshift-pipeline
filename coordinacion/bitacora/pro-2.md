@@ -19,3 +19,4 @@
 - 02:50 T029: tomada por el trabajador
 - 02:59 T029: terminada, PR #25
 - 03:14 T035: tomada por el trabajador
+- 03:16 T035: terminada, PR #29
