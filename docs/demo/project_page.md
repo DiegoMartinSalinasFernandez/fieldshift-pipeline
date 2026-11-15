@@ -11,14 +11,17 @@ Rules for whoever pastes this into the form:
 - **Everything in English.** All links must be **public, with no login**. Test them in a private window.
 - **No invented numbers.** Each figure has a `[src: ...]` note with the repo file it comes from. Delete those notes
   before pasting, but keep the numbers exactly as written. Anything we do not have yet is marked **[TBD]**.
-- **Coverage (checked 2026-11-15, task T089).** The only published data release is **`datos-oh-ne-mn`: Ohio,
-  Nebraska and Minnesota, 268 counties (OH 88, NE 93, MN 87), 2000–2025**, with 8 packages (`agua`, `clima`,
-  `cultivos`, `economia`, `nldas`, `paisaje`, `suelo_terreno`, `vegetacion`), 19 CSV files and 169 data columns
-  `[src: release datos-oh-ne-mn, condados.csv and CSV headers, zips checked against their .sha256]`. Iowa,
-  Illinois and Indiana (first batch, 293 counties, `docs/datasets/clima.md`), Kansas, the field-level
-  `fieldshift_lotes_v1` and the `ecostress`, `teledeteccion` and `validacion` packages have **no published
-  release**: their numbers below come from repo data cards only and are marked. Do not claim 7 states or 666
-  counties as delivered until those releases exist. `docs/demo/coverage.md` lists the published releases with
+- **Coverage (checked 2026-11-15, tasks T089 and T104).** Two data releases are published:
+  **`datos-oh-ne-mn`: Ohio, Nebraska and Minnesota, 268 counties (OH 88, NE 93, MN 87), 2000–2025**, with 8
+  packages (`agua`, `clima`, `cultivos`, `economia`, `nldas`, `paisaje`, `suelo_terreno`, `vegetacion`), 19 CSV
+  files and 169 data columns `[src: release datos-oh-ne-mn, condados.csv and CSV headers, zips checked against
+  their .sha256]`, and **`datos-mo-wi-sd`: Missouri, Wisconsin and South Dakota, 253 counties (MO 115, WI 72,
+  SD 66), 2000–2025**, with the same 8 packages and 19 CSV files `[src: release datos-mo-wi-sd,
+  docs/demo/coverage.md]`. Together: **6 states, 521 counties**. Iowa, Illinois and Indiana (first batch, 293
+  counties, `docs/datasets/clima.md`), Kansas (105 counties), the field-level `fieldshift_lotes_v1` and the
+  `ecostress`, `teledeteccion` and `validacion` packages have **no published release**: their numbers below come
+  from repo data cards only and are marked. Do not claim 10 states or 919 counties as delivered until those
+  releases exist. `docs/demo/coverage.md` lists the published releases with
   counted numbers: rerun `docs/demo/coverage.py` before pasting.
 - **Model results.** This repo builds the data only and trains no models (`CLAUDE.md`). Any claim about model
   accuracy or recommended rotations has to come from the ML or frontend team. **[TBD]**
@@ -46,8 +49,8 @@ tab): **[TBD]**. Local event: **[TBD]**.
 > years. We built an open, reproducible data pipeline that brings together 26 years (2000–2025) of NASA Earth
 > observations, which are the core of the tool: weather and rainfall (NASA POWER, GPM IMERG), soil moisture (SMAP,
 > NLDAS-2, GRACE-DA-DM), vegetation and land surface temperature (MODIS) and terrain (NASADEM). The first
-> published release covers 268 counties in Ohio, Nebraska and Minnesota; Iowa, Illinois, Indiana and Kansas
-> complete the planned 7-state study area. The pipeline combines the NASA data, county by county, with the crops
+> published releases cover 521 counties in six states (Ohio, Nebraska, Minnesota, Missouri, Wisconsin and South
+> Dakota); Iowa, Illinois, Indiana and Kansas complete the planned 10-state study area. The pipeline combines the NASA data, county by county, with the crops
 > actually grown on every 30 m pixel
 > (USDA Cropland Data Layer), county yields, soil surveys (SSURGO) and economics. On top of these tables, the
 > tool compares at least three rotations, starting with the farmer's current one. For each rotation it shows
@@ -55,8 +58,9 @@ tab): **[TBD]**. Local event: **[TBD]**.
 > fields, where satellite and terrain data separate dry knolls from wet depressions. The tool supports farmers'
 > decisions and local expertise; it does not replace them.
 
-Sources for the numbers: period, products and the 268 counties from the release `datos-oh-ne-mn`; planned
-states `CLAUDE.md` §2. ECOSTRESS, HLS and Landsat were taken out of the summary because their packages
+Sources for the numbers: period and products from the release `datos-oh-ne-mn`; the 521 counties from the
+releases `datos-oh-ne-mn` (268) and `datos-mo-wi-sd` (253), counted in `docs/demo/coverage.md`; planned states
+`config/config.yaml`. ECOSTRESS, HLS and Landsat were taken out of the summary because their packages
 (`ecostress`, `lotes`, `teledeteccion`) have no published release; put them back if they are published.
 Rotation penalty: continuous corn yields 4.3 % less than rotated corn on rainfed fields and 1.7 % less on
 irrigated ones, continuous soybean 10.3 % and 9.6 % less, and the corn penalty is largest in dry, low-yield
@@ -79,8 +83,9 @@ project from Global Judging (`space_apps_criterios.md` §2). The draft is in `do
 - **Data:** processed CSVs are published as GitHub Releases, one per group of states (`datos-<states>`, made by
   `scripts/entregar.py`), plus a separate field-level release (`fieldshift_lotes_v1`, `CLAUDE.md` §6.6).
   What is published today, with states, counties, years and rows counted from the zips:
-  `docs/demo/coverage.md` (refresh with `docs/demo/coverage.py`). Published release (Ohio, Nebraska, Minnesota):
-  <repo URL>/releases/tag/datos-oh-ne-mn · all releases: <repo URL>/releases `[src: coverage.md, 2026-11-15; add the
+  `docs/demo/coverage.md` (refresh with `docs/demo/coverage.py`). Published releases (Ohio, Nebraska, Minnesota):
+  <repo URL>/releases/tag/datos-oh-ne-mn · (Missouri, Wisconsin, South Dakota):
+  <repo URL>/releases/tag/datos-mo-wi-sd · all releases: <repo URL>/releases `[src: coverage.md, 2026-11-15; add the
   other datos-<states> tags only once they are published]`
 - **English documentation for judges:** `docs/datasets/README_en.md` (data summary, sources, quality control,
   limitations): [`docs/datasets/README_en.md`](../datasets/README_en.md)
@@ -95,9 +100,9 @@ project from Global Judging (`space_apps_criterios.md` §2). The draft is in `do
 ### What it does
 
 Field Shift is a decision-support tool for crop rotations in the U.S. Corn Belt. The planned study area is every
-county of Iowa, Illinois, Indiana, Ohio, Nebraska, Minnesota and Kansas, 666 counties, for 2000–2025
-`[src: CLAUDE.md §2]`. Published so far: Ohio, Nebraska and Minnesota, 268 counties, 2000–2025 `[src: release
-datos-oh-ne-mn]`. For a given county or field, the tool compares at least three rotation strategies,
+county of Iowa, Illinois, Indiana, Ohio, Nebraska, Minnesota, Kansas, Missouri, Wisconsin and South Dakota,
+919 counties, for 2000–2025 `[src: config/config.yaml]`. Published so far: Ohio, Nebraska, Minnesota, Missouri,
+Wisconsin and South Dakota, 521 counties, 2000–2025 `[src: releases datos-oh-ne-mn and datos-mo-wi-sd]`. For a given county or field, the tool compares at least three rotation strategies,
 including the current one, as the challenge asks. These are the corn–soybean rotation, continuous corn and
 rotations that add a small grain or alfalfa. For each strategy it reports:
 

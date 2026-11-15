@@ -12,8 +12,10 @@ Rules this script follows (`docs/research/space_apps_criterios.md` §1–§2):
 - **Only real figures** from `docs/demo/fig/` and **only numbers** from `docs/demo/coverage.md` or the published
   release `datos-oh-ne-mn`. Every number below has its source in the last table. No model results: the shot
   marked **[ML]** is left for the ML team.
-- **What is published today:** only Ohio, Nebraska and Minnesota (268 counties, 2000–2025, release
-  `datos-oh-ne-mn`). Do **not** say "666 counties" or "7 states" as delivered. All figures are OH/NE/MN only.
+- **What is published today:** Ohio, Nebraska and Minnesota (268 counties, release `datos-oh-ne-mn`) and
+  Missouri, Wisconsin and South Dakota (253 counties, release `datos-mo-wi-sd`): 6 states, 521 counties,
+  2000–2025. Do **not** say "919 counties" or "10 states" as delivered. All figures except the map (fig0) are
+  OH/NE/MN only, and so are the numbers in shots 2–5.
 - No NASA logos (and no AI-modified logos): credits are plain text. Any AI-generated image or voice carries a
   visible "AI-generated" watermark. No people under 18.
 
@@ -41,7 +43,7 @@ Total: **30 s**. Narration: **71 words** (about 70 fit in 30 s; see the word cou
 ## Shot 1 — 0:00 to 0:03 · Title and team
 
 - **On screen:** `docs/demo/fig/fig0_mapa.png` (task T094): the counties of the study states, solid where the
-  data release is published (OH, NE, MN) and hatched where it is in progress. Title text over a dark band at
+  data release is published (OH, NE, MN, MO, WI, SD) and hatched where it is in progress. Title text over a dark band at
   the top. **Re-run `docs/demo/figuras.py --solo-mapa` before the final cut** so the solid/hatched status is
   current. Do not draw a map by hand.
 - **On-screen text:**
@@ -122,7 +124,7 @@ Total: **30 s**. Narration: **71 words** (about 70 fit in 30 s; see the word cou
 - **On screen:** plain-text card, no logos.
 - **On-screen text:**
   - **Built on open NASA data:** POWER · GPM IMERG (via POWER) · SMAP · GRACE-DA-DM · MODIS · NLDAS-2 · NASADEM
-  - *+ USDA NASS, NRCS, ERS · 268 counties published (OH, NE, MN), 2000–2025*
+  - *+ USDA NASS, NRCS, ERS · 521 counties published in 6 states (OH, NE, MN, MO, WI, SD), 2000–2025*
   - <repo URL> (the public GitHub URL of this repository)
 - **Narration (13 words):** "Open NASA data, an open pipeline, and the farmer still makes the call."
 - **Subtitle (2 lines):**
@@ -222,8 +224,9 @@ numbers were checked again by pro-3; the SMAP May value comes from fig3, because
 
 | Number | Where it comes from |
 |---|---|
-| Study-area map, solid = published release | `docs/demo/fig/fig0_mapa.png` (T094), checked 2026-11-15: only `datos-oh-ne-mn` published |
+| Study-area map, solid = published release | `docs/demo/fig/fig0_mapa.png` (T094, redone in T104), checked 2026-11-15: `datos-oh-ne-mn` and `datos-mo-wi-sd` published |
 | 268 counties (OH, NE, MN), 2000–2025; 83,616 county-months in `clima_mensual.csv` | `docs/demo/coverage.md`, release table |
+| 521 counties in 6 states published (268 OH/NE/MN + 253 MO/WI/SD), shot 7 | `docs/demo/coverage.md`, release table (T104) |
 | 7 NASA product families in the published release | `docs/demo/coverage.md`, "NASA products in the data" (packages `clima`, `agua`, `vegetacion`, `nldas`, `suelo_terreno`) |
 | Median county corn yield 138.4 bu/ac in 2012 (238 counties) vs 160.6 bu/ac in the other years (5,987 county-years in total), not detrended | `produccion_anual.csv`, `cultivo = maiz`, `rend_bu_ac`; figure fig5 |
 | Corn after corn 2025, county median: OH 11.0 %, MN 23.9 %, NE 46.5 %; 266 counties | `rotacion_anual.csv`, `anio = 2025`, `pct_maiz_tras_maiz`, median by state; figure fig4 |

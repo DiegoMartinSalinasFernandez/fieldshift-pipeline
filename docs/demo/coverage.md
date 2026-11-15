@@ -34,7 +34,7 @@ How to read it:
 | `datos-ia-il-in` | Iowa, Illinois, Indiana (first batch) | | | | | | in progress |
 | `datos-oh-ne-mn` | MN (87), NE (93), OH (88) | 268 | 2000–2025 | 8 | 91.0 | 2026-11-15 | published |
 | `datos-ks` | Kansas | | | | | | in progress |
-| `datos-mo-wi-sd` | Missouri, Wisconsin, South Dakota | | | | | | in progress |
+| `datos-mo-wi-sd` | MO (115), SD (66), WI (72) | 253 | 2000–2025 | 8 | 83.6 | 2026-11-15 | published |
 | `fieldshift_lotes_v1` | 10 demonstration fields, per 30 m pixel (CLAUDE.md §6.6) | | | | | | in progress |
 
 ### `datos-oh-ne-mn`: rows per file
@@ -60,6 +60,30 @@ How to read it:
 | `vegetacion` (5.0 MB zip) | `fenologia_anual.csv` | 6,968 | 12 | fips | 268 | 2000–2025 (26 years) |
 | `vegetacion` (5.0 MB zip) | `vegetacion_16d.csv` | 156,512 | 8 | fips | 268 | 2000–2025 (26 years) |
 | `vegetacion` (5.0 MB zip) | `vegetacion_mensual.csv` | 82,276 | 16 | fips | 268 | 2000–2025 (26 years) |
+
+### `datos-mo-wi-sd`: rows per file
+
+| Package | File | Rows | Columns | Spatial unit | Units | Years |
+|---|---|---|---|---|---|---|
+| `agua` (11.3 MB zip) | `agua_diario.csv` | 993,784 | 5 | fips | 253 | 2015–2025 (11 years) |
+| `agua` (11.3 MB zip) | `agua_mensual.csv` | 32,637 | 9 | fips | 253 | 2015–2025 (11 years) |
+| `agua` (11.3 MB zip) | `agua_semanal.csv` | 303,347 | 6 | fips | 253 | 2003–2025 (23 years) |
+| `clima` (65.5 MB zip) | `clima_anual.csv` | 6,578 | 15 | fips | 253 | 2000–2025 (26 years) |
+| `clima` (65.5 MB zip) | `clima_diario.csv` | 2,402,741 | 15 | fips | 253 | 2000–2025 (26 years) |
+| `clima` (65.5 MB zip) | `clima_mensual.csv` | 78,936 | 29 | fips | 253 | 2000–2025 (26 years) |
+| `cultivos` (0.6 MB zip) | `fenologia_estado.csv` | 156 | 7 | fips_estado | 3 | 2000–2025 (26 years) |
+| `cultivos` (0.6 MB zip) | `practicas_censo.csv` | 759 | 6 | fips | 253 | 2012–2022 (3 years) |
+| `cultivos` (0.6 MB zip) | `produccion_anual.csv` | 20,634 | 11 | fips | 252 | 2000–2025 (26 years) |
+| `cultivos` (0.6 MB zip) | `rotacion_anual.csv` | 4,554 | 13 | fips | 253 | 2008–2025 (18 years) |
+| `cultivos` (0.6 MB zip) | `rotacion_secuencia.csv` | 2,783 | 9 | fips | 253 | 11 8-year windows, 2008-2015 to 2018-2025 |
+| `economia` (0.0 MB zip) | `economia_anual.csv` | 312 | 9 | fips_estado | 3 | 2000–2025 (26 years) |
+| `economia` (0.0 MB zip) | `economia_forrajes_anual.csv` | 156 | 5 | fips_estado | 3 | 2000–2025 (26 years) |
+| `nldas` (1.4 MB zip) | `nldas_mensual.csv` | 78,936 | 9 | fips | 253 | 2000–2025 (26 years) |
+| `paisaje` (0.2 MB zip) | `paisaje_anual.csv` | 6,325 | 9 | fips | 253 | 2000–2024 (25 years) |
+| `suelo_terreno` (0.0 MB zip) | `suelo_terreno_estatico.csv` | 253 | 25 | fips | 253 |  |
+| `vegetacion` (4.6 MB zip) | `fenologia_anual.csv` | 6,578 | 12 | fips | 253 | 2000–2025 (26 years) |
+| `vegetacion` (4.6 MB zip) | `vegetacion_16d.csv` | 147,752 | 8 | fips | 253 | 2000–2025 (26 years) |
+| `vegetacion` (4.6 MB zip) | `vegetacion_mensual.csv` | 77,671 | 16 | fips | 253 | 2000–2025 (26 years) |
 
 <!-- coverage:end -->
 
