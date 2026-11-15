@@ -156,3 +156,95 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
   Las transiciones lo corrigen con su denominador (ver Supuestos), pero los % de área
   (`pct_maiz`, `pct_soja`, …) y las máscaras `mascara_maiz_<anio>` / `mascara_soja_<anio>`
   de esos años pueden diferir algo de lo que daría un CDL de 30 m.
+
+## Cobertura de condados de NASS por estado y año
+
+> **Aviso: no hagas totales ni promedios de estado sumando condados de `produccion_anual.csv` en 2018–2025.**
+> En esos años NASS publica cada vez menos condados y junta el resto en "OTHER (COMBINED) COUNTIES"
+> (`county_code` 998), que este paquete deja afuera (no es un condado). Sumando los condados publicados se
+> llega a solo 48–81 % de la superficie sembrada del estado en el peor año de 2018–2025 (tabla de abajo).
+> Para superficie por condado o por estado usá `rotacion_anual.csv` (CDL), que cubre todos los condados todos
+> los años. Un rendimiento "de estado" armado con los condados publicados también queda sesgado.
+
+Condados con `sup_sembrada_ac` publicada (valor numérico, sin la fila 998) y, entre paréntesis, el % de la
+superficie sembrada del estado que NASS junta en las filas 998 (una por distrito agrícola; se suman). Fuente:
+base completa de Quick Stats `qs.crops_20261114.txt.gz`; SURVEY, `<CULTIVO> - ACRES PLANTED`, año completo,
+dominio TOTAL (es `ALL PRODUCTION PRACTICES`). Condados de cada estado: IA 99, IL 102, IN 92, OH 88, NE 93,
+MN 87, KS 105. Script: `docs/datasets/cobertura_nass.py` (solo lee; la tabla es su salida tal cual).
+
+**Maíz** (`CORN - ACRES PLANTED`): condados publicados (% de la superficie del estado en la fila 998)
+
+| anio | IA | IL | IN | OH | NE | MN | KS |
+|---|---|---|---|---|---|---|---|
+| 2000 | 99 (0,0) | 102 (0,0) | 87 (0,3) | 86 (0,0) | 91 (0,0) | 79 (0,0) | 105 (0,0) |
+| 2001 | 99 (0,0) | 102 (0,0) | 87 (0,3) | 86 (0,0) | 90 (0,0) | 79 (0,0) | 103 (0,1) |
+| 2002 | 99 (0,0) | 102 (0,0) | 87 (0,3) | 84 (0,1) | 90 (0,0) | 79 (0,1) | 105 (0,0) |
+| 2003 | 99 (0,0) | 102 (0,0) | 87 (0,3) | 86 (0,0) | 90 (0,0) | 79 (0,0) | 103 (0,0) |
+| 2004 | 99 (0,0) | 102 (0,0) | 87 (0,3) | 82 (0,2) | 90 (0,0) | 71 (0,5) | 105 (0,0) |
+| 2005 | 99 (0,0) | 102 (0,0) | 87 (0,3) | 86 (0,0) | 90 (0,0) | 75 (0,2) | 101 (0,5) |
+| 2006 | 99 (0,0) | 102 (0,0) | 86 (0,5) | 80 (0,3) | 91 (0,0) | 75 (0,3) | 101 (0,2) |
+| 2007 | 99 (0,0) | 102 (0,0) | 87 (0,3) | 80 (0,3) | 90 (0,0) | 76 (0,0) | 97 (0,8) |
+| 2008 | 99 (0,0) | 98 (0,1) | 90 (0,1) | 75 (0,8) | 85 (0,4) | 71 (1,8) | 52 (46,4) |
+| 2009 | 99 (0,0) | 100 (0,1) | 88 (0,4) | 73 (1,3) | 83 (0,7) | 72 (0,6) | 74 (16,7) |
+| 2010 | 99 (0,0) | 98 (0,2) | 92 (0,0) | 80 (0,3) | 87 (0,1) | 75 (0,2) | 88 (7,3) |
+| 2011 | 99 (0,0) | 97 (0,2) | 83 (8,0) | 80 (3,0) | 87 (0,2) | 72 (0,7) | 85 (11,2) |
+| 2012 | 99 (0,0) | 90 (3,9) | 84 (4,3) | 80 (2,3) | 85 (0,9) | 73 (0,9) | 87 (6,8) |
+| 2013 | 99 (0,0) | 90 (4,3) | 75 (9,2) | 80 (0,8) | 81 (2,0) | 75 (1,0) | 75 (20,0) |
+| 2014 | 99 (0,0) | 96 (1,7) | 87 (2,4) | 84 (0,9) | 83 (1,4) | 71 (0,6) | 72 (23,5) |
+| 2015 | 95 (1,9) | 91 (3,3) | 85 (3,2) | 81 (2,4) | 78 (4,5) | 72 (1,5) | 58 (38,1) |
+| 2016 | 99 (0,0) | 92 (5,6) | 81 (9,2) | 78 (1,1) | 81 (2,2) | 76 (1,1) | 66 (30,5) |
+| 2017 | 95 (1,2) | 98 (0,1) | 85 (2,2) | 80 (1,8) | 73 (10,8) | 71 (2,4) | 71 (31,3) |
+| 2018 | 93 (3,8) | 84 (6,1) | 80 (8,6) | 75 (6,8) | 72 (8,1) | 58 (13,7) | 58 (50,7) |
+| 2019 | 88 (7,3) | 78 (16,7) | 69 (23,5) | 68 (13,3) | 69 (11,7) | 60 (11,8) | 55 (51,6) |
+| 2020 | 95 (4,8) | 99 (0,1) | 89 (0,4) | 83 (0,5) | 83 (3,1) | 77 (2,2) | 90 (9,8) |
+| 2021 | 84 (13,1) | 79 (18,3) | 73 (24,2) | 78 (9,0) | 55 (40,5) | 71 (13,1) | 75 (25,0) |
+| 2022 | 97 (0,8) | 94 (5,0) | 81 (8,2) | 79 (2,0) | 70 (13,8) | 73 (9,1) | 79 (25,1) |
+| 2023 | 87 (10,6) | 91 (6,2) | 74 (16,5) | 72 (12,0) | 69 (20,9) | 64 (14,5) | 74 (27,8) |
+| 2024 | 73 (25,6) | 62 (35,0) | 71 (18,4) | 66 (17,2) | 60 (28,6) | 61 (21,3) | 59 (43,2) |
+| 2025 | 79 (20,8) | 64 (35,6) | 60 (22,1) | 69 (18,9) | 46 (46,4) | 62 (21,2) | 52 (51,4) |
+
+**Soja** (`SOYBEANS - ACRES PLANTED`): condados publicados (% de la superficie del estado en la fila 998)
+
+| anio | IA | IL | IN | OH | NE | MN | KS |
+|---|---|---|---|---|---|---|---|
+| 2000 | 99 (0,0) | 102 (0,0) | 87 (0,4) | 79 (0,1) | 79 (0,0) | 74 (0,0) | 105 (0,0) |
+| 2001 | 99 (0,0) | 102 (0,0) | 87 (0,3) | 80 (0,1) | 80 (0,0) | 74 (0,0) | 94 (0,5) |
+| 2002 | 99 (0,0) | 102 (0,0) | 87 (0,4) | 80 (0,1) | 78 (0,0) | 79 (0,0) | 95 (0,4) |
+| 2003 | 99 (0,0) | 102 (0,0) | 87 (0,4) | 77 (0,1) | 75 (0,0) | 79 (0,0) | 93 (0,6) |
+| 2004 | 99 (0,0) | 102 (0,0) | 87 (0,3) | 79 (0,1) | 79 (0,0) | 76 (0,2) | 94 (1,4) |
+| 2005 | 99 (0,0) | 102 (0,0) | 87 (0,4) | 80 (0,1) | 77 (0,0) | 76 (0,1) | 98 (1,2) |
+| 2006 | 99 (0,0) | 102 (0,0) | 87 (0,3) | 79 (0,1) | 77 (0,1) | 76 (0,2) | 92 (1,7) |
+| 2007 | 99 (0,0) | 102 (0,0) | 87 (0,3) | 81 (0,0) | 76 (0,0) | 74 (0,1) | 92 (0,5) |
+| 2008 | 99 (0,0) | 98 (0,3) | 90 (0,1) | 72 (3,7) | 72 (0,3) | 70 (1,3) | 50 (18,2) |
+| 2009 | 99 (0,0) | 98 (0,3) | 90 (0,1) | 70 (1,5) | 74 (0,2) | 73 (0,1) | 65 (8,0) |
+| 2010 | 99 (0,0) | 100 (0,1) | 89 (0,1) | 77 (0,4) | 73 (0,5) | 76 (0,0) | 86 (2,8) |
+| 2011 | 99 (0,0) | 97 (0,3) | 85 (6,2) | 75 (2,1) | 75 (0,3) | 74 (0,1) | 81 (5,9) |
+| 2012 | 99 (0,0) | 96 (0,9) | 86 (5,8) | 76 (3,4) | 73 (0,6) | 73 (1,3) | 73 (5,5) |
+| 2013 | 99 (0,0) | 91 (3,6) | 74 (11,3) | 79 (0,5) | 71 (1,9) | 73 (0,3) | 70 (7,7) |
+| 2014 | 99 (0,0) | 95 (1,5) | 88 (1,7) | 79 (0,5) | 68 (2,3) | 70 (1,8) | 65 (12,1) |
+| 2015 | 97 (1,7) | 93 (4,1) | 87 (1,4) | 77 (0,7) | 62 (7,6) | 66 (5,3) | 54 (24,5) |
+| 2016 | 99 (0,0) | 93 (4,7) | 82 (5,8) | 74 (1,1) | 66 (4,7) | 71 (0,7) | 59 (17,2) |
+| 2017 | 96 (1,5) | 97 (0,6) | 88 (1,3) | 75 (2,0) | 55 (7,3) | 72 (0,8) | 67 (13,6) |
+| 2018 | 96 (3,8) | 88 (5,4) | 83 (5,2) | 72 (5,4) | 54 (9,6) | 58 (15,1) | 53 (34,3) |
+| 2019 | 82 (14,0) | 75 (19,5) | 72 (19,9) | 68 (10,2) | 44 (22,9) | 60 (15,3) | 47 (35,5) |
+| 2020 | 86 (14,4) | 99 (0,9) | 88 (1,4) | 82 (3,1) | 69 (4,9) | 79 (2,3) | 75 (2,6) |
+| 2021 | 76 (23,8) | 78 (23,5) | 73 (20,6) | 73 (11,6) | 47 (35,3) | 71 (12,6) | 71 (12,2) |
+| 2022 | 97 (1,4) | 93 (5,2) | 83 (7,7) | 77 (2,6) | 61 (9,6) | 74 (11,4) | 70 (9,2) |
+| 2023 | 82 (17,2) | 89 (7,4) | 74 (15,8) | 67 (12,2) | 61 (12,7) | 69 (17,9) | 58 (16,0) |
+| 2024 | 68 (31,4) | 61 (34,1) | 73 (16,1) | 63 (16,8) | 50 (33,9) | 60 (29,2) | 45 (38,5) |
+| 2025 | 73 (26,9) | 62 (38,9) | 58 (31,4) | 61 (23,7) | 36 (47,6) | 67 (20,7) | 48 (36,2) |
+
+- **Condados + fila 998 = total de estado** en todos los años: 96,2–100,7 % (los mínimos son NE soja
+  2017–2019, 96,2–96,8 %, y KS soja 2008–2009, 97,2–97,5 %; el resto, 99–100,7 %). El proceso no pierde
+  superficie: lo que falta en los condados es lo que NASS juntó en 998.
+- **% del estado que suman los condados publicados, peor año de 2018–2025:** maíz IA 74,4, IL 64,4, IN 75,8,
+  OH 81,1, NE 54,1, MN 78,7, KS 48,4; soja IA 68,6, IL 61,1, IN 68,6, OH 76,3, NE 52,4, MN 70,8, KS 61,5.
+- Antes de 2018 la fila 998 pesa poco (máximo de 2000–2017: IA ≤ 1,9 %, OH ≤ 3,7, MN ≤ 5,3, IL ≤ 5,6,
+  NE ≤ 10,8, IN ≤ 11,3), salvo **KS, que ya desde 2008 junta mucho** (maíz hasta 46,4 % en 2008).
+- Los peores años son 2019, 2021 y 2024–2025 (NE 2025: 46,4 % del maíz y 47,6 % de la soja en 998; KS maíz
+  2018–2019 y 2025: más de 50 %). 2020 y 2022 vuelven a tener casi todos los condados en IA, IL y OH.
+- Ningún condado publicado tiene `(D)` en la superficie sembrada de maíz o soja: los ocultos no aparecen
+  como fila propia, van a 998.
+- En OH, NE y MN, el número de condados con `sup_sembrada_ac` de maíz y soja de `produccion_anual.csv`
+  (release `datos-oh-ne-mn`) coincide con el de Quick Stats en todos los años. IA, IL, IN y KS no tienen
+  release de `cultivos` en este repo: sus columnas salen solo de Quick Stats.
