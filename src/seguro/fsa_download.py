@@ -28,6 +28,7 @@ import requests
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 from src.common.config import cargar_config  # noqa: E402
+from src.common.manifest import asegurar_manifest  # noqa: E402
 
 RAW = REPO / "data" / "raw" / "seguro" / "fsa"
 INTERIM = REPO / "data" / "interim" / "seguro"
@@ -62,10 +63,6 @@ FINALES = {
 }
 
 
-def asegurar_manifest(man: Path) -> None:
-    if not man.exists() or man.stat().st_size == 0:
-        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n",
-                       encoding="utf-8")
 
 
 def upsert_manifest(filas: list[dict], man: Path = MANIFEST) -> None:

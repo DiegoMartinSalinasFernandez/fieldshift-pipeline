@@ -29,6 +29,7 @@ import requests
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 from src.common.config import cargar_config  # noqa: E402
+from src.common.manifest import asegurar_manifest  # noqa: E402
 
 RAW = REPO / "data" / "raw" / "seguro"
 INTERIM = REPO / "data" / "interim" / "seguro"
@@ -50,10 +51,6 @@ DOCS = {
 UA = "fieldshift-pipeline/1.0"
 
 
-def asegurar_manifest(man: Path) -> None:
-    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
-    if not man.exists() or man.stat().st_size == 0:
-        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
 
 
 def upsert_manifest(filas: list[dict]) -> None:

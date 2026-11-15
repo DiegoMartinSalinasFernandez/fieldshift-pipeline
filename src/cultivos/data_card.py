@@ -11,7 +11,6 @@ import pandas as pd
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-from src.zona_texto import lista_estados  # noqa: E402
 from src.cultivos.riego_nass import COLS_DATA_CARD as RIEGO_COLS, SECCION_DATA_CARD as RIEGO_SECCION  # noqa: E402  T134
 from src.common.zona_texto import lista_estados  # noqa: E402
 OUT = REPO / "data" / "processed" / "cultivos"
