@@ -92,7 +92,7 @@ def armar_zip(paquete: str, etiqueta: str) -> Path:
             zf.write(p, p.relative_to(REPO).as_posix())
         if manifest is not None:
             zf.writestr("manifest.csv", manifest.encode("utf-8"))
-    (z.with_suffix(".zip.sha256")).write_text(f"{sha256(z)}  {z.name}\n", encoding="utf-8")
+    (z.with_suffix(".zip.sha256")).write_text(f"{sha256(z)}  {z.name}\n", encoding="utf-8", newline="\n")  # LF: sha256sum -c de Linux rechaza el CR
     print(f"{z.relative_to(REPO)}: {z.stat().st_size / 1e6:.1f} MB, {len(archivos)} archivos de datos")
     return z
 
