@@ -29,3 +29,4 @@ La página en un PR.
 
 ## Notas
 - 2026-11-15 08:20 · pro-3: tomada
+- 2026-11-15 08:20 · pro-3: corte por el límite de uso de Claude; 0 commits guardados en tarea/T115-auto. El trabajador sigue cuando se renueve.
