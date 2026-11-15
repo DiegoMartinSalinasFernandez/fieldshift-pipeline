@@ -1,9 +1,9 @@
 ---
 id: T023
 titulo: Descargas con un bbox por estado (vegetacion, nldas y CDL)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados:
 - OH
 - NE
@@ -13,7 +13,7 @@ depende_de:
 - T021
 rama: null
 creada: 2026-11-15 02:50
-actualizada: 2026-11-15 02:50
+actualizada: 2026-11-15 02:37
 ---
 
 ## Qué hacer
@@ -37,3 +37,4 @@ Espera a T021 porque las dos tocan los `download.py`.
 Las tres descargas con un bbox por estado y la paginación del CDL, en un PR con la prueba descrita.
 
 ## Notas
+- 2026-11-15 02:37 · pro-4: tomada
