@@ -191,14 +191,15 @@ SSURGO · USDA NASS CSB and CDL.
 - Right: `docs/demo/fig/fig6_lluvia_oh_ne_mn.png` (real, T095): monthly `prec_imerg_mm` vs `prec_power_mm`,
   one point per county-month, one panel per state (OH, NE, MN), 1:1 line, ratio of totals and r in each
   title. Caption: "GPM IMERG vs NASA POWER monthly rainfall by county, Ohio, Nebraska and Minnesota,
-  2000–2025. Two NASA products compared with each other, not with rain gauges."
+  2000–2025. Two NASA products compared with each other, not with rain gauges. IMERG: GPM IMERG Final V07,
+  served by the NASA POWER API (IMERG_PRECTOT)."
 - Still to make: the same scatter against `prec_prism_mm` (`validacion_mensual.csv`). **[TBD: needs the
   IA/IL/IN validacion data, which is not in a published release. Until then, give the PRISM r values above as
   text only, and say they are IA/IL/IN.]**
 
 **Data credit:** NASA SMAP L4 V8 (doi:10.5067/T5RUATAQREF8), via USDA NASS Crop-CASMA · NASA ECOSTRESS L4T_ESI
-V002 (doi:10.5067/ECOSTRESS/ECO_L4T_ESI.002) · NASA POWER · NASA GPM IMERG V07 · PRISM Group, Oregon State
-University · CoCoRaHS.
+V002 (doi:10.5067/ECOSTRESS/ECO_L4T_ESI.002) · NASA POWER · NASA GPM IMERG V07 (via the POWER API) · PRISM
+Group, Oregon State University · CoCoRaHS.
 
 ---
 

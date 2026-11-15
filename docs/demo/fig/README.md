@@ -17,6 +17,8 @@ No incluyen IA, IL, IN ni KS; el pie de cada figura lo aclara. Se regeneran con:
 ## `fig6_lluvia_oh_ne_mn.png` (T095)
 
 Lluvia mensual GPM IMERG contra NASA POWER, un punto por condado-mes (`clima_mensual.csv` de
-`datos-oh-ne-mn`), un panel por estado, con la recta 1:1, la razón de totales IMERG/POWER y la r de Pearson. Se
+`datos-oh-ne-mn`). `prec_imerg_mm` es GPM IMERG Final V07 servido por la API de NASA POWER (`IMERG_PRECTOT`,
+0,1°; Late V07 de 2025-10 a 2025-12), no `GPM_3IMERGDF` de GES DISC (ver `docs/datasets/clima.md`); el pie de
+la figura lo dice. Hay un panel por estado, con la recta 1:1, la razón de totales IMERG/POWER y la r de Pearson. Se
 genera con el mismo comando de arriba (solo necesita el zip `datos-oh-ne-mn_clima.zip`). No es una validación
 contra pluviómetros: esa figura (contra PRISM) espera el release de `validacion`.
