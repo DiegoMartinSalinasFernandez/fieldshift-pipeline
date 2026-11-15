@@ -117,3 +117,12 @@ máquinas a la vez, cada una con sus estados y sus tareas.
 Las fuentes son de dominio público (NASA POWER, GPM IMERG, MODIS, SMAP, GRACE-DA-DM, NLDAS, ECOSTRESS, USDA
 NASS, Cropland Data Layer, SSURGO, NASADEM, Annual NLCD, ERS). Cada data card en `docs/datasets/` dice de
 dónde sale cada columna.
+
+## Uso de IA
+
+La mayor parte del código de este repositorio, los data cards y las notas de research los escribieron agentes de
+IA (Anthropic Claude, mediante Claude Code), trabajando en tareas definidas y revisadas por el equipo (ver
+[`MAQUINAS.md`](MAQUINAS.md) y [`coordinacion/`](coordinacion)). **Los datos no los genera la IA**: cada valor se
+baja de las fuentes originales de la NASA, el USDA y el USGS listadas arriba, y cada archivo bajado queda
+registrado en `manifest.csv`. Los agentes tienen la instrucción de no rellenar huecos con valores supuestos: los
+faltantes quedan vacíos y se documentan en los data cards. La idea de la herramienta es del equipo.
