@@ -1,9 +1,9 @@
 ---
 id: T139
 titulo: Sumar las clases 0, 27 y 58 del CDL a `clases_cdl.csv` (código listo, espera OK)
-estado: tomada
+estado: libre
 plan_minimo: pro
-maquina: pro-4
+maquina: null
 estados: []
 depende_de: []
 rama: null
@@ -34,3 +34,4 @@ El código, las pruebas sin red y la documentación en un PR con CI en verde, re
 - 2026-11-15 10:01 · pro-5: soltada: pro-5 sin cuota de Claude hasta 15/11 13:00
 - 2026-11-15 10:01 · pro-4: tomada
 - 2026-11-15 10:03 · pro-4: corte por el límite de uso de Claude; 1 commits guardados en tarea/T139-auto. El trabajador sigue cuando se renueve.
+- 2026-11-15 10:03 · pro-4: soltada: pro-4 sin cuota de Claude hasta 15/11 12:20
