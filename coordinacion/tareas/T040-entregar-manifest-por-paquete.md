@@ -45,3 +45,4 @@ El cambio y las pruebas en un PR; `pytest tests/` pasa.
 - 2026-11-15 03:27 · pro-2: tomada
 - 2026-11-15 03:28 · pro-2: soltada: quedó a medias, PR #33 actualizado. INCOMPLETA: el agente no dejó resultado.
 - 2026-11-15 03:28 · pro-2: tomada
+- 2026-11-15 03:28 · pro-2: intento sin cambios (You've hit your weekly limit · resets Nov 16, 9am (America/Argentina/Buenos_Aires)); reintento
