@@ -1,9 +1,9 @@
 ---
 id: T026
 titulo: 'Research: efecto rotación en el rendimiento (maíz tras soja vs. maíz tras maíz)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 02:50
-actualizada: 2026-11-15 02:50
+actualizada: 2026-11-15 02:45
 ---
 
 ## Qué hacer
@@ -39,3 +39,4 @@ Escribí `docs/research/efecto_rotacion.md`, con una tabla de ensayos (lugar, a�
 El research en un PR, con valores citados que se puedan usar como reglas y su incertidumbre.
 
 ## Notas
+- 2026-11-15 02:45 · pro-4: tomada
