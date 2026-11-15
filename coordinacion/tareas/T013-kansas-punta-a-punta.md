@@ -1,16 +1,16 @@
 ---
 id: T013
 titulo: 'Kansas de punta a punta: bajar, procesar y publicar datos-ks'
-estado: libre
+estado: tomada
 plan_minimo: max
 minutos: 400
-maquina: null
+maquina: max-2
 estados:
 - KS
 depende_de: []
 rama: null
 creada: 2026-11-15 01:25
-actualizada: 2026-11-15 01:25
+actualizada: 2026-11-15 03:14
 ---
 
 ## Qué hacer
@@ -42,3 +42,4 @@ El release `datos-ks` con los paquetes que procesan, un PR con los arreglos de c
 tabla por paquete: bajado sí/no, procesado sí/no, filas, y qué falló y por qué.
 
 ## Notas
+- 2026-11-15 03:14 · max-2: tomada
