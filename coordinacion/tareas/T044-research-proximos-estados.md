@@ -1,7 +1,7 @@
 ---
 id: T044
 titulo: 'Research: candidatos para sumar estados (SD, WI, MO, MI)'
-estado: libre
+estado: bloqueada
 plan_minimo: pro
 maquina: null
 estados:
@@ -41,3 +41,4 @@ El research en un PR, con un orden recomendado.
 - 2026-11-15 03:31 · pro-2: tomada
 - 2026-11-15 03:42 · max-1: liberada y en pausa (auto: false): pro-2 llegó al límite semanal y el trabajador no lo reconoce, así que bloquea cada tarea que toma. Se reactiva cuando pro-2 pare.
 - 2026-11-15 03:31 · pro-2: intento sin cambios (You've hit your weekly limit · resets Nov 16, 9am (America/Argentina/Buenos_Aires)); reintento
+- 2026-11-15 03:31 · pro-2: bloqueada: el trabajador no logró cambios en 2 intentos. You've hit your weekly limit · resets Nov 16, 9am (America/Argentina/Buenos_Aires)
