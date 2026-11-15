@@ -1,14 +1,14 @@
 ---
 id: T039
 titulo: Citas y DOIs de los productos de la NASA que usamos
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 03:20
-actualizada: 2026-11-15 03:16
+actualizada: 2026-11-15 03:24
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ El documento en un PR.
 
 ## Notas
 - 2026-11-15 03:16 · pro-2: tomada
+- 2026-11-15 03:24 · pro-2: terminada por el trabajador: PR #32, falta la revisión de max-1
