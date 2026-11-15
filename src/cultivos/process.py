@@ -3,7 +3,7 @@
 Salidas (data/processed/cultivos/):
 - produccion_anual.csv  (fips, anio, cultivo, ...) — encuesta por condado.
 - fenologia_estado.csv  (fips_estado, anio, cultivo, doy_50_*) — Crop Progress por estado.
-- practicas_censo.csv   (fips, anio_censo, pct_*) — Censo Agropecuario 2012/2017/2022.
+- practicas_censo.csv   (fips, anio_censo, pct_*, flag_nass) — Censo Agropecuario 2012/2017/2022.
 
 Paso intermedio: cada archivo de raw se filtra una vez a los estados de config.yaml y se guarda
 en data/interim/cultivos/<archivo>.filtrado.tsv (se reusa si ya existe; es determinístico).
@@ -181,6 +181,30 @@ CENSO_NUM = {
     "pct_riego": ["AG LAND, IRRIGATED - ACRES"],
 }
 CENSO_DEN = "AG LAND, CROPLAND - ACRES"
+# Riego por cultivo (para_decidir #2, research censo_agropecuario.md): columna -> (numerador, denominador).
+CENSO_RIEGO = {
+    "pct_maiz_regado": ("CORN, GRAIN, IRRIGATED - ACRES HARVESTED", "CORN, GRAIN - ACRES HARVESTED"),
+    "pct_soja_regada": ("SOYBEANS, IRRIGATED - ACRES HARVESTED", "SOYBEANS - ACRES HARVESTED"),
+    "pct_cosechado_regado": ("AG LAND, CROPLAND, HARVESTED, IRRIGATED - ACRES",
+                             "AG LAND, CROPLAND, HARVESTED - ACRES"),
+}
+
+
+def _por_fips(c: pd.DataFrame, desc: str, campo: str) -> pd.Series:
+    return c[c["SHORT_DESC"] == desc].drop_duplicates("fips").set_index("fips")[campo]
+
+
+def flags_riego(c: pd.DataFrame, indice: list[str]) -> pd.Series:
+    """flag_nass de las columnas de riego por cultivo: `col=(D)` por cada valor oculto (numerador o
+    denominador), separados por `;`. Vacío si no hay ninguno."""
+    partes = pd.Series([[] for _ in indice], index=indice, dtype=object)
+    for col, (num, den) in CENSO_RIEGO.items():
+        fn = _por_fips(c, num, "flag").reindex(indice).fillna("")
+        fd = _por_fips(c, den, "flag").reindex(indice).fillna("")
+        cod = fn.where(fn != "", fd)
+        for f in cod[cod != ""].index:
+            partes[f].append(f"{col}={cod[f]}")
+    return partes.map(";".join)
 
 
 def practicas(censos: list[tuple[int, pd.DataFrame]]) -> pd.DataFrame:
@@ -189,8 +213,9 @@ def practicas(censos: list[tuple[int, pd.DataFrame]]) -> pd.DataFrame:
     for anio, c in censos:
         c = c[(c["AGG_LEVEL_DESC"] == "COUNTY") & (c["DOMAIN_DESC"] == "TOTAL")
               & (c["COUNTY_CODE"] != "998") & (c["YEAR"] == str(anio))]
+        num, flag = valor(c["VALUE"])
         c = c.assign(fips=c["STATE_FIPS_CODE"].str.zfill(2) + c["COUNTY_CODE"].str.zfill(3),
-                     num=valor(c["VALUE"])[0])
+                     num=num, flag=flag)
         den = c[c["SHORT_DESC"] == CENSO_DEN].drop_duplicates("fips").set_index("fips")["num"]
         res = pd.DataFrame(index=sorted(fips_ok))
         for col, descs in CENSO_NUM.items():
@@ -199,7 +224,12 @@ def practicas(censos: list[tuple[int, pd.DataFrame]]) -> pd.DataFrame:
                 if len(n):
                     break
             res[col] = (100 * n / den).reindex(res.index).round(2)
+        for col, (num_desc, den_desc) in CENSO_RIEGO.items():
+            n = _por_fips(c, num_desc, "num")
+            d = _por_fips(c, den_desc, "num")
+            res[col] = (100 * n / d).reindex(res.index).round(2)
         res = res.where((res >= 0) & (res <= 100))
+        res["flag_nass"] = flags_riego(c, list(res.index))
         res.insert(0, "anio_censo", anio)
         filas.append(res.rename_axis("fips").reset_index())
     return pd.concat(filas, ignore_index=True).sort_values(["fips", "anio_censo"]).reset_index(drop=True)

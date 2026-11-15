@@ -65,6 +65,10 @@ COLS = {
         ("pct_labranza_cero", "CONSERVATION TILLAGE, NO-TILL / AG LAND, CROPLAND × 100", "%", CE, ""),
         ("pct_drenaje_tile", "DRAINED BY TILE / AG LAND, CROPLAND × 100", "%", CE, ""),
         ("pct_riego", "AG LAND, IRRIGATED / AG LAND, CROPLAND × 100", "%", CE, ""),
+        ("pct_maiz_regado", "CORN, GRAIN, IRRIGATED / CORN, GRAIN - ACRES HARVESTED × 100", "%", CE, ""),
+        ("pct_soja_regada", "SOYBEANS, IRRIGATED / SOYBEANS - ACRES HARVESTED × 100", "%", CE, ""),
+        ("pct_cosechado_regado", "AG LAND, CROPLAND, HARVESTED, IRRIGATED / AG LAND, CROPLAND, HARVESTED × 100", "%", CE, ""),
+        ("flag_nass", "Valores ocultos de las tres columnas de riego por cultivo: `columna=(D)` separados por `;` (numerador o denominador)", "texto", CE, ""),
     ],
 }
 TIEMPO = {"produccion_anual.csv": "anio", "fenologia_estado.csv": "anio", "rotacion_anual.csv": "anio",
@@ -195,6 +199,23 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
   Las transiciones lo corrigen con su denominador (ver Supuestos), pero los % de área
   (`pct_maiz`, `pct_soja`, …) y las máscaras `mascara_maiz_<anio>` / `mascara_soja_<anio>`
   de esos años pueden diferir algo de lo que daría un CDL de 30 m.
+
+## Riego por cultivo del Censo (T132)
+
+- `pct_maiz_regado`, `pct_soja_regada` y `pct_cosechado_regado` de `practicas_censo.csv` salen del Censo
+  2012, 2017 y 2022 (`DOMAIN_DESC=TOTAL`, nivel condado), con los `short_desc` de
+  `docs/research/censo_agropecuario.md`: numerador `CORN, GRAIN, IRRIGATED - ACRES HARVESTED`,
+  `SOYBEANS, IRRIGATED - ACRES HARVESTED` y `AG LAND, CROPLAND, HARVESTED, IRRIGATED - ACRES`; denominador, la
+  superficie cosechada total del mismo cultivo (`CORN, GRAIN - ACRES HARVESTED`,
+  `SOYBEANS - ACRES HARVESTED`) o de todo el cropland (`AG LAND, CROPLAND, HARVESTED - ACRES`), del mismo
+  condado y censo. A diferencia del resto de prácticas, estas tres sí existen por condado en 2012.
+- Son superficie **cosechada** regada, no sembrada: el maíz es grano (no incluye silaje).
+- Si el numerador o el denominador es `(D)`, `(Z)` u otro código oculto, la celda va vacía y `flag_nass`
+  guarda `columna=código` (varias separadas por `;`). `flag_nass` solo cubre estas tres columnas; las
+  cuatro anteriores (`pct_cobertura` … `pct_riego`) siguen sin flag, como antes.
+- Un condado sin fila de riego por cultivo queda vacío y sin flag: no se asume 0. En OH, MN, IA, IL e IN
+  faltan muchos condados (poco riego; ver research), en NE y KS casi todos tienen dato.
+- Porcentajes fuera de 0-100 (numerador mayor que el total) quedan vacíos, igual que las otras columnas.
 """
 
 
