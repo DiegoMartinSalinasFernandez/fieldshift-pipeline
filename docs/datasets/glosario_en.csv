@@ -72,6 +72,18 @@ clima,clima_anual.csv,prec_ago_mm,August precipitation,mm,Derived from NASA POWE
 clima,clima_anual.csv,deficit_temporada_mm,April-September sum of prec_power_mm − eto_pm_mm,mm,Derived from NASA POWER,D04
 clima,clima_anual.csv,tend_prec_mm_decada,OLS slope of annual precipitation over the 30 years ending in anio (min. 20 years),mm/decade,Derived from NASA POWER,D24
 clima,clima_anual.csv,tend_tmed_c_decada,OLS slope of annual mean temperature over the 30 years ending in anio (min. 20 years),°C/decade,Derived from NASA POWER,D24
+clima,clima_anual.csv,doy_ini_floracion_maiz,"Day of year of 25 % corn silking in the state (Crop Progress, interpolated and rounded)",day of year,"NASS Crop Progress (Quick Stats, state level)",CT05
+clima,clima_anual.csv,doy_fin_floracion_maiz,Day of year of 75 % corn silking in the state,day of year,"NASS Crop Progress (Quick Stats, state level)",CT05
+clima,clima_anual.csv,prec_floracion_maiz_mm,"Precipitation from doy_ini to doy_fin of corn silking, both inclusive",mm,Derived from NASA POWER and NASS Crop Progress,D19
+clima,clima_anual.csv,tmax_floracion_maiz_c,Mean daily tmax during corn silking,°C,Derived from NASA POWER and NASS Crop Progress,D10
+clima,clima_anual.csv,dias_tmax_gt30_floracion_maiz,Days with tmax > 30 °C during corn silking,days,Derived from NASA POWER and NASS Crop Progress,D10
+clima,clima_anual.csv,dias_tmax_gt35_floracion_maiz,Days with tmax > 35 °C during corn silking,days,Derived from NASA POWER and NASS Crop Progress,D10
+clima,clima_anual.csv,doy_ini_llenado_soja,Day of year of 50 % soybean setting pods in the state,day of year,"NASS Crop Progress (Quick Stats, state level)",CT05
+clima,clima_anual.csv,doy_fin_llenado_soja,Day of year of 25 % soybean dropping leaves in the state,day of year,"NASS Crop Progress (Quick Stats, state level)",CT05
+clima,clima_anual.csv,prec_llenado_soja_mm,"Precipitation from doy_ini to doy_fin of soybean pod and seed fill, both inclusive",mm,Derived from NASA POWER and NASS Crop Progress,D19
+clima,clima_anual.csv,tmax_llenado_soja_c,Mean daily tmax during soybean pod and seed fill,°C,Derived from NASA POWER and NASS Crop Progress,D10
+clima,clima_anual.csv,deficit_llenado_soja_mm,Sum of prec_power_mm − eto_pm_mm during soybean pod and seed fill,mm,Derived from NASA POWER and NASS Crop Progress,D04
+clima,clima_anual.csv,prec_ago_sep15_mm,Precipitation from August 1 to September 15 (no phenology),mm,Derived from NASA POWER,D19
 cultivos,produccion_anual.csv,sup_sembrada_ac,"Planted area (AREA PLANTED, all utilizations)",acres,"USDA NASS Quick Stats (SURVEY, county)",Y01
 cultivos,produccion_anual.csv,sup_cosechada_ac,Harvested area (AREA HARVESTED; corn: grain),acres,"USDA NASS Quick Stats (SURVEY, county)",Y02
 cultivos,produccion_anual.csv,produccion_bu,"Production (PRODUCTION in BU; corn: grain). Empty for alfalfa and hay, which are measured in tons",bu,"USDA NASS Quick Stats (SURVEY, county)",Y03

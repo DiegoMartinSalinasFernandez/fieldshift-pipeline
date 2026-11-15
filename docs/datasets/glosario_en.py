@@ -145,6 +145,8 @@ FUENTES = {
     "config/config.yaml (ventanas)": "config/config.yaml (windows)",
     "GPM IMERG vía NASA POWER (IMERG_PRECTOT, 0,1°)": "GPM IMERG via NASA POWER (IMERG_PRECTOT, 0.1°)",
     "Derivada de NASA POWER": "Derived from NASA POWER",
+    "NASS Crop Progress (Quick Stats, nivel estado)": "NASS Crop Progress (Quick Stats, state level)",
+    "Derivada de NASA POWER y NASS Crop Progress": "Derived from NASA POWER and NASS Crop Progress",
     "USDA NASS Quick Stats (SURVEY, condado)": "USDA NASS Quick Stats (SURVEY, county)",
     "Derivada de NASS Quick Stats": "Derived from NASS Quick Stats",
     "USDA NASS Quick Stats Crop Progress (SURVEY, estado)": "USDA NASS Quick Stats Crop Progress (SURVEY, state)",
@@ -287,6 +289,30 @@ DESCRIPCIONES = {
         "OLS slope of annual precipitation over the 30 years ending in anio (min. 20 years)",
     "Pendiente MCO de la temperatura media anual en los 30 años que terminan en anio (mín. 20)":
         "OLS slope of annual mean temperature over the 30 years ending in anio (min. 20 years)",
+    "Día del año del 25 % de silking del maíz en el estado (Crop Progress, interpolado y redondeado)":
+        "Day of year of 25 % corn silking in the state (Crop Progress, interpolated and rounded)",
+    "Día del año del 75 % de silking del maíz en el estado":
+        "Day of year of 75 % corn silking in the state",
+    "Lluvia de doy_ini a doy_fin de floración del maíz, ambos inclusive":
+        "Precipitation from doy_ini to doy_fin of corn silking, both inclusive",
+    "Media de la tmax diaria en la floración del maíz":
+        "Mean daily tmax during corn silking",
+    "Días con tmax > 30 °C en la floración del maíz":
+        "Days with tmax > 30 °C during corn silking",
+    "Días con tmax > 35 °C en la floración del maíz":
+        "Days with tmax > 35 °C during corn silking",
+    "Día del año del 50 % de setting pods de la soja en el estado":
+        "Day of year of 50 % soybean setting pods in the state",
+    "Día del año del 25 % de dropping leaves de la soja en el estado":
+        "Day of year of 25 % soybean dropping leaves in the state",
+    "Lluvia de doy_ini a doy_fin del llenado de la soja, ambos inclusive":
+        "Precipitation from doy_ini to doy_fin of soybean pod and seed fill, both inclusive",
+    "Media de la tmax diaria en el llenado de la soja":
+        "Mean daily tmax during soybean pod and seed fill",
+    "Suma de prec_power_mm − eto_pm_mm en el llenado de la soja":
+        "Sum of prec_power_mm − eto_pm_mm during soybean pod and seed fill",
+    "Lluvia del 1 de agosto al 15 de septiembre (sin fenología)":
+        "Precipitation from August 1 to September 15 (no phenology)",
     # cultivos
     "Superficie sembrada (AREA PLANTED, todos los usos)": "Planted area (AREA PLANTED, all utilizations)",
     "Superficie cosechada (AREA HARVESTED; maíz: grano)": "Harvested area (AREA HARVESTED; corn: grain)",
