@@ -1,7 +1,7 @@
 ---
 id: T085
 titulo: 'Data card de vegetación: cobertura de ndvi_maiz y ndvi_soja por estado y año'
-estado: tomada
+estado: bloqueada
 plan_minimo: pro
 maquina: pro-2
 estados:
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T06:27
-actualizada: 2026-11-15 06:39
+actualizada: 2026-11-15 06:40
 ---
 
 ## Qué hacer
@@ -36,3 +36,6 @@ El cambio en los data cards en un PR. No cambies código ni esquema.
 - 2026-11-15 06:38 · pro-2: tomada
 - 2026-11-15 06:39 · pro-2: soltada: quedó a medias, PR #76 actualizado. INCOMPLETA: falta la tabla estado × año (2008–2025) de OH, NE y MN y medir el umbral del 50 %. pro-2 (NE, KS) no tiene vegetacion_16d.csv, las máscaras del CDL ni MOD13Q1 de esos estados, y en esta corrida (la quinta) tampoco tuvo permiso para bajar el release `datos-oh-ne-mn` con `gh`. Las únicas e
 - 2026-11-15 06:39 · pro-2: tomada
+- 2026-11-15 06:40 · pro-2: bloqueada: el trabajo quedó en la rama tarea/T085-auto pero push falló: To github.com:DiegoMartinSalinasFernandez/fieldshift-pipeline.git
+ ! [rejected]        tarea/T085-auto -> tarea/T085-auto (stale info)
+error: failed to push some refs to 'github.com:DiegoMartinSalinasFernandez/fieldshift-pipeline.git'
