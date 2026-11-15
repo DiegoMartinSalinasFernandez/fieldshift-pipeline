@@ -208,14 +208,34 @@ def serie_evento(rel: Release, ev: dict) -> pd.DataFrame:
 
 
 def seccion_eventos(rel: Release, eventos: list[dict]) -> None:
+    """Campos opcionales de cada evento, además de los de serie_evento():
+    - estados: lista de estados del evento; la tabla muestra solo esos, y si ninguno está en el release el
+      evento se saltea con un aviso (así una lista de KS o de MO/WI/SD corre sobre cualquier release);
+    - esperado: texto con la dirección esperada de la señal; fuente: sección del research que la respalda."""
     print("## Eventos extremos (medias de condado por estado)\n")
     for ev in eventos:
         paq, arch = ((ev["paquete"], ev["archivo"]) if "paquete" in ev
                      else ("cultivos", "produccion_anual.csv"))
+        estados = ev.get("estados")
+        if estados:
+            estan = [e for e in estados if e in rel.estados]
+            if not estan:
+                print(f"_{ev['titulo']}: {', '.join(estados)} no están en el release "
+                      f"({', '.join(rel.estados)}): se saltea._\n")
+                continue
         if not rel.tiene(paq, arch):
             print(f"_{ev['titulo']}: no está `{paq}/{arch}` en el release._\n")
             continue
-        tabla(ev["titulo"], serie_evento(rel, ev), ev["anios"])
+        col = ev.get("columna")
+        if col and col not in pd.read_csv(rel.paquetes[paq] / arch, nrows=0).columns:
+            print(f"_{ev['titulo']}: no está la columna `{col}` en `{paq}/{arch}`: se saltea._\n")
+            continue
+        serie = serie_evento(rel, ev)
+        if estados:
+            serie = serie.reindex(columns=estan)
+        tabla(ev["titulo"], serie, ev["anios"])
+        if ev.get("esperado"):
+            print(f"Esperado: {ev['esperado']}" + (f" ({ev['fuente']})" if ev.get("fuente") else "") + "\n")
 
 
 # ---------------------------------------------------------------- rangos
