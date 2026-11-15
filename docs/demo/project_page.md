@@ -80,7 +80,8 @@ project from Global Judging (`space_apps_criterios.md` §2). The draft is in `do
   What is published today, with states, counties, years and rows counted from the zips:
   `docs/demo/coverage.md` (refresh with `docs/demo/coverage.py`). **[TBD: release URLs]**
 - **English documentation for judges:** `docs/datasets/README_en.md` (data summary, sources, quality control,
-  limitations). **[TBD: link]**
+  limitations). **[TBD: link]** How the data is checked and what the QA of the Ohio, Nebraska and Minnesota
+  release found: [`docs/demo/data_quality.md`](data_quality.md).
 - **Tool / frontend:** **[TBD: link, if there is one]**.
 
 ---
