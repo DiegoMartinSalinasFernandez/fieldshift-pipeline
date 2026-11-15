@@ -244,11 +244,11 @@ Narration can be in another language with English subtitles. ~12–14 words per 
 | Time | What is on screen | What is said (EN) |
 |---|---|---|
 | 0:00–0:05 | Team name, member names **[TBD]**, then the challenge title "Field Shift: Adapting Farms with NASA Data" | "We're team [TBD]. We chose Field Shift because rotations decide farm risk." |
-| 0:05–0:10 | Project name and tagline **[TBD]** over the Corn Belt map of corn-after-corn share (`rotacion_anual.csv`) fading into a NASA layer (MODIS NDVI or SMAP) | "[Project name]: comparing crop rotations with NASA satellites, for every Corn Belt county." |
+| 0:05–0:10 | Project name and tagline **[TBD]** over `fig4_corn_after_soy_vs_corn_oh_ne_mn.png` (real), then `fig2_ndvi_max_vs_yield_oh_ne_mn.png` (MODIS NDVI) | "[Project name]: comparing crop rotations with NASA satellites, county by county." |
 | 0:10–0:15 | Three rotation cards (corn–soybean, continuous corn, diversified) with ranges **[TBD: from ML team]** | "Pick your field and compare three rotations — with ranges, evidence and open risks." |
-| 0:15–0:20 | One loess-hills field: NASADEM relief → per-pixel NDVI from Landsat and HLS (`lotes`) | "Inside each field, NASA elevation and imagery separate dry knolls from wet swales." |
-| 0:20–0:25 | SMAP root-zone moisture with July highlighted, then the IMERG/POWER vs PRISM scatter (r = 0.93–0.94) | "SMAP, ECOSTRESS and GPM show stress; we check them against ground gauges." |
-| 0:25–0:30 | Text credits: "Data: NASA POWER, GPM IMERG, SMAP, MODIS, ECOSTRESS, NASADEM, HLS, NLDAS, GRACE · USDA" + repo link **[TBD]** | "Open NASA data, an open pipeline — and the farmer still makes the call." |
+| 0:15–0:20 | One loess-hills field: NASADEM relief → per-pixel NDVI from Landsat and HLS (`lotes`) **[TBD: needs the `fieldshift_lotes_v1` release, not published; otherwise replace with `fig1_corn_yield_july_rain_oh_ne_mn.png`]** | "Inside each field, NASA elevation and imagery separate dry knolls from wet swales." |
+| 0:20–0:25 | `fig3_smap_may_vs_planting_oh_ne_mn.png` (real: SMAP May moisture vs planting date), then the text "rain vs gauges: r = 0.93–0.94" (IA/IL/IN, `validacion.md`; no scatter PNG yet) | "SMAP, ECOSTRESS and GPM show stress; we check them against ground gauges." |
+| 0:25–0:30 | Text credits: "Data: NASA POWER, GPM IMERG, SMAP, MODIS, NASADEM, NLDAS, GRACE · USDA" (add ECOSTRESS and HLS only if their releases are published) + repo link **[TBD]** | "Open NASA data, an open pipeline — and the farmer still makes the call." |
 
 Video checks: ≤ 30 s total (trim, do not speed up); English subtitles if narrated in Spanish; watermark on any
 AI-generated image or voice; no NASA logos modified; hosted on a public link (YouTube/Vimeo/Drive) and tested in a
@@ -263,15 +263,21 @@ private window.
 | 4.3 % / 1.7 % continuous-corn penalty, ~10 % continuous-soybean penalty, 748,374 records | `docs/research/efecto_rotacion.md` (Seifert, Roberts & Lobell 2017) |
 | Marsden +4 % corn, +16 % soybean, −86 % to −91 % mineral N | `docs/research/efecto_rotacion.md` (ISU Marsden Farm; Davis et al. 2012) |
 | 14 %–90 % smaller drought losses, 11 trials | `docs/research/efecto_rotacion.md` (Bowles et al. 2020) |
-| 10 fields; relief 4.00–31.03 m (NASADEM) | `docs/datasets/lotes.md`, field and relief tables |
+| 268 counties (OH 88, NE 93, MN 87), 2000–2025, 8 packages, 19 CSV files, 169 data columns | release `datos-oh-ne-mn` (checked with `.sha256` on 2026-11-15): `condados.csv` and CSV headers |
+| Corn after corn 2025: median 24.5 %, 0–98.5 %, OH 11.0 %, MN 23.9 %, NE 46.5 %; corn after soybean median 64.6 %; 266 counties | release `datos-oh-ne-mn`, `rotacion_anual.csv` |
+| Median county corn yield 138.4 bu/ac (2012) vs 160.6 bu/ac (other years), 5,987 county-years | release `datos-oh-ne-mn`, `produccion_anual.csv` |
+| 8 NASA products in the published release | data cards inside the `datos-oh-ne-mn` zips |
+| Figures fig1–fig5 | `docs/demo/fig/` (T074), from release `datos-oh-ne-mn` |
+| 10 fields; relief 4.00–31.03 m (NASADEM) | `docs/datasets/lotes.md`, field and relief tables (release not published) |
 | NDVI Landsat − HLS: −0.0173 ± 0.0477, 343,925 pairs | `docs/datasets/lotes.md`, "Coherencia Landsat–Sentinel-2" |
-| Rainfall r and bias (POWER, IMERG vs PRISM and CoCoRaHS), 91,416 county-months | `docs/datasets/validacion.md`, validation table |
+| Rainfall r and bias (POWER, IMERG vs PRISM: 91,416 county-months; vs CoCoRaHS: 42,798) — IA/IL/IN, not in a published release | `docs/datasets/validacion.md`, validation table |
 | SMAP 2015-03-31 to 2025-12-31; ECOSTRESS 2025-04 to 2025-10 | `docs/datasets/agua.md`, `docs/datasets/ecostress.md` |
 | 12 NASA products with DOI + POWER; all DOIs | `docs/research/citas_nasa.md` §1 |
-| 293 counties (IA, IL, IN); 666 counties in 7 states | `docs/datasets/clima.md`; `CLAUDE.md` §2 |
+| 293 counties (IA, IL, IN, not published); 666 counties in 7 states (planned, not delivered) | `docs/datasets/clima.md`; `CLAUDE.md` §2 |
 | Demo limits, deadline, criteria | `docs/research/space_apps_criterios.md` §1–§2 |
 
-Still **[TBD]**: project name and tagline, team name and members, local event, corn-after-corn summary numbers
-(compute from the published `rotacion_anual.csv`), model results and uncertainty ranges (ML team), sector maps
-(ML team), repo and release URLs, POWER API version and access date, Copernicus attribution wording,
-confirmation that the 7-state release is published.
+Still **[TBD]**: project name and tagline, team name and members, local event, model results and uncertainty
+ranges (ML team), sector maps (ML team), repo and release URLs, POWER API version and access date, Copernicus
+attribution wording, the Corn Belt map for slide 1 and the rainfall scatter for slide 6, and the releases still
+missing (IA/IL/IN, KS, `fieldshift_lotes_v1`, `ecostress`, `validacion`). When they are published, redo the
+numbers above for all states (T089 used only `datos-oh-ne-mn`).
