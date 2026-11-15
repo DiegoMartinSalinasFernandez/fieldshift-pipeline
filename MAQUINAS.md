@@ -150,8 +150,8 @@ Desde la carpeta del repo, con las variables de la sección 1 ya definidas, `git
 
 | | Linux | Windows |
 |---|---|---|
-| Iniciar por 7 h | `bash scripts/trabajador.sh iniciar 7` | `powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 iniciar -Horas 7` |
-| Solo una tarea, con más tiempo | `bash scripts/trabajador.sh iniciar 7 T013 400` | `... trabajador.ps1 iniciar -Horas 7 -Solo T013 -MinutosTarea 400` |
+| Iniciar por 7 h | `bash scripts/trabajador.sh iniciar` | `powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 iniciar` |
+| Solo una tarea, con más tiempo | `bash scripts/trabajador.sh iniciar T013 400` | `... trabajador.ps1 iniciar -Solo T013 -MinutosTarea 400` |
 | Ver qué hace | `bash scripts/trabajador.sh estado` | `... trabajador.ps1 estado` |
 | Pararlo | `bash scripts/trabajador.sh parar` (o `parar ya`) | `... trabajador.ps1 parar` (o `parar -Ya`) |
 

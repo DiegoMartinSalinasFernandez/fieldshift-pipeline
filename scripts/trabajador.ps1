@@ -1,7 +1,7 @@
 ﻿<#
 Lanzador del trabajador automático (scripts/trabajador.py) en segundo plano, sin ventana.
 
-  powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 iniciar [-Horas 7] [-Solo T009] [-MinutosTarea 400]
+  powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 iniciar [-Horas 24] [-Solo T009] [-MinutosTarea 400]
   powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 estado
   powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 parar [-Ya]
 
@@ -11,7 +11,7 @@ definidas FIELDSHIFT_MAQUINA y FIELDSHIFT_ESTADOS (ver MAQUINAS.md), y Claude Co
 #>
 param(
     [ValidateSet("iniciar", "estado", "parar")][string]$Accion = "estado",
-    [double]$Horas = 7,
+    [double]$Horas = 24,
     [string]$Solo = "",
     [string]$Modelo = "opus",
     [string]$Effort = "medium",

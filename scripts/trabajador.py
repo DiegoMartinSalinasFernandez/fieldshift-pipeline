@@ -12,7 +12,7 @@ carpeta donde trabaja la persona, así la máquina y Claude siguen libres para o
 Nunca une PRs: eso lo revisa max-1. Todo va a .trabajador/ (logs), nada a la consola.
 
 Uso (normalmente desde scripts/trabajador.ps1):
-  python scripts/trabajador.py correr [--horas 7] [--minutos-tarea 60] [--modelo opus] [--effort medium]
+  python scripts/trabajador.py correr [--horas 24] [--minutos-tarea 60] [--modelo opus] [--effort medium]
                                       [--solo T004] [--max-tareas N] [--sin-pr]
   python scripts/trabajador.py estado
 Para pararlo: crear .trabajador/STOP (termina la tarea en curso y sale) o `trabajador.ps1 parar`.
@@ -172,6 +172,43 @@ def llamar(fn, *a) -> str | None:
         return None
     except SystemExit as e:
         return str(e.code)
+
+
+CODIGO = ("scripts/trabajador.py", "scripts/tareas.py")
+SIN_CAMBIOS = [0]   # tareas seguidas que terminaron sin cambios
+HASH_INICIO: dict[str, str] = {}
+
+
+def hash_codigo(ref: str | None) -> dict[str, str]:
+    """Blob de git de cada archivo de CODIGO: en disco (ref None) o en `ref`."""
+    out = {}
+    for f in CODIGO:
+        r = git("hash-object", f, check=False) if ref is None else git("rev-parse", f"{ref}:{f}", check=False)
+        out[f] = r.stdout.strip()
+    return out
+
+
+def relanzar_si_cambio(fin: dt.datetime) -> None:
+    """Si main trae otro trabajador.py o tareas.py, actualiza la copia y se vuelve a lanzar con las horas que quedan."""
+    git("fetch", "-q", "origin", "main", check=False)
+    nuevo = hash_codigo("origin/main")
+    if not HASH_INICIO or not all(nuevo.values()) or nuevo == HASH_INICIO:
+        return
+    log("hay una versión nueva del trabajador en main: me actualizo y sigo")
+    bitacora(os.environ.get("FIELDSHIFT_MAQUINA", ""), "trabajador actualizado desde main")
+    git("switch", "-q", "main", check=False)
+    git("reset", "-q", "--hard", "origin/main", check=False)
+    argv = list(sys.argv)
+    horas = max(0.5, (fin - ahora()).total_seconds() / 3600)
+    if "--horas" in argv:
+        argv[argv.index("--horas") + 1] = f"{horas:.2f}"
+    else:
+        argv[argv.index("correr") + 1:argv.index("correr") + 1] = ["--horas", f"{horas:.2f}"]
+    nuevo_cmd = [sys.executable, "-X", "utf8"] + argv
+    sin_suspender(False)
+    if ES_WINDOWS:
+        sys.exit(subprocess.call(nuevo_cmd))   # en Windows execv cambia de proceso: el padre espera al hijo
+    os.execv(sys.executable, nuevo_cmd)       # en Linux y macOS sigue el mismo proceso (el pid no cambia)
 
 
 def pausada(maquina: str) -> bool:
@@ -383,11 +420,19 @@ def hacer_tarea(claude: str, tid: str, meta: dict, texto_tarea: str, maquina: st
             intentos_fallidos += 1
             detalle = (cuerpo or res["texto"] or "sin detalle")[:400].replace("\n", " ")
             if intentos_fallidos >= 2 or ahora() >= fin - dt.timedelta(minutes=15) or STOP.exists():
+                SIN_CAMBIOS[0] += 1
+                if SIN_CAMBIOS[0] >= 2:
+                    # la tarea anterior tampoco avanzó: el problema es de esta máquina, no de la tarea
+                    anotar(tid, maquina, "libre", f"soltada: {maquina} no logra cambios en ninguna tarea; espera 30 min. {detalle}")
+                    bitacora(maquina, f"{tid}: devuelta; la máquina espera 30 min ({detalle[:120]})")
+                    dormir(ahora() + dt.timedelta(minutes=30), fin, "dos tareas seguidas sin cambios")
+                    return
                 anotar(tid, maquina, "bloqueada", f"bloqueada: el trabajador no logró cambios en 2 intentos. {detalle}")
                 bitacora(maquina, f"{tid}: bloqueada sin cambios ({detalle[:120]})")
                 return
             anotar(tid, maquina, None, f"intento sin cambios ({detalle}); reintento")
             continue
+        SIN_CAMBIOS[0] = 0
         incompleta = (not cuerpo) or cuerpo.upper().startswith("INCOMPLETA") or res["timeout"]
         if not cuerpo:
             cuerpo = ("INCOMPLETA: el agente no dejó resultado.\n\nÚltimo mensaje del agente:\n\n"
@@ -423,6 +468,7 @@ def correr(a) -> None:
     claude = encontrar_claude()
     DIR.mkdir(parents=True, exist_ok=True)
     STOP.unlink(missing_ok=True)
+    HASH_INICIO.update(hash_codigo(None))
     fin = ahora() + dt.timedelta(hours=a.horas)
     log(f"arranca {maquina} (plan {plan}, estados {','.join(estados) or '-'}) hasta las {fin:%H:%M}; "
         f"{a.modelo}/{a.effort}, {a.minutos_tarea} min por tarea")
@@ -433,6 +479,7 @@ def correr(a) -> None:
             if a.max_tareas and hechas >= a.max_tareas:
                 log(f"llegué al tope de {a.max_tareas} tareas")
                 break
+            relanzar_si_cambio(fin)
             if pausada(maquina):
                 dormir(ahora() + dt.timedelta(minutes=15), fin, "pausada en coordinacion/maquinas.yaml")
                 continue
@@ -471,7 +518,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     c = sub.add_parser("correr")
-    c.add_argument("--horas", type=float, default=7)
+    c.add_argument("--horas", type=float, default=24)
     c.add_argument("--minutos-tarea", type=float, default=None, help="por defecto 60 en Pro y 150 en Max")
     c.add_argument("--modelo", default="opus")
     c.add_argument("--effort", default="medium", choices=["low", "medium", "high", "xhigh", "max"])

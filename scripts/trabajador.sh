@@ -2,7 +2,7 @@
 # Lanzador del trabajador automático (scripts/trabajador.py) en segundo plano, para Linux y macOS.
 # (En Windows: scripts/trabajador.ps1.)
 #
-#   bash scripts/trabajador.sh iniciar [horas] [tarea] [minutos_por_tarea]   # ej.: iniciar 7  o  iniciar 7 T013 400
+#   bash scripts/trabajador.sh iniciar [horas] [tarea] [minutos_por_tarea]   # ej.: iniciar  o  iniciar 24 T013 400
 #   bash scripts/trabajador.sh estado
 #   bash scripts/trabajador.sh parar [ya]
 #
@@ -38,7 +38,7 @@ case "$accion" in
     fi
     ;;
   iniciar)
-    horas="${2:-7}"; solo="${3:-}"; minutos="${4:-}"
+    horas="${2:-24}"; solo="${3:-}"; minutos="${4:-}"
     : "${FIELDSHIFT_MAQUINA:?Falta FIELDSHIFT_MAQUINA (ver MAQUINAS.md, sección 1)}"
     : "${FIELDSHIFT_ESTADOS:?Falta FIELDSHIFT_ESTADOS (ver MAQUINAS.md, sección 1)}"
     if corriendo; then echo "Ya hay un trabajador corriendo (pid $(cat "$pidf")). Usá 'parar' primero."; exit 1; fi
