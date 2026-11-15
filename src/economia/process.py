@@ -18,7 +18,7 @@ Salidas (data/processed/economia/):
   costo_operativo_usd_ac, costo_total_usd_ac, margen_operativo_usd_ac, flag_nass
 - economia_forrajes_anual.csv: fips_estado, anio, cultivo, precio_usd_ton, flag_nass
 - docs/datasets/economia.md (tabla de columnas y de pesos por región, generadas)
-- data/interim/economia/pesos_region_ers.csv: fips_estado, cultivo, region_ers, acres, peso
+- data/interim/economia/pesos_region_ers.csv: fips_estado, cultivo, region_ers, acres, base, peso
 
 El escaneo del volcado (1,1 GB comprimido) se cachea en data/interim/economia/ (regenerable:
 se rehace si cambia el nombre o el tamaño del volcado).
@@ -90,7 +90,10 @@ def escanear_precios(estados: list[str]) -> pd.DataFrame:
     src = volcado()
     cache = INTERIM / f"precios_{src.name.split('.txt')[0]}_{src.stat().st_size}.csv"
     if cache.exists():
-        return pd.read_csv(cache, dtype=str, keep_default_na=False)
+        # la caché puede venir de una corrida con otros estados (FIELDSHIFT_ESTADOS)
+        df = pd.read_csv(cache, dtype=str, keep_default_na=False)
+        if set(estados) <= set(df["STATE_ALPHA"]):
+            return df[df["STATE_ALPHA"].isin(estados)].reset_index(drop=True)
     buscados = set(GRANOS.values()) | set(FORRAJES.values())
     filas = []
     with gzip.open(src, "rt", encoding="utf-8", errors="replace") as f:
@@ -194,12 +197,21 @@ def pesos_region(estados: dict, anios: range) -> pd.DataFrame:
     a["cultivo"] = a["SHORT_DESC"].map({v: k for k, v in AREA.items()})
     a["fips_estado"] = a["STATE_FIPS_CODE"].str.zfill(2)
     a["fips_condado"] = a["fips_estado"] + a["COUNTY_ANSI"].str.zfill(3)
-    a = a.merge(regiones_condado(), on="fips_condado", how="left")
+    regiones = regiones_condado()
+    a = a.merge(regiones, on="fips_condado", how="left")
     sin = a[a["region_ers"].isna()]["fips_condado"].unique()
     if len(sin):
         raise SystemExit(f"condados de NASS sin región en {REGLINK.name}: {sorted(sin)}")
     p = a.groupby(["fips_estado", "cultivo", "region_ers"], as_index=False)["acres"].sum()
     p = p[p["acres"] > 0]
+    p["base"] = "acres_sembrados"
+    # sin área por condado (p. ej. avena en IN): peso = proporción de condados de cada región
+    falta = [(f, c) for f in sorted(str(e["fips"]).zfill(2) for e in estados.values())
+             for c in AREA if not ((p["fips_estado"] == f) & (p["cultivo"] == c)).any()]
+    for f, c in falta:
+        n = regiones[regiones["fips_condado"].str[:2] == f].groupby("region_ers").size()
+        p = pd.concat([p, pd.DataFrame({"fips_estado": f, "cultivo": c, "region_ers": n.index,
+                                        "acres": n.values, "base": "condados"})], ignore_index=True)
     p["peso"] = p["acres"] / p.groupby(["fips_estado", "cultivo"])["acres"].transform("sum")
     p = p.sort_values(["fips_estado", "cultivo", "peso"], ascending=[True, True, False])
     INTERIM.mkdir(parents=True, exist_ok=True)
@@ -315,8 +327,8 @@ Los datos solo existen por estado (NASS) o por región (ERS): la clave es `fips_
 Participación de cada región en el área sembrada del cultivo en el estado (suma de ACRES PLANTED
 por condado en el período). Se guardan también en `data/interim/economia/pesos_region_ers.csv`.
 
-| fips_estado | cultivo | region_ers | acres | peso |
-|---|---|---|---|---|
+| fips_estado | cultivo | region_ers | acres | base | peso |
+|---|---|---|---|---|---|
 {pesos}
 
 ## Supuestos
@@ -337,6 +349,9 @@ por condado en el período). Se guardan también en `data/interim/economia/pesos
   tiene trigo y su avena empieza en 2023; la avena de Prairie Gateway termina en 2022), se
   repondera entre las regiones con dato, siempre que cubran al menos el 50 % del peso del
   estado; si no, los costos del año quedan vacíos.
+- **Sin área por condado.** Si NASS no publica `ACRES PLANTED` por condado de un cultivo en un
+  estado (avena en IN), el peso de cada región es su proporción de condados (`base = condados`
+  en la tabla de pesos; la columna `acres` trae entonces la cantidad de condados).
 - **Condados combinados.** Las filas de NASS de `OTHER (COMBINED) COUNTIES` no tienen condado
   y no entran en los pesos. Los códigos `(D)` y similares cuentan como sin dato.
 - **Trigo.** ERS publica costos de trigo en general (no separa el de invierno). Se asignan a
@@ -396,7 +411,7 @@ def data_card() -> None:
             hasta = llenos.max() if len(llenos) else ""
             filas.append(f"| {archivo} | {nombre} | {desc} | {unidad} | {fuente} | {cid} | {desde} | {hasta} | {falt:.1f} |")
     p = pd.read_csv(INTERIM / "pesos_region_ers.csv", dtype={"fips_estado": str})
-    tabla_pesos = [f"| {r.fips_estado} | {r.cultivo} | {r.region_ers} | {r.acres:,.0f} | {r.peso:.3f} |"
+    tabla_pesos = [f"| {r.fips_estado} | {r.cultivo} | {r.region_ers} | {r.acres:,.0f} | {r.base} | {r.peso:.3f} |"
                    for r in p.itertuples()]
     CARD.parent.mkdir(parents=True, exist_ok=True)
     texto = TEXTO.replace("{tabla}", "\n".join(filas)).replace("{pesos}", "\n".join(tabla_pesos))

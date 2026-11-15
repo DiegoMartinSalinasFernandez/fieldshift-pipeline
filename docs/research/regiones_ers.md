@@ -53,7 +53,21 @@ con dato si cubren al menos el 50 % del peso; si no, deja el año vacío.
 
 ## Pesos por estado y cultivo
 
-{PESOS}
+Participación de cada región en el área sembrada 2000–2025 (`ACRES PLANTED` de NASS por condado).
+IA, IL e IN: 1,00 Heartland en los cuatro cultivos (la avena de IN, sin área por condado en NASS,
+se pondera por cantidad de condados: también 100 % Heartland). KS: 1,00 Prairie Gateway.
+
+| estado | región | maíz | soja | trigo de invierno | avena |
+|---|---|---|---|---|---|
+| OH | Heartland | 0,75 | 0,78 | 0,73 | 0,13 |
+| OH | Northern Crescent | 0,21 | 0,20 | 0,25 | 0,61 |
+| OH | Eastern Uplands | 0,04 | 0,02 | 0,02 | 0,27 |
+| NE | Prairie Gateway | 0,51 | 0,42 | 0,52 | 0,26 |
+| NE | Heartland | 0,41 | 0,55 | 0,02 | 0,46 |
+| NE | Northern Great Plains | 0,08 | 0,03 | 0,46 | 0,28 |
+| MN | Heartland | 0,74 | 0,66 | 0,06 | 0,44 |
+| MN | Northern Crescent | 0,21 | 0,15 | 0,07 | 0,41 |
+| MN | Northern Great Plains | 0,05 | 0,19 | 0,87 | 0,15 |
 
 ## Fuentes
 
