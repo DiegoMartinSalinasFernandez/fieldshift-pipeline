@@ -160,3 +160,16 @@ git). `AREA PLANTED`, SURVEY, `ALL PRODUCTION PRACTICES`, año completo.
    `scripts/entregar.py` (escribir el `.sha256` con `\n`).
 5. **`doy_primera_helada` no ve la helada del 20-8-2004 en el norte de MN** (límite de la celda de POWER). → nota
    para el data card de `clima`, en la misma tarea de documentación que el punto 1.
+
+## Tareas nuevas propuestas
+
+El trabajador automático no puede tocar el tablero; estas tareas quedan para abrir con `scripts/tareas.py nueva`:
+
+1. **`entregar.py`: `.sha256` con fin de línea LF.** `scripts/entregar.py:95` usa `write_text(...)`, que en
+   Windows escribe `\r\n`; pasar `newline="\n"`. Plan pro, sin dependencias. (Problema 4.)
+2. **Data card de `cultivos`: cobertura de condados de NASS por estado y año.** Tabla de condados publicados y %
+   de la superficie de estado que queda en "OTHER (COMBINED) COUNTIES" (sección 6 de este informe), con el aviso
+   de no hacer totales de estado con la suma de condados en 2018–2025. Plan pro. (Problema 1.) En la misma
+   tarea, o una aparte para `clima`: la nota de `doy_primera_helada` (2004) y el sesgo IMERG/POWER de OH (1,18).
+3. **Data card de `vegetacion`: cobertura de `ndvi_maiz` / `ndvi_soja` por estado y año**, y proponer al humano
+   (sin aplicarlo) una columna aparte con un umbral de pureza más bajo para OH. Plan pro. (Problema 3.)
