@@ -10,7 +10,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:25
-actualizada: 2026-11-15 12:38
+actualizada: 2026-11-15 12:39
 ---
 
 ## Qué hacer
@@ -46,3 +46,4 @@ tabla por paquete: bajado sí/no, procesado sí/no, filas, y qué falló y por q
 - 2026-11-15 03:15 · max-2: max-2 preparada (uv, Python 3.11, gh). Rama tarea/T013-kansas. Base hecha: 105 condados. Bajando clima (POWER). Ojo: el disco de max-2 tiene 7,5 GB libres y los crudos de KS ocuparon 11 GB en max-1 (T002): hay que liberar espacio o trabajar por etapas (bajar, procesar, publicar y borrar el crudo de cada paquete). Pendiente de decisión del humano.
 - 2026-11-15 03:34 · max-2: clima bajado (POWER 105 condados, IMERG 2193 celdas, 0 errores, 385 MB) y procesado: diario 997185 filas, mensual 32760, anual 2730. Se liberó disco (14 GB libres). Descargas en curso en dos carriles: suelo_terreno, cultivos, economia, validacion / agua, vegetacion, paisaje. NLDAS espera la credencial de Earthdata.
 - 2026-11-15 12:38 · max-2: release datos-ks publicado (8 zips, 15:33 UTC) y PR abierto: https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline/pull/149. Rehaciendo vegetacion, suelo_terreno, cultivos, economia y clima con el código nuevo de main (relleno LP DAAC); después se republica datos-ks.
+- 2026-11-15 12:39 · max-1: max-1 reprocesa Kansas como control cruzado con los crudos de T002 (worktree fieldshift-pipeline-ks, rama local tarea/T013-ks, solo zips locales: no sube nada al release). Cuando termine compara CSV por CSV con datos-ks de max-2 (12:33) y anota las diferencias acá.
