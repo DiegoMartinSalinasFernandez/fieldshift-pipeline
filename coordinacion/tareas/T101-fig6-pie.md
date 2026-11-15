@@ -1,9 +1,9 @@
 ---
 id: T101
 titulo: 'Pie de fig6: IMERG viene por la API de POWER'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - OH
 - NE
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T07:02
-actualizada: 2026-11-15 07:04
+actualizada: 2026-11-15 07:09
 ---
 
 ## Qué hacer
@@ -30,3 +30,4 @@ El PNG y el texto en un PR.
 - 2026-11-15 07:03 · pro-1: tomada
 - 2026-11-15 07:04 · pro-1: corte por el límite de uso de Claude; 2 commits guardados en tarea/T101-auto. El trabajador sigue cuando se renueve.
 - 2026-11-15 07:04 · pro-1: soltada: pro-1 sin cuota de Claude hasta 15/11 09:20
+- 2026-11-15 07:09 · pro-2: tomada
