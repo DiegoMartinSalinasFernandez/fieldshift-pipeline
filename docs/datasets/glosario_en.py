@@ -374,6 +374,14 @@ DESCRIPCIONES = {
         "Tile-drained area / cropland × 100 (Census short_desc DRAINED BY TILE / AG LAND, CROPLAND)",
     "AG LAND, IRRIGATED / AG LAND, CROPLAND × 100":
         "Irrigated land / cropland × 100 (Census short_desc AG LAND, IRRIGATED / AG LAND, CROPLAND)",
+    "CORN, GRAIN, IRRIGATED / CORN, GRAIN - ACRES HARVESTED × 100":
+        "Irrigated corn-for-grain harvested area / total corn-for-grain harvested area × 100 (Census short_desc CORN, GRAIN, IRRIGATED / CORN, GRAIN - ACRES HARVESTED)",
+    "SOYBEANS, IRRIGATED / SOYBEANS - ACRES HARVESTED × 100":
+        "Irrigated soybean harvested area / total soybean harvested area × 100 (Census short_desc SOYBEANS, IRRIGATED / SOYBEANS - ACRES HARVESTED)",
+    "AG LAND, CROPLAND, HARVESTED, IRRIGATED / AG LAND, CROPLAND, HARVESTED × 100":
+        "Irrigated harvested cropland / total harvested cropland × 100 (Census short_desc AG LAND, CROPLAND, HARVESTED, IRRIGATED / AG LAND, CROPLAND, HARVESTED)",
+    "Valores ocultos de las tres columnas de riego por cultivo: `columna=(D)` separados por `;` (numerador o denominador)":
+        "Withheld NASS values of the three irrigation-by-crop columns: `column=(D)` separated by `;` (numerator or denominator)",
     # economia
     "Precio recibido por el productor, promedio del año comercial (NASS PRICE RECEIVED, MARKETING YEAR, estado)":
         "Price received by farmers, marketing-year average (NASS PRICE RECEIVED, MARKETING YEAR, state level)",

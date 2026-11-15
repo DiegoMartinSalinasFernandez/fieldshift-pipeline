@@ -317,3 +317,43 @@ MN 87, KS 105. Script: `docs/datasets/cobertura_nass.py` (solo lee; la tabla es 
 - En OH, NE y MN, el número de condados con `sup_sembrada_ac` de maíz y soja de `produccion_anual.csv`
   (release `datos-oh-ne-mn`) coincide con el de Quick Stats en todos los años. IA, IL, IN y KS no tienen
   release de `cultivos` en este repo: sus columnas salen solo de Quick Stats.
+
+## Riego por cultivo del Censo (T132)
+
+Tres columnas nuevas en `practicas_censo.csv`, después de `pct_riego` (las existentes no cambian), del Censo
+2012, 2017 y 2022 (`DOMAIN_DESC=TOTAL`, nivel condado), con los `short_desc` de
+`docs/research/censo_agropecuario.md`. Esquema nuevo: espera el OK de `coordinacion/para_decidir.md` #2.
+
+| archivo | columna | descripcion | unidad | fuente | id_catalogo | desde | hasta | faltantes_pct (NE+KS) |
+|---|---|---|---|---|---|---|---|---|
+| practicas_censo.csv | pct_maiz_regado | CORN, GRAIN, IRRIGATED / CORN, GRAIN - ACRES HARVESTED × 100 | % | USDA NASS Censo Agropecuario (Quick Stats CENSUS) |  | 2012 | 2022 | 13.3 |
+| practicas_censo.csv | pct_soja_regada | SOYBEANS, IRRIGATED / SOYBEANS - ACRES HARVESTED × 100 | % | USDA NASS Censo Agropecuario (Quick Stats CENSUS) |  | 2012 | 2022 | 24.2 |
+| practicas_censo.csv | pct_cosechado_regado | AG LAND, CROPLAND, HARVESTED, IRRIGATED / AG LAND, CROPLAND, HARVESTED × 100 | % | USDA NASS Censo Agropecuario (Quick Stats CENSUS) |  | 2012 | 2022 | 23.9 |
+| practicas_censo.csv | flag_nass | Valores ocultos de las tres columnas de riego por cultivo: `columna=(D)` separados por `;` (numerador o denominador) | texto | USDA NASS Censo Agropecuario (Quick Stats CENSUS) |  |  |  |  |
+
+**Supuestos**
+
+- Superficie **cosechada** regada sobre cosechada total del mismo cultivo y condado; el maíz es grano (sin
+  silaje). `pct_cosechado_regado` es sobre todo el cropland cosechado. A diferencia de cobertura, labranza
+  cero y tile, estas tres columnas sí existen por condado en 2012.
+- Si el numerador o el denominador es `(D)`, `(Z)` u otro código oculto, la celda va vacía y `flag_nass`
+  guarda `columna=código`. `flag_nass` solo cubre estas tres columnas; las cuatro anteriores siguen sin flag.
+- Condado sin fila: vacío y sin flag (no se asume 0). Porcentajes fuera de 0-100: vacíos (no hubo ninguno en
+  NE y KS).
+
+**Cobertura en NE y KS** (corrida del 2026-11-15; condados con valor y, entre paréntesis, mediana en %):
+
+| estado | censo | `pct_riego` | `pct_maiz_regado` | `pct_soja_regada` | `pct_cosechado_regado` |
+|---|---|---|---|---|---|
+| NE (93) | 2012 | 93 (35,3) | 86 (60,5) | 72 (60,4) | 75 (45,6) |
+|  | 2017 | 93 (35,2) | 87 (53,0) | 77 (54,1) | 74 (45,2) |
+|  | 2022 | 93 (33,3) | 88 (52,5) | 81 (50,8) | 77 (45,5) |
+| KS (105) | 2012 | 100 (4,1) | 85 (31,3) | 77 (16,2) | 75 (5,5) |
+|  | 2017 | 100 (3,3) | 87 (19,5) | 71 (12,1) | 81 (5,0) |
+|  | 2022 | 99 (3,7) | 82 (15,3) | 72 (9,6) | 70 (5,1) |
+
+- Celdas con flag, por columna (NE 2012/2017/2022; KS 2012/2017/2022): maíz 5/5/4 y 11/7/16; soja 13/10/7 y
+  18/21/21; cosechado 18/19/16 y 30/24/34. El resto de los vacíos son condados sin fila.
+- `pct_riego` (sobre todo el cropland) subestima el peso del riego en maíz y soja: en KS la mediana es 3-4 %,
+  pero la del maíz regado es 15-31 %. En OH, MN, IA, IL e IN se esperan muchas celdas vacías (poco riego).
+- Pendiente: `loop/spec/entregables.yaml` no tiene todavía los rangos de las tres columnas (no se toca sin OK).
