@@ -45,3 +45,4 @@
 - 09:23 T128: tomada por el trabajador
 - 09:30 T128: terminada, PR #117
 - 09:30 T130: tomada por el trabajador
+- 09:34 T130: terminada, PR #120
