@@ -1,9 +1,9 @@
 ---
 id: T032
 titulo: 'Research: superficie con siembra prevenida por condado (FSA y RMA)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 03:00
-actualizada: 2026-11-15 03:00
+actualizada: 2026-11-15 02:53
 ---
 
 ## Qué hacer
@@ -39,3 +39,4 @@ Escribí `docs/research/siembra_prevenida.md`.
 El research en un PR, con una propuesta concreta (que el humano decide).
 
 ## Notas
+- 2026-11-15 02:53 · pro-4: tomada
