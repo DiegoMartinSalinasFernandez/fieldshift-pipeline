@@ -1,7 +1,7 @@
 ---
 id: T047
 titulo: 'Research: Crop Sequence Boundaries para los 7 estados'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-4
 estados:
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 04:05
-actualizada: 2026-11-15 04:02
+actualizada: 2026-11-15 04:17
 ---
 
 ## Qué hacer
@@ -37,3 +37,4 @@ El research en un PR.
 
 ## Notas
 - 2026-11-15 04:02 · pro-4: tomada
+- 2026-11-15 04:17 · pro-4: terminada por el trabajador: PR #41, falta la revisión de max-1
