@@ -46,7 +46,7 @@ REFERENCIA = REPO / "data" / "reference"
 MANIFEST = REPO / "manifest.csv"
 
 ZENODO_API = "https://zenodo.org/api/records/5548555"
-ZENODO_ARCHIVOS = ["Metadata.docx", "lanid1997-2003.zip", "lanid2004-2010.zip", "lanid2011-2017.zip",
+ZENODO_ARCHIVOS = ["Metadata.docx", "lanid2011-2017.zip", "lanid2004-2010.zip", "lanid1997-2003.zip",
                    "irrFreqAndChange.zip"]
 SCIENCEBASE_ITEM = "https://www.sciencebase.gov/catalog/item/639a11b9d34e0de3a1f0ddde?format=json"
 USGS_ARCHIVOS = ["lanid2018.tif", "lanid2019.tif", "lanid2020.tif", "maxIrrExt_0020.tif"]
