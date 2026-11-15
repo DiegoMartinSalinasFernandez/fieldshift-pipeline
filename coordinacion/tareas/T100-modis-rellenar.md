@@ -9,7 +9,7 @@ depende_de:
 - T119
 rama: null
 creada: 2026-11-15T07:02
-actualizada: 2026-11-15T08:45
+actualizada: 2026-11-15 09:09
 ---
 
 ## Qué hacer
@@ -36,3 +36,4 @@ El cambio y la prueba en un PR; después, cada máquina Max reprocesa vegetació
 
 ## Notas
 - 2026-11-15 07:51 · max-1: Ampliar a MOD11A2 (LST) según docs/research/lst_fechas.md (T105, PR 98): 20 compuestos enteros y 3 parciales en 2022–2025, ~0,9 GB para los 10 estados. Mejor calcular CMR − PC por producto, tesela y compuesto en el momento que usar una lista fija.
+- 2026-11-15 09:09 · max-1: Desde PR 110 (T119) el relleno desde LP DAAC solo corre con FIELDSHIFT_RELLENO_LPDAAC=1 (además de ~/.netrc). Son ~8-14 GB para los 10 estados: necesita el OK del humano (regla 6) antes de prenderlo.
