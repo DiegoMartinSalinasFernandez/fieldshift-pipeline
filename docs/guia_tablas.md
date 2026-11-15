@@ -99,8 +99,8 @@ Esto importa para no contar de más al entrenar o evaluar:
   `fenologia_estado` tiene solo **maíz y soja**: en los demás cultivos las columnas `doy_50_*` quedan vacías.
 - Consecuencia práctica: al dividir en folds, agrupá por condado (o por año) y no por fila, o los valores
   repetidos se filtran entre entrenamiento y validación.
-- Con 7 estados, las columnas por estado tienen solo 7 valores distintos por año y cultivo. Si se valida
-  dejando un estado afuera, esas columnas no aportan nada que el modelo no pueda memorizar del propio estado.
+- Con 7 estados, las columnas por estado tienen solo 7 valores distintos por año y cultivo, así que funcionan
+  casi como un identificador del estado. Tenelo en cuenta si validás dejando un estado entero afuera.
 
 ---
 
