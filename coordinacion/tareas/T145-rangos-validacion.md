@@ -1,14 +1,15 @@
 ---
 id: T145
-titulo: Rangos físicos de rendimiento para los 10 estados en `src/common/validacion.py` y el spec (código listo, espera OK)
-estado: libre
+titulo: Rangos físicos de rendimiento para los 10 estados en `src/common/validacion.py` y el spec (código listo,
+  espera OK)
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T10:17
-actualizada: 2026-11-15T10:17
+actualizada: 2026-11-15 10:32
 ---
 
 ## Qué hacer
@@ -32,3 +33,4 @@ dejá en el cuerpo del PR la lista exacta de lo que cambia en esos directorios.
 El cambio, las pruebas sin red y la documentación en un PR con CI en verde, retenido como dice arriba.
 
 ## Notas
+- 2026-11-15 10:32 · pro-2: tomada

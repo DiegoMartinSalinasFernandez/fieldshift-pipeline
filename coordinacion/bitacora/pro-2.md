@@ -109,3 +109,5 @@
 - 10:28 T140: tomada por el trabajador
 - 10:29 T140: terminada, PR #138
 - 10:29 T143: tomada por el trabajador
+- 10:32 T143: terminada, PR #140
+- 10:32 T145: tomada por el trabajador

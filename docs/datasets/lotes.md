@@ -6,6 +6,14 @@ Pedido del equipo de ML (CLAUDE.md §6.6, aprobado por el humano el 2026-11-14).
 Scripts: `src/lotes/download.py` (descargas) y `src/lotes/process.py` (regenera todos los CSV, el
 GeoPackage y la tabla de abajo desde `data/raw` y `data/reference`, sin bajar nada).
 
+<!-- ATRIBUCION:INICIO -->
+## Atribución
+
+Texto obligatorio al distribuir o mostrar estos datos (copiar tal cual; ver `docs/research/licencias_fuentes.md`):
+
+> Contains modified Copernicus Sentinel data 2016–2025, processed by NASA (HLS S30 v2.0).
+<!-- ATRIBUCION:FIN -->
+
 ## Fuentes
 
 - **USDA NASS Crop Sequence Boundaries (CSB), ventana 2018-2025, rev23**: `NationalCSB_2018-2025_rev23.zip`

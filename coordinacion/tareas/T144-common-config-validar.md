@@ -2,14 +2,14 @@
 id: T144
 titulo: '`cargar_config()` con `FIELDSHIFT_ESTADOS` en la clave del caché y `validar_csv()` con columnas numéricas
   por nombre (código listo, espera OK)'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T10:17
-actualizada: 2026-11-15 10:30
+actualizada: 2026-11-15 10:34
 ---
 
 ## Qué hacer
@@ -37,3 +37,4 @@ El cambio, las pruebas sin red y la documentación en un PR con CI en verde, ret
 
 ## Notas
 - 2026-11-15 10:30 · pro-1: tomada
+- 2026-11-15 10:34 · pro-1: terminada por el trabajador: PR #141, falta la revisión de max-1
