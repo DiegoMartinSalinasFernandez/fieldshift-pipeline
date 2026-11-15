@@ -16,3 +16,4 @@
 - 04:35 T044: tomada por el trabajador
 - 04:44 T044: terminada, PR #50 actualizado
 - 04:44 T060: tomada por el trabajador
+- 04:49 T060: terminada, PR #56
