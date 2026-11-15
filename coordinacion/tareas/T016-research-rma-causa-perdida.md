@@ -1,9 +1,9 @@
 ---
 id: T016
 titulo: 'Research: causas de pérdida del seguro agrícola (USDA RMA) por condado'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:40
-actualizada: 2026-11-15 01:40
+actualizada: 2026-11-15 02:21
 ---
 
 ## Qué hacer
@@ -41,3 +41,4 @@ Escribí `docs/research/rma_causa_perdida.md`.
 El research en un PR, con una propuesta concreta de qué columnas bajar (sin bajarlas).
 
 ## Notas
+- 2026-11-15 02:21 · pro-2: tomada
