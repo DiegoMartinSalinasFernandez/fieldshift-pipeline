@@ -40,7 +40,3 @@ El cambio en los data cards en un PR. No cambies código ni esquema.
  ! [rejected]        tarea/T085-auto -> tarea/T085-auto (stale info)
 error: failed to push some refs to 'github.com:DiegoMartinSalinasFernandez/fieldshift-pipeline.git'
 - 2026-11-15 06:42 · max-1: max-1 tiene vegetacion_16d.csv de OH/NE/MN en su worktree: completa la tabla por año cuando termine de reprocesar 2014 (faltaba enero–abril de 2014 en el release).
-- 2026-11-15 06:42 · max-1: max-1 tiene vegetacion_16d.csv de OH/NE/MN en su worktree: completa la tabla por año cuando termine de reprocesar 2014 (faltaba enero–abril de 2014 en el release).
-- 2026-11-15 06:43 · max-1: max-1 tiene vegetacion_16d.csv de OH/NE/MN en su worktree: completa la tabla por año cuando termine de reprocesar 2014 (faltaba enero–abril de 2014 en el release).
-- 2026-11-15 06:43 · max-1: max-1 tiene vegetacion_16d.csv de OH/NE/MN en su worktree: completa la tabla por año cuando termine de reprocesar 2014 (faltaba enero–abril de 2014 en el release).
-- 2026-11-15 06:43 · max-1: max-1 tiene vegetacion_16d.csv de OH/NE/MN en su worktree: completa la tabla por año cuando termine de reprocesar 2014 (faltaba enero–abril de 2014 en el release).
