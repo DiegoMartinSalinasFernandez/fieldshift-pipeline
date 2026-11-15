@@ -1,14 +1,14 @@
 ---
 id: T049
 titulo: 'Research: criterios de evaluación de Space Apps y cómo mostrar los datos'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:05
-actualizada: 2026-11-15 04:05
+actualizada: 2026-11-15 04:14
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ Escribí `docs/research/space_apps_criterios.md`.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 04:14 · pro-2: tomada
