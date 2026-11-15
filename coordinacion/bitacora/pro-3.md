@@ -28,3 +28,4 @@
 - 06:10 T075: tomada por el trabajador
 - 06:16 T075: terminada, PR #71
 - 06:31 trabajador actualizado desde main
+- 06:31 T079: tomada por el trabajador
