@@ -2,7 +2,8 @@
 
 Por cada estado de config.yaml y cada tabla se arma una consulta SQL al servicio REST de SDA
 (https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest), filtrando por las áreas de
-relevamiento del estado (`legend.areasymbol`, en IA/IL/IN una por condado: IA169 = 19169).
+relevamiento del estado (`legend.areasymbol`, casi siempre una por condado: IA169 = 19169; las
+excepciones, solo en MN, están en `AREAS_ESPECIALES` de process.py).
 Para no pasar el límite de filas de SDA se consulta en tandas de áreas y se concatena.
 
 Tablas (una por estado, en data/raw/suelo_terreno/sda/<tabla>_<estado>.csv):
