@@ -1,14 +1,14 @@
 ---
 id: T037
 titulo: Índice de los research (docs/research/README.md)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 03:20
-actualizada: 2026-11-15 03:20
+actualizada: 2026-11-15 03:16
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ Solo leé los documentos: no cambies ninguno. Si dos se contradicen, anotalo en 
 El índice en un PR.
 
 ## Notas
+- 2026-11-15 03:16 · pro-1: tomada
