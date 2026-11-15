@@ -250,6 +250,12 @@ Problemas conocidos:
     en todos (LANID cubre todo el estado y no declara nodata).
 - La grilla de LANID está alineada con la del CDL (EPSG:5070, 30 m; origen −2354955, 3165615, a un
   número entero de píxeles del origen del CDL), así que el vecino más cercano no mueve píxeles.
+- **Prueba completa con Zenodo en NE** (2000–2017, 93 condados, 1674 filas): mediana de
+  `frac_riego_lanid` entre 0,44 (2002) y 0,60 (2015). `mascara_riego_max.tif` (`maxIrrExt` 1997–2017)
+  se arma en 6 s: marca el 73 % de los píxeles agrícolas de NE como regados alguna vez (es el máximo de
+  21 años, no un año típico), y el 15 % de sus píxeles regados cae fuera de la máscara agrícola
+  (pasturas y heno regados del oeste). La máscara cubre todo el rectángulo de la grilla, también
+  fuera de los condados: hay que cruzarla con `mascara_agricola.tif` al usarla.
 
 ## Problemas conocidos
 
