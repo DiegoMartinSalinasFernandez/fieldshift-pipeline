@@ -1,15 +1,15 @@
 ---
 id: T080
 titulo: 'Research: presupuestos por cultivo y precios en Kentucky'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - KY
 depende_de: []
 rama: null
 creada: 2026-11-15T06:18
-actualizada: 2026-11-15T06:18
+actualizada: 2026-11-15 06:37
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ Escribí `docs/research/presupuestos_ky.md`.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 06:37 · pro-1: tomada
