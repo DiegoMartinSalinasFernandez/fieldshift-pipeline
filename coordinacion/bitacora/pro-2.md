@@ -60,3 +60,4 @@
 - 06:04 T074: tomada por el trabajador
 - 06:07 T074: terminada, PR #65
 - 06:07 T071: tomada por el trabajador
+- 06:11 T071: terminada, PR #68
