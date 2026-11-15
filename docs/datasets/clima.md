@@ -145,3 +145,25 @@ Los CSV procesados cubren el período de `config.yaml` (2000-2025);
   relleno. Es un falso positivo: el valor sale del cálculo y no se modifica. Propuesta en
   `loop/notes/decisiones.md`.
 - POWER en un punto: condados vecinos dentro de la misma celda MERRA-2 tienen series idénticas.
+- **`doy_primera_helada` (y `doy_ultima_helada`, `periodo_libre_heladas_dias`) no ve heladas locales de los
+  bajos.** Sale de `tmin_c` de POWER en el centroide del condado, que es la media de una celda de 0,5° × 0,625°
+  (MERRA-2): una helada de radiación en los bajos queda promediada con el resto de la celda y no baja de 0 °C.
+  Ejemplo: la helada temprana del 20–21 de agosto de 2004 en el norte de MN no aparece; POWER da `tmin_c`
+  mínima de 2,4 °C (Kittson, 27069), 2,8 °C (Koochiching, 27071) y 2,9 °C (St. Louis, 27137) del 19 al 22 de
+  agosto, y los 87 condados de MN tienen `doy_primera_helada` 275–276 (1–2 de octubre) ese año. Tomalo como
+  helada "regional", no del lote; puede llegar días o semanas tarde en los bajos fríos. (QA de OH/NE/MN,
+  `docs/qa/oh_ne_mn.md`, problema 5.)
+- **IMERG llueve más que POWER, y más en OH.** Razón de la lluvia anual `prec_imerg_mm` / `prec_power_mm`
+  (suma de los 12 meses de `clima_mensual.csv`, por condado-año, 2000–2025, release `datos-oh-ne-mn`):
+
+  | estado | mediana | percentil 10–90 | lluvia anual mediana IMERG / POWER (mm) |
+  |---|---|---|---|
+  | OH | 1,18 | 1,10–1,32 | 1.148 / 962 |
+  | NE | 1,07 | 0,97–1,21 | 682 / 634 |
+  | MN | 1,07 | 0,97–1,24 | 773 / 707 |
+
+  No es un error del proceso: son dos productos distintos (IMERG satelital con ajuste a pluviómetros; POWER
+  `PRECTOTCORR` de MERRA-2 corregido). No mezcles las dos columnas en una misma serie ni compares la lluvia de
+  un estado medida con una contra la de otro medida con la otra; en OH la diferencia entre fuentes es de
+  ≈ 18 % (≈ 190 mm por año). No se calculó para IA, IL, IN ni KS (no tienen
+  release de `clima` en este repo).
