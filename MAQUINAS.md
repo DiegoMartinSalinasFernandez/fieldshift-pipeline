@@ -42,7 +42,7 @@ para el equipo de ML. El humano decide lo que el CLAUDE.md le reserva: estados, 
      echo 'export FIELDSHIFT_MAQUINA=pro-1' >> ~/.bashrc
      ```
      ```bash
-     echo 'export FIELDSHIFT_ESTADOS=NE,KS' >> ~/.bashrc
+     echo 'export FIELDSHIFT_ESTADOS=OH,MN' >> ~/.bashrc
      ```
    - En **Windows**, con `setx` y una terminal nueva:
      ```bash

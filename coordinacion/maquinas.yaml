@@ -15,8 +15,8 @@ maquinas:
   pro-1:
     plan: pro
     rol: research y código chico (T006 hecha, PR 1)
-    estados: [NE, KS]   # preferencia: riego, trigo de invierno
+    estados: [OH, MN]   # preferencia
   pro-2:
     plan: pro
     rol: research y código chico (T005 hecha, PR 2)
-    estados: [OH, MN]   # preferencia
+    estados: [NE, KS]   # preferencia: riego, trigo de invierno
