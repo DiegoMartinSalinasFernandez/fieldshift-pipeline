@@ -25,6 +25,8 @@ COLS = {
         ("ndvi_maiz", "NDVI medio de los píxeles con >= 75 % de maíz (CDL del año)", "adim.", V, "M01"),
         ("ndvi_soja", "NDVI medio de los píxeles con >= 75 % de soja (CDL del año)", "adim.", V, "M01"),
         ("frac_pixeles_validos", "Píxeles que pasan el filtro de calidad sobre los píxeles del condado", "0-1", V, "M03"),
+        ("ndvi_maiz_p50", "Como ndvi_maiz, con umbral de pureza de 50 %: píxeles con >= 50 % de maíz (CDL del año)", "adim.", V, "M01"),
+        ("ndvi_soja_p50", "Como ndvi_soja, con umbral de pureza de 50 %: píxeles con >= 50 % de soja (CDL del año)", "adim.", V, "M01"),
     ],
     "vegetacion_mensual.csv": [
         ("ndvi", "Media de los compuestos de 16 días que empiezan en el mes", "adim.", V, "M01"),
@@ -40,6 +42,8 @@ COLS = {
         ("vci", "VCI = 100 (ndvi − mín) / (máx − mín) del mes calendario, por condado", "0-100", D13, "F11"),
         ("tci", "TCI = 100 (máx − lst_dia_c) / (máx − mín) del mes calendario, por condado", "0-100", DL, "F12"),
         ("vhi", "VHI = 0,5 VCI + 0,5 TCI", "0-100", DL, "F13"),
+        ("ndvi_maiz_p50", "Media mensual del NDVI de maíz (CDL >= 50 %)", "adim.", V, "M01"),
+        ("ndvi_soja_p50", "Media mensual del NDVI de soja (CDL >= 50 %)", "adim.", V, "M01"),
     ],
     "fenologia_anual.csv": [
         ("doy_inicio", "Día del año en que el NDVI suavizado sube al 50 % de la amplitud del año", "DOY", D13, "F01"),
@@ -52,6 +56,8 @@ COLS = {
         ("ndvi_max_maiz", "Máximo NDVI de maíz del año (compuestos de 16 días)", "adim.", D13, "F03"),
         ("ndvi_max_soja", "Máximo NDVI de soja del año (compuestos de 16 días)", "adim.", D13, "F03"),
         ("dias_ndvi_lt03_invierno", "Días con NDVI diario interpolado < 0,3 entre 1-nov (anio−1) y 31-mar", "días", D13, "F09"),
+        ("ndvi_max_maiz_p50", "Como ndvi_max_maiz, desde ndvi_maiz_p50 (CDL >= 50 %)", "adim.", D13, "F03"),
+        ("ndvi_max_soja_p50", "Como ndvi_max_soja, desde ndvi_soja_p50 (CDL >= 50 %)", "adim.", D13, "F03"),
     ],
 }
 
@@ -118,6 +124,12 @@ TEXTO = """
   promedio a la grilla MODIS de cada tesela. Un píxel MODIS cuenta si >= 75 % de su área es del
   cultivo de ese año (umbral pedido para 250 m, aplicado al píxel del overview de ~927 m). Cache en
   `data/interim/vegetacion/frac_cultivos/` (se regenera si falta).
+- **Columnas `*_p50` (T130, esperan el OK de `para_decidir.md` #32):** `ndvi_maiz_p50`, `ndvi_soja_p50` y
+  `ndvi_max_maiz_p50`, `ndvi_max_soja_p50` repiten el mismo cálculo con umbral de pureza de 50 %
+  (`UMBRAL_CULTIVO_P50` en `src/vegetacion/process.py`). Se agregan **además** de las de 75 %, al final de
+  cada archivo, sin cambiar las que ya existen. Con 50 % la señal mezcla hasta la mitad de otros usos del
+  suelo (otros cultivos, pastura, monte): ganan cobertura (sobre todo en OH) a costa de pureza. No mezclar
+  las dos versiones como si fueran la misma variable.
 - `ndvi_max_maiz`/`ndvi_max_soja`: máximo de los compuestos del año que pasan el filtro (sin
   suavizar), solo si hay >= 10 compuestos con dato en el año.
 - `anio` es el año calendario de la fecha (16d) o del mes (mensual). La fecha del compuesto es su
@@ -179,6 +191,9 @@ def main() -> None:
         df = pd.read_csv(OUT / arch, dtype={"fips": str})
         tcol = "fecha" if "fecha" in df else ("mes" if "mes" in df else "anio")
         for c, desc, u, f, idc in cols:
+            if c not in df:  # CSV de antes de la columna (por ejemplo, *_p50 de T130): sin medir
+                lineas.append(f"| {arch} | {c} | {desc} | {u} | {f} | {idc} |  |  | (no está en el CSV) |")
+                continue
             s = df[c]
             ok = df.loc[s.notna(), tcol].astype(str)
             desde, hasta = (ok.min(), ok.max()) if len(ok) else ("", "")

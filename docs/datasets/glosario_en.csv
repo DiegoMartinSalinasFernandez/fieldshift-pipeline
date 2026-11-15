@@ -319,6 +319,8 @@ vegetacion,vegetacion_16d.csv,evi,County mean EVI,dimensionless,MODIS MOD13Q1 v0
 vegetacion,vegetacion_16d.csv,ndvi_maiz,Mean NDVI of pixels with >= 75 % corn (same-year CDL),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
 vegetacion,vegetacion_16d.csv,ndvi_soja,Mean NDVI of pixels with >= 75 % soybeans (same-year CDL),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
 vegetacion,vegetacion_16d.csv,frac_pixeles_validos,Pixels passing the quality filter / all county pixels,0-1,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M03
+vegetacion,vegetacion_16d.csv,ndvi_maiz_p50,"Like ndvi_maiz, with a 50 % purity threshold: pixels with >= 50 % corn (same-year CDL)",dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
+vegetacion,vegetacion_16d.csv,ndvi_soja_p50,"Like ndvi_soja, with a 50 % purity threshold: pixels with >= 50 % soybeans (same-year CDL)",dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
 vegetacion,vegetacion_mensual.csv,ndvi,Mean of the 16-day composites starting in the month,dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
 vegetacion,vegetacion_mensual.csv,evi,Mean of the 16-day composites starting in the month,dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M02
 vegetacion,vegetacion_mensual.csv,ndvi_maiz,Monthly mean corn NDVI (CDL >= 75 %),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
@@ -332,6 +334,8 @@ vegetacion,vegetacion_mensual.csv,ndvi_anom_z,"(ndvi − calendar-month mean) / 
 vegetacion,vegetacion_mensual.csv,vci,"Vegetation Condition Index VCI = 100 (ndvi − min) / (max − min) for the calendar month, per county",0-100,Derived from MOD13Q1,F11
 vegetacion,vegetacion_mensual.csv,tci,"Temperature Condition Index TCI = 100 (max − lst_dia_c) / (max − min) for the calendar month, per county",0-100,Derived from MOD11A2 + MOD13Q1,F12
 vegetacion,vegetacion_mensual.csv,vhi,Vegetation Health Index VHI = 0.5 VCI + 0.5 TCI,0-100,Derived from MOD11A2 + MOD13Q1,F13
+vegetacion,vegetacion_mensual.csv,ndvi_maiz_p50,Monthly mean corn NDVI (CDL >= 50 %),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
+vegetacion,vegetacion_mensual.csv,ndvi_soja_p50,Monthly mean soybean NDVI (CDL >= 50 %),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
 vegetacion,fenologia_anual.csv,doy_inicio,Day of year when smoothed NDVI rises to 50 % of the year's amplitude (start of season),DOY,Derived from MOD13Q1,F01
 vegetacion,fenologia_anual.csv,doy_pico,Day of year of maximum smoothed NDVI (composite start + 8 days),DOY,Derived from MOD13Q1,F02
 vegetacion,fenologia_anual.csv,doy_fin,Day of year when smoothed NDVI falls to 50 % of the amplitude (end of season),DOY,Derived from MOD13Q1,F04
@@ -342,3 +346,5 @@ vegetacion,fenologia_anual.csv,n_ciclos,Peaks of smoothed NDVI with prominence >
 vegetacion,fenologia_anual.csv,ndvi_max_maiz,Annual maximum corn NDVI (16-day composites),dimensionless,Derived from MOD13Q1,F03
 vegetacion,fenologia_anual.csv,ndvi_max_soja,Annual maximum soybean NDVI (16-day composites),dimensionless,Derived from MOD13Q1,F03
 vegetacion,fenologia_anual.csv,dias_ndvi_lt03_invierno,Days with interpolated daily NDVI < 0.3 between Nov 1 (anio−1) and Mar 31,days,Derived from MOD13Q1,F09
+vegetacion,fenologia_anual.csv,ndvi_max_maiz_p50,"Like ndvi_max_maiz, from ndvi_maiz_p50 (CDL >= 50 %)",dimensionless,Derived from MOD13Q1,F03
+vegetacion,fenologia_anual.csv,ndvi_max_soja_p50,"Like ndvi_max_soja, from ndvi_soja_p50 (CDL >= 50 %)",dimensionless,Derived from MOD13Q1,F03
