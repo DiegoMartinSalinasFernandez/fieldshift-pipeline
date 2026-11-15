@@ -1,14 +1,14 @@
 ---
 id: T057
 titulo: Borrador de la página del proyecto para el envío (inglés)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:30
-actualizada: 2026-11-15 04:30
+actualizada: 2026-11-15 04:35
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ El envío a Space Apps cierra el **domingo 2026-11-15 a las 23:59 hora del event
 El documento en un PR.
 
 ## Notas
+- 2026-11-15 04:35 · pro-5: tomada
