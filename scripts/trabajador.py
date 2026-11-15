@@ -320,6 +320,12 @@ def abrir_pr(tid: str, titulo: str, rama: str, cuerpo: str, maquina: str, sin_pr
     return f"PR #{m.group(1)}" if m else c.stdout.strip()
 
 
+def minutos_para(meta: dict, a, fin: dt.datetime) -> float:
+    # tope: el de la línea de comandos si se pasó; si no, el campo `minutos` de la tarea; si no, el del plan
+    tope = a.minutos_tarea if a.minutos_cli else float(meta.get("minutos") or a.minutos_tarea)
+    return max(10.0, min(tope, (fin - ahora()).total_seconds() / 60 - 5))
+
+
 def hacer_tarea(claude: str, tid: str, meta: dict, texto_tarea: str, maquina: str, plan: str, estados: list[str],
                 fin: dt.datetime, a) -> None:
     rama = f"tarea/{tid}-auto"
@@ -328,9 +334,7 @@ def hacer_tarea(claude: str, tid: str, meta: dict, texto_tarea: str, maquina: st
     while True:
         continua = preparar_rama(rama)
         resultado_p.unlink(missing_ok=True)
-        # tope: el de la línea de comandos si se pasó; si no, el campo `minutos` de la tarea; si no, el del plan
-        tope = a.minutos_tarea if a.minutos_cli else float(meta.get("minutos") or a.minutos_tarea)
-        minutos = max(10.0, min(tope, (fin - ahora()).total_seconds() / 60 - 5))
+        minutos = minutos_para(meta, a, fin)
         python = ".venv/Scripts/python" if ES_WINDOWS else ".venv/bin/python"   # sirve en PowerShell y Git Bash
         plantilla = git("show", "origin/main:coordinacion/prompt_trabajador.md").stdout
         prompt = (plantilla.replace("{maquina}", maquina).replace("{plan}", plan).replace("{minutos}", f"{minutos:.0f}")
