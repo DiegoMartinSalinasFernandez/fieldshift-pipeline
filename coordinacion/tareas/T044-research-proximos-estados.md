@@ -1,9 +1,9 @@
 ---
 id: T044
 titulo: 'Research: candidatos para sumar estados (SD, WI, MO, MI)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - SD
 - WI
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 03:45
-actualizada: 2026-11-15 03:45
+actualizada: 2026-11-15 03:31
 ---
 
 ## Qué hacer
@@ -37,3 +37,4 @@ Escribí `docs/research/proximos_estados.md`. **No cambies `config/`**: es una p
 El research en un PR, con un orden recomendado.
 
 ## Notas
+- 2026-11-15 03:31 · pro-2: tomada
