@@ -1,14 +1,14 @@
 ---
 id: T053
 titulo: Glosario en inglés de las columnas (CSV para el frontend)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:17
-actualizada: 2026-11-15 04:28
+actualizada: 2026-11-15 04:32
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ está en el glosario.
 
 ## Notas
 - 2026-11-15 04:28 · pro-5: tomada
+- 2026-11-15 04:32 · pro-5: terminada por el trabajador: PR #49, falta la revisión de max-1
