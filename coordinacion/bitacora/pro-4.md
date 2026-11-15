@@ -25,3 +25,4 @@
 - 06:13 T070: terminada, PR #69
 - 06:28 trabajador actualizado desde main
 - 06:28 T084: tomada por el trabajador
+- 07:27 T084: terminada, PR #96
