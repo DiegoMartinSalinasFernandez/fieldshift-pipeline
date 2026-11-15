@@ -105,6 +105,46 @@ class TestQaRelease(unittest.TestCase):
                                        "columna": "sup_sembrada_ac", "escala": 1000})
         self.assertEqual(s.loc[2019, "XA"], 4)
 
+    def test_evento_con_fips(self):
+        s = qa.serie_evento(self.rel, {"paquete": "cultivos", "archivo": "produccion_anual.csv", "cultivo": "maiz",
+                                       "columna": "rend_bu_ac", "fips": [91007]})
+        self.assertEqual(s.loc[2021, "XA"], 10)
+        self.assertEqual(list(s.columns), ["XA"])
+
+    def test_eventos_por_estado(self):
+        """Un evento de estados que no están en el release se saltea con aviso; si alguno está, solo se muestra ese."""
+        eventos = [
+            {"titulo": "solo KS", "estados": ["KS"], "paquete": "clima", "archivo": "clima_mensual.csv",
+             "columna": "prec_power_mm", "meses": [7], "anios": [2020]},
+            {"titulo": "MO y XB", "estados": ["MO", "XB"], "paquete": "clima", "archivo": "clima_mensual.csv",
+             "columna": "prec_power_mm", "meses": [7], "anios": [2020], "esperado": "alta", "fuente": "sección X"},
+            {"titulo": "columna que no está", "estados": ["XA"], "paquete": "clima", "archivo": "clima_mensual.csv",
+             "columna": "spi6", "anios": [2020]},
+        ]
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            qa.seccion_eventos(self.rel, eventos)
+        txt = out.getvalue()
+        self.assertIn("_solo KS: KS no está en el release (XA, XB): se saltea._", txt)
+        self.assertIn("| anio | XB |", txt)
+        self.assertIn("| 2020 | 30.00 |", txt)
+        self.assertNotIn("| 2020 | 10.00 |", txt)
+        self.assertIn("Esperado: alta (sección X)", txt)
+        self.assertIn("no está la columna `spi6`", txt)
+
+    def test_yaml_de_t117_se_saltean_sin_error(self):
+        """Las listas de KS y de MO/WI/SD corren sobre un release sin esos estados: todo se saltea con aviso."""
+        args = [str(self.base)]
+        for n in ("eventos_ks.yaml", "eventos_mo_wi_sd.yaml"):
+            args += ["--eventos", str(REPO / "docs" / "qa" / n)]
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            qa.main(args)
+        ev = out.getvalue().split("## Eventos")[1].split("## Rangos")[0]
+        bloques = [b for b in ev.split("\n\n")[1:] if b.strip()]
+        self.assertTrue(bloques)
+        self.assertTrue(all("se saltea" in b for b in bloques), bloques)
+
     def test_outlier_contra_vecinos(self):
         vec = qa.vecinos(self.rel.condados)
         pa = self.rel.leer("cultivos", "produccion_anual.csv")

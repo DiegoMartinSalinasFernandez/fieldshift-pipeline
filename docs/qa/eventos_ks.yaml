@@ -1,0 +1,173 @@
+# Eventos de la QA de KS (T007), para scripts/qa_release.py --eventos (tarea T117).
+# Fuente: docs/research/eventos_extremos_nuevos.md, solo los eventos de KS de ese documento (2007, 2011, 2017,
+# 2018 y 2023, los cuatro de trigo de invierno y la ventisca). Los eventos de KS del documento base
+# (docs/research/eventos_extremos.md: 2002, 2012, 2014 y 2022) no están acá: para esos, sumar
+# --eventos docs/qa/eventos_oh_ne_mn.yaml (no filtra estados, así que muestra KS si está en el release).
+#
+# Campos (ver serie_evento() y seccion_eventos() en scripts/qa_release.py):
+#   estados: el evento se saltea con un aviso si ninguno está en el release; la tabla muestra solo esos.
+#   anios: el año del evento y años vecinos como referencia (los vecinos no son eventos).
+#   esperado: dirección de la señal según el research; fuente: sección del research.
+# Advertencias del research: la señal del trigo está en el invierno previo y la primavera, no en abril–septiembre;
+# en 2023 el abandono se ve en ratio_cosechada, no en rend_bu_ac; POWER (celda de 0,5°) puede no ver heladas
+# locales. Las cifras de rendimiento citadas son pronósticos o giras de mayo, no valores finales de NASS.
+# rend_dif5 compara con la media de los 5 años previos del mismo release (hace falta desde 2000 para 2007).
+eventos:
+  # ---------------------------------------------------------------- 2007: helada de abril sobre el trigo
+  - titulo: "KS 2007 — `anom_tmed_c` de marzo (marzo cálido antes de la helada)"
+    estados: [KS]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: anom_tmed_c
+    meses: [3]
+    anios: [2006, 2007, 2008]
+    esperado: "positiva en 2007"
+    fuente: "eventos_extremos_nuevos.md, «2007 — Helada de abril en el trigo de Kansas»"
+  - titulo: "KS 2007 — `dias_tmin_le_m2` de abril"
+    estados: [KS]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: dias_tmin_le_m2
+    meses: [4]
+    anios: [2006, 2007, 2008]
+    esperado: "alto en 2007 (mínimas «en los teens» °F del 4 al 10 de abril)"
+    fuente: "eventos_extremos_nuevos.md, «2007 — Helada de abril en el trigo de Kansas»"
+  - titulo: "KS 2007 — `doy_ultima_helada`"
+    estados: [KS]
+    paquete: clima
+    archivo: clima_anual.csv
+    columna: doy_ultima_helada
+    anios: [2006, 2007, 2008]
+    esperado: "tardío en 2007 (abril, tras un marzo cálido)"
+    fuente: "eventos_extremos_nuevos.md, «2007 — Helada de abril en el trigo de Kansas»"
+  - titulo: "KS 2007 — trigo de invierno: diferencia % contra la media de los 5 años previos"
+    estados: [KS]
+    tipo: rend_dif5
+    cultivo: trigo_invierno
+    anios: [2006, 2007, 2008]
+    esperado: "negativa en 2007 (el research solo tiene el daño de la encuesta de USDA: 18 % severo y 26 % moderado; sin rendimiento final)"
+    fuente: "eventos_extremos_nuevos.md, «2007 — Helada de abril en el trigo de Kansas»"
+
+  # ---------------------------------------------------------------- 2011: sequía y trigo en el suroeste
+  - titulo: "KS 2011 — `prec_invierno_previo_mm` (nov 2010 – mar 2011)"
+    estados: [KS]
+    paquete: clima
+    archivo: clima_anual.csv
+    columna: prec_invierno_previo_mm
+    anios: [2010, 2011, 2012]
+    esperado: "bajo en 2011, peor en el suroeste y centro-sur"
+    fuente: "eventos_extremos_nuevos.md, «2011 — Sequía y trigo en el suroeste de Kansas»"
+  - titulo: "KS 2011 — `spi6` de marzo a mayo"
+    estados: [KS]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: spi6
+    meses: [3, 4, 5]
+    anios: [2010, 2011, 2012]
+    esperado: "negativo en 2011 (a fines de mayo ≈60 % de KS en sequía moderada a excepcional)"
+    fuente: "eventos_extremos_nuevos.md, «2011 — Sequía y trigo en el suroeste de Kansas»"
+  - titulo: "KS 2011 — trigo de invierno en Finney y Haskell (`rend_bu_ac`)"
+    estados: [KS]
+    paquete: cultivos
+    archivo: produccion_anual.csv
+    cultivo: trigo_invierno
+    columna: rend_bu_ac
+    fips: ["20055", "20081"]
+    anios: [2010, 2011, 2012]
+    esperado: "muy bajo en 2011 (gira de mayo: 25,1 bu/ac contra 61,0 en 2010)"
+    fuente: "eventos_extremos_nuevos.md, «2011 — Sequía y trigo en el suroeste de Kansas»"
+  - titulo: "KS 2011 — trigo de invierno: rendimiento implícito de estado (bu/ac)"
+    estados: [KS]
+    tipo: rend_implicito
+    cultivo: trigo_invierno
+    anios: [2010, 2011, 2012]
+    esperado: "bajo en 2011 (gira de mayo: 37,4 bu/ac contra 45 en 2010; la cosecha final salió mejor)"
+    fuente: "eventos_extremos_nuevos.md, «2011 — Sequía y trigo en el suroeste de Kansas»"
+
+  # ---------------------------------------------------------------- 2017: ventisca de fines de abril
+  - titulo: "KS 2017 — `prec_power_mm` de abril (equivalente en agua de la nieve)"
+    estados: [KS]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: prec_power_mm
+    meses: [4]
+    anios: [2016, 2017, 2018]
+    esperado: "alta en 2017, sobre todo en el oeste y suroeste (más de 15 pulgadas de nieve del 28 de abril al 1 de mayo)"
+    fuente: "eventos_extremos_nuevos.md, «2017 — Ventisca de fines de abril en Kansas»"
+  - titulo: "KS 2017 — `dias_tmin_le0` de abril"
+    estados: [KS]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: dias_tmin_le0
+    meses: [4]
+    anios: [2016, 2017, 2018]
+    esperado: "más días en 2017 en el oeste (la ventisca cae a fin de mes; la media de estado puede moverse poco)"
+    fuente: "eventos_extremos_nuevos.md, «2017 — Ventisca de fines de abril en Kansas»"
+  - titulo: "KS 2017 — trigo de invierno: diferencia % contra la media de los 5 años previos"
+    estados: [KS]
+    tipo: rend_dif5
+    cultivo: trigo_invierno
+    anios: [2016, 2017, 2018]
+    esperado: "pérdida en el oeste de KS en 2017 (≈40 % del trigo con algún daño); sin rendimiento final en el research: mirar por condado"
+    fuente: "eventos_extremos_nuevos.md, «2017 — Ventisca de fines de abril en Kansas»"
+
+  # ---------------------------------------------------------------- 2018: sequía y frío en el trigo
+  - titulo: "KS 2018 — `prec_invierno_previo_mm` (nov 2017 – mar 2018)"
+    estados: [KS]
+    paquete: clima
+    archivo: clima_anual.csv
+    columna: prec_invierno_previo_mm
+    anios: [2017, 2018, 2019]
+    esperado: "bajo en 2018 (sequía desde el otoño de 2017)"
+    fuente: "eventos_extremos_nuevos.md, «2018 — Sequía y frío en el trigo de Kansas»"
+  - titulo: "KS 2018 — `spi6` de marzo a mayo"
+    estados: [KS]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: spi6
+    meses: [3, 4, 5]
+    anios: [2017, 2018, 2019]
+    esperado: "negativo en 2018"
+    fuente: "eventos_extremos_nuevos.md, «2018 — Sequía y frío en el trigo de Kansas»"
+  - titulo: "KS 2018 — trigo de invierno: rendimiento implícito de estado (bu/ac)"
+    estados: [KS]
+    tipo: rend_implicito
+    cultivo: trigo_invierno
+    anios: [2017, 2018, 2019]
+    esperado: "bajo en 2018 (gira de mayo: 37,0 bu/ac contra 48,0 de USDA en 2017; pronóstico de USDA 37)"
+    fuente: "eventos_extremos_nuevos.md, «2018 — Sequía y frío en el trigo de Kansas»"
+
+  # ---------------------------------------------------------------- 2023: sequía en el trigo
+  - titulo: "KS 2023 — `prec_invierno_previo_mm` (nov 2022 – mar 2023)"
+    estados: [KS]
+    paquete: clima
+    archivo: clima_anual.csv
+    columna: prec_invierno_previo_mm
+    anios: [2022, 2023, 2024]
+    esperado: "bajo en 2023, peor en el oeste"
+    fuente: "eventos_extremos_nuevos.md, «2023 — Sequía en el trigo de Kansas»"
+  - titulo: "KS 2023 — `spi6` de marzo a mayo"
+    estados: [KS]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: spi6
+    meses: [3, 4, 5]
+    anios: [2022, 2023, 2024]
+    esperado: "muy negativo en 2023 (julio puede verse húmedo: lluvia fuerte a principios de julio)"
+    fuente: "eventos_extremos_nuevos.md, «2023 — Sequía en el trigo de Kansas»"
+  - titulo: "KS 2023 — trigo de invierno: `ratio_cosechada` (abandono)"
+    estados: [KS]
+    paquete: cultivos
+    archivo: produccion_anual.csv
+    cultivo: trigo_invierno
+    columna: ratio_cosechada
+    anios: [2022, 2023, 2024]
+    esperado: "bajo en 2023 (abandono estimado en 18,5 % en mayo)"
+    fuente: "eventos_extremos_nuevos.md, «2023 — Sequía en el trigo de Kansas» y advertencia «2023 en KS»"
+  - titulo: "KS 2023 — trigo de invierno: rendimiento implícito de estado (bu/ac)"
+    estados: [KS]
+    tipo: rend_implicito
+    cultivo: trigo_invierno
+    anios: [2022, 2023, 2024]
+    esperado: "bajo en 2023 (USDA antes del 1 de agosto: 32 bu/ac, la cosecha más chica desde 1966)"
+    fuente: "eventos_extremos_nuevos.md, «2023 — Sequía en el trigo de Kansas»"

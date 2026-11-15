@@ -16,7 +16,10 @@ condado con la de estado.
 
 Uso:
   .venv/bin/python -X utf8 scripts/qa_release.py datos-oh-ne-mn --eventos docs/qa/eventos_oh_ne_mn.yaml \
-      [--qs qs.crops_<fecha>.txt.gz] > informe.md
+      [--eventos docs/qa/eventos_ks.yaml ...] [--qs qs.crops_<fecha>.txt.gz] > informe.md
+
+`--eventos` se puede repetir. Un evento con `estados` que no están en el release se saltea con un aviso, así las
+listas de una tanda (`eventos_ks.yaml`, `eventos_mo_wi_sd.yaml`) corren sobre cualquier release.
 
 Salida en Markdown por stdout, con secciones: faltantes por estado contra el data card de `main` (IA/IL/IN),
 eventos, rangos, outliers por vecinos y totales de NASS. Las secciones cuyo paquete no está en el release se
@@ -184,7 +187,8 @@ def serie_evento(rel: Release, ev: dict) -> pd.DataFrame:
     - suma_condados: suma de `columna` sobre condados (con `min_count=1`), dividida por `escala`;
     - rend_implicito: suma de producción / suma de cosechada de `cultivo` (paquete cultivos);
     - rend_dif5: diferencia % del rendimiento implícito contra la media de los 5 años previos.
-    `cultivo` filtra filas de un archivo largo en media / suma_condados."""
+    `cultivo` filtra filas de un archivo largo en media / suma_condados; `fips` (lista) deja solo esos
+    condados (para eventos de pocos condados, como una inundación de río)."""
     tipo = ev.get("tipo", "media")
     if tipo in ("rend_implicito", "rend_dif5"):
         rend = rend_implicito(rel.leer("cultivos", "produccion_anual.csv"), ev["cultivo"])
@@ -194,6 +198,8 @@ def serie_evento(rel: Release, ev: dict) -> pd.DataFrame:
     df = rel.leer(ev["paquete"], ev["archivo"])
     if "cultivo" in ev:
         df = df[df.cultivo == ev["cultivo"]]
+    if "fips" in ev:
+        df = df[df.fips.isin([str(f).zfill(5) for f in ev["fips"]])]
     if "meses" in ev:
         df = df[df.m.isin(ev["meses"])]
     col = ev["columna"]
@@ -208,14 +214,34 @@ def serie_evento(rel: Release, ev: dict) -> pd.DataFrame:
 
 
 def seccion_eventos(rel: Release, eventos: list[dict]) -> None:
+    """Campos opcionales de cada evento, además de los de serie_evento():
+    - estados: lista de estados del evento; la tabla muestra solo esos, y si ninguno está en el release el
+      evento se saltea con un aviso (así una lista de KS o de MO/WI/SD corre sobre cualquier release);
+    - esperado: texto con la dirección esperada de la señal; fuente: sección del research que la respalda."""
     print("## Eventos extremos (medias de condado por estado)\n")
     for ev in eventos:
         paq, arch = ((ev["paquete"], ev["archivo"]) if "paquete" in ev
                      else ("cultivos", "produccion_anual.csv"))
+        estados = ev.get("estados")
+        if estados:
+            estan = [e for e in estados if e in rel.estados]
+            if not estan:
+                print(f"_{ev['titulo']}: {', '.join(estados)} no {'está' if len(estados) == 1 else 'están'} en el release "
+                      f"({', '.join(rel.estados)}): se saltea._\n")
+                continue
         if not rel.tiene(paq, arch):
             print(f"_{ev['titulo']}: no está `{paq}/{arch}` en el release._\n")
             continue
-        tabla(ev["titulo"], serie_evento(rel, ev), ev["anios"])
+        col = ev.get("columna")
+        if col and col not in pd.read_csv(rel.paquetes[paq] / arch, nrows=0).columns:
+            print(f"_{ev['titulo']}: no está la columna `{col}` en `{paq}/{arch}`: se saltea._\n")
+            continue
+        serie = serie_evento(rel, ev)
+        if estados:
+            serie = serie.reindex(columns=estan)
+        tabla(ev["titulo"], serie, ev["anios"])
+        if ev.get("esperado"):
+            print(f"Esperado: {ev['esperado']}" + (f" ({ev['fuente']})" if ev.get("fuente") else "") + "\n")
 
 
 # ---------------------------------------------------------------- rangos
@@ -391,7 +417,8 @@ def seccion_nass(rel: Release, qs: Path) -> None:
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("release", help="nombre del release o carpeta con los zips descomprimidos")
-    ap.add_argument("--eventos", type=Path, help="YAML con la lista `eventos` (ver serie_evento)")
+    ap.add_argument("--eventos", type=Path, action="append",
+                    help="YAML con la lista `eventos` (ver serie_evento y seccion_eventos); se puede repetir")
     ap.add_argument("--qs", type=Path, help="base de Quick Stats qs.crops_<fecha>.txt.gz")
     ap.add_argument("--destino", type=Path, default=REPO / "data" / "entregas",
                     help="dónde bajar y descomprimir el release (por defecto data/entregas)")
@@ -405,7 +432,7 @@ def main(argv: list[str] | None = None) -> None:
           + ", ".join(f"{e} {n}" for e, n in rel.condados.estado.value_counts().sort_index().items()) + ").\n")
     seccion_faltantes(rel)
     if a.eventos:
-        eventos = yaml.safe_load(a.eventos.read_text(encoding="utf-8"))["eventos"]
+        eventos = [e for p in a.eventos for e in yaml.safe_load(p.read_text(encoding="utf-8"))["eventos"]]
         seccion_eventos(rel, eventos)
     seccion_rangos(rel)
     seccion_outliers(rel)
