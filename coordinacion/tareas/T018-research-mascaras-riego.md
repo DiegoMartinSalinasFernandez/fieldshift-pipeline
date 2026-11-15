@@ -1,7 +1,7 @@
 ---
 id: T018
 titulo: 'Research: máscaras de riego para Nebraska y Kansas'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados:
@@ -10,7 +10,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:40
-actualizada: 2026-11-15 02:27
+actualizada: 2026-11-15 02:36
 ---
 
 ## Qué hacer
@@ -38,3 +38,4 @@ decisión de cambiar un esquema queda para el humano.
 
 ## Notas
 - 2026-11-15 02:27 · pro-2: tomada
+- 2026-11-15 02:36 · pro-2: terminada por el trabajador: PR #14, falta la revisión de max-1
