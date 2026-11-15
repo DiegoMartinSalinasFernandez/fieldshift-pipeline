@@ -22,3 +22,4 @@
 - 02:57 T015: terminada, PR #23
 - 02:57 T033: tomada por el trabajador
 - 03:01 T033: terminada, PR #26
+- 03:16 T037: tomada por el trabajador
