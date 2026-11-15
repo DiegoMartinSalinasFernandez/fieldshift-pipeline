@@ -1,14 +1,14 @@
 ---
 id: T056
 titulo: Borrador de las 7 láminas de la demo (inglés)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:30
-actualizada: 2026-11-15 04:33
+actualizada: 2026-11-15 04:35
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ El documento en un PR.
 
 ## Notas
 - 2026-11-15 04:33 · pro-5: tomada
+- 2026-11-15 04:35 · pro-5: terminada por el trabajador: PR #51, falta la revisión de max-1
