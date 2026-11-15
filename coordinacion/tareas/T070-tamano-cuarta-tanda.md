@@ -1,9 +1,9 @@
 ---
 id: T070
 titulo: 'Research: cuánto pesa y cuánto tarda una cuarta tanda (MI, ND, KY)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados:
 - MI
 - ND
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 05:42
-actualizada: 2026-11-15 05:42
+actualizada: 2026-11-15 05:56
 ---
 
 ## Qué hacer
@@ -31,3 +31,4 @@ Escribí `docs/research/cuarta_tanda.md`.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 05:56 · pro-4: tomada
