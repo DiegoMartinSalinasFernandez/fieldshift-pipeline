@@ -1,14 +1,15 @@
 ---
 id: T100
-titulo: Rellenar los 11 compuestos de MOD13Q1 que faltan en Planetary Computer (LP DAAC)
+titulo: Rellenar MODIS (MOD13Q1 y MOD11A2) desde LP DAAC con el código de T119 y reprocesar vegetación
 estado: libre
 plan_minimo: max
 maquina: null
 estados: []
-depende_de: []
+depende_de:
+- T119
 rama: null
 creada: 2026-11-15T07:02
-actualizada: 2026-11-15 07:51
+actualizada: 2026-11-15T08:45
 ---
 
 ## Qué hacer
@@ -26,6 +27,8 @@ Lo más grave es julio–noviembre de 2025: sin ellos no hay pico de NDVI de 202
 3. Data card de `vegetacion`: fuente mixta (PC + LP DAAC) y qué compuestos vienen de cada una.
 
 No cambies el esquema de los CSV. Más de 5 GB: preguntá antes (deberían ser ~66 archivos por grupo de estados).
+
+**Desde 2026-11-15:** el código lo escribe T119 (Pro), que también cubre MOD11A2 (LST, `docs/research/lst_fechas.md`). Esta tarea queda para las máquinas Max con Earthdata: correr la bajada para sus estados, reprocesar `vegetacion`, revisar con `verificar_entrega.py` y republicar.
 
 ## Terminada cuando
 
