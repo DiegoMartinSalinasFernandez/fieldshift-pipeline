@@ -1,14 +1,14 @@
 ---
 id: T141
 titulo: Costos del ERS asignados por condado con `reglink.xls` (código listo, espera OK)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:59
-actualizada: 2026-11-15 10:12
+actualizada: 2026-11-15 10:17
 ---
 
 ## Qué hacer
@@ -30,3 +30,4 @@ El código, las pruebas y el data card en un PR con CI en verde, retenido como d
 
 ## Notas
 - 2026-11-15 10:12 · pro-1: tomada
+- 2026-11-15 10:17 · pro-1: terminada por el trabajador: PR #134, falta la revisión de max-1
