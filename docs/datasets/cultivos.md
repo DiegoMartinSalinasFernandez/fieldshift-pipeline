@@ -248,3 +248,45 @@ MN 87, KS 105. Script: `docs/datasets/cobertura_nass.py` (solo lee; la tabla es 
 - En OH, NE y MN, el número de condados con `sup_sembrada_ac` de maíz y soja de `produccion_anual.csv`
   (release `datos-oh-ne-mn`) coincide con el de Quick Stats en todos los años. IA, IL, IN y KS no tienen
   release de `cultivos` en este repo: sus columnas salen solo de Quick Stats.
+
+## Riego y secano (T134, propuesta 1 de `para_decidir.md`)
+
+Columnas agregadas al final de `produccion_anual.csv` por `src/cultivos/riego_nass.py`
+(research: `docs/research/riego_nass.md`). Las columnas anteriores no cambian.
+
+- **Fuente:** la misma encuesta de condado de Quick Stats (`SOURCE_DESC=SURVEY`, `DOMAIN_DESC=TOTAL`,
+  `FREQ_DESC=ANNUAL`, `REFERENCE_PERIOD_DESC=YEAR`), con `PRODN_PRACTICE_DESC` = `IRRIGATED` (riego) y
+  `NON-IRRIGATED` (secano). Mismos `CLASS_DESC` y `UTIL_PRACTICE_DESC` que las columnas totales (maíz: grano
+  para cosechada, producción y rendimiento; sembrada con todos los usos).
+- **Cultivos:** maíz, soja y trigo de invierno. Avena, alfalfa y heno quedan vacíos (avena no tiene dato por
+  práctica en NE ni KS; alfalfa está en toneladas y solo hasta 2009).
+- **Cobertura esperada:** NE y KS, 2000–2018 (trigo de invierno hasta 2019). Desde la cosecha 2019 NASS
+  dejó de publicar estimaciones de condado por práctica (Federal Register 2019-24789). En los otros cinco
+  estados todo queda vacío. En KS la serie es despareja desde 2008 y la soja no tiene dato en 2010–2013 ni
+  2017–2018.
+
+### Supuestos
+
+- **Vacío no es "sin riego":** quiere decir que NASS no lo publicó para ese condado o lo juntó en
+  "OTHER (COMBINED) COUNTIES" (`county_code` 998, que se descarta como en el resto del paquete).
+- **Secano = `NON-IRRIGATED`.** Las subdivisiones del trigo (`NON-IRRIGATED, CONTINUOUS CROP`,
+  `NON-IRRIGATED, FOLLOWING SUMMER FALLOW`, 2000–2008) no se usan.
+- `pct_sembrada_riego` usa como denominador `sup_sembrada_ac` (ALL PRODUCTION PRACTICES) y queda vacío si
+  falta alguno de los dos o el total es 0.
+- `flag_nass` no cambia: los códigos ocultos de las columnas por práctica van en `flag_nass_riego`. En la
+  encuesta de NE y KS el research no encontró ningún `(D)`, así que se espera vacía.
+- Un dato por práctica sin fila de ALL PRODUCTION PRACTICES para el mismo condado, año y cultivo no se
+  agrega (el archivo no suma filas).
+
+### Problemas conocidos
+
+- Comparar `rend_bu_ac` de NE y KS con el de IA, IL o IN mezcla riego y secano; desde 2019 solo queda el
+  Censo (superficie cosechada con riego, sin rendimiento; propuesta 2 de `para_decidir.md`).
+- La muestra de 2008–2018 está sesgada hacia los condados que siguieron publicando por práctica.
+- **Rendimientos de secano muy bajos o 0:** NASS publica `0` en el secano de algunos condados del oeste en
+  sequías (maíz: NE Dawes, Loup, Garfield, Morrill 2002, Dawes y Cherry 2004, Dawes, Blaine y Rock 2007; KS Clark 2000; soja:
+  KS Harper 2002, Gray 2003, Rooks 2002) y maíz de secano entre 7 y 19 bu/ac en 2002 y 2012. Son valores
+  publicados (pérdida casi total), no faltantes: quedan como vienen. Están por debajo del rango de
+  `validar_csv()` para el maíz (20–300), que hoy solo mira `rend_bu_ac`.
+- Control de coherencia: `chequear_coherencia()` lista las filas donde riego + secano se aleja más de 1 %
+  de la superficie sembrada total (el research dio 0 casos).
