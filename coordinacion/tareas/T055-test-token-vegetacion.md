@@ -1,14 +1,14 @@
 ---
 id: T055
 titulo: 'Prueba de la descarga de MODIS: token renovado y código de salida'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-4
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:17
-actualizada: 2026-11-15 04:28
+actualizada: 2026-11-15 04:29
 ---
 
 ## Qué hacer
@@ -31,3 +31,4 @@ Las pruebas en un PR.
 
 ## Notas
 - 2026-11-15 04:28 · pro-4: tomada
+- 2026-11-15 04:29 · pro-4: terminada por el trabajador: PR #48, falta la revisión de max-1
