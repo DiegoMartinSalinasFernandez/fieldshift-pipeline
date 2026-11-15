@@ -1,7 +1,7 @@
 ---
 id: T113
 titulo: 'Research: calendario de siembra y cosecha de Michigan y Kentucky (para cultivos_estado.csv)'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-4
 estados:
@@ -10,7 +10,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T08:11
-actualizada: 2026-11-15 08:13
+actualizada: 2026-11-15 08:18
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ El research en un PR.
 
 ## Notas
 - 2026-11-15 08:13 · pro-4: tomada
+- 2026-11-15 08:18 · pro-4: terminada por el trabajador: PR #105, falta la revisión de max-1
