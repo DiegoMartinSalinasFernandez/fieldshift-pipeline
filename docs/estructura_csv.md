@@ -8,10 +8,23 @@ Cómo llegan los datos al equipo de machine learning. Sale de las reglas que ver
 - **Dos tablas para entrenar**, en `data/processed/`:
   - `tabla_anual.csv`: una fila por **condado × año × cultivo** (las filas de `produccion_anual.csv`). Es la tabla principal: target, clima del año, rotación, fenología, suelo y terreno, precios y costos, aptitud (GAEZ), paisaje (NLCD) y cobertura del suelo a 30 m. 106 columnas además de las claves.
   - `tabla_mensual.csv`: una fila por **condado × mes**, con clima, vegetación, agua, validación (PRISM, CoCoRaHS), ECOSTRESS, NLDAS y napa y caudales (USGS). 65 columnas además de las claves.
-- **Zona:** Iowa (IA, FIPS 19, 99 condados), Illinois (IL, FIPS 17, 102 condados), Indiana (IN, FIPS 18, 92 condados). Total: 293 condados. Está pendiente de confirmación.
+- **Zona:** todos los condados de 7 estados del Corn Belt, 666 en total (tabla de abajo). En `config/config.yaml` la zona sigue con `confirmada: false`.
+
+  | Estado | Código | FIPS | Condados | Tanda | Release de datos |
+  |---|---|---|---|---|---|
+  | Iowa | IA | 19 | 99 | primera | `datos-ia-il-in` |
+  | Illinois | IL | 17 | 102 | primera | `datos-ia-il-in` |
+  | Indiana | IN | 18 | 92 | primera | `datos-ia-il-in` |
+  | Ohio | OH | 39 | 88 | segunda (aprobada el 2026-11-14) | `datos-oh-ne-mn` |
+  | Nebraska | NE | 31 | 93 | segunda | `datos-oh-ne-mn` |
+  | Minnesota | MN | 27 | 87 | segunda | `datos-oh-ne-mn` |
+  | Kansas | KS | 20 | 105 | segunda | `datos-ks` |
+  | **Total** | | | **666** | | |
+
+  De dónde salen los condados: del campo `condados` de `config/config.yaml`. Coinciden con los conteos por condado de `docs/research/regiones_ers.md` (tabla `reglink.xls` del ERS) y de `docs/research/nass_2024_2025.md`. `data/reference/condados.csv` no está en esta máquina, así que no se volvieron a contar ahí. Los releases son los grupos de `coordinacion/maquinas.yaml` (max-1: OH, NE y MN; max-2: KS); el de IA, IL e IN es el que usa de ejemplo `scripts/unir_estados.py`.
 - **Período:** 2000 a 2025. Rotaciones desde 2008 (el CDL cubre todo el país desde ese año).
 - **Cultivos:** `maiz`, `soja`, `trigo_invierno`, `avena`, `alfalfa`, `heno`.
-- **Tamaño máximo:** 293 × 26 × 6 = 45.708 filas en la anual (NASS no publica todos los condados ni todos los cultivos, así que habrá menos) y 293 × 26 × 12 = 91.416 filas en la mensual.
+- **Tamaño máximo:** 666 × 26 × 6 = 103.896 filas en la anual (NASS no publica todos los condados ni todos los cultivos, así que habrá menos) y 666 × 26 × 12 = 207.792 filas en la mensual. Por estado: condados del estado × 26 × 6 (anual) y × 26 × 12 (mensual); por ejemplo, Kansas: 16.380 y 32.760.
 
 ## De dónde sale cada tabla
 
@@ -39,6 +52,17 @@ Cómo llegan los datos al equipo de machine learning. Sale de las reglas que ver
 - `tabla_anual.csv` junta todos los archivos anuales y estáticos. Los que son por estado (`fenologia_estado`, `economia_*`) se unen por los dos primeros dígitos de `fips`.
 - `tabla_mensual.csv` junta todos los `*_mensual.csv`.
 - `rotacion_secuencia.csv` (ventanas de 8 años) y `practicas_censo.csv` (solo años de censo) quedan aparte porque tienen otra granularidad.
+
+## Cómo se publican y se unen los 7 estados
+
+Los datos no van en git. Cada máquina Max baja y procesa solo sus estados (`FIELDSHIFT_ESTADOS`) y los publica en un Release de GitHub. Después se apilan los releases y se arman las tablas.
+
+1. **Publicar, por grupo de estados** (`scripts/entregar.py`, en la máquina que procesó): arma un zip por paquete y lo sube al release `datos-<estados>`, con los códigos en minúscula y unidos por guiones en el orden de `FIELDSHIFT_ESTADOS` (`datos-ia-il-in`, `datos-oh-ne-mn`, `datos-ks`). Cada zip (`datos-ks_clima.zip`) lleva `data/processed/<paquete>/*.csv`, el data card `docs/datasets/<paquete>.md`, `data/reference/condados.csv` y `anios.csv`, y las filas de `manifest.csv` de ese paquete. Al lado va su `.sha256`. Volver a publicar un paquete reemplaza el zip anterior del mismo release.
+2. **Controlar** (`scripts/verificar_entrega.py`, opcional): revisa cada zip o carpeta unida contra el contrato de la sección 4 del `CLAUDE.md` y da APTO o NO APTO por paquete.
+3. **Unir los estados** (`scripts/unir_estados.py --releases datos-ia-il-in,datos-oh-ne-mn,datos-ks`): baja los zips (o los toma de `--dir`), verifica el `.sha256`, apila por filas los CSV del mismo nombre en `data/unido/<paquete>/` y controla que no haya claves duplicadas y que cada `fips` venga de un solo release. También junta `condados.csv`, `anios.csv` y `manifest.csv`. Los data cards de cada release quedan como `data/unido/<paquete>/<release>.md`, porque la cobertura y los faltantes cambian de un estado a otro.
+4. **Armar las tablas** (`src/merge.py`): genera `tabla_anual.csv` y `tabla_mensual.csv`. Lo hace la máquina coordinadora (max-1, tarea T008). `unir_estados.py` no corre `merge.py`.
+
+Los archivos por estado (`fenologia_estado`, `economia_*`) se apilan igual que los de condado: su clave `fips_estado` no se repite entre releases porque cada estado está en uno solo.
 
 ## `tabla_anual.csv`
 
@@ -87,7 +111,7 @@ X = anual.merge(ancho.reset_index(), on=["fips", "anio"], how="left")
 
 | Fuente | Desde |
 |---|---|
-| NASS Quick Stats por condado | 2000 (los de 2024 y 2025 están por verificar) |
+| NASS Quick Stats por condado | 2000. Hay datos hasta 2025, pero en 2024 el trigo de invierno y la avena solo están en Illinois (`docs/research/nass_2024_2025.md`) |
 | NASA POWER | 1981 (radiación desde 1984) |
 | GPM IMERG | junio de 2000 |
 | MODIS MOD13Q1 / MOD11A2 | 2000 |
@@ -114,11 +138,21 @@ X = anual.merge(ancho.reset_index(), on=["fips", "anio"], how="left")
 - **No se sacó la tendencia del rendimiento.** Lo decide el equipo de ML, para no filtrar información del futuro.
 - Las tendencias de clima (`tend_*`) solo usan años hasta el `anio` de la fila.
 - Partir por año (entrenar con años viejos, validar con los nuevos), no al azar.
-- Cada columna tiene su descripción, fuente, cobertura real y % de faltantes en `docs/datasets/<paquete>.md`. Leer "Supuestos" y "Problemas conocidos" antes de usarla.
+- Cada columna tiene su descripción, fuente, cobertura real y % de faltantes en `docs/datasets/<paquete>.md`. Leer "Supuestos" y "Problemas conocidos" antes de usarla. Con 7 estados hay un data card por release (en `data/unido/<paquete>/<release>.md`): mirar el del estado que se usa.
+- **Los estados de la segunda tanda no son como Iowa.** Ver la sección siguiente.
+
+## Qué cambia con los estados nuevos (OH, NE, MN, KS)
+
+- **Riego (NE y KS).** El rendimiento de `ALL PRODUCTION PRACTICES` mezcla riego y secano. Según el Censo 2022, en Nebraska se riega cerca del 53 % del maíz grano cosechado y el 44 % de la soja; en Kansas, el 25 % del maíz y el 8 % de la soja (`docs/research/censo_agropecuario.md`). `pct_riego` de `practicas_censo.csv` está calculado sobre el cropland, así que subestima cuánto pesa el riego en el rendimiento de maíz (en KS ronda el 8–10 %). NASS publicó rendimientos por condado separados en riego y secano solo hasta la cosecha 2018 (maíz y soja) y 2019 (trigo de invierno) (`docs/research/riego_nass.md`). Agregar esas columnas está propuesto y espera el OK del humano (tarea T004). Mientras tanto, conviene usar el estado o `pct_riego` como variable, o separar NE y KS al evaluar.
+- **Trigo de invierno (KS).** El cultivo `trigo_invierno` tiene datos de condado sobre todo en Kansas: en 2020, 94 de los 105 condados (90 %), contra 337 condados en total en los 7 estados. En Iowa y Minnesota NASS no lo estima por condado en ningún año (`docs/research/nass_2024_2025.md`). En 2024 solo hay datos de Illinois. Se siembra en el otoño del `anio − 1`, así que el clima que importa cae en el invierno previo y en la primavera, no en la temporada de abril a septiembre. Crop Progress tiene el trigo de invierno de OH, NE y KS (`docs/research/crop_progress_estados_nuevos.md`), pero `fenologia_estado.csv` hoy trae solo maíz y soja. En el CDL, el trigo de invierno es aceptable en KS, NE, OH e IN y malo en IA y MN (`docs/research/cdl_precision.md`).
+- **Menos condados publicados.** En 2025 hay rendimiento de maíz en el 49 % de los condados de Nebraska y el 50 % de Kansas, y la fila "OTHER (COMBINED) COUNTIES", que se descarta, llega a tener el 51 % de la superficie de maíz de Kansas (`docs/research/nass_2024_2025.md`). Lo que falta no es al azar.
+- **Rendimientos bajos.** El maíz de secano de KS y NE puede quedar debajo del mínimo de 20 bu/ac de `validar_csv()` (`docs/research/rangos_estados_nuevos.md`).
+- **Costos por región del ERS.** IA, IL e IN están enteros en Heartland y KS entero en Prairie Gateway. OH, NE y MN se reparten entre tres regiones cada uno (`docs/research/regiones_ers.md`).
+- **Columnas no comparables entre releases.** `twi_decil_sup_pct` usa el percentil 90 del TWI de los condados que procesó cada máquina: hasta que se decida cómo recalcularlo (nota de max-1 en T008), no se puede comparar entre grupos de estados.
 
 ## A confirmar
 
-- Estados y condados exactos (hoy: todos los condados de Iowa, Illinois e Indiana).
+- La zona: los 7 estados están en `config/config.yaml`, pero con `confirmada: false`.
 - Los nombres marcados *(nombre propuesto)*: el CLAUDE.md no los fija.
 - Los paquetes `economia`, `aptitud`, `paisaje`, `teledeteccion`, `validacion`, `ecostress`, `nldas` e `hidrologia` usan los recursos del desafío y no están en el CLAUDE.md §6.
 - `anio` en los archivos diarios y mensuales como año calendario (el CLAUDE.md lo fija para los mensuales).
