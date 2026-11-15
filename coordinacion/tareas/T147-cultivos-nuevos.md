@@ -1,9 +1,10 @@
 ---
 id: T147
-titulo: Sumar cultivos nuevos al esquema (maíz para silo, trigo de primavera, cebada, girasol, canola, frijol seco) (código listo, espera OK)
-estado: libre
+titulo: Sumar cultivos nuevos al esquema (maíz para silo, trigo de primavera, cebada, girasol, canola, frijol seco)
+  (código listo, espera OK)
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - ND
 - MN
@@ -12,7 +13,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T10:17
-actualizada: 2026-11-15T10:17
+actualizada: 2026-11-15 10:17
 ---
 
 ## Qué hacer
@@ -39,3 +40,4 @@ dejá en el cuerpo del PR la lista exacta de lo que cambia en esos directorios.
 El cambio, las pruebas sin red y la documentación en un PR con CI en verde, retenido como dice arriba.
 
 ## Notas
+- 2026-11-15 10:17 · pro-1: tomada
