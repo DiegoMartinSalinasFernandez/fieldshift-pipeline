@@ -101,6 +101,95 @@ Paquete `vegetacion` de Field Shift (CLAUDE.md §6.3): MODIS por condado del Cor
   Ojo: el paquete `nldas` (si se arma) entrega `et_nldas_mm` del mismo modelo; en la tabla unida las dos
   columnas serían redundantes (no usar ambas como variables independientes en ML).
 
+## Cobertura de ndvi_maiz y ndvi_soja por estado
+
+Viene del QA de OH, NE y MN (`docs/qa/oh_ne_mn.md`, T073, problema 3). `ndvi_maiz` y `ndvi_soja` tienen
+muchos más faltantes en OH (maíz) y en la soja de los tres estados nuevos que en IA/IL/IN.
+
+**% de faltantes por columna (todo el período 2000–2025, incluye los 8 años sin CDL):**
+
+| archivo | columna | IA/IL/IN | OH | NE | MN |
+|---|---|---|---|---|---|
+| vegetacion_16d.csv | ndvi_maiz | 43,4 | 70,0 | 43,9 | 61,8 |
+| vegetacion_16d.csv | ndvi_soja | 43,7 | 63,2 | 63,2 | 63,2 |
+| vegetacion_mensual.csv | ndvi_maiz | 40,7 | 68,2 | 42,7 | 59,7 |
+| vegetacion_mensual.csv | ndvi_soja | 41,0 | 61,6 | 62,1 | 61,0 |
+| fenologia_anual.csv | ndvi_max_maiz | 38,5 | 66,4 | 40,2 | 51,6 |
+| fenologia_anual.csv | ndvi_max_soja | 38,6 | 59,7 | 60,1 | 52,5 |
+
+**% de condado-fechas con dato, 2008–2025 (rango entre años, `vegetacion_16d.csv`):**
+
+| estado | ndvi_maiz | ndvi_soja |
+|---|---|---|
+| OH | 30–49 | 41–66 |
+| NE | 73–88 | 41–66 |
+| MN | 47–69 | 41–66 |
+
+El QA dio la soja como un solo rango para los tres estados. **La tabla año por año (estado × año
+2008–2025) todavía no está:** la máquina que hizo esta tarea (pro-2, NE y KS) no tiene
+`vegetacion_16d.csv` de OH, NE ni MN, y no pudo bajarlo del release. La calcula
+`scripts/cobertura_ndvi_cultivo.py` en cualquier máquina que tenga el CSV:
+
+```
+.venv/bin/python -X utf8 scripts/cobertura_ndvi_cultivo.py
+```
+
+**Referencia para comparar: IA, IL e IN, año por año.** % de condado-fechas de `vegetacion_16d.csv` con
+dato, 2008–2025, misma cuenta que hace el script. Sale de la entrega v1.3 (IA 99, IL 102 e IN 92 condados).
+Con esta tabla se ve la distancia con los rangos de OH, NE y MN de arriba: IA e IL quedan entre 73 y 95 % en
+maíz y entre 66 y 94 % en soja; IN, con lotes más chicos, ya baja a 65–82 % y 58–86 %.
+
+| año | maíz IA | maíz IL | maíz IN | soja IA | soja IL | soja IN |
+|---|---|---|---|---|---|---|
+| 2008 | 73 | 83 | 71 | 66 | 79 | 72 |
+| 2009 | 81 | 78 | 69 | 73 | 82 | 69 |
+| 2010 | 75 | 78 | 65 | 71 | 79 | 58 |
+| 2011 | 90 | 87 | 75 | 84 | 82 | 72 |
+| 2012 | 90 | 88 | 80 | 84 | 87 | 74 |
+| 2013 | 91 | 84 | 76 | 85 | 83 | 70 |
+| 2014 | 86 | 81 | 68 | 81 | 82 | 65 |
+| 2015 | 89 | 84 | 72 | 80 | 84 | 75 |
+| 2016 | 83 | 86 | 81 | 82 | 92 | 78 |
+| 2017 | 95 | 89 | 74 | 90 | 94 | 83 |
+| 2018 | 90 | 86 | 75 | 88 | 94 | 78 |
+| 2019 | 86 | 82 | 69 | 80 | 89 | 78 |
+| 2020 | 87 | 86 | 82 | 87 | 92 | 80 |
+| 2021 | 86 | 86 | 75 | 80 | 90 | 83 |
+| 2022 | 85 | 84 | 76 | 86 | 89 | 76 |
+| 2023 | 91 | 87 | 82 | 85 | 89 | 86 |
+| 2024 | 93 | 87 | 80 | 92 | 92 | 81 |
+| 2025 | 92 | 85 | 74 | 85 | 88 | 80 |
+
+**Por qué pasa.** Un píxel MODIS cuenta para `ndvi_maiz` o `ndvi_soja` si al menos el 75 % de su área es de
+ese cultivo según el CDL del año (ver Supuestos). Como MOD13Q1 se lee del overview de ~927 m y no del
+original de 250 m, cada píxel abarca unas 86 ha: para que cuente hacen falta unas 64 ha seguidas del mismo
+cultivo dentro del píxel. Pasa lo siguiente:
+
+- **OH:** lotes más chicos y más mezclados con monte, pasturas y zonas urbanas. Pocos píxeles llegan al 75 %
+  de maíz (no se midió en qué zonas del estado se pierden más).
+- **Soja en el oeste (NE, MN y también OH):** la soja ocupa menos superficie que el maíz en NE y el oeste de
+  MN, y comparte el paisaje con maíz, trigo y pasturas. Hay menos píxeles puros de soja que de maíz.
+- **2000–2007:** siempre vacíos (no hay CDL nacional). Son 8 de los 26 años, cerca del 31 % de las filas.
+
+No es un error: es el efecto del umbral documentado. Pero el modelo va a tener mucho menos `ndvi_maiz`
+en OH que en IA. Si se usa el NDVI por cultivo como variable, conviene filtrar o ponderar por estado.
+
+**Propuesta, sin aplicar: umbral del 50 %.** No se pudo medir cuántos condado-fechas se ganarían:
+esta máquina no tiene las máscaras del CDL de OH, NE ni MN (`data/reference/mascara_<cultivo>_<anio>.tif`)
+ni los compuestos de MOD13Q1 de esos estados. Para medirlo, en la máquina que tenga esos datos:
+
+```
+.venv/bin/python -X utf8 scripts/cobertura_ndvi_cultivo.py --umbral 0.5 [--anios 2012,2020]
+```
+
+El script usa la misma grilla, el mismo filtro de calidad y la misma fracción del CDL que
+`src/vegetacion/process.py`. Cuenta, por estado y año, los condado-fechas con al menos un píxel válido
+con fracción ≥ 0,75 y ≥ 0,50, y la diferencia (`*_ganados`). La columna `*_075` tiene que dar lo mismo que
+el CSV procesado; si da distinto, el script tiene un error. Si se aprueba, lo prudente es entregar el NDVI
+al 50 % **en columnas aparte** (por ejemplo `ndvi_maiz_p50`, `ndvi_soja_p50`), sin reemplazar las
+actuales: con 50 % la señal mezcla más de otros cultivos. Agregar columnas cambia el esquema: lo decide
+el humano.
+
 ## Problemas conocidos
 
 - NDVI de maíz/soja vacío en condados sin píxeles de ~927 m con >= 75 % del cultivo (zonas de
