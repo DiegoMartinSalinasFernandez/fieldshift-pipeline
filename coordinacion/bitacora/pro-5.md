@@ -39,3 +39,4 @@
 - 08:58 T121: tomada por el trabajador
 - 09:03 T121: terminada, PR #112
 - 09:03 T122: tomada por el trabajador
+- 09:05 T122: terminada, PR #113
