@@ -82,3 +82,4 @@
 - 06:51 T093: tomada por el trabajador
 - 06:53 T093: terminada, PR #87
 - 07:09 T101: tomada por el trabajador
+- 07:10 T101: terminada, PR #91
