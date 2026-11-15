@@ -1,14 +1,14 @@
 ---
 id: T088
 titulo: Data coverage page in English for the Space Apps submission
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T06:33
-actualizada: 2026-11-15T06:33
+actualizada: 2026-11-15 06:43
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ Los zips de los releases son públicos: bajalos con `curl -L` desde `https://git
 La página y el script en un PR.
 
 ## Notas
+- 2026-11-15 06:43 · pro-3: tomada
