@@ -211,6 +211,32 @@ class TestVerificarEntrega(unittest.TestCase):
         self.assertNoApto(self.clima(sha="malo"), "sha256")
         self.assertTrue(self.uno(self.clima(sha="no")).apto)  # sin .sha256 al lado no se controla
 
+    def escribir_sha(self, z: Path, fin: bytes, h: str | None = None) -> None:
+        """Escribe el .sha256 en bytes (write_text en Windows pasaría LF a CRLF)."""
+        h = h or hashlib.sha256(z.read_bytes()).hexdigest()
+        z.with_suffix(".zip.sha256").write_bytes(f"{h}  {z.name}".encode("utf-8") + fin)
+
+    def test_sha256_con_lf_y_con_crlf(self):
+        # El release datos-oh-ne-mn tiene .sha256 con CRLF (hechos en Windows); los nuevos salen con LF.
+        for nombre, fin in (("LF", b"\n"), ("CRLF", b"\r\n")):
+            with self.subTest(fin=nombre):
+                z = self.clima()
+                self.escribir_sha(z, fin)
+                self.assertEqual(z.with_suffix(".zip.sha256").read_bytes().endswith(b"\r\n"), nombre == "CRLF")
+                inf = self.uno(z)
+                self.assertTrue(inf.apto, inf.markdown())
+                self.assertNotIn("sha256", "\n".join(inf.problemas))
+
+    def test_sha256_malo_con_crlf_igual_se_detecta(self):
+        z = self.clima()
+        self.escribir_sha(z, b"\r\n", h="0" * 64)
+        self.assertNoApto(z, "sha256")
+
+    def test_sha256_en_mayusculas_con_crlf(self):
+        z = self.clima()
+        self.escribir_sha(z, b"\r\n", h=hashlib.sha256(z.read_bytes()).hexdigest().upper())
+        self.assertTrue(self.uno(z).apto)
+
     # --- línea de comandos ---
 
     def test_main_codigo_de_salida_e_informes(self):
