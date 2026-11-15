@@ -46,18 +46,39 @@ validate NASA rain and temperature against ground data).
 
 ## How to run
 
-Python 3.11. Earthdata credentials go in `~/.netrc`; other keys (e.g. the optional `NASS_API_KEY`) in `.env`,
-which is git-ignored.
+**Requirements:** Git and Python 3.11 (3.12 also works for the tests and package 0). No system GDAL is needed:
+`rasterio`, `pyogrio` and `pyproj` install as wheels that bundle it. On Ubuntu/Debian the command is `python3`
+(there is no `python`) and `venv` may need `sudo apt install python3-venv`; with [uv](https://docs.astral.sh/uv/)
+you can get 3.11 without touching the system Python. The install takes about 1 GB on disk and takes a
+couple of minutes.
+
+**Quick check (no credentials, ~12 MB download):** tests and package 0 for one state.
 
 ```bash
-python -m venv .venv && .venv/bin/pip install -r requirements.txt
-export FIELDSHIFT_ESTADOS=KS           # states this machine processes (filters config/config.yaml)
-python src/base/download.py && python src/base/process.py     # counties, years (blocks everything else)
-python src/<package>/download.py      # clima, cultivos, agua, vegetacion, suelo_terreno, nldas, ...
-python src/<package>/process.py       # -> data/processed/<package>/*.csv
-python src/merge.py                   # -> tabla_anual.csv, tabla_mensual.csv
-python scripts/entregar.py <package>  # publish to the release of these states
-pytest tests/
+git clone https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline.git && cd fieldshift-pipeline
+python3.11 -m venv .venv               # or: uv venv --python 3.11
+.venv/bin/pip install -r requirements.txt   # or: uv pip install -r requirements.txt
+.venv/bin/python -m pytest tests/      # ~10 s, no network
+export FIELDSHIFT_ESTADOS=IN           # one state; without it, every state in config/config.yaml
+.venv/bin/python -X utf8 src/base/download.py   # US Census counties -> data/raw/base/
+.venv/bin/python -X utf8 src/base/process.py    # -> data/reference/condados.csv (92 rows), anios.csv
+```
+
+On Windows use `.venv\Scripts\python` instead of `.venv/bin/python`, `set FIELDSHIFT_ESTADOS=IN` (cmd) or
+`$env:FIELDSHIFT_ESTADOS="IN"` (PowerShell), and keep `-X utf8`: without it the Spanish console messages break.
+Run everything from the repository root. `FIELDSHIFT_ESTADOS` only accepts states listed in
+`config/config.yaml` (two-letter codes, comma-separated).
+
+**Full pipeline.** Credentials are needed only from here on: a free
+[NASA Earthdata](https://urs.earthdata.nasa.gov) login in `~/.netrc` (`_netrc` on Windows) for the packages
+that read from Earthdata (`nldas`, `ecostress`, `lotes`; `clima` and `agua` do not need it); other keys (e.g. the optional `NASS_API_KEY`) in `.env`, which is git-ignored.
+Some packages download several GB per state and take hours; the processed results are already in the Releases.
+
+```bash
+.venv/bin/python -X utf8 src/<package>/download.py   # clima, cultivos, agua, vegetacion, suelo_terreno, nldas, ...
+.venv/bin/python -X utf8 src/<package>/process.py    # -> data/processed/<package>/*.csv
+.venv/bin/python -X utf8 src/merge.py                # -> tabla_anual.csv, tabla_mensual.csv
+.venv/bin/python -X utf8 scripts/entregar.py <package>  # team only: publishes to a Release (needs `gh` with write access)
 ```
 
 Downloads are idempotent (files already in `data/raw/` are not downloaded again) and `data/raw/` is never
