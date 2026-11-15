@@ -55,3 +55,4 @@
 - 08:03 T112: tomada por el trabajador
 - 08:05 T112: no pude publicar (push falló: To https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline.git
  ! [remote rejected] tarea/T112-au)
+- 08:20 T115: tomada por el trabajador
