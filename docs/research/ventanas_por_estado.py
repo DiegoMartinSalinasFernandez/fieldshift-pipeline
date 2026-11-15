@@ -61,6 +61,9 @@ for f in sorted(os.listdir(REP)):
             yrs=None; seen=False
             for j in range(i+1,min(i+60,len(lines))):
                 L=lines[j]
+                # T116: se corta en el título de la tabla siguiente, para no tomar la fila de otra tabla
+                # cuando ningún estado figura en esta (antes solo se cortaba en el total, después de un estado)
+                if '- Selected States' in L or re.match(r'\s*[A-Z][A-Za-z ]+:\s+Percent [A-Z]',L): break
                 ys=re.findall(r'\b(20\d\d)\b',L)
                 if yrs is None and len(ys)>=3 and 'average' not in L.lower() or (yrs is None and len(ys)>=4):
                     yrs=[int(y) for y in ys]
