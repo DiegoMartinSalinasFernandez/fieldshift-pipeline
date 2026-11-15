@@ -46,7 +46,8 @@ tab): **[TBD]**. Local event: **[TBD]**.
 > observations, which are the core of the tool: weather and rainfall (NASA POWER, GPM IMERG), soil moisture (SMAP,
 > NLDAS-2, GRACE-DA-DM), vegetation and land surface temperature (MODIS) and terrain (NASADEM). The first
 > published release covers 268 counties in Ohio, Nebraska and Minnesota; Iowa, Illinois, Indiana and Kansas
-> complete the planned 7-state study area. The pipeline combines them, county by county, with the crops actually grown on every 30 m pixel
+> complete the planned 7-state study area. The pipeline combines the NASA data, county by county, with the crops
+> actually grown on every 30 m pixel
 > (USDA Cropland Data Layer), county yields, soil surveys (SSURGO) and economics. On top of these tables, the
 > tool compares at least three rotations, starting with the farmer's current one. For each rotation it shows
 > the evidence, the expected benefits, the risks, the uncertainty and the data gaps. It goes down to individual
