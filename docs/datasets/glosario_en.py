@@ -548,6 +548,10 @@ DESCRIPCIONES = {
         "SMAP root-zone soil moisture, April-September mean, 9 km cell containing the centroid",
     "1 si la celda AgTile-US que contiene el centro del píxel está drenada con caños":
         "1 if the AgTile-US cell containing the pixel center is tile-drained",
+    "probabilidad de drenaje con caños de la celda SEETileDrain (2017, ~30 m, EPSG:4326) que contiene el centro del píxel":
+        "tile drainage probability of the SEETileDrain cell (2017, ~30 m, EPSG:4326) containing the pixel center",
+    "clase publicada de SEETileDrain (1 = drenado con caños) de la celda que contiene el centro del píxel":
+        "published SEETileDrain class (1 = tile-drained) of the cell containing the pixel center",
     # nldas
     "Humedad volumétrica 0-10 cm: SoilM_0_10cm (kg m-2) / 100 mm, media ponderada del condado":
         "Volumetric soil moisture 0-10 cm: SoilM_0_10cm (kg m-2) / 100 mm, weighted county mean",
