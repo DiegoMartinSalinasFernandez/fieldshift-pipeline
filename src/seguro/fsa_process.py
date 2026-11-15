@@ -22,8 +22,8 @@ Reglas (docs/research/siembra_prevenida.md):
   pastorea y se cosecha (nota de la página de FSA); se saca en todos los años para que la serie sea
   pareja.
 - pct_prevenida = 100 × prevenida / (sembrada + prevenida); vacío si el denominador es 0.
-- Riego y secano por separado solo para la prevenida y solo si el archivo trae `Irrigation
-  Practice` (desde 2012); antes, vacío. Las filas con la práctica en blanco cuentan en el total y en
+- Riego y secano por separado solo para la prevenida: desde 2012 con `Irrigation Practice`, en
+  2011 con las columnas `Prevented Irrigated` / `Nonirrigated`; en 2009–2010 no hay, vacío. Las filas con la práctica en blanco cuentan en el total y en
   ninguna de las dos.
 - Un 0 es un 0 real (el condado declaró el cultivo y no tuvo siembra prevenida).
 
@@ -63,7 +63,13 @@ ENCABEZADOS = {
     "crop type name": "tipo_nombre", "crop type": "tipo",
     "intended use": "uso", "irrigation practice": "riego",
     "planted acres": "sembrada", "prevented acres": "prevenida", "failed acres": "fallida",
+    "failded acres": "fallida",  # así, con la errata, en 2012
+    # 2011: formato ancho, total y por práctica
+    "planted total": "sembrada", "prevented total": "prevenida", "failed total": "fallida",
+    "prevented irrigated": "prev_riego", "prevented nonirrigated": "prev_secano",
 }
+# 2010: la primera columna se llama `State` (el código); en los otros años `State` es el nombre.
+ENCABEZADO_ESTADO_2010 = "state"
 OBLIGATORIAS = ["st", "cty", "cod_cultivo", "sembrada", "prevenida", "fallida"]
 USO_PASTOREO = {"GRAZING", "GZ"}
 
@@ -102,12 +108,15 @@ def leer_xlsx(contenido: bytes, estados_fips: set[str]) -> pd.DataFrame:
     filas = []
     for r in ws.iter_rows(values_only=True):
         if idx is None:
-            if r and isinstance(r[0], str) and r[0].strip().lower() == "state code":
+            cab = [" ".join(str(h or "").split()).lower() for h in r] if r else []
+            if cab and cab[0] in ("state code", ENCABEZADO_ESTADO_2010) and "county code" in cab:
                 idx = {}
-                for i, h in enumerate(r):
-                    k = ENCABEZADOS.get(str(h or "").strip().lower())
+                for i, h in enumerate(cab):
+                    k = ENCABEZADOS.get(h)
                     if k and k not in idx:
                         idx[k] = i
+                if "st" not in idx:
+                    idx["st"] = 0
                 faltan = [c for c in OBLIGATORIAS if c not in idx]
                 if faltan:
                     raise ValueError(f"hoja {hoja}: faltan columnas {faltan}")
@@ -118,24 +127,33 @@ def leer_xlsx(contenido: bytes, estados_fips: set[str]) -> pd.DataFrame:
         if st not in estados_fips:
             continue
         tipo_i = idx.get("tipo_nombre", idx.get("tipo"))
+        prev = r[idx["prevenida"]]
+        if "prev_riego" in idx:  # 2011, formato ancho
+            pr, ps = r[idx["prev_riego"]], r[idx.get("prev_secano")] if "prev_secano" in idx else None
+        elif "riego" in idx:
+            practica = _texto(r[idx["riego"]], 0).upper()
+            pr = prev if practica == "I" else 0
+            ps = prev if practica == "N" else 0
+        else:
+            pr = ps = None
         filas.append({
             "st": st,
             "cty": _texto(r[idx["cty"]], 3),
             "cod_cultivo": _texto(r[idx["cod_cultivo"]], 4),
             "tipo": _texto(r[tipo_i], 0) if tipo_i is not None else "",
             "uso": _texto(r[idx["uso"]], 0) if "uso" in idx else "",
-            "riego": _texto(r[idx["riego"]], 0).upper() if "riego" in idx else None,
-            "sembrada": r[idx["sembrada"]], "prevenida": r[idx["prevenida"]],
-            "fallida": r[idx["fallida"]],
+            "sembrada": r[idx["sembrada"]], "prevenida": prev, "fallida": r[idx["fallida"]],
+            "prev_riego": pr, "prev_secano": ps,
         })
     wb.close()
     if idx is None:
         raise ValueError(f"hoja {hoja}: no encontré la fila de encabezado (`State Code`)")
-    df = pd.DataFrame(filas, columns=["st", "cty", "cod_cultivo", "tipo", "uso", "riego",
-                                      "sembrada", "prevenida", "fallida"])
-    for c in ("sembrada", "prevenida", "fallida"):
+    df = pd.DataFrame(filas, columns=["st", "cty", "cod_cultivo", "tipo", "uso", "sembrada",
+                                      "prevenida", "fallida", "prev_riego", "prev_secano"])
+    con_riego = "riego" in idx or "prev_riego" in idx
+    for c in ("sembrada", "prevenida", "fallida") + (("prev_riego", "prev_secano") if con_riego else ()):
         df[c] = pd.to_numeric(df[c], errors="coerce").fillna(0.0)
-    df.attrs["con_riego"] = "riego" in idx
+    df.attrs["con_riego"] = con_riego
     return df
 
 
@@ -171,8 +189,8 @@ def agregar(df: pd.DataFrame, anio: int, admin: dict[str, str], validos: set[str
     sin_fips = sin_fips.groupby(["codigo", "cultivo"], as_index=False)[sumas].sum().assign(anio=anio)
     d = d[d["fips"].isin(validos)]
     con_riego = df.attrs.get("con_riego", False)
-    d["prev_riego"] = np.where(d["riego"] == "I", d["prevenida"], 0.0)
-    d["prev_secano"] = np.where(d["riego"] == "N", d["prevenida"], 0.0)
+    if not con_riego:
+        d["prev_riego"] = d["prev_secano"] = 0.0
     g = d.groupby(["fips", "cultivo"], as_index=False)[sumas + ["prev_riego", "prev_secano"]].sum()
     out = pd.DataFrame({
         "fips": g["fips"], "anio": anio, "cultivo": g["cultivo"],
@@ -231,7 +249,7 @@ def escribir_card(out: pd.DataFrame, conv: pd.DataFrame, sin: pd.DataFrame, info
         "| `sup_prevenida_ac` | superficie con siembra prevenida | acres | FSA `Prevented Acres` |",
         "| `sup_fallida_ac` | superficie sembrada y perdida | acres | FSA `Failed Acres` |",
         "| `sup_prevenida_riego_ac`, `sup_prevenida_secano_ac` | prevenida con `Irrigation Practice` I / N "
-        "(vacío antes de 2012) | acres | FSA |",
+        "(2011: columnas Irrigated / Nonirrigated; vacío en 2009–2010) | acres | FSA |",
         "| `pct_prevenida` | 100 × prevenida / (sembrada + prevenida); vacío si el denominador es 0 | % | "
         "cálculo |",
         "",
@@ -280,8 +298,10 @@ def escribir_card(out: pd.DataFrame, conv: pd.DataFrame, sin: pd.DataFrame, info
         "- La siembra prevenida depende también de reglas del seguro (fecha final de siembra, regla 1 de 4) "
         "y de los precios, no solo del clima. En KS una parte es por sequía (para separarla: RMA, etapas "
         "P2/PF/PT y causa).",
-        "- Los nombres de columna de 2010–2013 no los verificó el research; el lector los busca por nombre "
-        "y falla con un mensaje claro si falta alguno.",
+        "- El encabezado cambia entre años: 2010 llama `State` al código de estado, 2011 viene en formato "
+        "ancho (`Planted Total`, `Prevented Irrigated`...), 2012 dice `Failded Acres`. El lector busca las "
+        "columnas por nombre y falla con un mensaje claro si falta alguna.",
+        "- En 2012 hay un uso `Grain/Graze` (un solo acre con los dos usos): se cuenta una vez.",
         "",
     ]
     CARD.write_text("\n".join(partes), encoding="utf-8")

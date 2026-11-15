@@ -147,3 +147,29 @@ def test_enlace_zip():
     assert d.enlace_zip('<a href="/sites/default/files/a.zip">') == "https://www.fsa.usda.gov/sites/default/files/a.zip"
     assert d.enlace_zip("<html></html>") is None
     assert set(d.FINALES) == set(range(2009, 2026))
+
+
+def test_2010_columna_state():
+    enc = ["State", "County Code", "State Abbrev", "County Name", "Crop Code", "Crop Name",
+           "Crop Type Name", "Crop Type", "Intended Use", "Planted Acres", "Prevented Acres", "Failed Acres"]
+    filas = [["20", "001", "KS", "ALLEN", "0081", "SOYBEANS", "COMMON", "COM", "GR", 90, 10, 1]]
+    out, _, _ = p.agregar(p.leer_xlsx(xlsx(enc, filas, hoja="Sheet1"), ESTADOS), 2010, ADMIN, VALIDOS)
+    assert out.iloc[0]["sup_prevenida_ac"] == 10 and out.iloc[0]["pct_prevenida"] == pytest.approx(10)
+
+
+def test_2011_formato_ancho():
+    enc = ["State Code", "County Code", "State Name", "County Name", "Crop Code", "Crop Name", "Crop Type",
+           "Crop Type Name", "Intended Use", "Planted\nTotal", "Prevented\nTotal", "Failed\nTotal",
+           "Planted\nIrrigated", "Prevented\nIrrigated", "Planted\nNonirrigated", "Prevented\nNonirrigated"]
+    filas = [["20", "001", "KANSAS", "ALLEN", "0041", "CORN", "YEL", "YELLOW", "GR", 100, 30, 2, 40, 10, 60, 20]]
+    df = p.leer_xlsx(xlsx(enc, filas, hoja="Sheet1"), ESTADOS)
+    assert df.attrs["con_riego"]
+    r = p.agregar(df, 2011, ADMIN, VALIDOS)[0].iloc[0]
+    assert (r["sup_sembrada_fsa_ac"], r["sup_prevenida_ac"], r["sup_fallida_ac"]) == (100, 30, 2)
+    assert (r["sup_prevenida_riego_ac"], r["sup_prevenida_secano_ac"]) == (10, 20)
+
+
+def test_2012_errata_failded():
+    enc = [("Failded Acres" if c == "Failed Acres" else c) for c in ENC_2012]
+    df = p.leer_xlsx(xlsx(enc, FILAS_2012), ESTADOS)
+    assert df["fallida"].sum() == 10
