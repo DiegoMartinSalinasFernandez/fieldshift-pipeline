@@ -1,14 +1,14 @@
 ---
 id: T089
 titulo: Poner números y figuras reales en las láminas y la página del proyecto
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T06:33
-actualizada: 2026-11-15 06:46
+actualizada: 2026-11-15 06:51
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ Las láminas y la página corregidas en un PR, con la lista de números cambiado
 
 ## Notas
 - 2026-11-15 06:46 · pro-2: tomada
+- 2026-11-15 06:51 · pro-2: terminada por el trabajador: PR #85, falta la revisión de max-1
