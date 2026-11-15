@@ -1,14 +1,14 @@
 ---
 id: T128
 titulo: 'Ventanas de floración y llenado por estado y año en `clima_anual.csv`: código listo, espera OK'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:11
-actualizada: 2026-11-15 09:23
+actualizada: 2026-11-15 09:29
 ---
 
 ## Qué hacer
@@ -40,3 +40,4 @@ El código, las pruebas y el data card en un PR con CI en verde, retenido como d
 
 ## Notas
 - 2026-11-15 09:23 · pro-5: tomada
+- 2026-11-15 09:29 · pro-5: terminada por el trabajador: PR #117, falta la revisión de max-1
