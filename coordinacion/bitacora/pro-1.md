@@ -40,3 +40,4 @@
 - 06:04 T073: tomada por el trabajador
 - 06:20 T073: terminada, PR #72
 - 06:20 trabajador actualizado desde main
+- 06:20 T082: tomada por el trabajador
