@@ -134,6 +134,32 @@ El QA dio la soja como un solo rango para los tres estados. **La tabla año por 
 .venv/bin/python -X utf8 scripts/cobertura_ndvi_cultivo.py
 ```
 
+**Referencia para comparar: IA, IL e IN, año por año.** % de condado-fechas de `vegetacion_16d.csv` con
+dato, 2008–2025, misma cuenta que hace el script. Sale de la entrega v1.3 (IA 99, IL 102 e IN 92 condados).
+Con esta tabla se ve la distancia con los rangos de OH, NE y MN de arriba: IA e IL quedan entre 73 y 95 % en
+maíz y entre 66 y 94 % en soja; IN, con lotes más chicos, ya baja a 65–82 % y 58–86 %.
+
+| año | maíz IA | maíz IL | maíz IN | soja IA | soja IL | soja IN |
+|---|---|---|---|---|---|---|
+| 2008 | 73 | 83 | 71 | 66 | 79 | 72 |
+| 2009 | 81 | 78 | 69 | 73 | 82 | 69 |
+| 2010 | 75 | 78 | 65 | 71 | 79 | 58 |
+| 2011 | 90 | 87 | 75 | 84 | 82 | 72 |
+| 2012 | 90 | 88 | 80 | 84 | 87 | 74 |
+| 2013 | 91 | 84 | 76 | 85 | 83 | 70 |
+| 2014 | 86 | 81 | 68 | 81 | 82 | 65 |
+| 2015 | 89 | 84 | 72 | 80 | 84 | 75 |
+| 2016 | 83 | 86 | 81 | 82 | 92 | 78 |
+| 2017 | 95 | 89 | 74 | 90 | 94 | 83 |
+| 2018 | 90 | 86 | 75 | 88 | 94 | 78 |
+| 2019 | 86 | 82 | 69 | 80 | 89 | 78 |
+| 2020 | 87 | 86 | 82 | 87 | 92 | 80 |
+| 2021 | 86 | 86 | 75 | 80 | 90 | 83 |
+| 2022 | 85 | 84 | 76 | 86 | 89 | 76 |
+| 2023 | 91 | 87 | 82 | 85 | 89 | 86 |
+| 2024 | 93 | 87 | 80 | 92 | 92 | 81 |
+| 2025 | 92 | 85 | 74 | 85 | 88 | 80 |
+
 **Por qué pasa.** Un píxel MODIS cuenta para `ndvi_maiz` o `ndvi_soja` si al menos el 75 % de su área es de
 ese cultivo según el CDL del año (ver Supuestos). Como MOD13Q1 se lee del overview de ~927 m y no del
 original de 250 m, cada píxel abarca unas 86 ha: para que cuente hacen falta unas 64 ha seguidas del mismo
