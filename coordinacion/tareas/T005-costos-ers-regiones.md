@@ -1,9 +1,9 @@
 ---
 id: T005
 titulo: Costos de ERS por región para los estados nuevos
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - OH
 - NE
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-14 23:59
-actualizada: 2026-11-14 23:59
+actualizada: 2026-11-15 00:37
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ tabla condado → región), escribir `docs/research/regiones_ers.md` y proponer 
 Research con la región de cada estado (o condado) y la fuente oficial; cambio en `economia` en una rama con PR.
 
 ## Notas
+- 2026-11-15 00:37 · pro-2: tomada
