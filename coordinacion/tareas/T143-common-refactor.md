@@ -1,14 +1,14 @@
 ---
 id: T143
 titulo: Mover `zona_texto.py` y `asegurar_manifest()` a `src/common/` (código listo, espera OK)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T10:17
-actualizada: 2026-11-15 10:29
+actualizada: 2026-11-15 10:32
 ---
 
 ## Qué hacer
@@ -30,3 +30,4 @@ El cambio, las pruebas sin red y la documentación en un PR con CI en verde, ret
 
 ## Notas
 - 2026-11-15 10:29 · pro-2: tomada
+- 2026-11-15 10:32 · pro-2: terminada por el trabajador: PR #140, falta la revisión de max-1
