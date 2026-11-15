@@ -1,7 +1,7 @@
 ---
 id: T031
 titulo: 'Research: eventos extremos 2000–2025 en los 7 estados (para control de calidad)'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-3
 estados:
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 03:00
-actualizada: 2026-11-15 02:53
+actualizada: 2026-11-15 02:58
 ---
 
 ## Qué hacer
@@ -39,3 +39,4 @@ El research en un PR.
 
 ## Notas
 - 2026-11-15 02:53 · pro-3: tomada
+- 2026-11-15 02:58 · pro-3: terminada por el trabajador: PR #24, falta la revisión de max-1
