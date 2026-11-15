@@ -330,6 +330,8 @@ DESCR = {
     ("lotes_anual.csv", "lote_partido"): ("1 si pct_px_cultivo_principal < 90", "", "USDA NASS CDL"),
     ("lotes_anual.csv", "cultivo_csb"): ("grupo del cultivo que el CSB asigna al lote ese año (solo 2018-2025)", "", "USDA NASS CSB"),
     ("lotes_anual.csv", "pct_px_igual_csb"): ("% de píxeles interiores cuya clase CDL es la del CSB", "%", "USDA NASS CDL y CSB"),
+    ("drenaje_px.csv", "tile_prob_seetiledrain"): ("probabilidad de drenaje con caños de la celda SEETileDrain (2017, ~30 m, EPSG:4326) que contiene el centro del píxel", "", "Wan et al. 2024 (SEETileDrain)"),
+    ("drenaje_px.csv", "tile_seetiledrain"): ("clase publicada de SEETileDrain (1 = drenado con caños) de la celda que contiene el centro del píxel", "", "Wan et al. 2024 (SEETileDrain)"),
     ("pixeles.csv", "x_m"): ("x del centro del píxel (EPSG:5070)", "m", "grilla mascara_agricola.tif"),
     ("pixeles.csv", "y_m"): ("y del centro del píxel (EPSG:5070)", "m", "grilla mascara_agricola.tif"),
     ("pixeles.csv", "lon"): ("longitud del centro", "grados", "grilla mascara_agricola.tif"),
@@ -489,6 +491,23 @@ def escribir_card(tablas: dict[str, tuple[pd.DataFrame, str]], resumen: list[str
             texto += "\n" + nuevo + "\n"
     CARD.write_text(texto, encoding="utf-8")
 
+
+
+def controles_seetiledrain(dren: pd.DataFrame) -> list[str]:
+    """Cobertura de SEETileDrain por lote y acuerdo con AgTile-US y con prob >= 0,5."""
+    res = ["", "### Drenaje con caños: SEETileDrain y AgTile-US", ""]
+    if dren["tile_prob_seetiledrain"].isna().all() and dren["tile_seetiledrain"].isna().all():
+        return res + ["- Sin recortes de SEETileDrain en data/raw/lotes/seetiledrain/: columnas vacías "
+                      "(correr `python src/lotes/drenaje.py`)."]
+    res += ["| id_lote | % px con prob | prob media | % px tile_seetiledrain = 1 | % px prob >= 0,5 | "
+            "% acuerdo con AgTile-US |", "|---|---|---|---|---|---|"]
+    for lid, d in dren.groupby("id_lote", sort=True):
+        p, c, a = d["tile_prob_seetiledrain"], d["tile_seetiledrain"].astype(float), d["drenado_canos"].astype(float)
+        ambos = c.notna() & a.notna()
+        acuerdo = f"{(c[ambos] == a[ambos]).mean() * 100:.1f}" if ambos.any() else ""
+        res.append(f"| {lid} | {p.notna().mean() * 100:.1f} | {p.mean():.3f} | {c.mean() * 100:.1f} | "
+                   f"{(p.dropna() >= 0.5).mean() * 100 if p.notna().any() else float('nan'):.1f} | {acuerdo} |")
+    return res
 
 
 def controles_obs(obs: pd.DataFrame, va: pd.DataFrame, spx: pd.DataFrame, px: pd.DataFrame) -> list[str]:
@@ -680,6 +699,13 @@ def main() -> None:
             v = np.array([s_[0] for s_ in d.sample(zip(xa, ya))]).astype(float)
         dren["drenado_canos"] = np.where(np.isin(v, (0, 1)), v, np.nan)
     dren["drenado_canos"] = dren["drenado_canos"].astype("Int64")
+    # SEETileDrain (Wan et al. 2024, T131): celda EPSG:4326 de ~30 m que contiene el centro; vacío si falta el recorte
+    import drenaje
+    for lid, d in px.groupby("id_lote", sort=True):
+        for k, v in drenaje.columnas_lote(lid, d["x_m"].values.astype(float), d["y_m"].values.astype(float)).items():
+            dren.loc[d.index, k] = v
+    dren["tile_prob_seetiledrain"] = dren["tile_prob_seetiledrain"].round(4)
+    dren["tile_seetiledrain"] = dren["tile_seetiledrain"].astype("Int64")
     dren = dren.sort_values(["fips", "id_lote", "px_id"])
     dren.to_csv(OUT / "drenaje_px.csv", index=False, lineterminator="\n")
     t(f"drenaje_px.csv: {len(dren)} filas", t0)
@@ -707,6 +733,7 @@ def main() -> None:
             "", "| id_lote | relieve_m | relieve_3dep_m | pct_px_drenado_canos |", "|---|---|---|---|"]
     pdren = dren.groupby("id_lote")["drenado_canos"].mean() * 100
     res += [f"| {r.id_lote} | {r.relieve_m:.2f} | {r.relieve_3dep_m:.2f} | {pdren.get(r.id_lote, np.nan):.1f} |" for r in tab.itertuples()]
+    res += controles_seetiledrain(dren)
     res += controles_obs(obs, va, spx, px)
     escribir_card({"lotes.csv": (tab, "estatico"), "pixeles.csv": (px_out, "estatico"), "terreno_px.csv": (ter, "estatico"),
                    "lotes_anual.csv": (la, "anual"), "cultivo_px_anual.csv": (cp, "anual"),

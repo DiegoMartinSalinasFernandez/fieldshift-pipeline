@@ -264,6 +264,8 @@ lotes,clima_lote_anual.csv,prec_ago_imerg_mm,"IMERG precipitation, August",mm,GP
 lotes,clima_lote_anual.csv,dias_lluvia_gt50_abr_may_imerg,April-May days with IMERG precipitation > 50 mm,days,GPM IMERG Final via POWER (IMERG_PRECTOT),
 lotes,clima_lote_anual.csv,sm_rootzone_temporada_m3m3,"SMAP root-zone soil moisture, April-September mean, 9 km cell containing the centroid",m³/m³,NASA SMAP L4 via USDA Crop-CASMA (agua package),
 lotes,drenaje_px.csv,drenado_canos,1 if the AgTile-US cell containing the pixel center is tile-drained,dimensionless,Valayamkunnath et al. 2020 (AgTile-US),
+lotes,drenaje_px.csv,tile_prob_seetiledrain,"tile drainage probability of the SEETileDrain cell (2017, ~30 m, EPSG:4326) containing the pixel center",dimensionless,Wan et al. 2024 (SEETileDrain),
+lotes,drenaje_px.csv,tile_seetiledrain,published SEETileDrain class (1 = tile-drained) of the cell containing the pixel center,dimensionless,Wan et al. 2024 (SEETileDrain),
 nldas,nldas_mensual.csv,sm_0_10cm_m3m3,"Volumetric soil moisture 0-10 cm: SoilM_0_10cm (kg m-2) / 100 mm, weighted county mean",m3/m3,"NLDAS-2 Noah monthly v2.0 (NLDAS_NOAH0125_M, NASA GES DISC via Harmony)",G01
 nldas,nldas_mensual.csv,sm_0_100cm_m3m3,"Volumetric soil moisture 0-100 cm: SoilM_0_100cm (kg m-2) / 1000 mm, weighted county mean",m3/m3,"NLDAS-2 Noah monthly v2.0 (NLDAS_NOAH0125_M, NASA GES DISC via Harmony)",G02
 nldas,nldas_mensual.csv,sm_0_100cm_anom_z,"z-score anomaly of sm_0_100cm_m3m3 per county and calendar month, 1991-2020 baseline",dimensionless,"NLDAS-2 Noah monthly v2.0 (NLDAS_NOAH0125_M, NASA GES DISC via Harmony)",
