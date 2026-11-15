@@ -20,7 +20,7 @@ from rasterio.features import rasterize
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from src.zona_texto import lista_estados  # noqa: E402
+from src.common.zona_texto import lista_estados  # noqa: E402
 RAW = ROOT / "data/raw/paisaje"
 OUT = ROOT / "data/processed/paisaje"
 CARD = ROOT / "docs/datasets/paisaje.md"

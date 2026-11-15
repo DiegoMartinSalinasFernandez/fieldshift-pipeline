@@ -97,3 +97,15 @@
 - 10:11 T140: tomada por el trabajador
 - 10:16 T140: a medias, PR #133
 - 10:17 T140: tomada por el trabajador
+- 10:20 T140: a medias, PR #136
+- 10:21 T140: tomada por el trabajador
+- 10:23 T140: a medias, PR #137
+- 10:23 T140: tomada por el trabajador
+- 10:24 T140: a medias, PR #137 actualizado
+- 10:25 T140: tomada por el trabajador
+- 10:26 T140: a medias, PR #137 actualizado
+- 10:26 T140: tomada por el trabajador
+- 10:27 T140: a medias, PR #137 actualizado
+- 10:28 T140: tomada por el trabajador
+- 10:29 T140: terminada, PR #138
+- 10:29 T143: tomada por el trabajador

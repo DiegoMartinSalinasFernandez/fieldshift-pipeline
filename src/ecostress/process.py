@@ -14,7 +14,7 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 from src.common.config import estados_config  # noqa: E402
-from src.zona_texto import lista_estados  # noqa: E402
+from src.common.zona_texto import lista_estados  # noqa: E402
 
 RAW = REPO / "data/raw/ecostress"
 OUT = REPO / "data/processed/ecostress"

@@ -1,14 +1,14 @@
 ---
 id: T143
 titulo: Mover `zona_texto.py` y `asegurar_manifest()` a `src/common/` (código listo, espera OK)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T10:17
-actualizada: 2026-11-15T10:17
+actualizada: 2026-11-15 10:29
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ dejá en el cuerpo del PR la lista exacta de lo que cambia en esos directorios.
 El cambio, las pruebas sin red y la documentación en un PR con CI en verde, retenido como dice arriba.
 
 ## Notas
+- 2026-11-15 10:29 · pro-2: tomada
