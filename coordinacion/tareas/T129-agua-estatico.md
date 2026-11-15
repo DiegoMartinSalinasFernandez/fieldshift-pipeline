@@ -1,7 +1,7 @@
 ---
 id: T129
 titulo: '`agua_estatico.csv` con la fracción del condado que saca el filtro de SMAP (código listo, espera OK)'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T09:24
-actualizada: 2026-11-15 09:27
+actualizada: 2026-11-15 09:31
 ---
 
 ## Qué hacer
@@ -34,3 +34,4 @@ El código, las pruebas sin red y el data card en un PR con CI en verde, retenid
 
 ## Notas
 - 2026-11-15 09:27 · pro-1: tomada
+- 2026-11-15 09:31 · pro-1: terminada por el trabajador: PR #118, falta la revisión de max-1
