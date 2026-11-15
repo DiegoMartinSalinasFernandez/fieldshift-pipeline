@@ -27,3 +27,4 @@
 - 04:04 T048: tomada por el trabajador
 - 04:11 T048: terminada, PR #38
 - 04:11 T045: tomada por el trabajador
+- 04:26 T045: tomada por el trabajador
