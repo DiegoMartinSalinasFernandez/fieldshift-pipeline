@@ -67,3 +67,4 @@
 - 10:17 T141: terminada, PR #134
 - 10:17 T147: tomada por el trabajador
 - 10:30 T147: terminada, PR #139
+- 10:30 T144: tomada por el trabajador
