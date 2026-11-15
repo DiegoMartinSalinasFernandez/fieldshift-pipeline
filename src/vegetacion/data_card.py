@@ -12,8 +12,8 @@ REPO = Path(__file__).resolve().parents[2]
 OUT = REPO / "data" / "processed" / "vegetacion"
 CARD = REPO / "docs" / "datasets" / "vegetacion.md"
 
-V = "MODIS MOD13Q1 v061 (Planetary Computer)"
-L = "MODIS MOD11A2 v061 (Planetary Computer)"
+V = "MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC)"
+L = "MODIS MOD11A2 v061 (Planetary Computer + LP DAAC)"
 E = "NLDAS-2 Noah mensual v2.0 (NASA GES DISC, sustituye a MOD16A2)"
 D13 = "Derivada de MOD13Q1"
 DL = "Derivada de MOD11A2 + MOD13Q1"
@@ -79,6 +79,16 @@ TEXTO = """
   con 0,05° de margen, se juntan en uno: IA+IL+IN queda en un solo grupo; OH, MN y KS+NE en tres).
   Una tesela que cae en dos grupos se baja una sola vez, con la unión de sus bbox. Lee solo esa ventana y la guarda
   tal cual en `data/raw/vegetacion/<producto>/<anio>/<item>.tif` (una fila por archivo en `manifest.csv`).
+- **Fuente mixta (PC + LP DAAC, T119).** Después de la búsqueda en PC, `download.py` pregunta a CMR
+  (`short_name` MOD13Q1 / MOD11A2, versión 061) por las mismas teselas y años y baja de LP DAAC, con el login
+  de Earthdata de `~/.netrc`, los gránulos (compuesto, tesela) que están en CMR y no en PC
+  (`src/vegetacion/lpdaac.py`). Lee las mismas capas del HDF4, las reduce como los overviews de PC (GDAL
+  `cubic`, factor 2 por nivel: comprobado contra PC con diferencia 0 en LST y en pixel reliability y de hasta 1
+  unidad de redondeo en NDVI), recorta la misma ventana y las guarda como
+  `data/raw/vegetacion/<producto>/<anio>/<granulo>.lpdaac.tif` (manifest con fuente `NASA LP DAAC`). En
+  MOD11A2 suma `QC_Day` y `QC_Night` (vecino más cercano) como bandas 3 y 4, que `process.py` no usa. Sin
+  `~/.netrc` avisa y sigue solo con PC. Los compuestos a rellenar (research T090 y T105): MOD13Q1, 11
+  compuestos; MOD11A2, 20 enteros y 3 en parte de las teselas (2022–2025, incluido jul–nov de 2025).
 - `src/vegetacion/process.py` rasteriza los condados en la grilla sinusoidal de cada tesela, filtra
   calidad y promedia por condado (suma de todas las teselas que tocan el condado).
 - **NLDAS-2 Noah mensual v2.0** (`NLDAS_NOAH0125_M`, NASA GES DISC, 0,125°, CMR
@@ -149,9 +159,13 @@ TEXTO = """
   en el modelo) y PET > 500 mm en julio de 2012 (sequía) en 5 condados (visto en la primera tanda,
   IA, IL e IN). `et_pet_ratio` queda vacío
   cuando `pet_mm` <= 1 mm.- MCD12Q1 no se bajó (la máscara agrícola del CDL ya existe).
-- 2025 incompleto en origen: Planetary Computer no tiene los compuestos de mediados de 2025
-  (MOD13Q1 entre A2025193 y A2025305; MOD11A2 entre A2025185 y A2025321; revisado el 2026-11-14).
-  Todos los demás compuestos que lista el STAC para la zona están bajados.
+- Planetary Computer no tiene algunos compuestos (MOD13Q1 entre A2025193 y A2025305; MOD11A2 entre
+  A2025185 y A2025321 y otros de 2022–2024; revisado el 2026-11-14): se rellenan desde LP DAAC (ver Fuentes)
+  en las máquinas con Earthdata (T100). Hasta que esa corrida se publique, esos compuestos siguen faltando.
+- **Compuestos que no existen en ninguna fuente** (ni en PC ni en CMR de LP DAAC): enero–febrero de 2000
+  (MODIS empieza el 18-feb-2000: MOD11A2 `A2000001` a `A2000041`; MOD13Q1 `A2000001` a `A2000033`) y, solo en MOD11A2,
+  `A2001169` (Terra en modo seguro, junio–julio de 2001), parte de las teselas de `A2001177` (en MOD11A2:
+  h09v05, h10v04 y h11v04) y `A2022289` de MOD11A2. Quedan como faltantes.
 """
 
 
