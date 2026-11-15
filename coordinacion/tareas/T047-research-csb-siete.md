@@ -1,9 +1,9 @@
 ---
 id: T047
 titulo: 'Research: Crop Sequence Boundaries para los 7 estados'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 04:05
-actualizada: 2026-11-15 04:05
+actualizada: 2026-11-15 04:02
 ---
 
 ## Qué hacer
@@ -36,3 +36,4 @@ Escribí `docs/research/csb_siete_estados.md`.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 04:02 · pro-4: tomada
