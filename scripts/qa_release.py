@@ -184,7 +184,8 @@ def serie_evento(rel: Release, ev: dict) -> pd.DataFrame:
     - suma_condados: suma de `columna` sobre condados (con `min_count=1`), dividida por `escala`;
     - rend_implicito: suma de producción / suma de cosechada de `cultivo` (paquete cultivos);
     - rend_dif5: diferencia % del rendimiento implícito contra la media de los 5 años previos.
-    `cultivo` filtra filas de un archivo largo en media / suma_condados."""
+    `cultivo` filtra filas de un archivo largo en media / suma_condados; `fips` (lista) deja solo esos
+    condados (para eventos de pocos condados, como una inundación de río)."""
     tipo = ev.get("tipo", "media")
     if tipo in ("rend_implicito", "rend_dif5"):
         rend = rend_implicito(rel.leer("cultivos", "produccion_anual.csv"), ev["cultivo"])
@@ -194,6 +195,8 @@ def serie_evento(rel: Release, ev: dict) -> pd.DataFrame:
     df = rel.leer(ev["paquete"], ev["archivo"])
     if "cultivo" in ev:
         df = df[df.cultivo == ev["cultivo"]]
+    if "fips" in ev:
+        df = df[df.fips.isin([str(f).zfill(5) for f in ev["fips"]])]
     if "meses" in ev:
         df = df[df.m.isin(ev["meses"])]
     col = ev["columna"]
@@ -411,7 +414,8 @@ def seccion_nass(rel: Release, qs: Path) -> None:
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("release", help="nombre del release o carpeta con los zips descomprimidos")
-    ap.add_argument("--eventos", type=Path, help="YAML con la lista `eventos` (ver serie_evento)")
+    ap.add_argument("--eventos", type=Path, action="append",
+                    help="YAML con la lista `eventos` (ver serie_evento y seccion_eventos); se puede repetir")
     ap.add_argument("--qs", type=Path, help="base de Quick Stats qs.crops_<fecha>.txt.gz")
     ap.add_argument("--destino", type=Path, default=REPO / "data" / "entregas",
                     help="dónde bajar y descomprimir el release (por defecto data/entregas)")
@@ -425,7 +429,7 @@ def main(argv: list[str] | None = None) -> None:
           + ", ".join(f"{e} {n}" for e, n in rel.condados.estado.value_counts().sort_index().items()) + ").\n")
     seccion_faltantes(rel)
     if a.eventos:
-        eventos = yaml.safe_load(a.eventos.read_text(encoding="utf-8"))["eventos"]
+        eventos = [e for p in a.eventos for e in yaml.safe_load(p.read_text(encoding="utf-8"))["eventos"]]
         seccion_eventos(rel, eventos)
     seccion_rangos(rel)
     seccion_outliers(rel)
