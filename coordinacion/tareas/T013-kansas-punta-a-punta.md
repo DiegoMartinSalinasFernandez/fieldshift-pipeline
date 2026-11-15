@@ -10,7 +10,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:25
-actualizada: 2026-11-15 03:14
+actualizada: 2026-11-15 03:15
 ---
 
 ## Qué hacer
@@ -43,3 +43,4 @@ tabla por paquete: bajado sí/no, procesado sí/no, filas, y qué falló y por q
 
 ## Notas
 - 2026-11-15 03:14 · max-2: tomada
+- 2026-11-15 03:15 · max-2: max-2 preparada (uv, Python 3.11, gh). Rama tarea/T013-kansas. Base hecha: 105 condados. Bajando clima (POWER). Ojo: el disco de max-2 tiene 7,5 GB libres y los crudos de KS ocuparon 11 GB en max-1 (T002): hay que liberar espacio o trabajar por etapas (bajar, procesar, publicar y borrar el crudo de cada paquete). Pendiente de decisión del humano.
