@@ -1,9 +1,9 @@
 ---
 id: T073
 titulo: Control de calidad de OH, NE y MN con el release publicado
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - OH
 - NE
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 05:59
-actualizada: 2026-11-15 05:59
+actualizada: 2026-11-15 06:04
 ---
 
 ## Qué hacer
@@ -36,3 +36,4 @@ Escribí `docs/qa/oh_ne_mn.md` con APTO / NO APTO por paquete y la lista de prob
 El informe en un PR.
 
 ## Notas
+- 2026-11-15 06:04 · pro-1: tomada
