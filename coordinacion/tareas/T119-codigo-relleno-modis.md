@@ -1,14 +1,14 @@
 ---
 id: T119
 titulo: Código para rellenar desde LP DAAC los compuestos de MODIS que faltan en Planetary Computer (MOD13Q1 y MOD11A2)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T08:45
-actualizada: 2026-11-15T08:45
+actualizada: 2026-11-15 08:50
 ---
 
 ## Qué hacer
@@ -39,3 +39,4 @@ para los 10 estados: no bajes todo, eso lo hacen las Max en T100.
 El código, las pruebas y el data card en un PR, con CI en verde.
 
 ## Notas
+- 2026-11-15 08:50 · pro-5: tomada
