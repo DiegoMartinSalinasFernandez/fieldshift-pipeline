@@ -147,7 +147,7 @@ Reproducir: `docs/research/smap_costas_celdas.py <dir_tifs> <cb_2023_us_county_5
 piden con los parámetros de `src/agua/download.py`).
 
 Fuentes:
-- [Release `datos-oh-ne-mn`, `datos-oh-ne-mn_agua.zip`](https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline/releases/tag/datos-oh-ne-mn), consultado 2026-11-15
+- Release `datos-oh-ne-mn`, `datos-oh-ne-mn_agua.zip` (página de releases del repo), consultado 2026-11-15
 - [Crop-CASMA WPS `GetFileByFips`](https://cloud.csiss.gmu.edu/smap_service), capas `SMAP-9KM-DAILY-{SUB,TOP}_{2019.05.01,2023.07.15}_013000`, FIPS 18, 26, 27 y 39, consultado 2026-11-15
 - [Crop-CASMA metadata (USDA NASS)](https://www.nass.usda.gov/Research_and_Science/Cropland/metadata/metadata_cropcasma.htm), consultado 2026-11-15
 - [Crop-CASMA User's Guide, referencias (GMU)](https://nassgeo.csiss.gmu.edu/Crop-CASMA-User/user/references/), consultado 2026-11-15
