@@ -1,9 +1,9 @@
 ---
 id: T085
 titulo: 'Data card de vegetación: cobertura de ndvi_maiz y ndvi_soja por estado y año'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - OH
 - NE
@@ -29,3 +29,4 @@ El cambio en los data cards en un PR. No cambies código ni esquema.
 ## Notas
 - 2026-11-15 06:31 · pro-2: tomada
 - 2026-11-15 06:34 · pro-2: soltada: quedó a medias, PR #76. INCOMPLETA: falta la tabla de estado por año (2008–2025) y la medición del umbral de 50 %. Esta máquina (pro-2, NE y KS) no tiene vegetacion_16d.csv, las máscaras del CDL ni MOD13Q1 de OH, NE y MN, y no pudo bajar el release. Para completarla, correr `scripts/cobertura_ndvi_cultivo.py --umbral 0.5` 
+- 2026-11-15 06:34 · pro-2: tomada
