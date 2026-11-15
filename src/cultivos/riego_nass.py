@@ -130,6 +130,8 @@ def agregar_riego(prod: pd.DataFrame, crops: pd.DataFrame,
     base = prod.copy()
     orden = list(base.columns)
     out = base.merge(riego, on=CLAVES, how="left", validate="one_to_one")
+    numericas = [c for c in riego.columns if c not in CLAVES + [COLUMNA_FLAG]]
+    out[numericas] = out[numericas].astype(float)
     for practica in PRACTICAS:
         out[f"rend_{practica}_kgha"] = np.nan
         for cultivo in CULTIVOS_RIEGO:
