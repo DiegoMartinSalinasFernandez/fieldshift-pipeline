@@ -1,7 +1,7 @@
 ---
 id: T030
 titulo: 'Research: consumo de agua por cultivo y rotación en el Corn Belt'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 03:00
-actualizada: 2026-11-15 02:51
+actualizada: 2026-11-15 02:55
 ---
 
 ## Qué hacer
@@ -40,3 +40,4 @@ El research en un PR.
 
 ## Notas
 - 2026-11-15 02:51 · pro-1: tomada
+- 2026-11-15 02:55 · pro-1: terminada por el trabajador: PR #22, falta la revisión de max-1
