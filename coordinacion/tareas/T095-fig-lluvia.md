@@ -1,7 +1,7 @@
 ---
 id: T095
 titulo: 'Figura de la demo: lluvia mensual IMERG contra POWER por estado (OH, NE, MN)'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T06:55
-actualizada: 2026-11-15 06:58
+actualizada: 2026-11-15 07:00
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ El script, el PNG y la lámina en un PR.
 
 ## Notas
 - 2026-11-15 06:58 · pro-1: tomada
+- 2026-11-15 07:00 · pro-1: terminada por el trabajador: PR #89, falta la revisión de max-1
