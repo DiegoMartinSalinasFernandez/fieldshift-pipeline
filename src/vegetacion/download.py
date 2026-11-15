@@ -219,7 +219,7 @@ def main() -> None:
     a1 = int(sys.argv[3]) if len(sys.argv) > 3 else int(cfg["periodo"]["anio_fin"])
     grupos = grupos_bbox()
     log("grupos de estados: " + "; ".join(f"{'+'.join(e)} {[round(v, 2) for v in b]}" for e, b in grupos))
-    token = requests.get(SAS, timeout=60).json()["token"]
+    errores = 0
     for pk in prods:
         prod = PRODUCTOS[pk]
         for anio in range(max(a0, prod["desde"]), a1 + 1):
@@ -227,15 +227,21 @@ def main() -> None:
             pend = [(it, bb) for it, bb in items
                     if not (RAW / prod["prefijo"].lower() / str(anio) / f"{it['id']}.tif").exists()]
             log(f"{pk} {anio}: {len(items)} items, {len(pend)} pendientes")
+            # el token SAS anónimo vence a los ~45 min: se pide uno nuevo por año (si no, todo da 403)
+            token = requests.get(SAS, timeout=60).json()["token"] if pend else ""
             with ThreadPoolExecutor(12) as ex:
                 futs = {ex.submit(bajar_item, it, prod, bb, token): it["id"] for it, bb in pend}
                 for fu in as_completed(futs):
                     try:
                         fu.result()
                     except Exception as e:  # se reintenta en la próxima corrida
+                        errores += 1
                         log(f"ERROR {futs[fu]}: {type(e).__name__}: {str(e)[:200]}")
             registrar_manifest(pk)
             log(f"{pk} {anio}: listo")
+    if errores:
+        log(f"terminó con {errores} archivos sin bajar: volver a correr")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

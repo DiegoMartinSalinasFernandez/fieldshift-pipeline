@@ -49,11 +49,11 @@ Los datos solo existen por estado (NASS) o por región (ERS): la clave es `fips_
 
 | archivo | columna | descripcion | unidad | fuente | id_catalogo | desde | hasta | faltantes_pct |
 |---|---|---|---|---|---|---|---|---|
-| economia_anual.csv | precio_usd_bu | Precio recibido por el productor, promedio del año comercial (NASS PRICE RECEIVED, MARKETING YEAR, estado) | USD/bu | USDA NASS Quick Stats (volcado qs.crops) | MK01 | 2000 | 2025 | 3.3 |
-| economia_anual.csv | valor_produccion_usd_ac | Valor bruto de la producción por acre sembrado (ERS 'Total, gross value of production', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns |  | 2000 | 2025 | 5.2 |
-| economia_anual.csv | costo_operativo_usd_ac | Costos operativos por acre sembrado (ERS 'Total, operating costs', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK03 | 2000 | 2025 | 5.2 |
-| economia_anual.csv | costo_total_usd_ac | Costos totales listados por acre sembrado (ERS 'Total, costs listed', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK03 | 2000 | 2025 | 5.2 |
-| economia_anual.csv | margen_operativo_usd_ac | Valor de la producción menos costos operativos (ERS 'Value of production less operating costs', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK02 | 2000 | 2025 | 5.2 |
+| economia_anual.csv | precio_usd_bu | Precio recibido por el productor, promedio del año comercial (NASS PRICE RECEIVED, MARKETING YEAR, estado) | USD/bu | USDA NASS Quick Stats (volcado qs.crops) | MK01 | 2000 | 2025 | 2.2 |
+| economia_anual.csv | valor_produccion_usd_ac | Valor bruto de la producción por acre sembrado (ERS 'Total, gross value of production', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns |  | 2000 | 2025 | 4.8 |
+| economia_anual.csv | costo_operativo_usd_ac | Costos operativos por acre sembrado (ERS 'Total, operating costs', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK03 | 2000 | 2025 | 4.8 |
+| economia_anual.csv | costo_total_usd_ac | Costos totales listados por acre sembrado (ERS 'Total, costs listed', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK03 | 2000 | 2025 | 4.8 |
+| economia_anual.csv | margen_operativo_usd_ac | Valor de la producción menos costos operativos (ERS 'Value of production less operating costs', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK02 | 2000 | 2025 | 4.8 |
 | economia_anual.csv | flag_nass | Código original de NASS cuando el precio no se publica ((D), (S), (NA)); vacío si hay valor | texto | USDA NASS Quick Stats (volcado qs.crops) |  | 2019 | 2019 | 99.7 |
 | economia_forrajes_anual.csv | precio_usd_ton | Precio recibido por el productor, promedio del año comercial (NASS PRICE RECEIVED, MARKETING YEAR, estado) | USD/ton corta | USDA NASS Quick Stats (volcado qs.crops) | MK01 | 2000 | 2025 | 0.0 |
 | economia_forrajes_anual.csv | flag_nass | Código original de NASS cuando el precio no se publica ((D), (S), (NA)); vacío si hay valor | texto | USDA NASS Quick Stats (volcado qs.crops) |  |  |  | 100.0 |
@@ -67,22 +67,6 @@ por condado en el período). Se guardan también en `data/interim/economia/pesos
 
 | fips_estado | cultivo | region_ers | acres | base | peso |
 |---|---|---|---|---|---|
-| 17 | avena | Heartland | 497,000 | acres_sembrados | 1.000 |
-| 17 | maiz | Heartland | 285,364,500 | acres_sembrados | 1.000 |
-| 17 | soja | Heartland | 243,634,500 | acres_sembrados | 1.000 |
-| 17 | trigo_invierno | Heartland | 16,333,600 | acres_sembrados | 1.000 |
-| 18 | avena | Heartland | 92 | condados | 1.000 |
-| 18 | maiz | Heartland | 137,460,500 | acres_sembrados | 1.000 |
-| 18 | soja | Heartland | 135,131,400 | acres_sembrados | 1.000 |
-| 18 | trigo_invierno | Heartland | 7,814,700 | acres_sembrados | 1.000 |
-| 19 | avena | Heartland | 2,953,650 | acres_sembrados | 1.000 |
-| 19 | maiz | Heartland | 331,100,400 | acres_sembrados | 1.000 |
-| 19 | soja | Heartland | 243,078,600 | acres_sembrados | 1.000 |
-| 19 | trigo_invierno | Heartland | 102,640 | acres_sembrados | 1.000 |
-| 20 | avena | Prairie Gateway | 118,800 | acres_sembrados | 1.000 |
-| 20 | maiz | Prairie Gateway | 92,894,900 | acres_sembrados | 1.000 |
-| 20 | soja | Prairie Gateway | 86,408,000 | acres_sembrados | 1.000 |
-| 20 | trigo_invierno | Prairie Gateway | 198,429,100 | acres_sembrados | 1.000 |
 | 27 | avena | Heartland | 2,184,200 | acres_sembrados | 0.438 |
 | 27 | avena | Northern Crescent | 2,042,800 | acres_sembrados | 0.410 |
 | 27 | avena | Northern Great Plains | 756,200 | acres_sembrados | 0.152 |

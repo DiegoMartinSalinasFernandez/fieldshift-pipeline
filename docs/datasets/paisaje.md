@@ -6,7 +6,7 @@ agua, y la superficie impermeable media.
 
 ## Archivos
 
-- `data/processed/paisaje/paisaje_anual.csv` — `fips, anio, ...`, una fila por condado y año. Cobertura real: 7325 filas, 293 condados, años 2000-2024.
+- `data/processed/paisaje/paisaje_anual.csv` — `fips, anio, ...`, una fila por condado y año. Cobertura real: 6700 filas, 268 condados, años 2000-2024.
 
 ## Diccionario de columnas
 
@@ -26,7 +26,7 @@ agua, y la superficie impermeable media.
   y `Annual_NLCD_FctImp_<anio>_CU_C1V1.tif` (COG). Originales en `s3://usgs-landcover/annual-nlcd/c1/v1/cu/mosaic/`
   (requester-pays); se leen sin login desde el mirror público de Source Cooperative
   `https://data.source.coop/kylebarron/usgs-landcover/annual-nlcd/c1/v1/cu/mosaic/`.
-- `src/paisaje/download.py` lee por ventana solo el bbox de cada estado (IA, IL, IN) y lo guarda tal cual
+- `src/paisaje/download.py` lee por ventana solo el bbox de cada estado (OH, NE y MN) y lo guarda tal cual
   (mismos valores, misma grilla de 30 m) en `data/raw/paisaje/Annual_NLCD_<producto>_<anio>_<estado>_C1V1.tif`.
 
 ## Supuestos

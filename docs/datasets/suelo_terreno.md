@@ -59,13 +59,14 @@ Paquete `suelo_terreno` de Field Shift (CLAUDE.md §6.5): suelo (SSURGO) y terre
     manufacturada), el fondo del perfil y 150 cm (tope del `rootznemc` de Valu1). Las restricciones
     por "cambio textural abrupto" no se cuentan como límite.
 - **Ponderación por superficie, sin máscara agrícola.** El valor del condado es la media ponderada
-  por `muacres` de las unidades cartográficas del área de relevamiento del condado (en IA, IL e IN
-  `areasymbol` = estado + código de condado: IA169 → 19169), y dentro de cada unidad por
+  por `muacres` de las unidades cartográficas del área de relevamiento del condado (`areasymbol` =
+  estado + código de condado: IA169 → 19169; en MN, St. Louis está partido en cinco áreas, MN613 a
+  MN621, Koochiching es MN625 y Voyageurs National Park, MN627, queda afuera), y dentro de cada unidad por
   `comppct_r` de los componentes con dato. Sin el raster de MUKEY no se pudo cruzar con
   `data/reference/mascara_agricola.tif`: incluye superficie no agrícola.
 - Horizontes 0–30 cm: media ponderada por el espesor de cada horizonte dentro de la capa. La textura
   usa solo horizontes con arena, limo y arcilla que suman 100 ± 3 (quedan fuera los horizontes
-  orgánicos, por ejemplo los suelos muck del norte de Indiana, donde la textura no está definida).
+  orgánicos, por ejemplo los suelos muck, donde la textura no está definida).
 - Clase textural: triángulo USDA aplicado a la media de arena/limo/arcilla del condado (no a la
   clase dominante).
 - Factor K: `kwfact` del horizonte más superficial del componente (vacío en horizontes orgánicos).
@@ -77,7 +78,7 @@ Paquete `suelo_terreno` de Field Shift (CLAUDE.md §6.5): suelo (SSURGO) y terre
   los píxeles del condado (sin máscara agrícola), sin ponderar por área del píxel (varía < 1 % dentro
   de un condado). Pendiente calculada a 3" (~90 m, media de bloques de 3 × 3 píxeles de 1") con el tamaño real
   del píxel en metros: a 1" el ruido de NASADEM daba > 70 % del área con pendiente > 2 % aun en
-  condados llanos como Champaign (IL). Umbral de pendiente: 2 %. La última fila y columna de cada
+  condados llanos (Champaign, IL, en la primera tanda). Umbral de pendiente: 2 %. La última fila y columna de cada
   tesela (repiten el borde de la vecina) se descartan.
 - TWI = ln(a / tan β) a 3" (~90 m, media de 3 × 3 píxeles), con relleno de depresiones, flujo D8 y
   acumulación de pysheds dentro de cada tesela de 1° (el área aportante se corta en los bordes de
