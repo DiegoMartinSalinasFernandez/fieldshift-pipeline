@@ -193,34 +193,46 @@ def fuentes_lanid(raw: Path = RAW) -> tuple[dict[int, str], str | None]:
     return anuales, maximo
 
 
-def _a_grilla(ruta: str, ref) -> tuple[np.ndarray, np.ndarray]:
-    """(valores, válido) del raster en la grilla de `ref` (vecino más cercano).
+class _Grilla:
+    """LANID (u otro raster) llevado a la grilla de `ref` con vecino más cercano, leído por ventanas.
 
     Válido = dentro de la cobertura del raster y distinto de su nodata. Si el nodata declarado es 0,
     no se respeta: en LANID 0 es "no regado" (Metadata.docx de Zenodo), no "sin dato".
     """
-    import rasterio
-    from rasterio.enums import Resampling
-    from rasterio.vrt import WarpedVRT
 
-    with rasterio.open(ruta) as src:
-        nod = src.nodata if src.nodata not in (None, 0) else None
-        fuera = nod if nod is not None else SIN_DATO
-        with WarpedVRT(src, crs=ref.crs, transform=ref.transform, width=ref.width, height=ref.height,
-                       resampling=Resampling.nearest, src_nodata=nod, nodata=fuera) as vrt:
-            a = vrt.read(1)
-    return a, a != fuera
+    def __init__(self, ruta: str, ref):
+        import rasterio
+        from rasterio.enums import Resampling
+        from rasterio.vrt import WarpedVRT
+
+        self.src = rasterio.open(ruta)
+        nod = self.src.nodata if self.src.nodata not in (None, 0) else None
+        self.fuera = nod if nod is not None else SIN_DATO
+        self.vrt = WarpedVRT(self.src, crs=ref.crs, transform=ref.transform, width=ref.width,
+                             height=ref.height, resampling=Resampling.nearest, src_nodata=nod,
+                             nodata=self.fuera)
+
+    def leer(self, ventana=None) -> tuple[np.ndarray, np.ndarray]:
+        a = self.vrt.read(1, window=ventana)
+        return a, a != self.fuera
+
+    def cerrar(self) -> None:
+        self.vrt.close()
+        self.src.close()
+
+
+def _a_grilla(ruta: str, ref) -> tuple[np.ndarray, np.ndarray]:
+    """(valores, válido) del raster entero en la grilla de `ref`."""
+    g = _Grilla(ruta, ref)
+    try:
+        return g.leer()
+    finally:
+        g.cerrar()
 
 
 # ---------------------------------------------------------------- proceso
 
-def _ids_condados(ref, condados) -> tuple[np.ndarray, list[str]]:
-    from rasterio.features import rasterize
-
-    cond = condados.to_crs(ref.crs).reset_index(drop=True)
-    ids = rasterize([(g, i + 1) for i, g in enumerate(cond.geometry)], out_shape=(ref.height, ref.width),
-                    transform=ref.transform, fill=0, dtype="int32")
-    return ids, cond["fips"].astype(str).str.zfill(5).tolist()
+FILAS_FRANJA = 2048  # filas de la grilla por franja (la memoria no depende del tamaño de la zona)
 
 
 def _contar(ids: np.ndarray, sel: np.ndarray, n: int) -> np.ndarray:
@@ -233,47 +245,77 @@ def _frac(num: np.ndarray, den: np.ndarray) -> np.ndarray:
 
 
 def riego_anual(mascara: Path, condados, anuales: dict[int, str], anios: list[int],
-                referencia: Path | None = None) -> pd.DataFrame:
+                referencia: Path | None = None, filas_franja: int = FILAS_FRANJA) -> pd.DataFrame:
     """Fracciones de riego por condado y año sobre la grilla de `mascara` (agrícola = 1).
 
     - frac_riego_lanid = píxeles agrícolas regados / píxeles agrícolas con dato de LANID.
     - frac_maiz_regado / frac_soja_regada: lo mismo dentro de mascara_maiz_<anio>.tif /
       mascara_soja_<anio>.tif (vacío si no está la máscara de ese año o no hay píxeles del cultivo).
     - frac_pixeles_validos = píxeles agrícolas con dato de LANID / píxeles agrícolas.
+
+    Recorre la grilla por franjas de filas: en cada una rasteriza los condados y lee todos los años.
     """
     import rasterio
+    from rasterio.features import rasterize
+    from rasterio.windows import Window
+    from rasterio.windows import transform as transform_ventana
 
     referencia = referencia or mascara.parent
+    anios = [a for a in anios if a in anuales]
+    cols = ["fips", "anio", "frac_riego_lanid", "frac_maiz_regado", "frac_soja_regada", "frac_pixeles_validos"]
+    if not anios:
+        return pd.DataFrame(columns=cols)
     with rasterio.open(mascara) as ref:
-        agri = ref.read(1) == 1
-        ids, fips = _ids_condados(ref, condados)
+        cond = condados.to_crs(ref.crs).reset_index(drop=True)
+        fips = cond["fips"].astype(str).str.zfill(5).tolist()
+        formas = [(g, i + 1) for i, g in enumerate(cond.geometry)]
         n = len(fips)
-        sel_agri = agri & (ids > 0)
-        n_agri = _contar(ids, sel_agri, n)
-        filas = []
+        lanid = {a: _Grilla(anuales[a], ref) for a in anios}
+        cultivos = {}
         for a in anios:
-            if a not in anuales:
-                continue
-            v, valido = _a_grilla(anuales[a], ref)
-            regado = valido & (v == REGADO)
-            n_val = _contar(ids, sel_agri & valido, n)
-            df = pd.DataFrame({"fips": fips, "anio": a,
-                               "frac_riego_lanid": _frac(_contar(ids, sel_agri & regado, n), n_val)})
-            for col, nom in (("frac_maiz_regado", "maiz"), ("frac_soja_regada", "soja")):
+            for nom in ("maiz", "soja"):
                 p = referencia / f"mascara_{nom}_{a}.tif"
                 if p.exists():
-                    with rasterio.open(p) as mc:
-                        if (mc.transform, mc.shape) != (ref.transform, ref.shape):
-                            raise ValueError(f"{p.name} no está en la grilla de {mascara.name}")
-                        cult = (mc.read(1) == 1) & (ids > 0)
-                    df[col] = _frac(_contar(ids, cult & regado, n), _contar(ids, cult & valido, n))
-                else:
-                    df[col] = np.nan
-            df["frac_pixeles_validos"] = _frac(n_val, n_agri)
-            filas.append(df)
-    cols = ["fips", "anio", "frac_riego_lanid", "frac_maiz_regado", "frac_soja_regada", "frac_pixeles_validos"]
-    if not filas:
-        return pd.DataFrame(columns=cols)
+                    mc = rasterio.open(p)
+                    if (mc.transform, mc.shape) != (ref.transform, ref.shape):
+                        raise ValueError(f"{p.name} no está en la grilla de {mascara.name}")
+                    cultivos[(a, nom)] = mc
+        n_agri = np.zeros(n, np.int64)
+        cuenta = {(a, k): np.zeros(n, np.int64) for a in anios
+                  for k in ("val", "reg", "maiz_val", "maiz_reg", "soja_val", "soja_reg")}
+        try:
+            for f0 in range(0, ref.height, filas_franja):
+                win = Window(0, f0, ref.width, min(filas_franja, ref.height - f0))
+                ids = rasterize(formas, out_shape=(int(win.height), int(win.width)),
+                                transform=transform_ventana(win, ref.transform), fill=0, dtype="int32")
+                if not ids.any():
+                    continue
+                agri = (ref.read(1, window=win) == 1) & (ids > 0)
+                n_agri += _contar(ids, agri, n)
+                for a in anios:
+                    v, valido = lanid[a].leer(win)
+                    regado = valido & (v == REGADO)
+                    cuenta[(a, "val")] += _contar(ids, agri & valido, n)
+                    cuenta[(a, "reg")] += _contar(ids, agri & regado, n)
+                    for nom in ("maiz", "soja"):
+                        if (a, nom) in cultivos:
+                            cult = (cultivos[(a, nom)].read(1, window=win) == 1) & (ids > 0)
+                            cuenta[(a, nom + "_val")] += _contar(ids, cult & valido, n)
+                            cuenta[(a, nom + "_reg")] += _contar(ids, cult & regado, n)
+        finally:
+            for g in lanid.values():
+                g.cerrar()
+            for mc in cultivos.values():
+                mc.close()
+    filas = []
+    for a in anios:
+        df = pd.DataFrame({"fips": fips, "anio": a,
+                           "frac_riego_lanid": _frac(cuenta[(a, "reg")], cuenta[(a, "val")])})
+        for col, nom in (("frac_maiz_regado", "maiz"), ("frac_soja_regada", "soja")):
+            df[col] = (_frac(cuenta[(a, nom + "_reg")], cuenta[(a, nom + "_val")])
+                       if (a, nom) in cultivos else np.nan)
+        df["frac_pixeles_validos"] = _frac(cuenta[(a, "val")], n_agri)
+        filas.append(df)
     out = pd.concat(filas, ignore_index=True)[cols]
     # condados sin píxeles agrícolas: sin fila (no hay área agrícola sobre la que medir)
     out = out[out["fips"].isin([f for f, k in zip(fips, n_agri) if k > 0])]
@@ -282,20 +324,29 @@ def riego_anual(mascara: Path, condados, anuales: dict[int, str], anios: list[in
     return out.sort_values(["fips", "anio"]).reset_index(drop=True)
 
 
-def mascara_riego_max(mascara: Path, maximo: str, salida: Path) -> float:
+def mascara_riego_max(mascara: Path, maximo: str, salida: Path, filas_franja: int = FILAS_FRANJA) -> float:
     """maxIrrExt de LANID en la grilla de `mascara` (1 bit). Devuelve la fracción regada de la grilla."""
     import rasterio
+    from rasterio.windows import Window
 
     with rasterio.open(mascara) as ref:
-        v, valido = _a_grilla(maximo, ref)
         perfil = {"driver": "GTiff", "dtype": "uint8", "count": 1, "width": ref.width, "height": ref.height,
                   "crs": ref.crs, "transform": ref.transform, "nodata": None, "compress": "deflate",
                   "nbits": 1, "tiled": True, "blockxsize": 512, "blockysize": 512}
-    m = (valido & (v == REGADO)).astype("uint8")
-    salida.parent.mkdir(parents=True, exist_ok=True)
-    with rasterio.open(salida, "w", **perfil) as dst:
-        dst.write(m, 1)
-    return float(m.mean())
+        g = _Grilla(maximo, ref)
+        salida.parent.mkdir(parents=True, exist_ok=True)
+        regados = 0
+        try:
+            with rasterio.open(salida, "w", **perfil) as dst:
+                for f0 in range(0, ref.height, filas_franja):
+                    win = Window(0, f0, ref.width, min(filas_franja, ref.height - f0))
+                    v, valido = g.leer(win)
+                    m = (valido & (v == REGADO)).astype("uint8")
+                    regados += int(m.sum())
+                    dst.write(m, 1, window=win)
+        finally:
+            g.cerrar()
+        return regados / (ref.width * ref.height)
 
 
 def procesar() -> None:

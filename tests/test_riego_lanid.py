@@ -141,3 +141,14 @@ def test_nodata_cero_y_cobertura_parcial(escena, tmp_path):
     b = df.set_index("fips").loc["31003"]
     assert a["frac_pixeles_validos"] == 1.0 and a["frac_riego_lanid"] == pytest.approx(10 / 40)
     assert b["frac_pixeles_validos"] == 0.0 and np.isnan(b["frac_riego_lanid"])
+
+
+def test_franjas_dan_lo_mismo(escena, tmp_path):
+    """El resultado no depende del tamaño de la franja de filas."""
+    ref, cond = escena
+    rng = np.random.default_rng(0)
+    tif(tmp_path / "lanid2010.tif", rng.integers(0, 2, (10, 10)))
+    args = (ref / "mascara_agricola.tif", cond, {2010: str(tmp_path / "lanid2010.tif")}, [2010])
+    entero = rg.riego_anual(*args)
+    for h in (1, 3, 7):
+        assert rg.riego_anual(*args, filas_franja=h).equals(entero)
