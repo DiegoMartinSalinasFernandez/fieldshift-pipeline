@@ -8,18 +8,18 @@ Fuentes de esta guía: `src/merge.py`, `loop/spec/entregables.yaml`, `docs/datas
 `docs/estructura_csv.md` y la sección 4 del `CLAUDE.md`. Si una columna no figura en el spec o en un data
 card, no la damos por existente.
 
-> **Aviso: qué une `merge.py` hoy y qué prevé el spec.** El spec (`loop/spec/entregables.yaml`, paquete
-> `merge`) pide que las tablas incluyan **todos** los archivos anuales, estáticos y mensuales de todos los
-> paquetes. Pero el `src/merge.py` de este repo todavía tiene una lista fija:
+> **Aviso: qué une `merge.py` hoy.** Desde T136 (código listo; **espera el OK de `para_decidir.md` #27**)
+> `merge.py` une:
 >
 > - `tabla_anual`: `produccion_anual` + `clima_anual`, `rotacion_anual`, `fenologia_anual`,
->   `fenologia_estado` y `suelo_terreno_estatico`.
-> - `tabla_mensual`: `clima_mensual`, `vegetacion_mensual` y `agua_mensual`.
+>   `fenologia_estado`, `suelo_terreno_estatico`, `economia_anual` + `economia_forrajes_anual`,
+>   `paisaje_anual`, `teledeteccion_anual` y `practicas_censo` (último censo ≤ `anio`).
+> - `tabla_mensual`: `clima_mensual`, `vegetacion_mensual`, `agua_mensual`, `nldas_mensual` y
+>   `ecostress_mensual`.
 >
-> Los bloques de las secciones 3 y 4 marcados **(prevista)** (economía, aptitud, paisaje, teledetección,
-> validación, ECOSTRESS, NLDAS, hidrología) están en el spec y en `docs/estructura_csv.md`, pero no entran en
-> las tablas hasta que `merge.py` se actualice. Antes de entrenar, mirá el encabezado real del CSV que te
-> llegó: `head -1 data/processed/tabla_anual.csv`.
+> Si un paquete no está en la máquina que corre `merge.py`, se saltea con un aviso y sus columnas no salen.
+> Los bloques marcados **(prevista)** (aptitud, validación, hidrología) no entran. Antes de entrenar, mirá
+> el encabezado real del CSV que te llegó: `head -1 data/processed/tabla_anual.csv`.
 
 ---
 
@@ -117,16 +117,19 @@ El target es `rend_bu_ac` (o `rend_kgha`). Alfalfa y heno se miden en toneladas:
 | Fenología por satélite (MODIS) | `doy_inicio`, `doy_pico`, `doy_fin`, `ndvi_max`, `duracion_dias`, `ndvi_integral`, `n_ciclos`, `ndvi_max_maiz`, `ndvi_max_soja`, `dias_ndvi_lt03_invierno` | condado, año | [vegetacion](datasets/vegetacion.md) |
 | Fechas reales de siembra, emergencia, floración y cosecha (Crop Progress) | `doy_50_sembrado`, `doy_50_emergido`, `doy_50_floracion`, `doy_50_cosechado` | estado, año, cultivo (solo maíz y soja) | [cultivos](datasets/cultivos.md) |
 | Suelo y terreno (gSSURGO, NASADEM) | `aws0_100_mm`, `aws0_150_mm`, `soc0_30_gm2`, `soc0_100_gm2`, `patron`, `prof_raices_cm`, `clase_drenaje`, `grupo_hidrologico`, `napa_min_cm`, `arcilla_pct`, `arena_pct`, `limo_pct`, `materia_organica_pct`, `ph_agua`, `clase_textural_usda`, `factor_k_rusle`, `elevacion_media_m`, `elevacion_desvio_m`, `pendiente_media_pct`, `pendiente_gt2_pct`, `twi_medio`, `twi_decil_sup_pct` | condado (fijo) | [suelo_terreno](datasets/suelo_terreno.md) |
-| **(prevista)** Precios y costos (NASS, ERS) | `precio_usd_bu`, `valor_produccion_usd_ac`, `costo_operativo_usd_ac`, `costo_total_usd_ac`, `margen_operativo_usd_ac`, `flag_nass`; forrajes: `precio_usd_ton` | estado, año, cultivo | [economia](datasets/economia.md) |
+| Precios y costos (NASS, ERS) | `precio_usd_bu`, `valor_produccion_usd_ac`, `costo_operativo_usd_ac`, `costo_total_usd_ac`, `margen_operativo_usd_ac`, `economia_flag_nass` (el `flag_nass` de economía); forrajes: `precio_usd_ton` | estado, año, cultivo | [economia](datasets/economia.md) |
 | **(prevista)** Aptitud agroclimática y rendimiento alcanzable (FAO GAEZ) | `aptitud_<cultivo>_1981_2010`, `aptitud_<cultivo>_2041_2070`, `rend_alcanzable_<cultivo>_kgha_<período>` | condado (fijo) | sin data card propio; ver [estructura_csv](estructura_csv.md) |
-| **(prevista)** Cobertura del suelo (NLCD) | `pct_cultivos_nlcd`, `pct_pasturas_heno_nlcd`, `pct_bosque_nlcd`, `pct_humedales_nlcd`, `pct_urbano_nlcd`, `pct_agua_nlcd`, `impermeable_pct` | condado, año | [paisaje](datasets/paisaje.md) |
-| **(prevista)** Suelo desnudo y cobertura invernal a 30 m (Landsat) | `pct_suelo_desnudo_abr_may`, `pct_suelo_desnudo_oct_nov`, `pct_cobertura_verde_mar_abr`, `bsi_abr_may`, `ndvi_max_30m`, `n_escenas_validas`, `frac_pixeles_validos` | condado, año | [teledeteccion](datasets/teledeteccion.md) |
+| Cobertura del suelo (NLCD) | `pct_cultivos_nlcd`, `pct_pasturas_heno_nlcd`, `pct_bosque_nlcd`, `pct_humedales_nlcd`, `pct_urbano_nlcd`, `pct_agua_nlcd`, `impermeable_pct` | condado, año | [paisaje](datasets/paisaje.md) |
+| Suelo desnudo y cobertura invernal a 30 m (Landsat) | `pct_suelo_desnudo_abr_may`, `pct_suelo_desnudo_oct_nov`, `pct_cobertura_verde_mar_abr`, `bsi_abr_may`, `ndvi_max_30m`, `n_escenas_validas`, `teledeteccion_frac_pixeles_validos` | condado, año | [teledeteccion](datasets/teledeteccion.md) |
+| Prácticas del Censo (último censo ≤ `anio`) | `anio_censo_ref` (año del censo usado), `pct_cobertura`, `pct_labranza_cero`, `pct_drenaje_tile`, `pct_riego` | condado, año de censo (2012, 2017, 2022; antes de 2012, vacío) | [cultivos](datasets/cultivos.md) |
 
 Notas del bloque de producción: la columna `flag_nass` guarda el código original cuando NASS oculta el dato
 (`(D)`, `(Z)`); en esos casos el valor numérico va vacío.
 
-La clave que une estos bloques y el nombre de cada columna no cambian al unir. Si dos paquetes tuvieran una
-columna con el mismo nombre, la segunda se renombra `<paquete>_<columna>` (hoy no hay colisiones).
+La clave que une estos bloques y el nombre de cada columna no cambian al unir, salvo los choques: si una
+columna nueva ya está en la tabla, se renombra `<paquete>_<columna>` (hoy: `flag_nass` de economía →
+`economia_flag_nass`), y `frac_pixeles_validos` lleva siempre el prefijo del paquete. Las columnas que ya
+estaban antes de T136 no cambian nunca. Detalle en [merge](datasets/merge.md).
 
 ---
 
@@ -141,12 +144,12 @@ columnas; el ejemplo está en [estructura_csv.md](estructura_csv.md).
 | Vegetación (MODIS) | `ndvi`, `evi`, `ndvi_maiz`, `ndvi_soja`, `lst_dia_c`, `lst_noche_c`, `et_mm`, `pet_mm`, `et_pet_ratio`, `ndvi_anom_z`, `vci`, `tci`, `vhi` | [vegetacion](datasets/vegetacion.md) |
 | Agua (SMAP) | `sm_surface_m3m3`, `sm_rootzone_m3m3`, `sm_surface_min_m3m3`, `sm_rootzone_min_m3m3`, `sm_rootzone_anom_z`, `dias_sm_saturado` | [agua](datasets/agua.md) |
 | **(prevista)** Validación (PRISM, CoCoRaHS) | `prec_prism_mm`, `tmax_prism_c`, `tmin_prism_c`, `tmed_prism_c`, `prec_cocorahs_mm`, `n_estaciones_cocorahs` | [validacion](datasets/validacion.md) |
-| **(prevista)** ECOSTRESS | `lst_ecostress_c`, `et_ecostress_mm_dia`, `esi_ecostress`, `n_pasadas_ecostress` | [ecostress](datasets/ecostress.md) |
-| **(prevista)** NLDAS-2 | `sm_0_10cm_m3m3`, `sm_0_100cm_m3m3`, `sm_0_100cm_anom_z`, `et_nldas_mm`, `escorrentia_nldas_mm`, `swe_nldas_mm` | [nldas](datasets/nldas.md) |
+| ECOSTRESS (muestra de condados, abril–octubre, 2018+) | `lst_ecostress_c`, `et_ecostress_mm_dia`, `esi_ecostress`, `n_pasadas_ecostress` | [ecostress](datasets/ecostress.md) |
+| NLDAS-2 (`et_nldas_mm` y `et_mm` de vegetación salen las dos de NLDAS-2 Noah `Evap`) | `sm_0_10cm_m3m3`, `sm_0_100cm_m3m3`, `sm_0_100cm_anom_z`, `et_nldas_mm`, `escorrentia_nldas_mm`, `swe_nldas_mm` | [nldas](datasets/nldas.md) |
 | **(prevista)** Hidrología (USGS NWIS) | `napa_prof_m`, `n_pozos`, `caudal_pctl`, `n_estaciones_aforo` | sin data card propio; ver [estructura_csv](estructura_csv.md) |
 
 Ojo con la lluvia: `prec_imerg_mm` y `prec_power_mm` son dos medidas distintas de lo mismo, y `prec_prism_mm`
-(cuando entre) es de superficie y **no es de la NASA**: sirve para validar, no como segunda fuente
+(no entra en la tabla) es de superficie y **no es de la NASA**: sirve para validar, no como segunda fuente
 independiente del modelo.
 
 ---
@@ -156,12 +159,12 @@ independiente del modelo.
 | Qué | Archivo | Por qué no entra | Dónde está |
 |---|---|---|---|
 | Secuencia de 8 años (maíz-soja alternado, continuo, diversidad) | `rotacion_secuencia.csv` | claves `fips` + `ventana` de 8 años | `data/processed/cultivos/`; [cultivos](datasets/cultivos.md) |
-| Prácticas del Censo (cobertura, labranza cero, drenaje con caños, riego) | `practicas_censo.csv` | solo existe en años de censo (2012, 2017, 2022); en 2012 faltan las prácticas salvo riego | `data/processed/cultivos/`; [cultivos](datasets/cultivos.md) |
 | Series diarias y de 8/16 días | `clima_diario`, `vegetacion_16d`, `agua_diario`, `agua_semanal` | otra granularidad temporal | cada carpeta de `data/processed/<paquete>/` |
 | Datos por lote y píxel (30 m) | paquete `lotes` | claves `fips`, `id_lote`, `px_id`; es una entrega aparte (`fieldshift_lotes_v1`) | `data/processed/lotes/`; [lotes](datasets/lotes.md) |
 
-Se pueden unir a mano a la tabla que corresponda cuando haga falta. Por ejemplo, `practicas_censo` se asocia
-al censo más cercano por condado, y eso es una decisión de modelado (ver sección 7).
+Se pueden unir a mano a la tabla que corresponda cuando haga falta. Por ejemplo, `rotacion_secuencia` se
+puede asociar a la ventana que termina en `anio − 1`, y eso es una decisión de modelado (ver sección 7).
+`practicas_censo` sí entra en `tabla_anual` (último censo ≤ `anio`, sección 3).
 
 ---
 
@@ -238,7 +241,7 @@ de cada uno):
 - **Rotación antes de 2008.** `rotacion_anual` empieza en 2008: de 2000 a 2007 esas columnas están vacías.
 - **SMAP desde 2015.** Las columnas de `agua` están vacías antes de 2015-04. Además falta el día 2016-12-15,
   así que diciembre de 2016 queda vacío en `agua_mensual`. Para años anteriores a 2015, NLDAS-2
-  (**prevista**) ofrece humedad de suelo desde 2000.
+  ofrece humedad de suelo desde 2000.
 - **Valores de humedad de SMAP.** En algunas celdas del noreste de Indiana y en DuPage (IL) se excluyen
   celdas con humedad mayor a 0,60 m3/m3; en esos condados la media usa menos celdas o queda vacía.
   `dias_sm_saturado` usa un umbral fijo de 0,40 m3/m3, provisorio.
@@ -251,10 +254,10 @@ de cada uno):
   no de GES DISC.
 - **Suelo y terreno.** Sin máscara agrícola, los promedios incluyen bosque, urbano y agua. `pendiente_gt2_pct`
   probablemente sobreestima el área con pendiente.
-- **Paisaje (prevista).** NLCD anual llega hasta 2024: 2025 queda sin filas.
-- **Teledetección (prevista).** Cobertura parcial de años y escenas (mirá `desde` y `hasta` en el data card):
+- **Paisaje.** NLCD anual llega hasta 2024: 2025 queda sin filas.
+- **Teledetección.** Cobertura parcial de años y escenas (mirá `desde` y `hasta` en el data card):
   hay filas que pueden cambiar si se baja más escenas.
-- **ECOSTRESS (prevista).** Solo abril a octubre, desde 2018-08, sobre una ventana de muestra y no el condado
+- **ECOSTRESS.** Solo abril a octubre, desde 2018-08, sobre una ventana de muestra y no el condado
   entero. Fuera de ese rango las columnas van vacías.
 - **Economía (prevista).** NASS dejó de publicar el precio del trigo de invierno en Iowa después de 2019 y el
   de la avena en Indiana después de 2015. Los costos son por región del ERS: IA, IL e IN están enteros en
