@@ -1,9 +1,9 @@
 ---
 id: T074
 titulo: Figuras de la demo con los datos publicados de OH, NE y MN
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - OH
 - NE
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 05:59
-actualizada: 2026-11-15 05:59
+actualizada: 2026-11-15 06:04
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ Los zips son públicos: si `gh release download` no anda en tu máquina, bajalos
 El cambio en el script y los PNG reales en un PR.
 
 ## Notas
+- 2026-11-15 06:04 · pro-2: tomada
