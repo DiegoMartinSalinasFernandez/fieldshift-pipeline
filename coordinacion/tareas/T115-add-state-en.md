@@ -1,14 +1,14 @@
 ---
 id: T115
 titulo: 'How to add a new state: English guide for judges (scalability)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T08:11
-actualizada: 2026-11-15T08:11
+actualizada: 2026-11-15 08:20
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ una tabla de tiempos y tamaños. Solo números que estén en el repo, citando de
 La página en un PR.
 
 ## Notas
+- 2026-11-15 08:20 · pro-3: tomada
