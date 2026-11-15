@@ -85,6 +85,7 @@ Paquete `agua` de Field Shift (CLAUDE.md §6.4): humedad del suelo y agua subter
 - Celdas de 9 km con valores > 0,60 m3/m3 (hasta ~0,92) en el noreste de Indiana (Allen, Whitley,
   Steuben, Jay, Miami) y DuPage (IL): suelos orgánicos o fracción de agua alta en el modelo. Se
   excluyen celda a celda (ver Supuestos); en esos condados la media usa menos celdas o queda vacía.
+  En MN y OH pasa lo mismo, con más área (ver "Área que saca el filtro de 0,6 m3/m3" más abajo).
 - `dias_sm_saturado` con umbral fijo de 0,40 m3/m3 (provisorio): en suelos con porosidad alta cuenta
   más días que en suelos arenosos. Mejor sería porosidad del modelo (`SPL4SMLM`) menos 0,05 m3/m3,
   que requiere Earthdata.
@@ -94,3 +95,49 @@ Paquete `agua` de Field Shift (CLAUDE.md §6.4): humedad del suelo y agua subter
   incompletos no se agregan).
 - `python src/agua/download.py` es reanudable: si una descarga se corta, completa lo que falta.
 - El servidor de nasagrace.unl.edu limita la velocidad por conexión (~50 KB/s).
+
+## Área que saca el filtro de 0,6 m3/m3 (MN y OH)
+
+Medido en `docs/research/smap_costas.md` (T082), con las capas de Crop-CASMA del 2019-05-01 y del
+2023-07-15 y los mismos parámetros de `src/agua/download.py`.
+
+- **Son siempre las mismas celdas.** En la capa `SUB` (zona radicular) el filtro `0 ≤ v ≤ 0,60` de
+  `src/agua/process.py` (`SM_MAX`) saca exactamente las mismas 384 celdas de MN y 23 de OH los dos días,
+  con valores de 0,62 a 0,93. Caen en turberas y suelos orgánicos: el norte de MN (Koochiching, St. Louis,
+  Beltrami, Itasca, Aitkin, Lake of the Woods), el sur agrícola de MN (Le Sueur, Hennepin, Waseca) y el oeste
+  de OH (Shelby, Darke, Auglaize, Allen). En la capa `TOP` (superficie) dependen del día: en un verano seco
+  casi no hay.
+- **No son agua de lago.** Crop-CASMA ya trae el agua abierta como nodata (`-9999`), que `process.py`
+  descarta aparte. Ningún condado de OH sobre el lago Erie pierde celdas por el filtro. No hace falta una
+  máscara de agua.
+- **Cuánta área.** En 46 de los 87 condados de MN el filtro saca alguna celda. En Koochiching saca el 65 %
+  del área del condado, en Le Sueur el 49 % y en Aitkin el 46 %. Ningún condado de MN ni de OH queda sin
+  celdas válidas.
+- **Efecto en las columnas.** Las celdas que se sacan son las más húmedas, así que en esos condados
+  `sm_rootzone_m3m3` (y sus derivadas mensuales) sale más baja que la media con todas las celdas, hasta
+  0,25–0,40 m3/m3 menos, y `dias_sm_saturado` (umbral 0,40) cuenta de menos. En el release
+  `datos-oh-ne-mn` ninguna media diaria de condado pasa de 0,52 m3/m3. Comparar la humedad entre condados
+  con turba y sin turba con cuidado.
+- Que las celdas > 0,6 sean la turba del módulo PEATCLSM de SMAP L4 es una inferencia (son fijas en el
+  tiempo, caen en turberas y llegan a una porosidad típica de turba). La documentación de Crop-CASMA y de
+  NSIDC no lo confirma.
+
+Efecto del filtro en la media de condado (`SUB`, 2023-07-15):
+
+| Condado | Área excluida | Media publicada (sin > 0,6) | Media con todas las celdas − publicada |
+|---|---|---|---|
+| Koochiching (27071) | 64,7 % | 0,229 | +0,338 |
+| Le Sueur (27079) | 48,5 % | 0,247 | +0,241 |
+| Aitkin (27001) | 46,3 % | 0,158 | +0,245 |
+| Hennepin (27053) | 44,3 % | 0,190 | +0,243 |
+| Lake of the Woods (27077) | 42,2 % | 0,214 | +0,219 |
+| St. Louis (27137) | 23,1 % | 0,181 | +0,128 |
+| Shelby (39149) | 34,2 % | 0,311 | +0,190 |
+| Auglaize (39011) | 27,9 % | 0,318 | +0,152 |
+| Condados de OH sobre el Erie | 0 % | — | 0 |
+
+(medias en m3/m3; la "media publicada" coincide al cuarto decimal con `agua_diario.csv` del release)
+
+No se cambió el cálculo. Una columna con la fracción del área excluida por condado
+(`frac_celdas_excluidas`, en un `agua_estatico.csv` nuevo) cambia el esquema y queda para decidir
+(`coordinacion/para_decidir.md` #31).
