@@ -26,7 +26,8 @@ Detalle: abajo, una sección por estado y la tabla resumen al final.
 - Estados disponibles en el formulario hoy: **IL, IN, MI, MN, OH, WI**. **Iowa ya no está** en la lista
   (el contacto de Iowa aparece oculto en la página).
 - Valores por defecto del formulario: N a **0,40 USD/lb N** y maíz a **4,00 USD/bu** → relación de precios
-  **0,10** (USD por lb de N / USD por bu de maíz). Rotaciones: `cc` (maíz tras maíz) y `cs` (maíz tras soja).
+  **0,10** (USD por lb de N / USD por bu de maíz). El Illinois Agronomy Handbook dice que la relación real "se
+  mantuvo cerca de" 0,1 a lo largo del tiempo. Rotaciones: `cc` (maíz tras maíz) y `cs` (maíz tras soja).
 - No hay API pública. No corrí la calculadora para cada estado (su endpoint interno no es para uso
   automatizado), así que los valores de abajo salen de las guías publicadas por cada universidad.
 - Las dosis MRTN son **totales** para la rotación: la propia calculadora dice que no se ajustan además por el
@@ -49,8 +50,14 @@ Detalle: abajo, una sección por estado y la tabla resumen al final.
 
 ## Illinois (IL)
 
-- **Guía:** MRTN (calculadora regional, Illinois dividido en norte, centro y sur).
-- **Valores abiertos (farmdoc daily, 31-mar-2026, centro de Illinois):**
+- **Guía:** MRTN con datos propios de Illinois, en tres regiones (norte, centro, sur) y dos rotaciones.
+  Fuente principal: Nafziger, *Nitrogen Management for Corn*, capítulo 9 del **Illinois Agronomy Handbook**
+  (PDF de abril de 2022). La guía dice que se use el MRTN y que **no** se use más la recomendación por
+  rendimiento esperado (la vieja regla de 1,2 lb N/bu menos un crédito de soja de 40 lb N/ac).
+- **MRTN maíz tras soja (Handbook 2022, relación 0,10):** sur **200**, centro **181**, norte **171** lb N/ac.
+  Maíz tras maíz: unas **35 lb más** en el norte, **20 lb más** en el centro y **casi igual** en el sur.
+  Los MRTN "subieron en cada región en los últimos cinco años" al sumar ensayos.
+- **Valores más recientes abiertos (farmdoc daily, 31-mar-2026, centro de Illinois):**
 
   | Rotación | Precios otoño 2025 | Precios primavera 2026 |
   |---|---|---|
@@ -59,7 +66,14 @@ Detalle: abajo, una sección por estado y la tabla resumen al final.
 
   Precios usados: maíz 4,15 USD/bu (otoño) y 4,50 USD/bu (primavera); N 0,48 USD/lb (anhidro 787 USD/t)
   y 0,61 USD/lb (anhidro 1000 USD/t). Relación calculada por mí: **0,116** (otoño) y **0,136** (primavera).
-- Crédito de soja: incluido en la dosis MRTN.
+- **Crédito de soja:** ya incluido (son bases de datos separadas por rotación).
+- **Alfalfa:** restar **125 a 150 lb N/ac** al MRTN de maíz tras soja si el stand era bueno, hasta 0 si
+  quedaban pocas plantas.
+- **Cultivos de cobertura:**
+  - centeno con más de 1 t/ac de materia seca al secarlo → usar el MRTN de **maíz tras maíz**;
+  - leguminosa (trébol) secada varias semanas antes de sembrar → extremo bajo del rango del MRTN maíz/soja,
+    y restar **20–30 lb** si ya se está descomponiendo al sembrar; si se secó cerca de la siembra → el MRTN;
+  - tras trigo u otro cereal de invierno → MRTN de maíz tras soja.
 
 ## Indiana (IN)
 
@@ -82,12 +96,14 @@ Detalle: abajo, una sección por estado y la tabla resumen al final.
 
 ## Ohio (OH)
 
-- **Guía:** MRTN (calculadora regional, eligiendo Ohio). Revisión grande en 2018 (281 ensayos: 228 tras soja,
-  53 tras maíz) y nota de actualización en el C.O.R.N. Newsletter 2025-13 ("Corn N recommendations: Maximum
-  Return to N calculator updated") — **no la abrí**.
-- **Valores (C.O.R.N. Newsletter 2026, según el resumen del buscador; pendiente abrir):** maíz tras soja
-  160 lb N/ac con UAN 28 % a 400 USD/t y maíz a 4,50 USD/bu (relación 0,158) y 152 lb N/ac a 450 USD/t
-  (0,178). No los pongo como confirmados.
+- **Guía:** MRTN de la calculadora regional eligiendo Ohio. **Datos nuevos agregados en abril de 2025**
+  (ensayos hasta 2024: 273 sitios de maíz tras soja y 83 de maíz tras maíz; C.O.R.N. Newsletter 2025-13).
+  Revisión anterior grande: 2018.
+- **Maíz tras soja (C.O.R.N. Newsletter 2026-06, UAN 28 %, maíz 4,50 USD/bu):**
+  - UAN 400 USD/t → relación **0,158** → MRTN **160 lb N/ac** (rango a ±1 USD: 146–172);
+  - UAN 450 USD/t → relación **0,178** → MRTN **152 lb N/ac** (139–165).
+- **Maíz tras maíz:** el artículo no da el valor. **No encontrado.**
+- Crédito de soja: incluido en el MRTN. Alfalfa y cobertura: no verificado en una fuente de Ohio.
 
 ## Nebraska (NE)
 
@@ -151,9 +167,9 @@ Detalle: abajo, una sección por estado y la tabla resumen al final.
 | Estado | Guía vigente (año) | Método | Maíz tras soja (lb N/ac) | Maíz tras maíz (lb N/ac) | Relación N:maíz usada | Crédito soja | Crédito alfalfa | Crédito cobertura | Cambió hace poco |
 |---|---|---|---|---|---|---|---|---|---|
 | IA | N-FACT (feb 2025) | ensayos en campo, por sitio | no encontrado | no encontrado | la ingresa el usuario | incluido | no verificado | no verificado | sí: dejó el MRTN regional |
-| IL | MRTN (farmdoc mar 2026, centro) | MRTN | 178 / 172 | 194 / 186 | 0,116 / 0,136 | incluido | no verificado | no verificado | no encontrado |
+| IL | MRTN (Handbook 2022; farmdoc mar 2026) | MRTN por región | N 171 / C 181 / S 200 a 0,10 (2022); centro 178 / 172 (2026) | N +35, C +20, S ≈ igual (2022); centro 194 / 186 (2026) | 0,10 (2022); 0,116 / 0,136 (2026) | incluido | −125 a −150 con buen stand | centeno >1 t/ac → usar MRTN maíz/maíz; trébol: −20 a −30 | sí: MRTN sube al sumar ensayos |
 | IN | Purdue (abr 2022) | EONR propia por región | 159–225 según región y precio (central 192 a 0,15) | ≈ +44 sobre maíz/soja (AONR) | 0,10–0,20 en tablas | incluido | no verificado | no verificado | 2022 |
-| OH | MRTN (rev. 2018; nota 2025) | MRTN | 152–160 (no confirmado) | no encontrado | 0,158–0,178 (no confirmado) | incluido | no verificado | no verificado | posible actualización 2025, sin abrir |
+| OH | MRTN (datos nuevos abr 2025) | MRTN | 160 (146–172) a 0,158; 152 (139–165) a 0,178 | no encontrado | 0,158–0,178 | incluido | no verificado | no verificado | sí: ensayos hasta 2024 agregados en 2025 |
 | NE | EC117 (dic 2023) + herramienta web (may 2024) | fórmula rendimiento esperado × precio × momento | depende del campo | depende del campo | maíz:N 4–12 (típico 8 ≈ 0,125) | se resta; 35 en suelos gruesos | en tabla I (no legible) | no encontrado | sí: herramienta web 2024 |
 | MN | UMN MRTN (sep 2025) | MRTN | 150 (135–160) a 0,10 | 185 (170–200) a 0,10 | 0,075–0,15 | incluido | 150 (1.er año), 75 (2.º) con ≥4 pl/ft² (no confirmado) | no encontrado | sí: +10 lb en 2025 |
 | KS | MF2586 (ene 2024) | fórmula rendimiento esperado | fórmula − 40 | fórmula | ninguna | −40 | −120 / −80 / −40 / 0 según stand | no trae | revisión 2024 |
@@ -162,16 +178,20 @@ Detalle: abajo, una sección por estado y la tabla resumen al final.
 
 Fuentes:
 - [Corn Nitrogen Rate Calculator (página y formulario)](https://www.cornnratecalc.org/calculator/?mode=single), consultado 2026-11-15
+- [Nafziger, Nitrogen Management for Corn, Illinois Agronomy Handbook cap. 9 (PDF abr-2022)](https://extension.illinois.edu/sites/default/files/iah_-_nitrogen_management_for_corn_v4.pdf), consultado 2026-11-15
+- [OSU C.O.R.N. Newsletter 2025-13, MRTN calculator updated](https://agcrops.osu.edu/newsletter/corn-newsletter/2025-13/corn-n-recommendations-maximum-return-n-calculator-updated), consultado 2026-11-15
+- [OSU C.O.R.N. Newsletter 2026-06, Rising nitrogen prices](https://agcrops.osu.edu/newsletter/corn-newsletter/2026-06/rising-nitrogen-prices-and-implications-corn-fertility-decisions), consultado 2026-11-15
 - [farmdoc daily, "High Fertilizer Prices Suggest Reconsidering Application Rates", 31-mar-2026](https://farmdocdaily.illinois.edu/2026/03/high-fertilizer-prices-suggest-reconsidering-application-rates.html), consultado 2026-11-15
 - [Camberato y Nielsen, Nitrogen Management Guidelines for Corn in Indiana, Purdue, abr-2022](https://www.agry.purdue.edu/Ext/corn/news/timeless/NitrogenMgmt.pdf), consultado 2026-11-15
 - [UMN Crop News, "Updated corn nitrogen rates: what are we...", 26-sep-2025](https://blog-crop-news.extension.umn.edu/2025/09/updated-corn-nitrogen-rates-what-are-we.html), consultado 2026-11-15
 - [UNL EC117, Nutrient Management Suggestions for Corn, rev. dic-2023](https://extensionpubs.unl.edu/publication/ec117/na/pdf/view), consultado 2026-11-15
 - [UNL CropWatch, "Nitrogen Management Suggestions for Corn Updated in EC117, EC155, and EC2008", 9-may-2024](https://cropwatch.unl.edu/2024/nitrogen-management-suggestions-corn-updated-ec117-ec155-and-ec2008), consultado 2026-11-15
 - [K-State MF2586, Soil Test Interpretations and Fertilizer Recommendations in Kansas, ene-2024](https://bookstore.ksre.ksu.edu/pubs/MF2586.pdf), consultado 2026-11-15
-- Solo por resultados de búsqueda (no abiertos): [Clean Water Iowa, N-FACT, 4-feb-2025](https://www.cleanwateriowa.org/news-releases/2025/2/6/02-04-2025-secretary-naig-encourages-farmers-to-use-n-fact-tool-to-calculate-optimal-nitrogen-application-rates); [OSU C.O.R.N. 2026, Rising nitrogen prices](https://agcrops.osu.edu/newsletter/corn-newsletter/2026-06/rising-nitrogen-prices-and-implications-corn-fertility-decisions); [OSU C.O.R.N. 2025-13, MRTN calculator updated](https://agcrops.osu.edu/newsletter/corn-newsletter/2025-13/corn-n-recommendations-maximum-return-n-calculator-updated); [UMN, Fertilizing corn in Minnesota](https://extension.umn.edu/crop-specific-needs/fertilizing-corn-minnesota)
+- Solo por resultados de búsqueda (no abiertos): [Clean Water Iowa, N-FACT, 4-feb-2025](https://www.cleanwateriowa.org/news-releases/2025/2/6/02-04-2025-secretary-naig-encourages-farmers-to-use-n-fact-tool-to-calculate-optimal-nitrogen-application-rates); [UMN, Fertilizing corn in Minnesota](https://extension.umn.edu/crop-specific-needs/fertilizing-corn-minnesota)
 
-Confianza: alta para KS, IN, MN y la ecuación de NE (documentos abiertos); media para IL (un solo artículo,
-solo región centro); baja para OH e IA (sin documento abierto con valores).
+Confianza: alta para KS, IN, IL, MN y la ecuación de NE (documentos abiertos); media para OH (solo maíz tras
+soja, sin maíz tras maíz); baja para IA (sin documento abierto con valores) y para los créditos de alfalfa de
+MN y de leguminosas de NE (no leídos en la fuente).
 
 Impacto: `config/cultivos.csv` (columna de fijación de N / crédito al cultivo siguiente) y el modelo de
 comparación de rotaciones (regla de costo de N por rotación). Ningún paquete de datos de `src/` cambia.
