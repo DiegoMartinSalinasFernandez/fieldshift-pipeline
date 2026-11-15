@@ -21,7 +21,7 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
 | produccion_anual.csv | rend_kgha | rend_bu_ac × factor de config.yaml (bu_ac_a_kgha) | kg/ha | Derivada de NASS Quick Stats | Y04 | 2000 | 2025 | 24.2 |
 | produccion_anual.csv | sup_sembrada_ha | sup_sembrada_ac × 0,4047 (acres_a_ha) | ha | Derivada de NASS Quick Stats | Y01 | 2000 | 2025 | 24.2 |
 | produccion_anual.csv | ratio_cosechada | sup_cosechada_ac / sup_sembrada_ac | fracción | Derivada de NASS Quick Stats | Y05 | 2000 | 2025 | 24.2 |
-| produccion_anual.csv | flag_nass | Código original de NASS cuando el valor está oculto: (D), (Z), (NA)… (separados por ;) | texto | USDA NASS Quick Stats (SURVEY, condado) |  | 2013 | 2013 | 98.5 |
+| produccion_anual.csv | flag_nass | Código original de NASS cuando el valor está oculto: (D), (Z), (NA)…; `0_sin_cosecha_grano` cuando NASS da rendimiento 0 sin superficie cosechada para grano (separados por ;) | texto | USDA NASS Quick Stats (SURVEY, condado) |  | 2013 | 2013 | 98.5 |
 | fenologia_estado.csv | doy_50_sembrado | Día del año en que se cruza el 50 % sembrado (PCT PLANTED, interpolado) | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) | CT03 | 2000 | 2025 | 0.6 |
 | fenologia_estado.csv | doy_50_emergido | Día del año en que se cruza el 50 % emergido (PCT EMERGED) | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) |  | 2000 | 2025 | 1.3 |
 | fenologia_estado.csv | doy_50_floracion | Día del año del 50 % en floración (maíz PCT SILKING, soja PCT BLOOMING) | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) | CT05 | 2000 | 2025 | 0.0 |
@@ -66,6 +66,11 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
   `rend_kgha` quedan vacías para esos cultivos. NASS no publica superficie sembrada de heno.
 - Valores ocultos de NASS (`(D)`, `(Z)`, `(NA)`, etc.) quedan vacíos con el código en
   `flag_nass`. La tendencia del rendimiento no se saca.
+- **Rendimiento 0 sin cosecha para grano** (`flag_nass` = `0_sin_cosecha_grano`): cuando NASS
+  publica `YIELD` = 0 bu/ac y la superficie cosechada para grano falta o es 0, no hubo cosecha
+  para grano (p. ej. todo el maíz del condado fue a silo): ese 0 es un relleno, no un
+  rendimiento. `rend_bu_ac` y `rend_kgha` quedan vacíos; el resto de la fila no cambia. Un
+  rendimiento bajo pero mayor que 0 con superficie cosechada queda como está.
 - Las filas OTHER (COMBINED) COUNTIES (`COUNTY_CODE` 998) quedan afuera; también todo fips que
   no esté en `data/reference/condados.csv`.
 - Crop Progress: semanas con `WEEK_ENDING`; el 50 % se interpola linealmente entre las dos
@@ -152,6 +157,11 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
   cobertura, labranza cero ni drenaje con caños por condado (solo `AG LAND, CROPLAND` y riego),
   y los archivos de 2017 y 2022 no repiten 2012. Esas columnas quedan vacías en 2012.
 - Los rendimientos de condado de 2024 se publicaron tarde; ver la columna `hasta`.
+- **Rendimiento 0 de NASS** (T148): NASS publica `YIELD` = 0 en condados donde no hubo cosecha
+  para grano (p. ej. maíz del oeste de Dakota del Sur 2000-2006, todo a silo). Desde T148 esas
+  filas tienen `rend_bu_ac` y `rend_kgha` vacíos con `flag_nass` = `0_sin_cosecha_grano` (ver
+  Supuestos). Los rendimientos bajos pero reales (Haakon, Oglala Lakota, Pennington: 2,9 a
+  18,3 bu/ac con superficie cosechada) quedan como están.
 - **CDL de 10 m en 2024-2025**: sus bordes de lote no coinciden con los de la serie de 30 m.
   Las transiciones lo corrigen con su denominador (ver Supuestos), pero los % de área
   (`pct_maiz`, `pct_soja`, …) y las máscaras `mascara_maiz_<anio>` / `mascara_soja_<anio>`

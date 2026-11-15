@@ -44,6 +44,9 @@ NASS_CULTIVOS = {
     "heno": ("HAY", "(EXCL ALFALFA)", "ALL UTILIZATION PRACTICES"),
 }
 CODIGOS_OCULTOS = {"(D)", "(Z)", "(NA)", "(X)", "(S)", "(L)", "(H)"}
+# NASS publica YIELD = 0 cuando no hubo cosecha para grano (p. ej. todo el maíz fue a silo) y no
+# publica AREA HARVESTED: ese 0 no es un rendimiento y va vacío con este código en flag_nass (T148).
+FLAG_SIN_COSECHA = "0_sin_cosecha_grano"
 
 
 def filtrar(raw: Path) -> pd.DataFrame:
@@ -73,6 +76,21 @@ def valor(s: pd.Series) -> tuple[pd.Series, pd.Series]:
     flag = v.where(v.isin(CODIGOS_OCULTOS), "")
     num = pd.to_numeric(v.str.replace(",", "", regex=False), errors="coerce")
     return num, flag
+
+
+def rend_cero_sin_cosecha(ancho: pd.DataFrame) -> pd.DataFrame:
+    """Rendimiento 0 con superficie cosechada vacía o 0 -> rend_bu_ac vacío y FLAG_SIN_COSECHA.
+
+    Solo toca rend_bu_ac y flag_nass; un rendimiento bajo pero real (> 0) queda igual.
+    """
+    ancho = ancho.copy()
+    sup = ancho["sup_cosechada_ac"]
+    m = (ancho["rend_bu_ac"] == 0) & (sup.isna() | (sup == 0))
+    ancho.loc[m, "rend_bu_ac"] = np.nan
+    previo = ancho.loc[m, "flag_nass"].fillna("").astype(str)
+    ancho.loc[m, "flag_nass"] = [";".join(sorted(set(filter(None, f.split(";"))) | {FLAG_SIN_COSECHA}))
+                                 for f in previo]
+    return ancho
 
 
 def produccion(crops: pd.DataFrame) -> pd.DataFrame:
@@ -111,7 +129,7 @@ def produccion(crops: pd.DataFrame) -> pd.DataFrame:
              .groupby(["fips", "anio", "cultivo"])["flag"]
              .agg(lambda x: ";".join(sorted(set(x)))))
     ancho = ancho.reindex(columns=list(variables)).join(flags.rename("flag_nass"))
-    ancho = ancho.reset_index()
+    ancho = rend_cero_sin_cosecha(ancho.reset_index())
     ancho["rend_kgha"] = np.nan
     for cultivo in ("maiz", "soja", "trigo_invierno", "avena"):
         m = ancho["cultivo"] == cultivo
