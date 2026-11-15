@@ -244,7 +244,7 @@ n de la ventana de soja: 18, salvo ND (14), SD (16) y KY (17). Estado-años con 
    pierden el final de la floración en los años tardíos (2008, 2009, 2019 aparecen en casi todos).
 2. **Los años que fallan siguen siendo del año, no solo del estado.** En el sur fallan por adelanto (MO y KY
    en 2012, con el 25 % a fin de junio). En el norte fallan por atraso (2008, 2009, 2019). El rango del 50 %
-   dentro de un estado es de 18 a 22 días (por ejemplo ND 198–218), más que la distancia entre estados. Una
+   dentro de un estado es de 15 a 22 días (WI 200–215, ND 198–218, MI 196–218), más que la distancia entre estados. Una
    ventana fija por estado corrige el corrimiento medio del norte, pero no los años extremos.
 3. **Kentucky se parece a Kansas por el ancho**: 19 días de mediana entre el 25 y el 75 % (MO 15), contra
    12–14 en el norte. Posibles causas: siembras escalonadas y maíz de siembra temprana y tardía. No se verificó.
