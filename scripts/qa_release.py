@@ -16,7 +16,10 @@ condado con la de estado.
 
 Uso:
   .venv/bin/python -X utf8 scripts/qa_release.py datos-oh-ne-mn --eventos docs/qa/eventos_oh_ne_mn.yaml \
-      [--qs qs.crops_<fecha>.txt.gz] > informe.md
+      [--eventos docs/qa/eventos_ks.yaml ...] [--qs qs.crops_<fecha>.txt.gz] > informe.md
+
+`--eventos` se puede repetir. Un evento con `estados` que no están en el release se saltea con un aviso, así las
+listas de una tanda (`eventos_ks.yaml`, `eventos_mo_wi_sd.yaml`) corren sobre cualquier release.
 
 Salida en Markdown por stdout, con secciones: faltantes por estado contra el data card de `main` (IA/IL/IN),
 eventos, rangos, outliers por vecinos y totales de NASS. Las secciones cuyo paquete no está en el release se
@@ -223,7 +226,7 @@ def seccion_eventos(rel: Release, eventos: list[dict]) -> None:
         if estados:
             estan = [e for e in estados if e in rel.estados]
             if not estan:
-                print(f"_{ev['titulo']}: {', '.join(estados)} no están en el release "
+                print(f"_{ev['titulo']}: {', '.join(estados)} no {'está' if len(estados) == 1 else 'están'} en el release "
                       f"({', '.join(rel.estados)}): se saltea._\n")
                 continue
         if not rel.tiene(paq, arch):
