@@ -194,7 +194,7 @@ counties to ERS resource regions", última modificación del archivo 2017-10-25;
 - Comparación de regiones: el "Western Kentucky" de los presupuestos de UK y los tiers de "Wheat Planting
   Decision" (Southwest entre la I-24 y la I-65, Northwest = Ohio Valley) se parecen a la parte Heartland de
   ERS, pero ninguno trae lista de condados: **no se puede cruzar condado por condado**.
-- Ojo con Eastern Uplands: según `reglink.xls` abarca 410 condados de 13 estados (KY 94, TN 62, WV 55, AR 40,
+- Ojo con Eastern Uplands: según `reglink.xls` abarca 422 condados de 13 estados (KY 94, TN 62, WV 55, AR 40,
   VA 37, MO 27, OK 25, AL 21, OH 18, NC 17, PA 13, GA 11, MD 2), así que su serie ERS no es de KY; su soja 2025 tiene rinde
   44 bu/ac (`presupuestos_estados_nuevos.md`), contra 56 bu/ac en los presupuestos de UK y 46,8 en KFBM 2025.
 
