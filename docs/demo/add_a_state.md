@@ -39,9 +39,12 @@ machines, so treat them as orders of magnitude.
    of missing values per column, assumptions and known problems (`CLAUDE.md` §7).
 7. **Publish.** `FIELDSHIFT_ESTADOS=MO,WI,SD python scripts/entregar.py` builds one zip per package (CSVs, data
    card, county table, manifest rows) with a `.sha256`, and uploads it to the GitHub release `datos-mo-wi-sd`.
+   It also uploads `datos-mo-wi-sd_base.zip`: the county polygons (`data/reference/condados.gpkg`, EPSG:4326),
+   `condados.csv`, `anios.csv` and a short README, so maps and ML do not need the Census file separately.
    It refuses to upload if any manifest URL carries an API key (`scripts/entregar.py`).
 8. **Check the release.** `python scripts/verificar_entrega.py data/entregas/<release>/*.zip` checks each zip
-   against the CSV contract and marks every package APTO (fit) or NO APTO (not fit). Ohio, Nebraska and
+   against the CSV contract and marks every package APTO (fit) or NO APTO (not fit); the `_base.zip` is
+   checked too (readable GeoPackage in EPSG:4326, same `fips` as `condados.csv`). Ohio, Nebraska and
    Minnesota passed with 8 packages APTO (`T003`). Then `python scripts/qa_release.py <release> --eventos
    <events>.yaml` looks for missing values by state, known extreme events, ranges, outliers against
    neighboring counties and county totals against NASS (`scripts/qa_release.py`, example in
