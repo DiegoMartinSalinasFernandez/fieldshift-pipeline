@@ -327,9 +327,33 @@ def commits_nuevos() -> int:
     return int(r.stdout.strip() or 0) if r.returncode == 0 else 0
 
 
+MAX_MB_WIP = 5   # un archivo nuevo más grande que esto no entra en el commit WIP
+
+
+def sacar_datos_del_indice() -> list[str]:
+    """Saca del índice los archivos nuevos que son datos: bajo data/, .zip o de más de MAX_MB_WIP.
+
+    El commit WIP junta todo lo que quedó en la carpeta; sin esto, zips y CSV bajados de los releases
+    terminaban en los PR (PR 66 y 68). Los archivos quedan en disco, sin seguimiento.
+    """
+    nuevos = git("diff", "--cached", "--name-only", "--diff-filter=A", check=False).stdout.splitlines()
+    fuera = []
+    for f in nuevos:
+        ruta = REPO / f
+        grande = ruta.is_file() and ruta.stat().st_size > MAX_MB_WIP * 1e6
+        if f.startswith("data/") or f.lower().endswith(".zip") or grande:
+            fuera.append(f)
+    for i in range(0, len(fuera), 100):
+        git("reset", "-q", "--", *fuera[i:i + 100], check=False)
+    return fuera
+
+
 def guardar_sin_commit(maquina: str) -> None:
     if git("status", "--porcelain").stdout.strip():
         git("add", "-A")
+        fuera = sacar_datos_del_indice()
+        if fuera:
+            log(f"WIP sin {len(fuera)} archivos de datos (quedan en disco): {', '.join(fuera[:5])}")
         git("-c", f"user.name=trabajador {maquina}", "-c", "user.email=trabajador@fieldshift.invalid",
             "commit", "-q", "-m", "WIP (trabajador): cambios sin commit al cortar la sesión", check=False)
 
