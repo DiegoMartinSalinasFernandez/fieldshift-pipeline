@@ -1,14 +1,14 @@
 ---
 id: T058
 titulo: Script de figuras para la demo con los datos publicados
-estado: tomada
+estado: libre
 plan_minimo: pro
-maquina: pro-5
+maquina: null
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:30
-actualizada: 2026-11-15 04:43
+actualizada: 2026-11-15 04:45
 ---
 
 ## Qué hacer
@@ -35,3 +35,4 @@ El script y las figuras en un PR.
 - 2026-11-15 04:39 · pro-5: tomada
 - 2026-11-15 04:43 · pro-5: soltada: quedó a medias, PR #53. INCOMPLETA: el script está terminado y probado, pero faltan los PNG reales. En esta máquina no se pudieron bajar los zips publicados: el permiso de `gh` (y el de la API de GitHub) se denegó. Falta correr `.venv/bin/python -X utf8 docs/demo/figuras.py` en una máquina con `gh` y commitear `docs/demo/f
 - 2026-11-15 04:43 · pro-5: tomada
+- 2026-11-15 04:45 · pro-5: soltada: quedó a medias, PR #53 actualizado. INCOMPLETA: `docs/demo/figuras.py` está terminado y probado, pero faltan los PNG reales en `docs/demo/fig/`. En pro-5 los permisos de `gh` (`gh release list` / `gh release download`) siguen denegados (segundo intento). Además, la URL pública del release (`.../releases/tag/datos-ia-il-in`) devuelve 4
