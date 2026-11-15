@@ -1,15 +1,15 @@
 ---
 id: T120
 titulo: 'suelo_terreno: repartir por condado las áreas de levantamiento que no son un condado (necesario para KY)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados:
 - KY
 depende_de: []
 rama: null
 creada: 2026-11-15T08:45
-actualizada: 2026-11-15T08:45
+actualizada: 2026-11-15 09:01
 ---
 
 ## Qué hacer
@@ -31,3 +31,4 @@ existen: 75 de los 120 condados quedarían sin suelo. Ese research trae una prop
 El cambio y las pruebas en un PR, con CI en verde.
 
 ## Notas
+- 2026-11-15 09:01 · pro-4: tomada
