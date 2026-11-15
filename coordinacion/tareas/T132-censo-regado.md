@@ -1,14 +1,14 @@
 ---
 id: T132
 titulo: Riego por cultivo del Censo en `practicas_censo.csv` (código listo, espera OK)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:24
-actualizada: 2026-11-15T09:24
+actualizada: 2026-11-15 09:44
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ No cambies ninguna columna que ya existe; no toques `src/common/` ni `config/`.
 El código, las pruebas sin red y el data card en un PR con CI en verde, retenido como dice arriba.
 
 ## Notas
+- 2026-11-15 09:44 · pro-2: tomada
