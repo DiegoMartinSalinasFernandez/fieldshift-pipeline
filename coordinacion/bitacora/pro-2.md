@@ -68,3 +68,4 @@
 - 06:34 T085: a medias, PR #76
 - 06:34 T085: tomada por el trabajador
 - 06:35 T085: a medias, PR #76 actualizado
+- 06:36 T085: tomada por el trabajador
