@@ -1,15 +1,15 @@
 ---
 id: T148
 titulo: 'Rendimiento 0 de NASS sin cosecha para grano: dejarlo vacío con `flag_nass` en `produccion_anual.csv`'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - SD
 depende_de: []
 rama: null
 creada: 2026-11-15T13:47Z
-actualizada: 2026-11-15T13:47Z
+actualizada: 2026-11-15 10:54
 ---
 
 ## Qué pasa
@@ -45,3 +45,4 @@ PR con CI en verde, el conteo por estado y cultivo en el cuerpo, y la prueba nue
 `cultivos` de MO/WI/SD (y los otros estados si cambian) después de unirlo.
 
 ## Notas
+- 2026-11-15 10:54 · pro-2: tomada
