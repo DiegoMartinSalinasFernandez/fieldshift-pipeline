@@ -1,0 +1,155 @@
+== 2000: PC 240 granulos, 40 fechas, 6 teselas | CMR 240 granulos, 40 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2001: PC 267 granulos, 45 fechas, 6 teselas | CMR 267 granulos, 45 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+   CMR fecha A2001177 sin teselas: h10v05 h11v05 h12v04
+== 2002: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2003: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2004: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2005: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2006: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2007: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2008: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2009: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2010: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2011: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2012: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2013: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2014: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2015: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2016: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2017: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2018: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2019: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2020: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2021: PC 276 granulos, 46 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: -
+   fechas PC que no estan en CMR: -
+== 2022: PC 250 granulos, 43 fechas, 6 teselas | CMR 270 granulos, 45 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: A2022337 A2022345
+   fechas PC que no estan en CMR: -
+   en CMR y no en PC, h09v05: 4 -> A2022281 A2022297 A2022337 A2022345
+   en CMR y no en PC, h10v04: 4 -> A2022281 A2022297 A2022337 A2022345
+   en CMR y no en PC, h10v05: 3 -> A2022297 A2022337 A2022345
+   en CMR y no en PC, h11v04: 3 -> A2022273 A2022337 A2022345
+   en CMR y no en PC, h11v05: 3 -> A2022273 A2022337 A2022345
+   en CMR y no en PC, h12v04: 3 -> A2022273 A2022337 A2022345
+== 2023: PC 264 granulos, 44 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: A2023001 A2023057
+   fechas PC que no estan en CMR: -
+   en CMR y no en PC, h09v05: 2 -> A2023001 A2023057
+   en CMR y no en PC, h10v04: 2 -> A2023001 A2023057
+   en CMR y no en PC, h10v05: 2 -> A2023001 A2023057
+   en CMR y no en PC, h11v04: 2 -> A2023001 A2023057
+   en CMR y no en PC, h11v05: 2 -> A2023001 A2023057
+   en CMR y no en PC, h12v04: 2 -> A2023001 A2023057
+== 2024: PC 264 granulos, 44 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: A2024121 A2024361
+   fechas PC que no estan en CMR: -
+   en CMR y no en PC, h09v05: 2 -> A2024121 A2024361
+   en CMR y no en PC, h10v04: 2 -> A2024121 A2024361
+   en CMR y no en PC, h10v05: 2 -> A2024121 A2024361
+   en CMR y no en PC, h11v04: 2 -> A2024121 A2024361
+   en CMR y no en PC, h11v05: 2 -> A2024121 A2024361
+   en CMR y no en PC, h12v04: 2 -> A2024121 A2024361
+== 2025: PC 168 granulos, 28 fechas, 6 teselas | CMR 276 granulos, 46 fechas, 6 teselas
+   teselas PC : h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   teselas CMR: h09v05 h10v04 h10v05 h11v04 h11v05 h12v04
+   fechas CMR que no estan en PC: A2025185 A2025193 A2025201 A2025209 A2025217 A2025225 A2025233 A2025241 A2025249 A2025257 A2025265 A2025273 A2025281 A2025289 A2025297 A2025305 A2025313 A2025321
+   fechas PC que no estan en CMR: -
+   en CMR y no en PC, h09v05: 18 -> A2025185 A2025193 A2025201 A2025209 A2025217 A2025225 A2025233 A2025241 A2025249 A2025257 A2025265 A2025273 A2025281 A2025289 A2025297 A2025305 A2025313 A2025321
+   en CMR y no en PC, h10v04: 18 -> A2025185 A2025193 A2025201 A2025209 A2025217 A2025225 A2025233 A2025241 A2025249 A2025257 A2025265 A2025273 A2025281 A2025289 A2025297 A2025305 A2025313 A2025321
+   en CMR y no en PC, h10v05: 18 -> A2025185 A2025193 A2025201 A2025209 A2025217 A2025225 A2025233 A2025241 A2025249 A2025257 A2025265 A2025273 A2025281 A2025289 A2025297 A2025305 A2025313 A2025321
+   en CMR y no en PC, h11v04: 18 -> A2025185 A2025193 A2025201 A2025209 A2025217 A2025225 A2025233 A2025241 A2025249 A2025257 A2025265 A2025273 A2025281 A2025289 A2025297 A2025305 A2025313 A2025321
+   en CMR y no en PC, h11v05: 18 -> A2025185 A2025193 A2025201 A2025209 A2025217 A2025225 A2025233 A2025241 A2025249 A2025257 A2025265 A2025273 A2025281 A2025289 A2025297 A2025305 A2025313 A2025321
+   en CMR y no en PC, h12v04: 18 -> A2025185 A2025193 A2025201 A2025209 A2025217 A2025225 A2025233 A2025241 A2025249 A2025257 A2025265 A2025273 A2025281 A2025289 A2025297 A2025305 A2025313 A2025321
