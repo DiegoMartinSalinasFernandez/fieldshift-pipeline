@@ -47,26 +47,26 @@ avena,raiz_max_m,1.5,https://www.fao.org/4/x0490e/x0490e0e.htm,oats 1.0-1.5 0.55
 alfalfa,raiz_max_m,2.0,https://www.fao.org/4/x0490e/x0490e0e.htm,alfalfa - for hay 1.0-2.0 0.55,2026-11-14
 trebol,raiz_max_m,0.9,https://www.fao.org/4/x0490e/x0490e0e.htm,"clover hay, berseem 0.6-0.9 0.50",2026-11-14
 heno,raiz_max_m,1.0,https://www.fao.org/4/x0490e/x0490e0e.htm,rye grass hay 0.6-1.0 0.60,2026-11-14
-maiz,siembra_inicio,04-14,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,"11,800 340 270 25 36 9,350 820 apr 14 (na) (na) mar 20 may 4 may 2 sep 28",2026-11-14
+maiz,siembra_inicio,04-05,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,sep 15 mar 1 may 10 apr 5 (na) (na) feb 20 may 5 may 5 may 15 sep 10,2026-11-15
 maiz,siembra_fin,06-10,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,jun 10 jun 10 (na) (na) may 10 jun 25 nov 5,2026-11-14
-maiz,cosecha_inicio,09-14,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 9 sep 14 may 9 may 11 jul 4 sep 18 sep 19 jun 15,2026-11-14
-maiz,cosecha_fin,11-25,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 25 sep 20 sep 20 sep 20 aug 10 nov 10 jul 25,2026-11-14
-soja,siembra_inicio,05-01,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,"5,460 110 300 320 7 5,440 450 apr 20 apr 20 (na) (na) apr 1 may 1 sep 25",2026-11-14
-soja,siembra_fin,06-25,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,jun 10 jun 10 (na) (na) may 10 jun 25 nov 5,2026-11-14
+maiz,cosecha_inicio,09-01,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,jun 20 jun 20 oct 15 sep 1 may 10 may 25 jul 10 sep 10 sep 20 sep 15 jun 15,2026-11-15
+maiz,cosecha_fin,12-01,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,dec 1 oct 14 sep 24 oct 13 aug 11 oct 17 nov 12 sep 30 jul 20,2026-11-15
+soja,siembra_inicio,04-26,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,apr 18 apr 18 (na) (na) apr 4 apr 10 apr 26 may 25 sep 26,2026-11-15
+soja,siembra_fin,07-01,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 1 may 1 jun 25 may 25 (na) (na) may 1 jul 15 jul 1 jul 10 nov 1,2026-11-15
 soja,cosecha_inicio,09-19,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 9 sep 14 may 9 may 11 jul 4 sep 18 sep 19 jun 15,2026-11-14
-soja,cosecha_fin,11-10,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 25 sep 20 sep 20 sep 20 aug 10 nov 10 jul 25,2026-11-14
-trigo_invierno,siembra_inicio,09-06,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,"13,400 220 920 300 95 9,530 22 apr 19 apr 19 (na) (na) mar 25 may 2 sep 6",2026-11-14
+soja,cosecha_fin,11-15,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,jul 5 jul 10 dec 30 nov 10 nov 1 sep 15 aug 10 nov 25 nov 15 nov 30 jul 15,2026-11-15
+trigo_invierno,siembra_inicio,08-25,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,apr 15 may 7 apr 22 apr 22 (na) (na) apr 11 apr 20 may 2 apr 18 may 7 apr 14 aug 25,2026-11-15
 trigo_invierno,siembra_fin,11-09,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,jun 5 (na) (na) may 12 jul 6 jun 24 nov 9,2026-11-14
 trigo_invierno,cosecha_inicio,06-15,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 9 sep 14 may 9 may 11 jul 4 sep 18 sep 19 jun 15,2026-11-14
-trigo_invierno,cosecha_fin,08-07,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 21 sep 25 sep 29 sep 3 aug 11 oct 31 aug 7,2026-11-14
-avena,siembra_inicio,03-20,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,"11,800 340 270 25 36 9,350 820 apr 14 (na) (na) mar 20 may 4 may 2 sep 28",2026-11-14
-avena,siembra_fin,05-13,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,may 26 jun 23 (na) (na) may 13 jun 16 oct 30,2026-11-14
+trigo_invierno,cosecha_fin,09-10,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,sep 18 oct 17 nov 23 oct 14 sep 24 aug 30 sep 4 oct 20 oct 31 oct 27 nov 25 sep 22 sep 10,2026-11-15
+avena,siembra_inicio,02-20,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,sep 15 mar 1 may 10 apr 5 (na) (na) feb 20 may 5 may 5 may 15 sep 10,2026-11-15
+avena,siembra_fin,05-26,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,jun 3 jun 18 may 29 may 29 (na) (na) may 26 jun 10 jun 13 may 26 jun 15 jun 1 sep 25,2026-11-15
 avena,cosecha_inicio,07-04,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 9 sep 14 may 9 may 11 jul 4 sep 18 sep 19 jun 15,2026-11-14
-avena,cosecha_fin,08-13,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 20 sep 21 jul 17 aug 13 nov 20 nov 7 jul 19,2026-11-14
+avena,cosecha_fin,09-04,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,sep 18 oct 17 nov 23 oct 14 sep 24 aug 30 sep 4 oct 20 oct 31 oct 27 nov 25 sep 22 sep 10,2026-11-15
 alfalfa,cosecha_inicio,05-09,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 9 sep 14 may 9 may 11 jul 4 sep 18 sep 19 jun 15,2026-11-14
-alfalfa,cosecha_fin,09-29,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 21 sep 25 sep 29 sep 3 aug 11 oct 31 aug 7,2026-11-14
+alfalfa,cosecha_fin,11-01,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,jul 5 jul 10 dec 30 nov 10 nov 1 sep 15 aug 10 nov 25 nov 15 nov 30 jul 15,2026-11-15
 heno,cosecha_inicio,05-11,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 9 sep 14 may 9 may 11 jul 4 sep 18 sep 19 jun 15,2026-11-14
-heno,cosecha_fin,09-20,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,nov 25 sep 20 sep 20 sep 20 aug 10 nov 10 jul 25,2026-11-14
+heno,cosecha_fin,10-13,https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf,dec 1 oct 14 sep 24 oct 13 aug 11 oct 17 nov 12 sep 30 jul 20,2026-11-15
 maiz,familia,Poaceae,https://en.wikipedia.org/wiki/Maize,family: poaceae subfamily: panicoideae genus: zea,2026-11-14
 soja,familia,Fabaceae,https://en.wikipedia.org/wiki/Soybean,family: fabaceae subfamily: faboideae genus: glycine,2026-11-14
 trigo_invierno,familia,Poaceae,https://en.wikipedia.org/wiki/Common_wheat,family: poaceae subfamily: pooideae genus: triticum,2026-11-14
