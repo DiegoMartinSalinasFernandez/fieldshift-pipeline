@@ -40,7 +40,8 @@ Paquete `suelo_terreno` de Field Shift (CLAUDE.md §6.5): suelo (SSURGO) y terre
 
 - **SSURGO** (USDA NRCS) por **Soil Data Access** (`https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest`,
   sin login). `src/suelo_terreno/download.py` consulta por estado las tablas `mapunit` + `muaggatt`,
-  `component`, `chorizon` (+ suma de `chfrags.fragvol_r`), `corestrictions` y `cointerp` (NCCPI 3.0) y
+  `component`, `chorizon` (+ suma de `chfrags.fragvol_r`), `corestrictions`, `cointerp` (NCCPI 3.0) y
+  `laoverlap` + `muaoverlap` (superficie de cada unidad por condado) y
   las guarda tal cual en `data/raw/suelo_terreno/sda/<tabla>_<estado>.csv`.
 - **NASADEM HGT v001** (1 arcsec, ~30 m), teselas de 1° en COG de Microsoft Planetary Computer
   (`nasademeuwest.blob.core.windows.net/nasadem-cog/v001/`, token SAS anónimo), en

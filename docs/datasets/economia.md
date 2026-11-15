@@ -93,6 +93,10 @@ por condado en el período). Se guardan también en `data/interim/economia/pesos
 - **Sin área por condado.** Si NASS no publica `ACRES PLANTED` por condado de un cultivo en un
   estado (avena en IN), el peso de cada región es su proporción de condados (`base = condados`
   en la tabla de pesos; la columna `acres` trae entonces la cantidad de condados).
+- **Códigos de condado viejos en `reglink.xls`.** La planilla de ERS trae a Oglala Lakota (SD)
+  con el código de Shannon County (46113); el Census lo cambió a 46102 en 2015 (Census Bureau,
+  "Substantial Changes to Counties and County Equivalent Entities: 2010-present"). Al leerla se
+  pasa 46113 → 46102. Es el único cambio de código desde 2000 en los estados de la zona.
 - **Condados combinados.** Las filas de NASS de `OTHER (COMBINED) COUNTIES` no tienen condado
   y no entran en los pesos. Los códigos `(D)` y similares cuentan como sin dato.
 - **Trigo.** ERS publica costos de trigo en general (no separa el de invierno). Se asignan a
