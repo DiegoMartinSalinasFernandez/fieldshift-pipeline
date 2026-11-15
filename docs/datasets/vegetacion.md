@@ -6,31 +6,31 @@ Paquete `vegetacion` de Field Shift (CLAUDE.md §6.3): MODIS por condado del Cor
 
 | archivo | columna | descripcion | unidad | fuente | id_catalogo | desde | hasta | faltantes_pct |
 |---|---|---|---|---|---|---|---|---|
-| vegetacion_16d.csv | ndvi | NDVI medio del condado (compuesto de 16 días; fecha = inicio del compuesto) | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M01 | 2000-02-18 | 2025-12-19 | 7.3 |
-| vegetacion_16d.csv | evi | EVI medio del condado | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M02 | 2000-02-18 | 2025-12-19 | 7.3 |
-| vegetacion_16d.csv | ndvi_maiz | NDVI medio de los píxeles con >= 75 % de maíz (CDL del año) | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M01 | 2008-01-01 | 2025-12-19 | 58.3 |
-| vegetacion_16d.csv | ndvi_soja | NDVI medio de los píxeles con >= 75 % de soja (CDL del año) | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M01 | 2008-01-01 | 2025-12-19 | 63.2 |
-| vegetacion_16d.csv | frac_pixeles_validos | Píxeles que pasan el filtro de calidad sobre los píxeles del condado | 0-1 | MODIS MOD13Q1 v061 (Planetary Computer) | M03 | 2000-02-18 | 2025-12-19 | 0.1 |
-| vegetacion_mensual.csv | ndvi | Media de los compuestos de 16 días que empiezan en el mes | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M01 | 2000-02 | 2025-12 | 5.4 |
-| vegetacion_mensual.csv | evi | Media de los compuestos de 16 días que empiezan en el mes | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M02 | 2000-02 | 2025-12 | 5.4 |
-| vegetacion_mensual.csv | ndvi_maiz | Media mensual del NDVI de maíz (CDL >= 75 %) | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M01 | 2008-01 | 2025-12 | 56.6 |
-| vegetacion_mensual.csv | ndvi_soja | Media mensual del NDVI de soja (CDL >= 75 %) | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M01 | 2008-01 | 2025-12 | 61.6 |
+| vegetacion_16d.csv | ndvi | NDVI medio del condado (compuesto de 16 días; fecha = inicio del compuesto) | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M01 | 2000-02-18 | 2025-12-19 | 7.4 |
+| vegetacion_16d.csv | evi | EVI medio del condado | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M02 | 2000-02-18 | 2025-12-19 | 7.4 |
+| vegetacion_16d.csv | ndvi_maiz | NDVI medio de los píxeles con >= 75 % de maíz (CDL del año) | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M01 | 2008-01-01 | 2025-12-19 | 58.1 |
+| vegetacion_16d.csv | ndvi_soja | NDVI medio de los píxeles con >= 75 % de soja (CDL del año) | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M01 | 2008-01-01 | 2025-12-19 | 63.0 |
+| vegetacion_16d.csv | frac_pixeles_validos | Píxeles que pasan el filtro de calidad sobre los píxeles del condado | 0-1 | MODIS MOD13Q1 v061 (Planetary Computer) | M03 | 2000-02-18 | 2025-12-19 | 0.0 |
+| vegetacion_mensual.csv | ndvi | Media de los compuestos de 16 días que empiezan en el mes | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M01 | 2000-02 | 2025-12 | 4.3 |
+| vegetacion_mensual.csv | evi | Media de los compuestos de 16 días que empiezan en el mes | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M02 | 2000-02 | 2025-12 | 4.3 |
+| vegetacion_mensual.csv | ndvi_maiz | Media mensual del NDVI de maíz (CDL >= 75 %) | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M01 | 2008-01 | 2025-12 | 55.9 |
+| vegetacion_mensual.csv | ndvi_soja | Media mensual del NDVI de soja (CDL >= 75 %) | adim. | MODIS MOD13Q1 v061 (Planetary Computer) | M01 | 2008-01 | 2025-12 | 61.0 |
 | vegetacion_mensual.csv | lst_dia_c | LST diurna media (compuestos de 8 días que empiezan en el mes) | °C | MODIS MOD11A2 v061 (Planetary Computer) | M04 | 2000-02 | 2025-12 | 0.2 |
 | vegetacion_mensual.csv | lst_noche_c | LST nocturna media | °C | MODIS MOD11A2 v061 (Planetary Computer) | M05 | 2000-02 | 2025-12 | 0.2 |
 | vegetacion_mensual.csv | et_mm | ET real total del mes (Evap de NLDAS-2 Noah, media ponderada del condado) | mm | NLDAS-2 Noah mensual v2.0 (NASA GES DISC, sustituye a MOD16A2) | M06 | 2000-02 | 2025-12 | 0.0 |
 | vegetacion_mensual.csv | pet_mm | ET potencial total del mes (PotEvap de NLDAS-2 Noah, W m-2 × 86400 × días / 2,501e6) | mm | NLDAS-2 Noah mensual v2.0 (NASA GES DISC, sustituye a MOD16A2) | M07 | 2000-02 | 2025-12 | 0.0 |
 | vegetacion_mensual.csv | et_pet_ratio | et_mm / pet_mm | adim. | NLDAS-2 Noah mensual v2.0 (NASA GES DISC, sustituye a MOD16A2) |  | 2000-02 | 2025-12 | 0.0 |
-| vegetacion_mensual.csv | ndvi_anom_z | (ndvi − media del mes calendario) / desvío, por condado, todos los años | adim. | Derivada de MOD13Q1 | F10 | 2000-02 | 2025-12 | 5.4 |
-| vegetacion_mensual.csv | vci | VCI = 100 (ndvi − mín) / (máx − mín) del mes calendario, por condado | 0-100 | Derivada de MOD13Q1 | F11 | 2000-02 | 2025-12 | 5.4 |
+| vegetacion_mensual.csv | ndvi_anom_z | (ndvi − media del mes calendario) / desvío, por condado, todos los años | adim. | Derivada de MOD13Q1 | F10 | 2000-02 | 2025-12 | 4.3 |
+| vegetacion_mensual.csv | vci | VCI = 100 (ndvi − mín) / (máx − mín) del mes calendario, por condado | 0-100 | Derivada de MOD13Q1 | F11 | 2000-02 | 2025-12 | 4.3 |
 | vegetacion_mensual.csv | tci | TCI = 100 (máx − lst_dia_c) / (máx − mín) del mes calendario, por condado | 0-100 | Derivada de MOD11A2 + MOD13Q1 | F12 | 2000-02 | 2025-12 | 0.2 |
-| vegetacion_mensual.csv | vhi | VHI = 0,5 VCI + 0,5 TCI | 0-100 | Derivada de MOD11A2 + MOD13Q1 | F13 | 2000-02 | 2025-12 | 5.6 |
-| fenologia_anual.csv | doy_inicio | Día del año en que el NDVI suavizado sube al 50 % de la amplitud del año | DOY | Derivada de MOD13Q1 | F01 | 2000 | 2025 | 5.8 |
-| fenologia_anual.csv | doy_pico | Día del año del máximo NDVI suavizado (inicio del compuesto + 8 días) | DOY | Derivada de MOD13Q1 | F02 | 2000 | 2025 | 5.5 |
-| fenologia_anual.csv | doy_fin | Día del año en que el NDVI suavizado baja al 50 % de la amplitud | DOY | Derivada de MOD13Q1 | F04 | 2000 | 2025 | 5.6 |
-| fenologia_anual.csv | ndvi_max | Máximo del NDVI suavizado del año | adim. | Derivada de MOD13Q1 | F03 | 2000 | 2025 | 5.5 |
-| fenologia_anual.csv | duracion_dias | doy_fin − doy_inicio | días | Derivada de MOD13Q1 | F05 | 2000 | 2025 | 5.9 |
-| fenologia_anual.csv | ndvi_integral | Integral del NDVI suavizado entre doy_inicio y doy_fin | NDVI·día | Derivada de MOD13Q1 | F06 | 2000 | 2025 | 5.9 |
-| fenologia_anual.csv | n_ciclos | Picos del NDVI suavizado con prominencia >= 0,1 | n | Derivada de MOD13Q1 | F07 | 2000 | 2025 | 5.5 |
+| vegetacion_mensual.csv | vhi | VHI = 0,5 VCI + 0,5 TCI | 0-100 | Derivada de MOD11A2 + MOD13Q1 | F13 | 2000-02 | 2025-12 | 4.5 |
+| fenologia_anual.csv | doy_inicio | Día del año en que el NDVI suavizado sube al 50 % de la amplitud del año | DOY | Derivada de MOD13Q1 | F01 | 2000 | 2025 | 2.2 |
+| fenologia_anual.csv | doy_pico | Día del año del máximo NDVI suavizado (inicio del compuesto + 8 días) | DOY | Derivada de MOD13Q1 | F02 | 2000 | 2025 | 2.2 |
+| fenologia_anual.csv | doy_fin | Día del año en que el NDVI suavizado baja al 50 % de la amplitud | DOY | Derivada de MOD13Q1 | F04 | 2000 | 2025 | 2.3 |
+| fenologia_anual.csv | ndvi_max | Máximo del NDVI suavizado del año | adim. | Derivada de MOD13Q1 | F03 | 2000 | 2025 | 2.2 |
+| fenologia_anual.csv | duracion_dias | doy_fin − doy_inicio | días | Derivada de MOD13Q1 | F05 | 2000 | 2025 | 2.3 |
+| fenologia_anual.csv | ndvi_integral | Integral del NDVI suavizado entre doy_inicio y doy_fin | NDVI·día | Derivada de MOD13Q1 | F06 | 2000 | 2025 | 2.3 |
+| fenologia_anual.csv | n_ciclos | Picos del NDVI suavizado con prominencia >= 0,1 | n | Derivada de MOD13Q1 | F07 | 2000 | 2025 | 2.2 |
 | fenologia_anual.csv | ndvi_max_maiz | Máximo NDVI de maíz del año (compuestos de 16 días) | adim. | Derivada de MOD13Q1 | F03 | 2008 | 2025 | 52.5 |
 | fenologia_anual.csv | ndvi_max_soja | Máximo NDVI de soja del año (compuestos de 16 días) | adim. | Derivada de MOD13Q1 | F03 | 2008 | 2025 | 57.5 |
 | fenologia_anual.csv | dias_ndvi_lt03_invierno | Días con NDVI diario interpolado < 0,3 entre 1-nov (anio−1) y 31-mar | días | Derivada de MOD13Q1 | F09 | 2001 | 2025 | 3.8 |

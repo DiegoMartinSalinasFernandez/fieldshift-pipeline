@@ -4,7 +4,8 @@ Arma un zip por paquete con:
   data/processed/<paquete>/*        los CSV de los estados de esta máquina
   docs/datasets/<paquete>.md        el data card
   data/reference/condados.csv, anios.csv
-  manifest.csv                      las filas de los archivos bajados (sin claves de API)
+  manifest.csv                      solo las filas del paquete; si alguna trae una clave
+                                    (key=, api_key=, token=...) en la URL, corta sin subir nada
 y lo sube al release `datos-<estados>` (por ejemplo `datos-ks` o `datos-oh-ne-mn`), reemplazando la versión
 anterior del mismo paquete. Cada zip lleva al lado su .sha256.
 
@@ -17,7 +18,10 @@ Los estados salen de FIELDSHIFT_ESTADOS (obligatoria).
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
+import io
+import re
 import subprocess
 import sys
 import zipfile
@@ -30,6 +34,9 @@ from src.common.config import estados_elegidos  # noqa: E402
 PROC = REPO / "data" / "processed"
 SALIDA = REPO / "data" / "entregas"
 
+# Parámetros de URL que suelen llevar credenciales (key=, api_key=, apikey=, token=, access_token=...).
+CLAVE_EN_URL = re.compile(r"(?i)(?<![a-z0-9])(api[_-]?key|key|token|access[_-]?token)=")
+
 
 def sha256(p: Path) -> str:
     h = hashlib.sha256()
@@ -39,18 +46,53 @@ def sha256(p: Path) -> str:
     return h.hexdigest()
 
 
+def manifest_del_paquete(paquete: str) -> str | None:
+    """Encabezado y filas de manifest.csv con `paquete == <paquete>`, en el mismo orden (UTF-8, `\\n`).
+
+    Corta con error si alguna de esas filas tiene una clave en `consulta_o_url` (sin mostrar el valor).
+    """
+    man = REPO / "manifest.csv"
+    if not man.exists():
+        return None
+    with open(man, encoding="utf-8", newline="") as f:
+        filas = list(csv.reader(f))
+    if not filas:
+        return None
+    encabezado, cuerpo = filas[0], filas[1:]
+    for col in ("paquete", "consulta_o_url"):
+        if col not in encabezado:
+            sys.exit(f"manifest.csv: falta la columna {col}")
+    i_paq, i_url = encabezado.index("paquete"), encabezado.index("consulta_o_url")
+    i_arch = encabezado.index("archivo") if "archivo" in encabezado else None
+    elegidas = [r for r in cuerpo if len(r) > i_paq and r[i_paq] == paquete]
+    for n, r in enumerate(elegidas, 1):
+        m = CLAVE_EN_URL.search(r[i_url]) if len(r) > i_url else None
+        if m:
+            donde = r[i_arch] if i_arch is not None and len(r) > i_arch else f"fila {n} del paquete"
+            sys.exit(f"{paquete}: manifest.csv tiene una clave en consulta_o_url ({m.group(1)}=...) en "
+                     f"{donde}. Sacala del manifest antes de entregar.")
+    out = io.StringIO()
+    w = csv.writer(out, lineterminator="\n")
+    w.writerow(encabezado)
+    w.writerows(elegidas)
+    return out.getvalue()
+
+
 def armar_zip(paquete: str, etiqueta: str) -> Path:
     archivos = sorted(p for p in (PROC / paquete).rglob("*") if p.is_file())
     if not archivos:
         sys.exit(f"{paquete}: no hay archivos en data/processed/{paquete}/")
     extras = [REPO / "docs" / "datasets" / f"{paquete}.md", REPO / "data" / "reference" / "condados.csv",
-              REPO / "data" / "reference" / "anios.csv", REPO / "manifest.csv"]
+              REPO / "data" / "reference" / "anios.csv"]
+    manifest = manifest_del_paquete(paquete)
     SALIDA.mkdir(parents=True, exist_ok=True)
     z = SALIDA / f"{etiqueta}_{paquete}.zip"
     with zipfile.ZipFile(z, "w", zipfile.ZIP_DEFLATED) as zf:
         for p in archivos + [e for e in extras if e.exists()]:
             zf.write(p, p.relative_to(REPO).as_posix())
-    (z.with_suffix(".zip.sha256")).write_text(f"{sha256(z)}  {z.name}\n", encoding="utf-8")
+        if manifest is not None:
+            zf.writestr("manifest.csv", manifest.encode("utf-8"))
+    (z.with_suffix(".zip.sha256")).write_text(f"{sha256(z)}  {z.name}\n", encoding="utf-8", newline="\n")  # LF: sha256sum -c de Linux rechaza el CR
     print(f"{z.relative_to(REPO)}: {z.stat().st_size / 1e6:.1f} MB, {len(archivos)} archivos de datos")
     return z
 
