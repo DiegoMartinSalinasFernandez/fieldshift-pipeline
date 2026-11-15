@@ -1,16 +1,16 @@
 ---
 id: T018
 titulo: 'Research: máscaras de riego para Nebraska y Kansas'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - NE
 - KS
 depende_de: []
 rama: null
 creada: 2026-11-15 01:40
-actualizada: 2026-11-15 01:40
+actualizada: 2026-11-15 02:27
 ---
 
 ## Qué hacer
@@ -37,3 +37,4 @@ El research en un PR, con una propuesta concreta (qué producto, qué columna nu
 decisión de cambiar un esquema queda para el humano.
 
 ## Notas
+- 2026-11-15 02:27 · pro-2: tomada
