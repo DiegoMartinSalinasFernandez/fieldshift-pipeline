@@ -1,9 +1,9 @@
 ---
 id: T104
 titulo: Actualizar coverage, mapa y láminas cuando se publique datos-mo-wi-sd
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - MO
 - WI
@@ -12,7 +12,7 @@ depende_de:
 - T062
 rama: null
 creada: 2026-11-15T07:25
-actualizada: 2026-11-15T07:25
+actualizada: 2026-11-15 10:52
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ con lo que digan los releases. Lo mismo con KS si `datos-ks` ya está.
 Los documentos y el mapa actualizados en un PR.
 
 ## Notas
+- 2026-11-15 10:52 · pro-1: tomada
