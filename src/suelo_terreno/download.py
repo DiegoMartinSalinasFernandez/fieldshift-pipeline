@@ -37,6 +37,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 from src.common.config import estados_config  # noqa: E402
+from src.common.manifest import asegurar_manifest  # noqa: E402
 
 RAW = REPO / "data" / "raw" / "suelo_terreno" / "sda"
 INTERIM = REPO / "data" / "interim" / "suelo_terreno"
@@ -101,12 +102,6 @@ def sda(sql: str) -> list[list]:
 def areas_estado(alfa: str) -> list[str]:
     t = sda(f"SELECT areasymbol FROM legend WHERE areasymbol LIKE '{alfa}%' ORDER BY areasymbol")
     return [f[0] for f in t[1:]]
-
-
-def asegurar_manifest(man: Path) -> None:
-    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
-    if not man.exists() or man.stat().st_size == 0:
-        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
 
 
 def registrar(archivo: Path, tabla: str, alfa: str) -> None:

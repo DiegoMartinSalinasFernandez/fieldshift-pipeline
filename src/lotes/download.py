@@ -20,6 +20,8 @@ from pathlib import Path
 import requests
 
 RAIZ = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(RAIZ))
+from src.common.manifest import asegurar_manifest  # noqa: E402
 INTERIM = RAIZ / "data" / "interim" / "lotes"
 RAW = RAIZ / "data" / "raw" / "lotes"
 MANIFEST = RAIZ / "manifest.csv"
@@ -42,12 +44,6 @@ def log(msg: str) -> None:
     print(linea, flush=True)
     with open(INTERIM / "download.log", "a", encoding="utf-8") as f:
         f.write(linea + "\n")
-
-
-def asegurar_manifest(man: Path) -> None:
-    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
-    if not man.exists() or man.stat().st_size == 0:
-        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
 
 
 def upsert_manifest(filas: list[dict]) -> None:

@@ -32,6 +32,8 @@ from rasterio.windows import Window, from_bounds
 from shapely.geometry import Point, shape
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO))
+from src.common.manifest import asegurar_manifest  # noqa: E402
 RAW = REPO / "data/raw/teledeteccion/landsat"
 INTERIM = REPO / "data/interim/teledeteccion"
 MASCARA = REPO / "data/reference/mascara_agricola.tif"
@@ -218,12 +220,6 @@ def bajar_escena(anio: int, esc: dict, vs: list[dict], tok: str, m_crs, m_tr) ->
     destino.parent.mkdir(parents=True, exist_ok=True)
     os.replace(tmp, destino)
     return "ok"
-
-
-def asegurar_manifest(man: Path) -> None:
-    """En una máquina nueva no hay manifest.csv (no va en git): lo crea con el encabezado (CLAUDE.md §7)."""
-    if not man.exists() or man.stat().st_size == 0:
-        man.write_text("paquete,archivo,fuente,producto,version,fecha_descarga,consulta_o_url\n", encoding="utf-8")
 
 
 def registrar_manifest(anio: int, escenas: dict[str, dict]) -> None:
