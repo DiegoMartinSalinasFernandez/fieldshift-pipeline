@@ -140,7 +140,7 @@ def fig_lluvia_julio(prod, clima, salida: Path) -> None:
     ax.scatter(otros["prec_jul_mm"], otros["rend_bu_ac"], s=5, alpha=0.25, color="#9e9e9e",
                edgecolors="none", label=f"Other years ({otros['anio'].min()}–{otros['anio'].max()})")
     ax.scatter(a12["prec_jul_mm"], a12["rend_bu_ac"], s=12, alpha=0.8, color="#c62828",
-               edgecolors="none", label="2012 (drought)")
+               edgecolors="none", label="2012 (drought year; docs/research/eventos_extremos.md)")
     ax.set_xlabel("July precipitation (mm), NASA POWER")
     ax.set_ylabel("Corn grain yield (bu/ac)")
     ax.set_title("County corn yield vs July rainfall: 2012 against all other years")
@@ -148,7 +148,8 @@ def fig_lluvia_julio(prod, clima, salida: Path) -> None:
     ax.grid(alpha=0.3)
     fig.subplots_adjust(bottom=0.16)
     pie(fig, [SRC_NASS, SRC_POWER], f"One point per county-year; n = {len(m)} "
-        f"({len(a12)} in 2012). States: {', '.join(sorted(estado(m['fips']).unique()))}.")
+        f"({len(a12)} in 2012). States: {', '.join(sorted(estado(m['fips']).unique()))}. "
+        "Yields mix irrigated and rainfed corn (large irrigated share in NE and KS).")
     guardar(fig, salida, nombre)
 
 
