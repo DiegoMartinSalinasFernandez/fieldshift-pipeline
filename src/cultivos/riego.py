@@ -52,7 +52,8 @@ SCIENCEBASE_ITEM = "https://www.sciencebase.gov/catalog/item/639a11b9d34e0de3a1f
 USGS_ARCHIVOS = ["lanid2018.tif", "lanid2019.tif", "lanid2020.tif", "maxIrrExt_0020.tif"]
 LIMITE_BYTES = 5e9  # regla 6 del CLAUDE.md
 
-REGADO = 1  # valor de "regado" en los rasters anuales de LANID y en maxIrrExt
+REGADO = 1  # valor de "regado" en los rasters anuales de LANID y en maxIrrExt (0 = no regado)
+SIN_DATO = 255  # relleno fuera de la cobertura de LANID al llevarlo a la grilla (LANID es binario)
 
 
 # ---------------------------------------------------------------- descarga
@@ -195,20 +196,20 @@ def fuentes_lanid(raw: Path = RAW) -> tuple[dict[int, str], str | None]:
 def _a_grilla(ruta: str, ref) -> tuple[np.ndarray, np.ndarray]:
     """(valores, válido) del raster en la grilla de `ref` (vecino más cercano).
 
-    Válido = dentro de la cobertura del raster y distinto de su nodata (si lo tiene).
+    Válido = dentro de la cobertura del raster y distinto de su nodata. Si el nodata declarado es 0,
+    no se respeta: en LANID 0 es "no regado" (Metadata.docx de Zenodo), no "sin dato".
     """
     import rasterio
     from rasterio.enums import Resampling
     from rasterio.vrt import WarpedVRT
 
     with rasterio.open(ruta) as src:
-        nod = src.nodata
+        nod = src.nodata if src.nodata not in (None, 0) else None
+        fuera = nod if nod is not None else SIN_DATO
         with WarpedVRT(src, crs=ref.crs, transform=ref.transform, width=ref.width, height=ref.height,
-                       resampling=Resampling.nearest, src_nodata=nod, nodata=nod) as vrt:
+                       resampling=Resampling.nearest, src_nodata=nod, nodata=fuera) as vrt:
             a = vrt.read(1)
-            dentro = vrt.read_masks(1) > 0
-    valido = dentro if nod is None else dentro & (a != nod)
-    return a, valido
+    return a, a != fuera
 
 
 # ---------------------------------------------------------------- proceso

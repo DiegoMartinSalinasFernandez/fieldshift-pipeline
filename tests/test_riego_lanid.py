@@ -128,3 +128,16 @@ def test_registrar_una_sola_vez(tmp_path):
     rg.registrar(p, "https://zenodo.org/x", man)
     filas = list(csv.DictReader(open(man, encoding="utf-8")))
     assert len(filas) == 1 and filas[0]["version"] == "3.0" and filas[0]["paquete"] == "cultivos"
+
+
+def test_nodata_cero_y_cobertura_parcial(escena, tmp_path):
+    """nodata=0 declarado no borra los 'no regado'; fuera de la cobertura de LANID no es válido."""
+    ref, cond = escena
+    lanid = np.zeros((10, 5), np.uint8)   # cubre solo el condado A
+    lanid[:, 0] = 1
+    tif(tmp_path / "lanid2010.tif", lanid, nodata=0)
+    df = rg.riego_anual(ref / "mascara_agricola.tif", cond, {2010: str(tmp_path / "lanid2010.tif")}, [2010])
+    a = df.set_index("fips").loc["31001"]
+    b = df.set_index("fips").loc["31003"]
+    assert a["frac_pixeles_validos"] == 1.0 and a["frac_riego_lanid"] == pytest.approx(10 / 40)
+    assert b["frac_pixeles_validos"] == 0.0 and np.isnan(b["frac_riego_lanid"])
