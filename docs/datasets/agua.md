@@ -14,6 +14,7 @@ Paquete `agua` de Field Shift (CLAUDE.md §6.4): humedad del suelo y agua subter
 | agua_mensual.csv | sm_rootzone_min_m3m3 | Mínimo mensual de sm_rootzone diaria | m3/m3 | NASA SMAP L4 SPL4SMGP 9 km, capas diarias de Crop-CASMA (USDA NASS / GMU) | S03 | 2015-04 | 2025-12 | 0.8 |
 | agua_mensual.csv | sm_rootzone_anom_z | (sm_rootzone del mes − media del mes calendario) / desvío, por condado, 2015-2025 | adim. | Derivada de SMAP L4 (Crop-CASMA) | D25 | 2015-04 | 2025-12 | 0.8 |
 | agua_mensual.csv | dias_sm_saturado | Días del mes con sm_rootzone diaria del condado >= 0,40 m3/m3 | días | Derivada de SMAP L4 (Crop-CASMA) | D26 | 2015-04 | 2025-12 | 0.8 |
+| agua_estatico.csv | frac_celdas_excluidas | Fracción del área del condado con dato SMAP cuyas celdas de 9 km descarta el filtro 0-0,60 m3/m3 de la capa SUB (turberas, suelos orgánicos); media sobre los días | fracción | Derivada de SMAP L4 (Crop-CASMA) |  |  |  | 0.0 |
 | agua_semanal.csv | gws_pctl | Percentil de almacenamiento de agua subterránea (media ponderada por área del condado) | percentil 0-100 | GRACE-DA-DM US (GRACEDADM_CLSM0125US_7D v030, nasagrace.unl.edu) | W01 | 2003-01-06 | 2025-12-29 | 0.0 |
 | agua_semanal.csv | rtzsm_pctl | Percentil de humedad del suelo en la zona radicular (media ponderada por área) | percentil 0-100 | GRACE-DA-DM US (GRACEDADM_CLSM0125US_7D v030, nasagrace.unl.edu) | W02 | 2003-01-06 | 2025-12-29 | 0.0 |
 | agua_semanal.csv | sfsm_pctl | Percentil de humedad del suelo superficial (media ponderada por área) | percentil 0-100 | GRACE-DA-DM US (GRACEDADM_CLSM0125US_7D v030, nasagrace.unl.edu) | W03 | 2003-01-06 | 2025-12-29 | 0.0 |
@@ -51,6 +52,12 @@ Paquete `agua` de Field Shift (CLAUDE.md §6.4): humedad del suelo y agua subter
 - Se excluyen celdas con valores fuera de 0-0,60 m3/m3 (rango físico de la definición de terminado
   del plan) antes de promediar; afecta ~1,5 % de las filas diarias (suelos orgánicos del NE de
   Indiana y DuPage, IL).
+- **`agua_estatico.csv` (`frac_celdas_excluidas`):** por condado y por cada día de la capa `SUB`, área de
+  las celdas que el filtro 0-0,60 m3/m3 de arriba descarta dividida por el área del condado con dato SMAP
+  (las celdas nodata, como los lagos, no cuentan ni arriba ni abajo; es la misma cuenta de
+  `docs/research/smap_costas.md`); después, la media sobre todos los días. Como esas celdas son fijas en
+  `SUB`, en la práctica es la misma fracción todos los días. La capa `TOP` no entra. Vacío si el condado no
+  tiene ninguna celda con dato. Es una propiedad del filtro, no de la humedad: no entra en las medias.
 - Mensual: solo meses con todos los días con dato; si falta un día, las columnas del mes quedan vacías.
   `anio` = año calendario del mes. El mes 2015-03 se omite (SMAP L4 empieza el 2015-03-31).
 - `sm_rootzone_anom_z`: z por condado y mes calendario con todos los años 2015-2025 disponibles
@@ -138,6 +145,9 @@ Efecto del filtro en la media de condado (`SUB`, 2023-07-15):
 
 (medias en m3/m3; la "media publicada" coincide al cuarto decimal con `agua_diario.csv` del release)
 
-No se cambió el cálculo. Una columna con la fracción del área excluida por condado
-(`frac_celdas_excluidas`, en un `agua_estatico.csv` nuevo) cambia el esquema y queda para decidir
-(`coordinacion/para_decidir.md` #31).
+No se cambió el cálculo de las medias. La fracción del área excluida por condado sale en
+`agua_estatico.csv` (`frac_celdas_excluidas`, T129; esquema nuevo, pendiente del OK de
+`coordinacion/para_decidir.md` #31). Recalculada con `src/agua/process.py` sobre las capas `SUB` de MN y OH
+del 2019-05-01 y del 2023-07-15, da los mismos porcentajes de la tabla (Koochiching 64,7 %, Le Sueur 48,5 %,
+Aitkin 46,3 %, Hennepin 44,3 %, Lake of the Woods 42,2 %, St. Louis 23,1 %, Shelby 34,2 %, Auglaize 27,9 %),
+46 condados de MN y 12 de OH con alguna celda excluida, y 0 en los condados de OH sobre el Erie.
