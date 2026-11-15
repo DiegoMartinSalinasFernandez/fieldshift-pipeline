@@ -47,3 +47,4 @@
 - 04:11 T046: tomada por el trabajador
 - 04:14 T046: terminada, PR #40
 - 04:14 T049: tomada por el trabajador
+- 04:18 T049: terminada, PR #42
