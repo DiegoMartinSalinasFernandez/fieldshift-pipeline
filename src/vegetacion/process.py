@@ -1,11 +1,14 @@
 """Procesa MODIS (data/raw/vegetacion/) a CSV por condado.
 
 Salidas en data/processed/vegetacion/:
-- vegetacion_16d.csv     fips, anio, fecha, ndvi, evi, ndvi_maiz, ndvi_soja, frac_pixeles_validos
+- vegetacion_16d.csv     fips, anio, fecha, ndvi, evi, ndvi_maiz, ndvi_soja, frac_pixeles_validos,
+                         ndvi_maiz_p50, ndvi_soja_p50
 - vegetacion_mensual.csv fips, anio, mes, ndvi, evi, ndvi_maiz, ndvi_soja, lst_dia_c, lst_noche_c,
-                         et_mm, pet_mm, et_pet_ratio, ndvi_anom_z, vci, tci, vhi
+                         et_mm, pet_mm, et_pet_ratio, ndvi_anom_z, vci, tci, vhi, ndvi_maiz_p50, ndvi_soja_p50
 - fenologia_anual.csv    fips, anio, doy_inicio, doy_pico, doy_fin, ndvi_max, duracion_dias,
-                         ndvi_integral, n_ciclos, ndvi_max_maiz, ndvi_max_soja, dias_ndvi_lt03_invierno
+                         ndvi_integral, n_ciclos, ndvi_max_maiz, ndvi_max_soja, dias_ndvi_lt03_invierno,
+                         ndvi_max_maiz_p50, ndvi_max_soja_p50
+(las columnas *_p50 usan un umbral de pureza de 50 % en lugar de 75 %: UMBRAL_CULTIVO_P50, T130)
 
 Calidad: un píxel cuenta si su valor está en el rango válido del producto, no toca (3x3) un píxel
 sin dato o fuera de rango (los overviews del COG remuestrean y dejan artefactos en los bordes)
@@ -43,6 +46,11 @@ PROMINENCIA_CICLO = 0.1              # un ciclo es un pico con prominencia >= 0.
 UMBRAL_INVIERNO = 0.3                # dias_ndvi_lt03_invierno: NDVI < 0.3 entre nov (anio-1) y mar
 EST = np.ones((3, 3), bool)
 UMBRAL_CULTIVO = 0.75                # NDVI de maíz/soja: el píxel MODIS cuenta si >= 75 % de su área es del cultivo
+UMBRAL_CULTIVO_P50 = 0.50            # columnas *_p50 (T130): mismo cálculo con >= 50 % del área del cultivo
+# sufijo de columna -> umbral de pureza; "" son las columnas originales (ndvi_maiz, ndvi_soja, ndvi_max_*)
+UMBRALES_CULTIVO = {"": UMBRAL_CULTIVO, "_p50": UMBRAL_CULTIVO_P50}
+CULTIVOS = ("maiz", "soja")
+COLS_CULTIVO = [f"ndvi_{c}{s}" for s in UMBRALES_CULTIVO for c in CULTIVOS]  # ndvi_maiz, ndvi_soja, *_p50
 LAMBDA_VAP = 2.501e6                 # J/kg, calor latente de vaporización (constante del modelo Noah) para PET W m-2 -> mm
 INTERIM = REPO / "data" / "interim" / "vegetacion"
 REF = REPO / "data" / "reference"
@@ -128,6 +136,26 @@ def sumar(acc, z, valido, dentro, valores: dict, n: int) -> None:
         acc[k] += np.bincount(zv, weights=v[valido].astype("float64"), minlength=n + 1)
 
 
+def sumar_cultivo(acc_f, z, base, fr, ndvi, cultivo: str, n: int) -> None:
+    """Suma, para cada umbral de UMBRALES_CULTIVO, el conteo y el NDVI de los píxeles válidos (base)
+    cuya fracción del cultivo es >= umbral. acc_f: acumulador de una fecha (dict de arrays de n + 1)."""
+    for suf, u in UMBRALES_CULTIVO.items():
+        vc = base & (fr >= u)
+        acc_f[f"n_{cultivo}{suf}"] += np.bincount(z[vc], minlength=n + 1)
+        acc_f[f"ndvi_{cultivo}{suf}"] += np.bincount(z[vc], weights=ndvi[vc], minlength=n + 1)
+
+
+def medias_cultivo(acc_f, n: int) -> dict[str, np.ndarray]:
+    """NDVI medio por condado (sin la zona 0) de cada columna de COLS_CULTIVO; vacío si no hay píxeles."""
+    out = {}
+    for col in COLS_CULTIVO:
+        k = "n_" + col[len("ndvi_"):]
+        cnt = acc_f[k][1:] if k in acc_f else np.zeros(n)
+        s_ = acc_f[col][1:] if col in acc_f else np.zeros(n)
+        out[col] = np.where(cnt > 0, s_ / np.maximum(cnt, 1), np.nan)
+    return out
+
+
 def zonal_producto(carpeta: str, zonas: Zonas, fn_validos, claves: list[str], cultivos: Cultivos | None = None) -> pd.DataFrame:
     acc = defaultdict(lambda: defaultdict(lambda: np.zeros(zonas.n + 1)))
     anio_prev = None
@@ -147,13 +175,11 @@ def zonal_producto(carpeta: str, zonas: Zonas, fn_validos, claves: list[str], cu
             dentro = z > 0
             sumar(acc[f], z, valido & dentro, dentro, valores, zonas.n)
             if cultivos is not None:
-                for c in ("maiz", "soja"):
+                for c in CULTIVOS:
                     fr = cultivos.frac(c, f.year, src)
                     if fr is None:
                         continue
-                    vc = valido & dentro & (fr >= UMBRAL_CULTIVO)
-                    acc[f][f"n_{c}"] += np.bincount(z[vc], minlength=zonas.n + 1)
-                    acc[f][f"ndvi_{c}"] += np.bincount(z[vc], weights=valores["ndvi"][vc], minlength=zonas.n + 1)
+                    sumar_cultivo(acc[f], z, valido & dentro, fr, valores["ndvi"], c, zonas.n)
     filas = []
     fips = zonas.gdf["fips"].to_numpy()
     for f in sorted(acc):
@@ -163,10 +189,8 @@ def zonal_producto(carpeta: str, zonas: Zonas, fn_validos, claves: list[str], cu
             with np.errstate(invalid="ignore", divide="ignore"):
                 d[k] = np.where(d["validos"] > 0, a[k][1:] / np.maximum(a["validos"][1:], 1), np.nan)
         if cultivos is not None:
-            for c in ("maiz", "soja"):
-                n = a[f"n_{c}"][1:] if f"n_{c}" in a else np.zeros(zonas.n)
-                s_ = a[f"ndvi_{c}"][1:] if f"ndvi_{c}" in a else np.zeros(zonas.n)
-                d[f"ndvi_{c}"] = np.where(n > 0, s_ / np.maximum(n, 1), np.nan)
+            for col, v in medias_cultivo(a, zonas.n).items():
+                d[col] = v
         filas.append(d)
     return pd.concat(filas, ignore_index=True) if filas else pd.DataFrame()
 
@@ -202,10 +226,13 @@ def fenologia(g: pd.DataFrame) -> list[dict]:
     for anio in anios:
         fila = {"anio": anio}
         sel = np.array([pd.Timestamp(x).year == anio for x in g["fecha"]])
-        for c in ("maiz", "soja"):  # máximo de los compuestos (filtrados por calidad) del año
-            vc = g[f"ndvi_{c}"].to_numpy(float)[sel]
-            if np.isfinite(vc).sum() >= 10:
-                fila[f"ndvi_max_{c}"] = float(np.nanmax(vc))
+        for suf in UMBRALES_CULTIVO:  # máximo de los compuestos (filtrados por calidad) del año
+            for c in CULTIVOS:
+                if f"ndvi_{c}{suf}" not in g:
+                    continue
+                vc = g[f"ndvi_{c}{suf}"].to_numpy(float)[sel]
+                if np.isfinite(vc).sum() >= 10:
+                    fila[f"ndvi_max_{c}{suf}"] = float(np.nanmax(vc))
         ys, ts = y[sel], t[sel]
         if np.isfinite(ys).sum() >= 15:
             yi = np.interp(ts, ts[np.isfinite(ys)], ys[np.isfinite(ys)])
@@ -332,9 +359,14 @@ def main() -> None:
     v16["frac_pixeles_validos"] = np.where(v16["dentro"] > 0, v16["validos"] / v16["dentro"].clip(lower=1), np.nan)
     v16["anio"] = pd.to_datetime(v16["fecha"]).dt.year
     v16["fecha"] = pd.to_datetime(v16["fecha"]).dt.strftime("%Y-%m-%d")
-    v16 = v16[["fips", "anio", "fecha", "ndvi", "evi", "ndvi_maiz", "ndvi_soja", "frac_pixeles_validos"]]
+    for col in COLS_CULTIVO:  # sin máscaras del CDL no hay columnas de cultivo: van vacías
+        if col not in v16:
+            v16[col] = np.nan
+    # columnas *_p50 al final, para no mover las que ya existen
+    v16 = v16[["fips", "anio", "fecha", "ndvi", "evi", "ndvi_maiz", "ndvi_soja", "frac_pixeles_validos",
+               "ndvi_maiz_p50", "ndvi_soja_p50"]]
     v16 = v16.sort_values(["fips", "fecha"]).reset_index(drop=True)
-    escribir(v16, "vegetacion_16d.csv", {"ndvi": 4, "evi": 4, "ndvi_maiz": 4, "ndvi_soja": 4,
+    escribir(v16, "vegetacion_16d.csv", {"ndvi": 4, "evi": 4, **{c: 4 for c in COLS_CULTIVO},
                                          "frac_pixeles_validos": 4})
 
     t1 = time.time()
@@ -343,7 +375,7 @@ def main() -> None:
 
     # mensual: media de los compuestos cuya fecha de inicio cae en el mes
     m = v16.assign(mes=v16["fecha"].str[:7]).groupby(["fips", "mes"], as_index=False)[
-        ["ndvi", "evi", "ndvi_maiz", "ndvi_soja"]].mean()
+        ["ndvi", "evi", *COLS_CULTIVO]].mean()
     if len(lst):
         lst["mes"] = pd.to_datetime(lst["fecha"]).dt.strftime("%Y-%m")
         ml = lst.groupby(["fips", "mes"], as_index=False)[["lst_dia_c", "lst_noche_c"]].mean()
@@ -371,9 +403,9 @@ def main() -> None:
     m["tci"] = (100 * (tmax - m["lst_dia_c"]) / (tmax - tmin)).where(tmax > tmin)
     m["vhi"] = 0.5 * m["vci"] + 0.5 * m["tci"]
     cols = ["fips", "anio", "mes", "ndvi", "evi", "ndvi_maiz", "ndvi_soja", "lst_dia_c", "lst_noche_c",
-            "et_mm", "pet_mm", "et_pet_ratio", "ndvi_anom_z", "vci", "tci", "vhi"]
+            "et_mm", "pet_mm", "et_pet_ratio", "ndvi_anom_z", "vci", "tci", "vhi", "ndvi_maiz_p50", "ndvi_soja_p50"]
     m = m[cols].sort_values(["fips", "mes"]).reset_index(drop=True)
-    escribir(m, "vegetacion_mensual.csv", {**{c: 4 for c in ["ndvi", "evi", "ndvi_maiz", "ndvi_soja", "et_pet_ratio",
+    escribir(m, "vegetacion_mensual.csv", {**{c: 4 for c in ["ndvi", "evi", *COLS_CULTIVO, "et_pet_ratio",
                                                             "ndvi_anom_z"]},
                                           **{c: 2 for c in ["lst_dia_c", "lst_noche_c", "et_mm", "pet_mm",
                                                             "vci", "tci", "vhi"]}})
@@ -385,7 +417,8 @@ def main() -> None:
             filas.append({"fips": f, **r})
     fen = pd.DataFrame(filas)
     cols = ["fips", "anio", "doy_inicio", "doy_pico", "doy_fin", "ndvi_max", "duracion_dias", "ndvi_integral",
-            "n_ciclos", "ndvi_max_maiz", "ndvi_max_soja", "dias_ndvi_lt03_invierno"]
+            "n_ciclos", "ndvi_max_maiz", "ndvi_max_soja", "dias_ndvi_lt03_invierno",
+            "ndvi_max_maiz_p50", "ndvi_max_soja_p50"]
     for c in cols:
         if c not in fen:
             fen[c] = np.nan
@@ -394,7 +427,7 @@ def main() -> None:
     fen["dias_ndvi_lt03_invierno"] = fen["dias_ndvi_lt03_invierno"].astype("Int64")
     escribir(fen, "fenologia_anual.csv", {"doy_inicio": 1, "doy_pico": 0, "doy_fin": 1, "ndvi_max": 4,
                                           "duracion_dias": 1, "ndvi_integral": 2, "ndvi_max_maiz": 4,
-                                          "ndvi_max_soja": 4})
+                                          "ndvi_max_soja": 4, "ndvi_max_maiz_p50": 4, "ndvi_max_soja_p50": 4})
     print(f"fenologia: {time.time() - t2:.0f}s; total {time.time() - t0:.0f}s")
 
     import data_card  # mismo directorio: tabla del data card desde los CSV recién escritos

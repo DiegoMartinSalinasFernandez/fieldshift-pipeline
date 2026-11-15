@@ -642,6 +642,14 @@ DESCRIPCIONES = {
     "Media de los compuestos de 16 días que empiezan en el mes": "Mean of the 16-day composites starting in the month",
     "Media mensual del NDVI de maíz (CDL >= 75 %)": "Monthly mean corn NDVI (CDL >= 75 %)",
     "Media mensual del NDVI de soja (CDL >= 75 %)": "Monthly mean soybean NDVI (CDL >= 75 %)",
+    "Como ndvi_maiz, con umbral de pureza de 50 %: píxeles con >= 50 % de maíz (CDL del año)":
+        "Like ndvi_maiz, with a 50 % purity threshold: pixels with >= 50 % corn (same-year CDL)",
+    "Como ndvi_soja, con umbral de pureza de 50 %: píxeles con >= 50 % de soja (CDL del año)":
+        "Like ndvi_soja, with a 50 % purity threshold: pixels with >= 50 % soybeans (same-year CDL)",
+    "Media mensual del NDVI de maíz (CDL >= 50 %)": "Monthly mean corn NDVI (CDL >= 50 %)",
+    "Media mensual del NDVI de soja (CDL >= 50 %)": "Monthly mean soybean NDVI (CDL >= 50 %)",
+    "Como ndvi_max_maiz, desde ndvi_maiz_p50 (CDL >= 50 %)": "Like ndvi_max_maiz, from ndvi_maiz_p50 (CDL >= 50 %)",
+    "Como ndvi_max_soja, desde ndvi_soja_p50 (CDL >= 50 %)": "Like ndvi_max_soja, from ndvi_soja_p50 (CDL >= 50 %)",
     "LST diurna media (compuestos de 8 días que empiezan en el mes)":
         "Mean daytime land surface temperature (8-day composites starting in the month)",
     "LST nocturna media": "Mean nighttime land surface temperature",
