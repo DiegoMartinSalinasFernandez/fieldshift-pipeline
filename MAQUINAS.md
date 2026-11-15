@@ -34,16 +34,23 @@ para el equipo de ML. El humano decide lo que el CLAUDE.md le reserva: estados, 
    uv venv --python 3.11
    uv pip install -r requirements.txt
    ```
-   En Windows corré los scripts con `.venv\Scripts\python -X utf8 ...`: la consola no es UTF-8 y los
-   mensajes en castellano se rompen sin `-X utf8`.
-4. **Quién sos y qué estados tenés.** Dos variables de entorno (en Windows, `setx` y abrir una terminal
-   nueva):
-   ```bash
-   setx FIELDSHIFT_MAQUINA pro-1
-   ```
-   ```bash
-   setx FIELDSHIFT_ESTADOS KS
-   ```
+   Los scripts se corren con `.venv/bin/python -X utf8 ...` en Linux y con `.venv\Scripts\python -X utf8 ...`
+   en Windows (ahí la consola no es UTF-8 y los mensajes en castellano se rompen sin `-X utf8`).
+4. **Quién sos y qué estados tenés.** Dos variables de entorno.
+   - En **Linux**, agregalas al final de `~/.bashrc` y abrí una terminal nueva:
+     ```bash
+     echo 'export FIELDSHIFT_MAQUINA=pro-1' >> ~/.bashrc
+     ```
+     ```bash
+     echo 'export FIELDSHIFT_ESTADOS=OH,NE,MN,KS' >> ~/.bashrc
+     ```
+   - En **Windows**, con `setx` y una terminal nueva:
+     ```bash
+     setx FIELDSHIFT_MAQUINA max-2
+     ```
+     ```bash
+     setx FIELDSHIFT_ESTADOS KS
+     ```
    `FIELDSHIFT_ESTADOS` es la lista de `coordinacion/maquinas.yaml` (por ejemplo `OH,NE,MN`). Con ella todos los
    scripts bajan y procesan solo esos estados. No edites `config/config.yaml` para eso.
 5. **Credenciales, solo si tu tarea las pide.** Casi todo se baja sin login. Earthdata (ECOSTRESS, LP DAAC) va
@@ -134,26 +141,19 @@ En lugar de pedirle cada tarea a Claude a mano, cada máquina puede dejar corrie
 tareas del tablero y las hace solo durante horas, sin ventana. La máquina queda libre para usarla, y Claude
 también.
 
-**Iniciarlo** (desde la carpeta del repo, con las variables de la sección 1 ya definidas):
+Desde la carpeta del repo, con las variables de la sección 1 ya definidas, `git pull` y:
 
-```bash
-powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 iniciar -Horas 7
-```
+| | Linux | Windows |
+|---|---|---|
+| Iniciar por 7 h | `bash scripts/trabajador.sh iniciar 7` | `powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 iniciar -Horas 7` |
+| Solo una tarea, con más tiempo | `bash scripts/trabajador.sh iniciar 7 T013 400` | `... trabajador.ps1 iniciar -Horas 7 -Solo T013 -MinutosTarea 400` |
+| Ver qué hace | `bash scripts/trabajador.sh estado` | `... trabajador.ps1 estado` |
+| Pararlo | `bash scripts/trabajador.sh parar` (o `parar ya`) | `... trabajador.ps1 parar` (o `parar -Ya`) |
 
 La primera vez crea una copia del repo solo para él, al lado de la tuya (`fieldshift-pipeline-trabajador`),
-con su propio `.venv`. Nunca toca tu carpeta.
-
-**Ver qué hace** y **pararlo:**
-
-```bash
-powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 estado
-```
-
-```bash
-powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 parar
-```
-
-`parar` deja terminar la tarea en curso; `parar -Ya` la corta en el momento.
+con su propio `.venv`. Nunca toca tu carpeta. Después de iniciarlo podés cerrar la terminal: sigue corriendo.
+`parar` deja terminar la tarea en curso; `parar ya` la corta en el momento. Modelo y esfuerzo: Opus 5.5 y
+medium por defecto (en Linux se cambian con `FIELDSHIFT_MODELO` y `FIELDSHIFT_EFFORT`).
 
 **Qué hace en cada vuelta**
 1. Toma la próxima tarea libre para su plan (primero las de sus estados). No toma las que dicen `auto: false`.
@@ -164,9 +164,13 @@ powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 parar
 4. Si se acaba el uso de Claude, espera a que se renueve y sigue con la misma tarea.
 5. Si no hay tareas libres, vuelve a mirar cada 15 minutos.
 
-Los logs quedan en `fieldshift-pipeline-trabajador\.trabajador\`. El trabajador nunca une PRs ni hace push a
+Los logs quedan en `fieldshift-pipeline-trabajador/.trabajador/`. El trabajador nunca une PRs ni hace push a
 `main` salvo el tablero y la bitácora; los PRs los revisa `max-1`.
 
 **Ojo con el uso en Pro:** el trabajador gasta el mismo límite de la cuenta que usa la persona cuando trabaja a
-mano. Conviene dejarlo de noche o cuando no estés usando Claude. Mientras corre, Windows no se suspende (la
-pantalla sí se puede apagar).
+mano. Conviene dejarlo de noche o cuando no estés usando Claude.
+
+**Que la máquina no se duerma:** en Windows el trabajador lo evita solo. En Linux lo evita con
+`systemd-inhibit` si está instalado (Ubuntu y Fedora lo traen); en una notebook, dejala enchufada y
+configurada para no suspenderse al cerrar la tapa. Si la máquina se duerme, el trabajador se pausa y sigue al
+despertarse.

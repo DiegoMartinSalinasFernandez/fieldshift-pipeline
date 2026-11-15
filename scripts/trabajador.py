@@ -85,9 +85,14 @@ def sin_suspender(activar: bool) -> None:
 
 
 def encontrar_claude() -> str:
+    if os.environ.get("FIELDSHIFT_CLAUDE"):
+        return os.environ["FIELDSHIFT_CLAUDE"]
     cand = Path(os.environ.get("APPDATA", "")) / "npm" / "node_modules" / "@anthropic-ai" / "claude-code" / "bin" / "claude.exe"
-    if cand.exists():
+    if ES_WINDOWS and cand.exists():
         return str(cand)
+    for c in (Path.home() / ".local" / "bin" / "claude", Path.home() / ".claude" / "local" / "claude"):
+        if not ES_WINDOWS and c.exists():
+            return str(c)     # un proceso en segundo plano puede no tener el PATH de la terminal
     for nombre in ("claude.exe", "claude"):
         w = shutil.which(nombre)
         if w and not w.lower().endswith((".cmd", ".ps1", ".bat")):
@@ -137,7 +142,11 @@ def matar_arbol(proc: subprocess.Popen) -> None:
     if ES_WINDOWS:
         subprocess.run(["taskkill", "/PID", str(proc.pid), "/T", "/F"], capture_output=True)
     else:
-        proc.kill()
+        import signal
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)   # el agente y todo lo que lanzó (sesión propia)
+        except (ProcessLookupError, PermissionError):
+            proc.kill()
 
 
 # ---------- tablero ----------
@@ -215,12 +224,12 @@ def lanzar_agente(claude: str, prompt: str, tid: str, minutos: float, a) -> dict
     res = {"rc": None, "timeout": False, "texto": "", "error": False, "hubo_resultado": False, "limite": False,
            "costo": 0.0, "minutos": 0.0, "log": log_p.name}
     t0 = time.time()
-    flags = subprocess.CREATE_NEW_PROCESS_GROUP if ES_WINDOWS else 0
+    extra = {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if ES_WINDOWS else {"start_new_session": True}
     with open(prompt_p, "rb") as fi, open(log_p, "wb") as fo, open(err_p, "wb") as fe:
         try:
-            proc = subprocess.Popen(cmd, cwd=REPO, env=entorno(), stdin=fi, stdout=fo, stderr=fe, creationflags=flags)
+            proc = subprocess.Popen(cmd, cwd=REPO, env=entorno(), stdin=fi, stdout=fo, stderr=fe, **extra)
         except OSError as e:
-            res.update(error=True, texto=f"no se pudo lanzar Claude: {e}")
+            res.update(error=True, no_arranca=True, texto=f"no se pudo lanzar Claude: {e}")
             return res
         try:
             while proc.poll() is None:
@@ -315,10 +324,12 @@ def hacer_tarea(claude: str, tid: str, meta: dict, texto_tarea: str, maquina: st
         guardar_sin_commit(maquina)
         n = commits_nuevos()
         cuerpo = resultado_p.read_text(encoding="utf-8").strip() if resultado_p.exists() else ""
-        if res.get("auth"):
-            anotar(tid, maquina, "libre", "soltada: Claude no tiene la sesión iniciada en esta máquina")
-            log("Claude no tiene la sesión iniciada: paro el trabajador")
-            STOP.write_text("sin sesión de Claude", encoding="utf-8")
+        if res.get("auth") or res.get("no_arranca"):
+            motivo = ("Claude no tiene la sesión iniciada en esta máquina" if res.get("auth")
+                      else f"no se pudo lanzar Claude ({res['texto'][:200]})")
+            anotar(tid, maquina, "libre", f"soltada: {motivo}")
+            log(f"{motivo}: paro el trabajador")
+            STOP.write_text(motivo, encoding="utf-8")
             return
         if res["limite"]:
             if n:
