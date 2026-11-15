@@ -31,3 +31,4 @@
 - 06:31 T079: tomada por el trabajador
 - 06:37 T079: terminada, PR #79
 - 06:37 T083: tomada por el trabajador
+- 06:43 T083: terminada, PR #80
