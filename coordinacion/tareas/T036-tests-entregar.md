@@ -1,14 +1,14 @@
 ---
 id: T036
 titulo: Pruebas de scripts/entregar.py (tests/test_entregar.py)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 03:20
-actualizada: 2026-11-15 03:20
+actualizada: 2026-11-15 03:15
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ carpeta temporal con un `data/processed/<paquete>/` y un `docs/datasets/<paquete
 Las pruebas en un PR.
 
 ## Notas
+- 2026-11-15 03:15 · pro-4: tomada
