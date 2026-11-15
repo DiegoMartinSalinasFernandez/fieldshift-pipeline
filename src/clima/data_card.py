@@ -100,16 +100,26 @@ Los CSV procesados cubren el período de `config.yaml` (2000-2025);
 |---|---|---|---|---|---|---|---|---|
 {tabla}
 
+## Fuentes
+
+- **NASA POWER** (API diaria por punto, comunidad AG; sin DOI). Cita pedida por POWER: "The data was
+  obtained from National Aeronautics and Space Administration (NASA) Langley Research Center's
+  Prediction Of Worldwide Energy Resources (POWER) project funded through the NASA Earth Science
+  Division." (https://power.larc.nasa.gov/docs/referencing/).
+- **GPM IMERG Final V07** (`GPM_3IMERGDF`), hasta el 2025-09-30: https://doi.org/10.5067/GPM/IMERGDF/DAY/07
+- **GPM IMERG Late V07** (`GPM_3IMERGDL`), desde el 2025-10-01 (ver Problemas conocidos):
+  https://doi.org/10.5067/GPM/IMERGDL/DAY/07
+- Citas completas: `docs/research/citas_nasa.md`.
+
 ## Supuestos
 
 - **IMERG sin Earthdata:** no hay credencial de Earthdata para `GPM_3IMERGDF` en GES DISC, así
   que `prec_imerg_mm` sale del parámetro `IMERG_PRECTOT` de la API diaria de NASA POWER (sin
   login), que sirve IMERG a su resolución nativa de 0,1°. Según la documentación de POWER
   (https://power.larc.nasa.gov/docs/methodology/, consultada 2026-11-14): "IMERG Precipitation
-  0.1° (~10 km), daily UTC June 1, 1998 Near Real Time". POWER no dice qué corrida de IMERG
-  (Final, Late o Early) usa en cada fecha: lo más probable es que sea la Final y que los meses
-  más recientes, que la Final todavía no cubre (GPM_3IMERGDF V07 en CMR llega a 2025-09-30),
-  vengan de una corrida de menor latencia. Ruta que cumple el plan: GPM_3IMERGDF por GES DISC
+  0.1° (~10 km), daily UTC June 1, 1998 Near Real Time". Según la página de metodología
+  meteorológica de POWER, usa la Final Run y, después de su última fecha, la Late Run
+  (GPM_3IMERGDF V07 en CMR llega a 2025-09-30; ver Problemas conocidos). Ruta que cumple el plan: GPM_3IMERGDF por GES DISC
   con Earthdata.
 - IMERG solo existe en días UTC (POWER rechaza la hora solar local para esta fuente), mientras
   que el resto de POWER está en días de hora solar local: `prec_imerg_mm` y `prec_power_mm`
@@ -151,8 +161,16 @@ Los CSV procesados cubren el período de `config.yaml` (2000-2025);
 
 ## Problemas conocidos
 
-- **GPM IMERG viene de POWER, no de GES DISC** (sin credencial de Earthdata): la versión y la
-  corrida exactas de IMERG no figuran en la respuesta de la API (ver Supuestos).
+- **GPM IMERG viene de POWER, no de GES DISC** (sin credencial de Earthdata): la respuesta de la
+  API no dice qué corrida de IMERG trae cada fecha (ver Supuestos).
+- **Los últimos meses de `prec_imerg_mm` son IMERG Late, no Final.** POWER usa la Final Run hasta
+  donde llega y la Late Run desde ahí ("IMERG Late Run | End of IMERG Final Run | Near Real Time",
+  https://power.larc.nasa.gov/docs/methodology/data/sources_meteorology/, consultada 2026-11-15). En
+  CMR, la Final V07 termina el 2025-09-30, así que en esta bajada **del 2025-10-01 al 2025-12-31
+  los datos son de la Late Run**: ajuste climatológico con pluviómetros (no el mensual de GPCC) y
+  posibles pasadas de microondas faltantes. POWER recomienda cortar los análisis de tendencia 3,5 meses antes del
+  presente. Si se vuelve a bajar cuando la Final cubra 2025, esos días cambian. Las filas no
+  tienen columna de corrida: cambiarlo tocaría el esquema y lo decide el humano.
 - PRISM (opcional, validación) no se bajó.
 - La radiación de POWER (CERES) empieza en 1984; el resto de la meteorología en 1981.
 - `validar_csv()` (src/common) marca `deficit_mm` de `clima_mensual.csv` porque hay un valor

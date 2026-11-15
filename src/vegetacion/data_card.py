@@ -65,6 +65,13 @@ def teselas_bajadas() -> str:
 TEXTO = """
 ## Fuentes y acceso
 
+- **DOI de los productos de la NASA:**
+  - MOD13Q1 V061: https://doi.org/10.5067/MODIS/MOD13Q1.061
+  - MOD11A2 V061: https://doi.org/10.5067/MODIS/MOD11A2.061
+  - NLDAS-2 Noah mensual V2.0 (`NLDAS_NOAH0125_M`, para `et_mm`, `pet_mm` y `et_pet_ratio`):
+    https://doi.org/10.5067/WB224IA3PVOJ
+- Citas completas: `docs/research/citas_nasa.md`.
+
 - **MOD13Q1 v061** (Terra, índices de vegetación 16 días, 250 m) y **MOD11A2 v061** (Terra, LST 8 días,
   1 km), COGs públicos de Microsoft Planetary Computer (colecciones `modis-13Q1-061` y
   `modis-11A2-061`), firmados con el token SAS anónimo. Teselas {teselas}.

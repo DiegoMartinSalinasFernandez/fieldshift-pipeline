@@ -13,6 +13,12 @@ Paquete `ecostress` de Field Shift: temperatura de superficie, evapotranspiraci�
 
 ## Fuentes y acceso
 
+- **DOI de los productos de la NASA (colección 2, V002, LP DAAC):**
+  - ECO_L2T_LSTE: https://doi.org/10.5067/ECOSTRESS/ECO_L2T_LSTE.002
+  - ECO_L3T_JET: https://doi.org/10.5067/ECOSTRESS/ECO_L3T_JET.002
+  - ECO_L4T_ESI: https://doi.org/10.5067/ECOSTRESS/ECO_L4T_ESI.002
+- Citas completas: `docs/research/citas_nasa.md`.
+
 - **ECOSTRESS colección 2, productos en teselas MGRS de 70 m** de LP DAAC (Earthdata Cloud):
   `ECO_L2T_LSTE.002` (capas `LST`, `QC`, `cloud`), `ECO_L3T_JET.002` (capa `ETdaily`) y
   `ECO_L4T_ESI.002` (capa `ESI`). Nombres de producto y capa verificados en la API de productos de

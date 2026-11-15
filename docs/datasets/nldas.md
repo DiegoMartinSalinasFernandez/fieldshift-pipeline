@@ -22,6 +22,10 @@ grilla de 0,125°, desde 1979-01. Completa a SMAP (paquete `agua`), que empieza 
 
 ## Fuentes y acceso
 
+- **DOI:** NLDAS Noah Land Surface Model L4 Monthly 0.125 x 0.125 degree V2.0 (`NLDAS_NOAH0125_M`,
+  GES DISC): https://doi.org/10.5067/WB224IA3PVOJ
+- Citas completas: `docs/research/citas_nasa.md`.
+
 - Descarga: `src/nldas/download.py`. Harmony (`harmony.earthdata.nasa.gov`, OGC API Coverages) con
   recorte en origen por bbox de la zona (condados ± 0,05°), por mes y por variable (`SoilM_0_10cm`,
   `SoilM_0_100cm`, `Evap`, `Qs`, `Qsb`, `SWE`). Un NetCDF4 de ~160 KB por mes en
