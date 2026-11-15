@@ -30,7 +30,9 @@ validate NASA rain and temperature against ground data).
   [`docs/datasets/README_en.md`](docs/datasets/README_en.md).
 - **Processed data:** not stored in git. They are published as zip files in the [Releases](../../releases),
   one release per group of states (`datos-<states>`, e.g. `datos-ks`), one zip per package with its `.sha256`,
-  data card and `manifest.csv` (one row per downloaded file: source, product, version, date, query).
+  data card and `manifest.csv` (one row per downloaded file: source, product, version, date, query), plus
+  `datos-<states>_base.zip` with the county polygons (`condados.gpkg`, EPSG:4326), `condados.csv` and
+  `anios.csv`.
   Published so far (2026-11-15): [`datos-oh-ne-mn`](../../releases/tag/datos-oh-ne-mn) (Ohio, Nebraska,
   Minnesota; 268 counties, 2000–2025). The other groups of states are in progress. Counted rows, columns and
   years per file: [`docs/demo/coverage.md`](docs/demo/coverage.md).

@@ -11,7 +11,8 @@ existen), los lee sin descomprimir a disco y guarda PNG en `docs/demo/fig/`:
   fig6_lluvia.png                    lluvia mensual IMERG vs POWER por condado-mes, un panel por estado
   fig7_county_maps_corn_after_corn_imerg.png
                                      mapas por condado: % de maíz tras maíz (CDL) y lluvia IMERG de julio,
-                                     mismo año (polígonos del Census CB 1:500k; los releases no traen el .gpkg)
+                                     mismo año (polígonos de `condados.gpkg` del `<release>_base.zip`; si el
+                                     release no lo trae, del Census CB 1:500k)
   fig8_county_monthly_smap_imerg.png serie mensual de un condado (Stearns, MN): SMAP zona radicular e IMERG,
                                      sequía de 2021 sombreada
   fig0_mapa.png                      condados de los estados de config.yaml, por grupo y estado del release
@@ -74,6 +75,8 @@ def aviso(msg: str) -> None:
 # --------------------------------------------------------------------------- descarga y lectura
 
 PAQUETES = ["clima", "cultivos", "vegetacion", "agua"]   # los zips que usan las figuras
+BASE = "base"                                            # <release>_base.zip: condados.gpkg (no está en releases viejos)
+ASSETS = PAQUETES + [BASE]
 
 
 def repo_github() -> str | None:
@@ -110,7 +113,7 @@ def sha256_ok(z: Path) -> bool | None:
 
 
 def bajar_https(et: str, d: Path) -> int:
-    """Sin `gh` ni token: baja `<et>_<paquete>.zip` y su `.sha256` de la URL pública del release."""
+    """Sin `gh` ni token: baja `<et>_<paquete>.zip` (y `<et>_base.zip`) con su `.sha256` de la URL pública del release."""
     import urllib.error
 
     slug = repo_github()
@@ -118,7 +121,7 @@ def bajar_https(et: str, d: Path) -> int:
         aviso("HTTPS: el remoto origin no es de GitHub; no sé de dónde bajar")
         return 0
     n = 0
-    for paq in PAQUETES:
+    for paq in ASSETS:
         nombre = f"{et}_{paq}.zip"
         z = d / nombre
         base = f"https://github.com/{slug}/releases/download/{et}/{nombre}"
@@ -132,7 +135,10 @@ def bajar_https(et: str, d: Path) -> int:
                 tmp.replace(z)
             n += 1
         except (urllib.error.URLError, TimeoutError) as e:
-            aviso(f"HTTPS: no se pudo bajar {nombre} de {et}: {e}")
+            if paq == BASE:
+                print(f"{et}: sin {nombre} (release viejo); fig7 usa el Census CB")
+            else:
+                aviso(f"HTTPS: no se pudo bajar {nombre} de {et}: {e}")
     return n
 
 
@@ -157,7 +163,7 @@ def bajar(etiquetas: list[str], destino: Path, https: bool = False) -> None:
             bajar_https(et, d)
         else:
             patrones = []
-            for paq in PAQUETES:
+            for paq in ASSETS:
                 patrones += ["--pattern", f"{et}_{paq}.zip", "--pattern", f"{et}_{paq}.zip.sha256"]
             try:
                 r = subprocess.run(["gh", "release", "download", et, *patrones, "--dir", str(d),
@@ -588,23 +594,72 @@ def fig_mapa(carpeta: Path, salida: Path) -> None:
 
 # --------------------------------------------------------------------------- mapas por condado y serie de un condado
 
-def leer_poligonos(carpeta: Path, fips: set[str]):
-    """Polígonos de los condados `fips` (Census CB 1:500k, el mismo zip que src/base y fig0), en EPSG:5070.
+ORIGEN_GPKG = "condados.gpkg of the release base zip (U.S. Census Bureau Cartographic Boundary Files {anio}, 1:500k)"
+ORIGEN_CB = "U.S. Census Bureau Cartographic Boundary Files {anio} (1:500k)"
 
-    Los releases no traen `condados.gpkg` (solo `condados.csv`, con centroides): la geometría sale del Census y
-    los valores, de los zips publicados. None si no se puede bajar o falta geopandas.
+
+def poligonos_de_releases(zips: Path | list[Path] | None, fips: set[str]):
+    """Polígonos de `data/reference/condados.gpkg` de los `<release>_base.zip` bajo `zips`, en EPSG:5070.
+
+    None si no hay ningún zip de base (releases de antes de T126) o falta geopandas.
+    """
+    if zips is None:
+        return None
+    try:
+        import geopandas as gpd
+    except ImportError:
+        return None
+    import tempfile
+
+    carpetas = zips if isinstance(zips, list) else [zips]
+    partes = []
+    for z in sorted(x for c in carpetas for x in c.rglob(f"*_{BASE}.zip")):
+        try:
+            with zipfile.ZipFile(z) as zf, tempfile.TemporaryDirectory() as tmp:
+                if "data/reference/condados.gpkg" not in zf.namelist():
+                    continue
+                ruta = Path(tmp) / "condados.gpkg"
+                ruta.write_bytes(zf.read("data/reference/condados.gpkg"))
+                g = gpd.read_file(ruta, layer="condados")
+        except Exception as e:  # noqa: BLE001  (zip roto o gpkg ilegible: se avisa y se sigue con el Census)
+            aviso(f"{z.name}: no se pudo leer condados.gpkg ({e})")
+            continue
+        g["fips"] = g["fips"].astype(str).str.zfill(5)
+        partes.append(g[["fips", "geometry"]].to_crs(5070))
+    if not partes:
+        return None
+    g = pd.concat(partes, ignore_index=True).drop_duplicates(subset="fips", keep="last")
+    return g[g["fips"].isin(fips)].reset_index(drop=True)
+
+
+def leer_poligonos(carpeta: Path, fips: set[str], zips: Path | list[Path] | None = None):
+    """Polígonos de los condados `fips` en EPSG:5070, con su origen en `.attrs["origen"]`.
+
+    Primero los de `condados.gpkg` de los `<release>_base.zip` bajados; los condados que no estén ahí (releases
+    viejos, sin zip de base) salen del Census CB 1:500k, el mismo zip que src/base y fig0. None si no hay
+    ninguno (no se puede bajar el Census o falta geopandas).
     """
     try:
         import geopandas as gpd
     except ImportError:
         aviso("mapas por condado: falta geopandas")
         return None
-    z = bajar_cb(URL_CB, carpeta)
-    if z is None:
+    rel = poligonos_de_releases(zips, fips)
+    faltan = set(fips) - (set(rel["fips"]) if rel is not None else set())
+    cb = None
+    if faltan:
+        z = bajar_cb(URL_CB, carpeta)
+        if z is not None:
+            cond = gpd.read_file(f"zip://{z}")
+            cond = cond[cond["GEOID"].isin(faltan)].rename(columns={"GEOID": "fips"})
+            cb = cond[["fips", "geometry"]].to_crs(5070)
+    partes = [g for g in (rel, cb) if g is not None and len(g)]
+    if not partes:
         return None
-    cond = gpd.read_file(f"zip://{z}")
-    cond = cond[cond["GEOID"].isin(fips)].rename(columns={"GEOID": "fips"})
-    return cond[["fips", "geometry"]].to_crs(5070)
+    out = gpd.GeoDataFrame(pd.concat(partes, ignore_index=True), crs=5070)
+    origenes = [o for g, o in ((rel, ORIGEN_GPKG), (cb, ORIGEN_CB)) if g is not None and len(g)]
+    out.attrs["origen"] = " + ".join(o.format(anio=ANIO_CB) for o in origenes)
+    return out
 
 
 def fig_mapas_condado(rot, clima_m, poligonos, salida: Path, mes_nasa: int = 7) -> None:
@@ -631,6 +686,7 @@ def fig_mapas_condado(rot, clima_m, poligonos, salida: Path, mes_nasa: int = 7) 
     if c.empty:
         aviso(f"{nombre}: se saltea (no hay prec_imerg_mm de {mes})")
         return
+    origen_pol = poligonos.attrs.get("origen") or ORIGEN_CB.format(anio=ANIO_CB)
     fips_datos = set(r["fips"]) | set(c["fips"])
     g = poligonos[poligonos["fips"].isin(fips_datos)].merge(r[["fips", "pct_maiz_tras_maiz"]], on="fips", how="left")
     g = g.merge(c, on="fips", how="left")
@@ -655,8 +711,7 @@ def fig_mapas_condado(rot, clima_m, poligonos, salida: Path, mes_nasa: int = 7) 
                  fontsize=12)
     fig.subplots_adjust(left=0.01, right=0.99, top=0.9, bottom=0.12, wspace=0.03)
     extra = (f"Left: rotacion_anual.csv (pixel-by-pixel CDL transition {anio - 1}→{anio}). Right: clima_mensual.csv "
-             f"({mes}). Grey = no value. County polygons: U.S. Census Bureau Cartographic Boundary Files "
-             f"{ANIO_CB} (1:500k), EPSG:5070.")
+             f"({mes}). Grey = no value. County polygons: {origen_pol}, shown in EPSG:5070.")
     if sin_poligono:
         extra += f" {sin_poligono} counties with data have no polygon."
     pie(fig, [SRC_CDL, SRC_IMERG], extra)
@@ -753,7 +808,7 @@ def main() -> None:
                     help="dibujar también fig0_mapa.png (baja el Census CB 1:500k y consulta los releases)")
     ap.add_argument("--solo-mapa", action="store_true", help="dibujar solo fig0_mapa.png")
     ap.add_argument("--sin-mapas-condado", action="store_true",
-                    help="no dibujar fig7 (evita bajar los polígonos del Census CB)")
+                    help="no dibujar fig7 (evita leer o bajar los polígonos de los condados)")
     a = ap.parse_args()
     if a.mapa or a.solo_mapa:
         # antes de fijar NOTA y SUFIJO: el mapa cubre todos los estados y no lleva esa nota ni sufijo
@@ -793,7 +848,7 @@ def main() -> None:
     fig_lluvia_imerg_power(clima_m, a.salida)
     if not a.sin_mapas_condado and rot is not None:
         fips = set(rot["fips"].astype(str).str.zfill(5))
-        fig_mapas_condado(rot, clima_m, leer_poligonos(a.zips / "census_cb", fips), a.salida)
+        fig_mapas_condado(rot, clima_m, leer_poligonos(a.zips / "census_cb", fips, zips=fuente or None), a.salida)
     fig_serie_condado(agua, clima_m, a.salida, nombre_condado=nombre_de_condado(fuente, SERIE_FIPS))
 
 

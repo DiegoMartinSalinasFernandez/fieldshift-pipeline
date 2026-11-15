@@ -17,6 +17,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest import mock
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -154,6 +155,12 @@ class TestCoverage(Base):
         self.assertIn("| `datos-ks` | Kansas | | | | | | in progress |", texto)
         self.assertIn("| `produccion_anual.csv` | 18 | 8 | fips | 3 | 2011–2013 (3 years) |", texto)
         self.assertIn("2 8-year windows, 2008-2015 to 2009-2016", texto)
+
+    def test_resumir_saltea_el_zip_de_base(self):
+        zips = self.bajar()
+        b = zips[0].parent / "datos-xa-xb_base.zip"
+        hacer_zip(b, {"data/reference/condados.csv": condados(), "data/reference/condados.gpkg": "x"})
+        self.assertEqual(set(cov.resumir(zips + [b])["paquetes"]), {"cultivos", "clima"})
 
     def test_reemplaza_solo_entre_marcas(self):
         pagina = f"# Título\n\nantes a mano\n\n{cov.INICIO}\nviejo\n{cov.FIN}\n\ndespués a mano\n"
@@ -327,6 +334,72 @@ class TestFiguras(Base):
             fig.fig_mapas_condado(rot, clima_m, None, self.tmp / "otra")
         self.assertIn("no hay polígonos", err.getvalue())
         self.assertFalse((self.tmp / "otra").exists())
+
+    def zip_base(self, d: Path, fips: list[str]) -> Path:
+        """`<release>_base.zip` como el de scripts/entregar.py, con condados.gpkg en EPSG:4326."""
+        import geopandas as gpd
+        from shapely.geometry import box
+        d.mkdir(parents=True, exist_ok=True)
+        gpkg = self.tmp / "c.gpkg"
+        gpd.GeoDataFrame({"fips": fips, "estado": "XA"}, geometry=[box(-90 + i, 40, -89 + i, 41)
+                                                                   for i in range(len(fips))],
+                         crs=4326).to_file(gpkg, layer="condados", driver="GPKG")
+        z = d / f"{d.name}_base.zip"
+        with zipfile.ZipFile(z, "w") as zf:
+            zf.write(gpkg, "data/reference/condados.gpkg")
+            zf.writestr("data/reference/condados.csv", "fips,estado\n" + "".join(f"{f},XA\n" for f in fips))
+        gpkg.unlink()
+        return z
+
+    def test_poligonos_del_zip_de_base_sin_census(self):
+        d = self.tmp / "datos-xa-xb"
+        release(d)
+        self.zip_base(d, FIPS)
+
+        def sin_red(*a, **k):
+            raise AssertionError("con el zip de base no se baja el Census")
+
+        with mock.patch.object(fig, "bajar_cb", sin_red):
+            pol = fig.leer_poligonos(self.tmp / "census_cb", set(FIPS[:2]), zips=[d])
+        self.assertEqual(sorted(pol["fips"]), sorted(FIPS[:2]))
+        self.assertEqual(pol.crs.to_epsg(), 5070)
+        self.assertIn("condados.gpkg", pol.attrs["origen"])
+        self.assertNotIn("+", pol.attrs["origen"])
+        import pandas as pd
+        rot = pd.DataFrame({"fips": FIPS[:2], "anio": 2013, "pct_maiz_tras_maiz": [10.0, 60.0]})
+        clima_m = pd.DataFrame({"fips": FIPS[:2], "mes": "2013-07", "prec_imerg_mm": [80.0, 95.0]})
+        with contextlib.redirect_stdout(io.StringIO()):
+            fig.fig_mapas_condado(rot, clima_m, pol, self.tmp / "fig")
+        self.assertTrue((self.tmp / "fig" / "fig7_county_maps_corn_after_corn_imerg.png").exists())
+
+    def test_release_viejo_sin_base_usa_el_census(self):
+        d = self.tmp / "datos-xa-xb"
+        release(d)                                # sin _base.zip
+        self.assertIsNone(fig.poligonos_de_releases([d], set(FIPS)))
+        llamadas = []
+
+        def cb_falso(url, carpeta):
+            llamadas.append(url)
+            return None                           # sin red: no hay Census
+
+        with mock.patch.object(fig, "bajar_cb", cb_falso):
+            self.assertIsNone(fig.leer_poligonos(self.tmp / "census_cb", set(FIPS), zips=[d]))
+        self.assertEqual(llamadas, [fig.URL_CB])
+
+    def test_base_con_condados_de_menos_completa_con_census(self):
+        d = self.tmp / "datos-xa-xb"
+        release(d)
+        self.zip_base(d, FIPS[:1])
+        llamadas = []
+
+        def cb_falso(url, carpeta):
+            llamadas.append(url)
+            return None
+
+        with mock.patch.object(fig, "bajar_cb", cb_falso):
+            pol = fig.leer_poligonos(self.tmp / "census_cb", set(FIPS), zips=[d])
+        self.assertEqual(list(pol["fips"]), FIPS[:1])     # el Census no se pudo bajar: quedan los del gpkg
+        self.assertEqual(llamadas, [fig.URL_CB])
 
 
 if __name__ == "__main__":
