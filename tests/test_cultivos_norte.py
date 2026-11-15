@@ -214,3 +214,37 @@ def test_fenologia_cultivos_del_norte():
     assert df.loc[(2020, "trigo_primavera"), "doy_50_floracion"] == pytest.approx(183.5)
     assert pd.isna(df.loc[(2020, "trigo_durum"), "doy_50_floracion"])  # ya estaba en 60 % la 1.ª semana
     assert df.loc[(2018, "frijol_seco"), "doy_50_floracion"] == pytest.approx(196)
+
+
+# ---------------------------------------------------------------- rotacion_anual() con teselas sintéticas
+
+def test_rotacion_anual_columnas_nuevas_al_final(tmp_path, monkeypatch):
+    np = pytest.importorskip("numpy")
+    gpd = pytest.importorskip("geopandas")
+    rasterio = pytest.importorskip("rasterio")
+    from rasterio.transform import from_origin
+    from shapely.geometry import box
+
+    ref = tmp_path / "data" / "reference"
+    ref.mkdir(parents=True)
+    gpd.GeoDataFrame({"fips": ["27053"]}, geometry=[box(10, 10, 80, 80)], crs=5070).to_file(ref / "condados.gpkg")
+    teselas = tmp_path / "teselas"
+    teselas.mkdir()
+    # 3×3 píxeles de 30 m: 2008 maíz con un píxel de trigo de primavera; 2009 soja con uno de canola
+    for anio, base, otro, cod in ((2008, 1, (0, 0), 23), (2009, 5, (2, 2), 31)):
+        x = np.full((3, 3), base, dtype="uint8")
+        x[otro] = cod
+        with rasterio.open(teselas / f"{anio}_30m_cdls_0_60_90.tif", "w", driver="GTiff", width=3, height=3,
+                           count=1, dtype="uint8", crs="EPSG:5070", transform=from_origin(0, 90, 30, 30)) as dst:
+            dst.write(x, 1)
+    monkeypatch.setattr(proc, "REPO", tmp_path)
+    monkeypatch.setattr(proc, "RAW_TESELAS", teselas)
+    df = proc.rotacion_anual()
+    viejas = ["fips", "anio", *proc.PCT_CLASES, *proc.TRANSICIONES]
+    assert list(df.columns) == viejas + list(proc.PCT_CLASES_NORTE)
+    f = df.set_index("anio")
+    assert f.loc[2008, "pct_trigo_primavera"] == pytest.approx(100 / 9, abs=1e-3)
+    assert f.loc[2008, "pct_maiz"] == pytest.approx(800 / 9, abs=1e-3)
+    assert f.loc[2009, "pct_canola"] == pytest.approx(100 / 9, abs=1e-3)
+    assert f.loc[2009, "pct_trigo_primavera"] == 0
+    assert f.loc[2008, "pct_trigo"] == 0  # el trigo de primavera no entra en pct_trigo
