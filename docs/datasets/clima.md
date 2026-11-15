@@ -73,6 +73,11 @@ Los CSV procesados cubren el período de `config.yaml` (2000-2025);
   obtained from National Aeronautics and Space Administration (NASA) Langley Research Center's
   Prediction Of Worldwide Energy Resources (POWER) project funded through the NASA Earth Science
   Division." (https://power.larc.nasa.gov/docs/referencing/).
+  Versión de la API: `v2.10.3` el 2026-11-15. Cada bajada nueva guarda la que devuelve la API (encabezado HTTP
+  `x-app-version`) en la columna `version` de `manifest.csv` (`POWER API v2.10.3`); las filas anteriores a
+  T123 dicen `v2 (API)` (meteorología) o `POWER API v2.10.3` (IMERG), escrito fijo en el código. Para saber
+  la vigente: pedir cualquier punto con `format=JSON` y leer `header.api.version`
+  (ver `docs/research/power_version.md`).
 - **GPM IMERG Final V07** (`GPM_3IMERGDF`), hasta el 2025-09-30: https://doi.org/10.5067/GPM/IMERGDF/DAY/07
 - **GPM IMERG Late V07** (`GPM_3IMERGDL`), desde el 2025-10-01 (ver Problemas conocidos):
   https://doi.org/10.5067/GPM/IMERGDL/DAY/07
