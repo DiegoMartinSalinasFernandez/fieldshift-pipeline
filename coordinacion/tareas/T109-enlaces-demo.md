@@ -1,14 +1,14 @@
 ---
 id: T109
 titulo: Check every link in the submission pages (docs/demo, README)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T07:46
-actualizada: 2026-11-15T07:46
+actualizada: 2026-11-15 08:02
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ parte de enlaces relativos.
 El script, la prueba y los arreglos en un PR.
 
 ## Notas
+- 2026-11-15 08:02 · pro-5: tomada
