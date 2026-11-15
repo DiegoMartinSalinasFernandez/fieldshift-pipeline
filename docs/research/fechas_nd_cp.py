@@ -1,9 +1,9 @@
-"""Fechas habituales de Dakota del Norte desde Crop Progress (tarea T108).
+"""Fechas habituales de Dakota del Norte (u otro estado) desde Crop Progress (tareas T108 y T113).
 
 Baja de ESMIS los reportes semanales de texto de un año (por defecto 2026) a la carpeta que se le pasa, fuera
 del repo, sin volver a bajar lo que ya está. De cada tabla "<Cultivo> <Etapa> - Selected States" toma la fila
-de North Dakota y la columna del promedio de 5 años (en los reportes de 2026: "2021-2025 Average"), junto con
-la fecha de cierre de la semana actual. Con esa serie interpola linealmente el día del año (y la fecha MM-DD)
+del estado (por defecto North Dakota) y la columna del promedio de 5 años (en los reportes de 2026: "2021-2025
+Average"), junto con la fecha de cierre de la semana actual. Con esa serie interpola linealmente el día del año (y la fecha MM-DD)
 en que el promedio cruza el 10, 25, 50, 75 y 90 %.
 
 Imprime un CSV: cultivo, etapa, umbral, doy, fecha, n_semanas, primera_semana, ultima_semana, pct_primera,
@@ -11,6 +11,9 @@ pct_ultima. Si el umbral queda antes de la primera semana publicada o después d
 
 Uso:
   .venv/bin/python -X utf8 docs/research/fechas_nd_cp.py /tmp/t108/cp [2026] > docs/research/fechas_nd_cp.csv
+  .venv/bin/python -X utf8 docs/research/fechas_nd_cp.py /tmp/t113/cp 2026 Michigan > docs/research/fechas_mi_cp.csv
+
+El tercer argumento es el nombre del estado tal como aparece en las tablas ("Michigan", "Kentucky").
 """
 import re
 import sys
@@ -56,7 +59,7 @@ def bajar(carpeta: Path, anio: int) -> None:
 
 
 def leer(archivo: Path, anio: int):
-    """Devuelve [(cultivo, etapa, fecha_semana, pct_promedio)] de North Dakota en un reporte."""
+    """Devuelve [(cultivo, etapa, fecha_semana, pct_promedio)] del estado ESTADO en un reporte."""
     lineas = archivo.read_text(encoding="latin-1").splitlines()
     filas = []
     i = 0
@@ -68,7 +71,9 @@ def leer(archivo: Path, anio: int):
         cultivo, etapa = m.group(1), m.group(2).strip()
         fecha_semana = None
         j = i + 1
-        while j < len(lineas) and not TABLA.match(lineas[j].strip()) and j < i + 60:
+        # se corta en el título de cualquier tabla siguiente (también "... Condition - Selected States: ..."), para
+        # no tomar la fila del estado de otra tabla cuando el estado no figura en esta
+        while j < len(lineas) and "- Selected States" not in lineas[j] and j < i + 60:
             ln = lineas[j]
             if "State" in ln and fecha_semana is None:
                 fechas = FECHA.findall(ln)
@@ -95,6 +100,9 @@ def cruce(serie, umbral):
 
 
 def main() -> None:
+    global ESTADO
+    if len(sys.argv) > 3:
+        ESTADO = sys.argv[3]
     carpeta = Path(sys.argv[1])
     anio = int(sys.argv[2]) if len(sys.argv) > 2 else 2026
     carpeta.mkdir(parents=True, exist_ok=True)
