@@ -1,14 +1,14 @@
 ---
 id: T039
 titulo: Citas y DOIs de los productos de la NASA que usamos
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 03:20
-actualizada: 2026-11-15 03:20
+actualizada: 2026-11-15 03:16
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ Solo fuentes oficiales (páginas del DAAC, CMR, DOI). Formato de research de la 
 El documento en un PR.
 
 ## Notas
+- 2026-11-15 03:16 · pro-2: tomada
