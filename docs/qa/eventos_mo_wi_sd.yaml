@@ -1,0 +1,497 @@
+# Eventos de la QA de MO, WI y SD (T081), para scripts/qa_release.py --eventos (tarea T117).
+# Fuente: docs/research/eventos_extremos_mo_wi_sd.md (MD) y su tabla de rendimientos finales de NASS por estado,
+# docs/research/eventos_extremos_mo_wi_sd_rend.csv (CSV; la media de 5 años es una referencia, no una tendencia).
+# Solo eventos de ese documento.
+#
+# Campos (ver serie_evento() y seccion_eventos() en scripts/qa_release.py):
+#   estados: el evento se saltea con un aviso si ninguno está en el release; la tabla muestra solo esos.
+#   fips: deja solo esos condados (eventos de pocos condados; los fips 29133, 29005 y 29087 son del MD).
+#   anios: el año del evento y años vecinos como referencia (los vecinos no son eventos).
+#   esperado: dirección de la señal según el research; fuente: sección del MD.
+# Lo que no está, a propósito:
+#   - sm_rootzone_anom_z (SMAP) en WI 2008: SMAP empieza en 2015.
+#   - SD 2011 (inundación del Missouri): el MD dice que casi no se ve en el clima local ni en el rendimiento
+#     estatal y no da condados con fips ni superficie de campo afectada; solo queda la referencia de NASS.
+#   - SD 2002 y 2022: el MD no da meses ni fuente del evento; solo el rendimiento de NASS.
+#   - Gradientes dentro del estado (Bootheel de MO en 2012, oeste de SD en 2017 y 2021): se miran por condado,
+#     no en estas medias de estado.
+# rend_dif5 compara el rendimiento implícito de condados con la media de los 5 años previos del mismo release;
+# el valor de NASS citado es el de estado (CSV), así que puede diferir algunos puntos.
+eventos:
+  # ---------------------------------------------------------------- SD 2002, 2006 y 2022: años raros de NASS
+  - titulo: "SD 2002 — maíz: rendimiento implícito de estado (bu/ac)"
+    estados: [SD]
+    tipo: rend_implicito
+    cultivo: maiz
+    anios: [2001, 2002, 2003]
+    esperado: "bajo en 2002 (NASS 95 bu/ac, −14 % contra 5 años; trigo de invierno 30, −23 %; soja 31, −12 %)"
+    fuente: "MD, «SD 2002, 2006 y 2022 — años raros solo en NASS»; CSV"
+  - titulo: "SD 2006 — `spi3` de junio a agosto"
+    estados: [SD]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: spi3
+    meses: [6, 7, 8]
+    anios: [2005, 2006, 2007]
+    esperado: "negativo en 2006, peor en el centro y centro-norte (solo extractos del buscador)"
+    fuente: "MD, tabla de respuesta corta (2006) y «SD 2002, 2006 y 2022»"
+  - titulo: "SD 2006 — `prec_temporada_mm`"
+    estados: [SD]
+    paquete: clima
+    archivo: clima_anual.csv
+    columna: prec_temporada_mm
+    anios: [2005, 2006, 2007]
+    esperado: "bajo en 2006"
+    fuente: "MD, tabla de respuesta corta (2006)"
+  - titulo: "SD 2006 — maíz: diferencia % contra la media de los 5 años previos"
+    estados: [SD]
+    tipo: rend_dif5
+    cultivo: maiz
+    anios: [2005, 2006, 2007]
+    esperado: "negativa en 2006 (NASS 97 bu/ac, −14 %; trigo de invierno 36, −7 %; soja +7 %)"
+    fuente: "MD, «SD 2002, 2006 y 2022»; CSV"
+  - titulo: "SD 2022 — maíz: diferencia % contra la media de los 5 años previos"
+    estados: [SD]
+    tipo: rend_dif5
+    cultivo: maiz
+    anios: [2021, 2022, 2023]
+    esperado: "negativa en 2022 (NASS maíz 132 bu/ac, −11 %; soja 38, −12 %)"
+    fuente: "MD, «SD 2002, 2006 y 2022»; CSV"
+
+  # ---------------------------------------------------------------- MO 2007: helada de Pascua
+  - titulo: "MO 2007 — `anom_tmed_c` de marzo"
+    estados: [MO]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: anom_tmed_c
+    meses: [3]
+    anios: [2006, 2007, 2008]
+    esperado: "positiva en 2007 (fines de marzo muy cálidos)"
+    fuente: "MD, «2007 — Helada de Pascua en Missouri»"
+  - titulo: "MO 2007 — `dias_tmin_le0` de abril"
+    estados: [MO]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: dias_tmin_le0
+    meses: [4]
+    anios: [2006, 2007, 2008]
+    esperado: "alto en 2007 (cuatro días seguidos de helada fuerte, ≈7 de abril)"
+    fuente: "MD, «2007 — Helada de Pascua en Missouri»"
+  - titulo: "MO 2007 — `dias_tmin_le_m2` de abril"
+    estados: [MO]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: dias_tmin_le_m2
+    meses: [4]
+    anios: [2006, 2007, 2008]
+    esperado: "alto en 2007"
+    fuente: "MD, «2007 — Helada de Pascua en Missouri»"
+  - titulo: "MO 2007 — `doy_ultima_helada`"
+    estados: [MO]
+    paquete: clima
+    archivo: clima_anual.csv
+    columna: doy_ultima_helada
+    anios: [2006, 2007, 2008]
+    esperado: "tardío en 2007"
+    fuente: "MD, «2007 — Helada de Pascua en Missouri»"
+  - titulo: "MO 2007 — trigo de invierno: diferencia % contra la media de los 5 años previos"
+    estados: [MO]
+    tipo: rend_dif5
+    cultivo: trigo_invierno
+    anios: [2006, 2007, 2008]
+    esperado: "negativa en 2007 (NASS 43 bu/ac, −19 %); el maíz no cae (140, +12 %)"
+    fuente: "MD, «2007 — Helada de Pascua en Missouri» y advertencia «MO 2007»; CSV"
+
+  # ---------------------------------------------------------------- WI 2008: inundaciones de junio
+  - titulo: "WI 2008 — `prec_max5d_mm` de junio"
+    estados: [WI]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: prec_max5d_mm
+    meses: [6]
+    anios: [2007, 2008, 2009]
+    esperado: "alta en 2008, sobre todo en el sur (7 a 21 de junio)"
+    fuente: "MD, «2008 — Inundaciones de junio en el sur de Wisconsin»"
+  - titulo: "WI 2008 — `dias_lluvia_gt50` de junio"
+    estados: [WI]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: dias_lluvia_gt50
+    meses: [6]
+    anios: [2007, 2008, 2009]
+    esperado: "más días en 2008 en el sur"
+    fuente: "MD, «2008 — Inundaciones de junio en el sur de Wisconsin»"
+  - titulo: "WI 2008 — soja: `ratio_cosechada`"
+    estados: [WI]
+    paquete: cultivos
+    archivo: produccion_anual.csv
+    cultivo: soja
+    columna: ratio_cosechada
+    anios: [2007, 2008, 2009]
+    esperado: "más bajo en 2008 en el sur de WI (Dodge y Jefferson con superficie perdida; la media de estado puede moverse poco)"
+    fuente: "MD, «2008 — Inundaciones de junio en el sur de Wisconsin»"
+  - titulo: "WI 2008 — soja: diferencia % contra la media de los 5 años previos"
+    estados: [WI]
+    tipo: rend_dif5
+    cultivo: soja
+    anios: [2007, 2008, 2009]
+    esperado: "negativa en 2008 (NASS 35 bu/ac, −8 %); maíz casi normal (137, −1 %)"
+    fuente: "MD, «2008 — Inundaciones de junio en el sur de Wisconsin»; CSV"
+
+  # ---------------------------------------------------------------- MO 2011: dique de Birds Point
+  - titulo: "MO 2011 — condado de Mississippi (29133): `ratio_cosechada` de maíz"
+    estados: [MO]
+    paquete: cultivos
+    archivo: produccion_anual.csv
+    cultivo: maiz
+    columna: ratio_cosechada
+    fips: ["29133"]
+    anios: [2010, 2011, 2012]
+    esperado: "bajo en 2011 (≈130.000 ac del floodway inundados desde el 3 de mayo; cifra de prensa). No se ve en la lluvia local"
+    fuente: "MD, «2011 — Voladura del dique de Birds Point (Missouri)»"
+  - titulo: "MO 2011 — condado de Mississippi (29133): superficie sembrada de maíz (miles de ac)"
+    estados: [MO]
+    tipo: suma_condados
+    paquete: cultivos
+    archivo: produccion_anual.csv
+    cultivo: maiz
+    columna: sup_sembrada_ac
+    fips: ["29133"]
+    escala: 1000
+    anios: [2010, 2011, 2012]
+    esperado: "más baja en 2011 (parte del maíz no se pudo sembrar a tiempo)"
+    fuente: "MD, «2011 — Voladura del dique de Birds Point (Missouri)»"
+  - titulo: "MO 2011 — condado de Mississippi (29133): `ratio_cosechada` de trigo de invierno"
+    estados: [MO]
+    paquete: cultivos
+    archivo: produccion_anual.csv
+    cultivo: trigo_invierno
+    columna: ratio_cosechada
+    fips: ["29133"]
+    anios: [2010, 2011, 2012]
+    esperado: "bajo en 2011 (había trigo sembrado en el floodway)"
+    fuente: "MD, «2011 — Voladura del dique de Birds Point (Missouri)»"
+
+  # ---------------------------------------------------------------- 2012: sequía en MO, SD y WI
+  - titulo: "MO/SD/WI 2012 — `spi3` de julio"
+    estados: [MO, SD, WI]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: spi3
+    meses: [7]
+    anios: [2011, 2012, 2013]
+    esperado: "muy negativo en 2012 en los tres (en WI, sobre todo en el sur)"
+    fuente: "MD, «2012 — Sequía en MO, SD y WI» y tabla de respuesta corta"
+  - titulo: "MO/SD/WI 2012 — `dias_tmax_gt35` de junio a agosto (media de los meses)"
+    estados: [MO, SD, WI]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: dias_tmax_gt35
+    meses: [6, 7, 8]
+    anios: [2011, 2012, 2013]
+    esperado: "alto en 2012 (sequía y calor)"
+    fuente: "MD, tabla de respuesta corta (2012, MO y «igual que MO» para SD)"
+  - titulo: "MO/SD/WI 2012 — `ndvi_anom_z` de julio–agosto"
+    estados: [MO, SD, WI]
+    paquete: vegetacion
+    archivo: vegetacion_mensual.csv
+    columna: ndvi_anom_z
+    meses: [7, 8]
+    anios: [2011, 2012, 2013]
+    esperado: "negativo en 2012"
+    fuente: "MD, tabla de respuesta corta (2012)"
+  - titulo: "MO/SD/WI 2012 — `vhi` de julio–agosto"
+    estados: [MO, SD, WI]
+    paquete: vegetacion
+    archivo: vegetacion_mensual.csv
+    columna: vhi
+    meses: [7, 8]
+    anios: [2011, 2012, 2013]
+    esperado: "bajo en 2012"
+    fuente: "MD, tabla de respuesta corta (2012)"
+  - titulo: "MO/SD/WI 2012 — maíz: diferencia % contra la media de los 5 años previos"
+    estados: [MO, SD, WI]
+    tipo: rend_dif5
+    cultivo: maiz
+    anios: [2011, 2012, 2013]
+    esperado: "muy negativa en 2012 (NASS: MO −44 %, SD −25 %, WI −19 %); en MO el sureste regado casi normal"
+    fuente: "MD, «2012 — Sequía en MO, SD y WI»; CSV"
+  - titulo: "MO/SD/WI 2012 — soja: diferencia % contra la media de los 5 años previos"
+    estados: [MO, SD, WI]
+    tipo: rend_dif5
+    cultivo: soja
+    anios: [2011, 2012, 2013]
+    esperado: "negativa en MO (−24 %) y SD (−21 %); casi normal en WI (−1 %)"
+    fuente: "MD, «2012 — Sequía en MO, SD y WI»; CSV"
+
+  # ---------------------------------------------------------------- SD 2017: sequía relámpago
+  - titulo: "SD 2017 — `spi1` de mayo a julio"
+    estados: [SD]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: spi1
+    meses: [5, 6, 7]
+    anios: [2016, 2017, 2018]
+    esperado: "muy negativo en 2017, peor al oeste del río Missouri"
+    fuente: "MD, «2017 — Sequía relámpago en Dakota del Sur»"
+  - titulo: "SD 2017 — `spi3` de mayo a julio"
+    estados: [SD]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: spi3
+    meses: [5, 6, 7]
+    anios: [2016, 2017, 2018]
+    esperado: "muy negativo en 2017, peor al oeste del río Missouri"
+    fuente: "MD, «2017 — Sequía relámpago en Dakota del Sur»"
+  - titulo: "SD 2017 — `ndvi_anom_z` de junio a agosto"
+    estados: [SD]
+    paquete: vegetacion
+    archivo: vegetacion_mensual.csv
+    columna: ndvi_anom_z
+    meses: [6, 7, 8]
+    anios: [2016, 2017, 2018]
+    esperado: "negativo en 2017 (el MD no da meses del NDVI; se usan los del verano de la sequía)"
+    fuente: "MD, «2017 — Sequía relámpago en Dakota del Sur»"
+  - titulo: "SD 2017 — trigo de invierno: diferencia % contra la media de los 5 años previos"
+    estados: [SD]
+    tipo: rend_dif5
+    cultivo: trigo_invierno
+    anios: [2016, 2017, 2018]
+    esperado: "negativa en 2017 (NASS 40 bu/ac, −19 %); el maíz casi no se mueve (145, +3 %)"
+    fuente: "MD, «2017 — Sequía relámpago en Dakota del Sur» y advertencia «SD 2017 y 2021»; CSV"
+
+  # ---------------------------------------------------------------- MO 2018: sequía en el norte
+  - titulo: "MO 2018 — `spi3` de junio a agosto"
+    estados: [MO]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: spi3
+    meses: [6, 7, 8]
+    anios: [2017, 2018, 2019]
+    esperado: "negativo en 2018 en el norte de MO (contraste norte–sur; la media de estado lo diluye)"
+    fuente: "MD, «2018 — Sequía en el norte de Missouri»"
+  - titulo: "MO 2018 — maíz: diferencia % contra la media de los 5 años previos"
+    estados: [MO]
+    tipo: rend_dif5
+    cultivo: maiz
+    anios: [2017, 2018, 2019]
+    esperado: "negativa en 2018 (NASS 140 bu/ac, −12 %); soja normal (44,5, +1 %)"
+    fuente: "MD, «2018 — Sequía en el norte de Missouri»; CSV"
+
+  # ---------------------------------------------------------------- MO 2019: inundación en Atchison y Holt
+  - titulo: "MO 2019 — Atchison y Holt (29005, 29087): `prec_power_mm` de marzo"
+    estados: [MO]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: prec_power_mm
+    meses: [3]
+    fips: ["29005", "29087"]
+    anios: [2018, 2019, 2020]
+    esperado: "alta en 2019 (lluvia y nieve locales en marzo; la mayor parte del agua vino río arriba)"
+    fuente: "MD, tabla de respuesta corta (2019, MO) y advertencia sobre inundaciones de río"
+  - titulo: "MO 2019 — Atchison y Holt: `sm_rootzone_anom_z` de marzo a mayo"
+    estados: [MO]
+    paquete: agua
+    archivo: agua_mensual.csv
+    columna: sm_rootzone_anom_z
+    meses: [3, 4, 5]
+    fips: ["29005", "29087"]
+    anios: [2018, 2019, 2020]
+    esperado: "alto en 2019"
+    fuente: "MD, «2019 — Inundación del Missouri en el noroeste de Missouri»"
+  - titulo: "MO 2019 — Atchison y Holt: superficie sembrada de maíz (miles de ac)"
+    estados: [MO]
+    tipo: suma_condados
+    paquete: cultivos
+    archivo: produccion_anual.csv
+    cultivo: maiz
+    columna: sup_sembrada_ac
+    fips: ["29005", "29087"]
+    escala: 1000
+    anios: [2018, 2019, 2020]
+    esperado: "baja en 2019 (siembra prevenida: Atchison 55.971 ac, Holt ≈60.000; extractos)"
+    fuente: "MD, «2019 — Inundación del Missouri en el noroeste de Missouri»"
+  - titulo: "MO 2019 — Atchison y Holt: superficie sembrada de soja (miles de ac)"
+    estados: [MO]
+    tipo: suma_condados
+    paquete: cultivos
+    archivo: produccion_anual.csv
+    cultivo: soja
+    columna: sup_sembrada_ac
+    fips: ["29005", "29087"]
+    escala: 1000
+    anios: [2018, 2019, 2020]
+    esperado: "baja en 2019"
+    fuente: "MD, «2019 — Inundación del Missouri en el noroeste de Missouri»"
+  - titulo: "MO 2019 — Atchison y Holt: `ratio_cosechada` de maíz"
+    estados: [MO]
+    paquete: cultivos
+    archivo: produccion_anual.csv
+    cultivo: maiz
+    columna: ratio_cosechada
+    fips: ["29005", "29087"]
+    anios: [2018, 2019, 2020]
+    esperado: "bajo en 2019; el rendimiento estatal casi no cae (NASS maíz 155, −3 %)"
+    fuente: "MD, «2019 — Inundación del Missouri en el noroeste de Missouri»; CSV"
+
+  # ---------------------------------------------------------------- SD 2019: siembra prevenida récord
+  - titulo: "SD 2019 — `prec_power_mm` de abril a junio (suma, media de condados)"
+    estados: [SD]
+    tipo: suma_meses
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: prec_power_mm
+    meses: [4, 5, 6]
+    anios: [2018, 2019, 2020]
+    esperado: "alta en 2019, sobre todo en el este"
+    fuente: "MD, «2019 — Siembra prevenida récord en Dakota del Sur»"
+  - titulo: "SD 2019 — `sm_rootzone_anom_z` de abril a junio"
+    estados: [SD]
+    paquete: agua
+    archivo: agua_mensual.csv
+    columna: sm_rootzone_anom_z
+    meses: [4, 5, 6]
+    anios: [2018, 2019, 2020]
+    esperado: "alto en 2019"
+    fuente: "MD, «2019 — Siembra prevenida récord en Dakota del Sur»"
+  - titulo: "SD 2019 — `prec_max5d_mm` de septiembre"
+    estados: [SD]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: prec_max5d_mm
+    meses: [9]
+    anios: [2018, 2019, 2020]
+    esperado: "alta en 2019 en el este (segunda inundación, casi un pie de lluvia a mediados de septiembre)"
+    fuente: "MD, «2019 — Siembra prevenida récord en Dakota del Sur»"
+  - titulo: "SD 2019 — maíz: `doy_50_sembrado` (estado)"
+    estados: [SD]
+    paquete: cultivos
+    archivo: fenologia_estado.csv
+    cultivo: maiz
+    columna: doy_50_sembrado
+    anios: [2018, 2019, 2020]
+    esperado: "tardío en 2019"
+    fuente: "MD, «2019 — Siembra prevenida récord en Dakota del Sur»"
+  - titulo: "SD 2019 — superficie sembrada de maíz, suma de condados (miles de ac)"
+    estados: [SD]
+    tipo: suma_condados
+    paquete: cultivos
+    archivo: produccion_anual.csv
+    cultivo: maiz
+    columna: sup_sembrada_ac
+    escala: 1000
+    anios: [2018, 2019, 2020]
+    esperado: "muy baja en 2019 (> 2,9 M ac de maíz con siembra prevenida); el rendimiento cae menos (NASS 144, −7 %)"
+    fuente: "MD, «2019 — Siembra prevenida récord en Dakota del Sur» y advertencia sobre siembra prevenida; CSV"
+  - titulo: "SD 2019 — superficie sembrada de soja, suma de condados (miles de ac)"
+    estados: [SD]
+    tipo: suma_condados
+    paquete: cultivos
+    archivo: produccion_anual.csv
+    cultivo: soja
+    columna: sup_sembrada_ac
+    escala: 1000
+    anios: [2018, 2019, 2020]
+    esperado: "baja en 2019 (867 mil ac de soja con siembra prevenida)"
+    fuente: "MD, «2019 — Siembra prevenida récord en Dakota del Sur»"
+
+  # ---------------------------------------------------------------- WI 2019: primavera húmeda
+  - titulo: "WI 2019 — `prec_power_mm` de mayo"
+    estados: [WI]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: prec_power_mm
+    meses: [5]
+    anios: [2018, 2019, 2020]
+    esperado: "alta en 2019"
+    fuente: "MD, «2019 — Primavera húmeda en Wisconsin»"
+  - titulo: "WI 2019 — maíz: `doy_50_sembrado` (estado)"
+    estados: [WI]
+    paquete: cultivos
+    archivo: fenologia_estado.csv
+    cultivo: maiz
+    columna: doy_50_sembrado
+    anios: [2018, 2019, 2020]
+    esperado: "tardío en 2019 (96 % sembrado recién el 30 de junio, ≈3 semanas detrás del promedio; extracto)"
+    fuente: "MD, «2019 — Primavera húmeda en Wisconsin»"
+  - titulo: "WI 2019 — superficie sembrada de maíz, suma de condados (miles de ac)"
+    estados: [WI]
+    tipo: suma_condados
+    paquete: cultivos
+    archivo: produccion_anual.csv
+    cultivo: maiz
+    columna: sup_sembrada_ac
+    escala: 1000
+    anios: [2018, 2019, 2020]
+    esperado: "baja en 2019; rendimiento casi normal (NASS 166, −2 %; trigo de invierno 64, −10 %)"
+    fuente: "MD, «2019 — Primavera húmeda en Wisconsin»; CSV"
+
+  # ---------------------------------------------------------------- SD 2021: sequía
+  - titulo: "SD 2021 — `spi3` de junio a agosto"
+    estados: [SD]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: spi3
+    meses: [6, 7, 8]
+    anios: [2020, 2021, 2022]
+    esperado: "negativo en 2021, peor al oeste del río Missouri y en el norte"
+    fuente: "MD, «2021 — Sequía en Dakota del Sur»"
+  - titulo: "SD 2021 — `ndvi_anom_z` de julio–agosto"
+    estados: [SD]
+    paquete: vegetacion
+    archivo: vegetacion_mensual.csv
+    columna: ndvi_anom_z
+    meses: [7, 8]
+    anios: [2020, 2021, 2022]
+    esperado: "negativo en 2021 en el norte y oeste (el MD no da meses del NDVI; se usan los del verano)"
+    fuente: "MD, «2021 — Sequía en Dakota del Sur»"
+  - titulo: "SD 2021 — maíz: diferencia % contra la media de los 5 años previos"
+    estados: [SD]
+    tipo: rend_dif5
+    cultivo: maiz
+    anios: [2020, 2021, 2022]
+    esperado: "negativa en 2021 (NASS 134 bu/ac, −13 %; soja 40, −12 %; trigo de invierno 38, −26 %)"
+    fuente: "MD, «2021 — Sequía en Dakota del Sur»; CSV"
+  - titulo: "SD 2021 — trigo de invierno: diferencia % contra la media de los 5 años previos"
+    estados: [SD]
+    tipo: rend_dif5
+    cultivo: trigo_invierno
+    anios: [2020, 2021, 2022]
+    esperado: "negativa en 2021 (NASS 38 bu/ac, −26 %)"
+    fuente: "MD, «2021 — Sequía en Dakota del Sur»; CSV"
+
+  # ---------------------------------------------------------------- WI 2023: sequía de primavera
+  - titulo: "WI 2023 — `spi1` de mayo–junio"
+    estados: [WI]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: spi1
+    meses: [5, 6]
+    anios: [2022, 2023, 2024]
+    esperado: "negativo en 2023 (3.er mayo–junio más seco: 3,5 pulgadas, 46 % de lo normal)"
+    fuente: "MD, «2023 — Sequía de primavera en Wisconsin»"
+  - titulo: "WI 2023 — `spi3` de mayo–junio"
+    estados: [WI]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: spi3
+    meses: [5, 6]
+    anios: [2022, 2023, 2024]
+    esperado: "negativo en 2023"
+    fuente: "MD, «2023 — Sequía de primavera en Wisconsin»"
+  - titulo: "WI 2023 — `deficit_mm` de junio"
+    estados: [WI]
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: deficit_mm
+    meses: [6]
+    anios: [2022, 2023, 2024]
+    esperado: "más negativo en 2023"
+    fuente: "MD, «2023 — Sequía de primavera en Wisconsin»"
+  - titulo: "WI 2023 — maíz: diferencia % contra la media de los 5 años previos"
+    estados: [WI]
+    tipo: rend_dif5
+    cultivo: maiz
+    anios: [2022, 2023, 2024]
+    esperado: "SIN caída en 2023 (NASS 176 bu/ac, +1 %; soja 51, 0 %): la anomalía climática no bajó el rendimiento"
+    fuente: "MD, «2023 — Sequía de primavera en Wisconsin» y advertencia «WI 2023»; CSV"

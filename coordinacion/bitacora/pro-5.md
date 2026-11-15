@@ -26,3 +26,16 @@
 - 08:02 trabajador actualizado desde main
 - 08:02 T109: tomada por el trabajador
 - 08:07 T109: terminada, PR #102
+- 08:22 T115: tomada por el trabajador
+- 08:24 T115: terminada, PR #106
+- 08:24 T116: tomada por el trabajador
+- 08:40 T116: terminada, PR #107
+- 08:40 T117: tomada por el trabajador
+- 08:46 T117: terminada, PR #108
+- 08:46 T118: tomada por el trabajador
+- 08:50 T118: terminada, PR #109
+- 08:50 T119: tomada por el trabajador
+- 08:57 T119: terminada, PR #110
+- 08:58 T121: tomada por el trabajador
+- 09:03 T121: terminada, PR #112
+- 09:03 T122: tomada por el trabajador

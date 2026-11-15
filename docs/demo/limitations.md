@@ -19,7 +19,7 @@ Status: 2026-11-15. Column names are in Spanish (`rend_bu_ac` = yield in bu/ac).
 | # | Limitation | Package · file | Source |
 |---|---|---|---|
 | 0.1 | The data cards were written for the first batch of states (Iowa, Illinois and Indiana, 293 counties). Unless a line says otherwise, coverage, missing-value percentages and validation statistics refer to those three states. | all · `docs/datasets/*.md` | data cards (e.g. `clima.md`, header) |
-| 0.2 | The second batch (Ohio, Nebraska, Minnesota and Kansas) was still being processed on 2026-11-15 (tasks T003 and T013 in progress). Which of the 7 states (666 counties) are in the final delivery: **[TBD]**. | all · per-state releases | `coordinacion/tareas/T003-*.md`, `T013-*.md` |
+| 0.2 | On 2026-11-15 the only published data release is `datos-oh-ne-mn` (Ohio, Nebraska, Minnesota; 268 counties, 2000–2025; [`coverage.md`](coverage.md)). Iowa, Illinois, Indiana and Kansas have no published release yet. Which of the 7 states (666 counties) are in the final delivery: **[TBD]**. | all · per-state releases | `coordinacion/tareas/T003-*.md`, `T013-*.md` |
 | 0.3 | The seven states have not been merged into one table yet (task T008 is open). | `merge` · `tabla_anual.csv`, `tabla_mensual.csv` | `coordinacion/tareas/T008-*.md` |
 | 0.4 | This repository only prepares data. No model is trained here, so this page says nothing about model accuracy: **[TBD]** by the ML team. | — | `CLAUDE.md` |
 

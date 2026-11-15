@@ -14,7 +14,7 @@ de maíz va **más adelantado**: 50 % cosechado el 23 de octubre, 75 % el 5 de n
 período más activo del 8 de octubre al 19 de noviembre. **ND no aparece en las tablas de trigo de invierno de Crop
 Progress**: para ese cultivo solo está el Handbook. Ventanas: la **floración del maíz (25–75 % *silking*) va del
 20 de julio al 4 de agosto** (50 % el 27 de julio, día 208). Es entre 5 y 14 días más tarde que en los 7 estados
-del Corn Belt, cuya mediana del 50 % va del día 194 al 203 (`ventanas_por_estado.md`), y deja en julio solo el 75 %
+del Corn Belt, cuya mediana del 50 % va del día 194 al 203 (`ventanas_por_estado.md`), y deja en julio solo el 82 %
 de la ventana. El **llenado de la soja (50 % *setting pods* → 25 % *dropping leaves*) va del 2 de agosto al 5 de
 septiembre** (35 días, el 87 % en agosto).
 
@@ -101,15 +101,19 @@ rompería la comparación con los otros 7 estados.
 
 | Ventana | Inicio | 50 % | Fin | Duración | Fracción en el mes fijo |
 |---|---|---|---|---|---|
-| Floración del maíz: *silking* 25 % → 75 % | 07-20 (día 200,6) | 07-27 (208,1) | 08-04 (215,8) | 15 días | 0,75 en julio |
+| Floración del maíz: *silking* 25 % → 75 % | 07-20 (día 200,6) | 07-27 (208,1) | 08-04 (215,8) | 15 días | 0,82 en julio (\*) |
 | Llenado de la soja: 50 % *setting pods* → 25 % *dropping leaves* | 08-02 (214,0) | — | 09-05 (248,5) | 35 días | 0,87 en agosto |
 
 Para referencia, la floración de la soja (50 % *blooming*) cae el 07-18 (día 198,5), y el maíz llega a 50 %
 *dough* el 08-18 y a 50 % *dented* el 09-06.
 
+(\*) Corregido en T116: decía 0,75. La fracción se calcula con días continuos, igual que en la ventana de la soja:
+julio es [182, 213), así que la parte en julio es (213 − 200,6) / (215,8 − 200,6) = 0,82. El 0,75 salía de usar 212
+como límite de julio. Lo señaló T113 (`fechas_mi_ky.md`).
+
 Comparado con los 7 estados (`ventanas_por_estado.md`, mediana 2008–2025 del 50 % *silking*: de 194 en IL a 203
 en OH), **ND florece 5 días después que OH y 2 semanas después que IL**. En la mediana de los otros estados, la ventana
-25–75 % cae entera en julio. En ND, en cambio, un cuarto cae en los primeros días de agosto. Si ND entra al
+25–75 % cae entera en julio. En ND, en cambio, casi una quinta parte (0,18) cae en los primeros días de agosto. Si ND entra al
 proyecto, `prec_jul_mm`, `tmax_jul_c` y `dias_tmax_gt30_jul` captan peor la floración de lo que la captan en el
 resto. Esto refuerza la propuesta de `ventanas_por_estado.md` de agregar ventanas por estado y año desde
 `fenologia_estado.csv`, una decisión del humano porque cambia el esquema. El llenado de la soja empieza dentro del rango
