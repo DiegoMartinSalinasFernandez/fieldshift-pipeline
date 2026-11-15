@@ -41,3 +41,4 @@
 - 09:32 T125: tomada por el trabajador
 - 09:48 T125: terminada, PR #122
 - 09:48 T133: tomada por el trabajador
+- 09:52 T133: terminada, PR #124
