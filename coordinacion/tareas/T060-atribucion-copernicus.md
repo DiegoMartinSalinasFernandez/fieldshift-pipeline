@@ -1,14 +1,14 @@
 ---
 id: T060
 titulo: 'Research: atribución de Copernicus/Sentinel-2 (vía HLS) y licencias de las fuentes'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:30
-actualizada: 2026-11-15 04:44
+actualizada: 2026-11-15 04:49
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ El research en un PR.
 
 ## Notas
 - 2026-11-15 04:44 · pro-3: tomada
+- 2026-11-15 04:49 · pro-3: terminada por el trabajador: PR #56, falta la revisión de max-1
