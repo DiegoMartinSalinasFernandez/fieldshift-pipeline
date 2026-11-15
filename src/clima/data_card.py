@@ -4,11 +4,15 @@ Uso: python src/clima/data_card.py  (después de process.py)
 """
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO))
+from src.clima.celdas import resumen_celdas  # noqa: E402
+from src.zona_texto import lista_estados, unir  # noqa: E402
 OUT = REPO / "data" / "processed" / "clima"
 CARD = REPO / "docs" / "datasets" / "clima.md"
 
@@ -80,9 +84,9 @@ TIEMPO = {"clima_diario.csv": "fecha", "clima_mensual.csv": "mes", "clima_anual.
 TEXTO = """# Data card — clima
 
 Paquete `clima` (CLAUDE.md §6.1): NASA POWER diario (comunidad AG) en el centroide de cada
-condado de IA, IL e IN (293 condados), 1981-2025 en `data/raw/clima/power/` (un CSV por condado,
+condado de {estados} ({n_condados} condados), 1981-2025 en `data/raw/clima/power/` (un CSV por condado,
 tal cual lo devuelve la API), y GPM IMERG diario 2000-2025 servido por la misma API de POWER
-(`IMERG_PRECTOT`), una consulta por celda de 0,1° en `data/raw/clima/imerg_power/` (4.121 celdas).
+(`IMERG_PRECTOT`), una consulta por celda de 0,1° en `data/raw/clima/imerg_power/` ({n_celdas} celdas).
 Los CSV procesados cubren el período de `config.yaml` (2000-2025);
 1981-1999 se usa solo como base de SPI, anomalías y tendencias.
 
@@ -112,8 +116,8 @@ Los CSV procesados cubren el período de `config.yaml` (2000-2025);
   del mismo día cubren ventanas desplazadas unas 6 h.
 - Media del condado de IMERG: promedio simple (sin ponderar por área ni por máscara agrícola)
   de las celdas de 0,1° cuyo centro cae dentro del polígono del condado (`src/clima/celdas.py`;
-  entre 3 y 32 celdas por condado). Si un condado no tuviera ningún centro adentro se usaría la
-  celda de su centroide; en IA/IL/IN no pasa. No se agrega `frac_pixeles_validos` porque la
+  entre {min_celdas} y {max_celdas} celdas por condado). Si un condado no tiene ningún centro adentro se usa
+  la celda de su centroide: {sin_centro}. No se agrega `frac_pixeles_validos` porque la
   columna no está en el esquema de clima.
 - Las variables derivadas de lluvia (SPI, días de lluvia, Rx1day, rachas, déficit) siguen
   usando POWER (PRECTOTCORR), que existe desde 1981 y da la base larga que necesita el SPI.
@@ -152,7 +156,7 @@ Los CSV procesados cubren el período de `config.yaml` (2000-2025);
 - PRISM (opcional, validación) no se bajó.
 - La radiación de POWER (CERES) empieza en 1984; el resto de la meteorología en 1981.
 - `validar_csv()` (src/common) marca `deficit_mm` de `clima_mensual.csv` porque hay un valor
-  real de −99,99 mm (fips 18065, 2011-07: lluvia − ETo), que coincide con su lista de códigos de
+  real de −99,99 mm (en la primera tanda: fips 18065, 2011-07: lluvia − ETo), que coincide con su lista de códigos de
   relleno. Es un falso positivo: el valor sale del cálculo y no se modifica. Propuesta en
   `loop/notes/decisiones.md`.
 - POWER en un punto: condados vecinos dentro de la misma celda MERRA-2 tienen series idénticas.
@@ -161,6 +165,18 @@ Los CSV procesados cubren el período de `config.yaml` (2000-2025);
 
 def fmt(v, temporal):
     return str(v)
+
+
+def textos(texto: str) -> str:
+    """Completa los datos de la zona (estados de config.yaml y celdas de IMERG de condados.gpkg)."""
+    cond = pd.read_csv(REPO / "data" / "reference" / "condados.csv", dtype={"fips": str})
+    r = resumen_celdas()
+    sin = (f"{len(r['sin_centro'])} condado(s) ({unir(r['sin_centro'])})" if r["sin_centro"]
+           else "no le pasa a ninguno")
+    for k, v in {"estados": lista_estados(), "n_condados": len(cond), "n_celdas": f"{r['n_celdas']:,}".replace(",", "."),
+                 "min_celdas": r["min"], "max_celdas": r["max"], "sin_centro": sin}.items():
+        texto = texto.replace("{" + k + "}", str(v))
+    return texto
 
 
 def main():
@@ -176,7 +192,7 @@ def main():
             hasta = llenos.max() if len(llenos) else ""
             filas.append(f"| {archivo} | {nombre} | {desc} | {unidad} | {fuente} | {cid} | {desde} | {hasta} | {falt:.1f} |")
     CARD.parent.mkdir(parents=True, exist_ok=True)
-    CARD.write_text(TEXTO.replace("{tabla}", "\n".join(filas)), encoding="utf-8", newline="\n")
+    CARD.write_text(textos(TEXTO).replace("{tabla}", "\n".join(filas)), encoding="utf-8", newline="\n")
     print(f"escrito {CARD.relative_to(REPO).as_posix()} ({len(filas)} columnas)")
 
 

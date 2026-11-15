@@ -55,12 +55,19 @@ COLS = {
     ],
 }
 
+def teselas_bajadas() -> str:
+    """Teselas MODIS presentes en data/raw/vegetacion (antes fijas: h10v04, h10v05, h11v04, h11v05 de IA, IL, IN)."""
+    raw = REPO / "data" / "raw" / "vegetacion"
+    ts = sorted({p.name.split(".")[2] for p in raw.rglob("*.tif") if p.name.count(".") >= 3})
+    return ", ".join(ts) if ts else "(ninguna bajada todavía)"
+
+
 TEXTO = """
 ## Fuentes y acceso
 
 - **MOD13Q1 v061** (Terra, índices de vegetación 16 días, 250 m) y **MOD11A2 v061** (Terra, LST 8 días,
   1 km), COGs públicos de Microsoft Planetary Computer (colecciones `modis-13Q1-061` y
-  `modis-11A2-061`), firmados con el token SAS anónimo. Teselas h10v04, h10v05, h11v04, h11v05.
+  `modis-11A2-061`), firmados con el token SAS anónimo. Teselas {teselas}.
 - `src/vegetacion/download.py` lee solo la ventana de cada tesela que cubre los condados y la guarda
   tal cual en `data/raw/vegetacion/<producto>/<anio>/<item>.tif` (una fila por archivo en `manifest.csv`).
 - `src/vegetacion/process.py` rasteriza los condados en la grilla sinusoidal de cada tesela, filtra
@@ -128,7 +135,8 @@ TEXTO = """
   (`modis.ornl.gov/rst/api/v1`, ~57 s por pedido de 10 fechas y por punto, errores 502: inviable).
 - NLDAS trae valores fuera del rango del contrato en muy pocas filas y se dejan como vienen: ET y PET
   apenas negativas (hasta −0,5 mm) en enero de 2006 en el noroeste de Iowa (condensación/escarcha neta
-  en el modelo) y PET > 500 mm en julio de 2012 (sequía) en 5 condados. `et_pet_ratio` queda vacío
+  en el modelo) y PET > 500 mm en julio de 2012 (sequía) en 5 condados (visto en la primera tanda,
+  IA, IL e IN). `et_pet_ratio` queda vacío
   cuando `pet_mm` <= 1 mm.- MCD12Q1 no se bajó (la máscara agrícola del CDL ya existe).
 - 2025 incompleto en origen: Planetary Computer no tiene los compuestos de mediados de 2025
   (MOD13Q1 entre A2025193 y A2025305; MOD11A2 entre A2025185 y A2025321; revisado el 2026-11-14).
@@ -152,7 +160,7 @@ def main() -> None:
             falt = 100 * s.isna().mean()
             lineas.append(f"| {arch} | {c} | {desc} | {u} | {f} | {idc} | {desde} | {hasta} | {falt:.1f} |")
     CARD.parent.mkdir(parents=True, exist_ok=True)
-    CARD.write_text("\n".join(lineas) + "\n" + TEXTO, encoding="utf-8")
+    CARD.write_text("\n".join(lineas) + "\n" + TEXTO.replace("{teselas}", teselas_bajadas()), encoding="utf-8")
 
 
 if __name__ == "__main__":

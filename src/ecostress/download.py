@@ -20,6 +20,7 @@ import csv
 import os
 import re
 import shutil
+import sys
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -36,16 +37,20 @@ from rasterio.mask import mask as rmask
 from rasterio.windows import Window
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO))
+from src.common.config import estados_config  # noqa: E402
+
 RAW = REPO / "data/raw/ecostress"
 INTERIM = REPO / "data/interim/ecostress"
 MANIFEST = REPO / "manifest.csv"
 CMR = "https://cmr.earthdata.nasa.gov/search/granules.umm_json"
 LPDAAC = "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected"
-BBOX = "-96.7,37.0,-84.7,43.6"  # IA, IL, IN
-# Hasta r006 el bbox era "-91.6,37.0,-84.8,43.5" y dejaba afuera el oeste de Iowa (83 condados). Los
-# meses que quedaron en raw con ese bbox se completan con un suplemento ecostress_extraccion_<mes>_oeste.csv
-# (solo las escenas que no estaban en escenas_hechas_<mes>.txt).
-MESES_BBOX_ESTE = ["2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10"]
+# Primera tanda (IA, IL, IN): hasta r006 el bbox era "-91.6,37.0,-84.8,43.5" y dejaba afuera el oeste de
+# Iowa (83 condados). Los meses que quedaron en raw con ese bbox se completan con un suplemento
+# ecostress_extraccion_<mes>_oeste.csv (solo las escenas que no estaban en escenas_hechas_<mes>.txt).
+# Solo aplica a una máquina que tenga IA: los demás estados se bajan siempre con el bbox completo.
+MESES_BBOX_ESTE = (["2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10"]
+                   if "IA" in estados_config() else [])
 MITAD = 16  # ventana de 32x32 píxeles de 70 m
 COLS = ["fips", "granulo", "tesela", "fecha_hora_utc", "n_px_agricolas", "n_px_lst", "lst_k_media",
         "n_px_et", "et_daily_media", "n_px_esi", "esi_media"]
@@ -61,6 +66,27 @@ def log(msg: str) -> None:
     print(linea, flush=True)
     with open(INTERIM / "download.log", "a", encoding="utf-8") as fh:
         fh.write(linea + "\n")
+
+
+def bboxes_cmr(margen: float = 0.1) -> list[str]:
+    """Un bbox de CMR (oeste,sur,este,norte) por estado de condados.gpkg, con margen en grados.
+
+    Antes era uno solo fijo, "-96.7,37.0,-84.7,43.6" (IA, IL, IN). Ahora sale de los estados en uso, uno
+    por estado para que dos estados lejanos (por ejemplo OH y MN) no traigan las pasadas de los del medio.
+    """
+    global _BBOXES
+    if _BBOXES is None:
+        g = gpd.read_file(REPO / "data/reference/condados.gpkg").to_crs(4326)
+        g["est"] = g["fips"].astype(str).str.zfill(5).str[:2]
+        _BBOXES = []
+        for _, sub in sorted(g.groupby("est")):
+            b = sub.total_bounds
+            _BBOXES.append(",".join(f"{v:.1f}" for v in (b[0] - margen, b[1] - margen,
+                                                           b[2] + margen, b[3] + margen)))
+    return _BBOXES
+
+
+_BBOXES: list[str] | None = None
 
 
 # ---------- puntos agrícolas por condado ----------
@@ -93,7 +119,8 @@ def puntos_condados() -> pd.DataFrame:
 def granulos_mes(producto: str, mes: str) -> list[dict]:
     a, m = map(int, mes.split("-"))
     fin = date(a + (m == 12), m % 12 + 1, 1)
-    params = {"short_name": producto, "version": "002", "bounding_box": BBOX, "page_size": 2000,
+    params = {"short_name": producto, "version": "002", "bounding_box[]": bboxes_cmr(),
+              "options[bounding_box][or]": "true", "page_size": 2000,
               "temporal": f"{mes}-01T00:00:00Z,{fin.isoformat()}T00:00:00Z"}
     res, after = [], None
     while True:
@@ -298,10 +325,11 @@ def registrar(p: Path, mes: str) -> None:
     with open(MANIFEST, encoding="utf-8", newline="") as fh:
         filas = list(csv.reader(fh))
     rel = p.relative_to(REPO).as_posix()
+    cajas = "&".join(f"bounding_box[]={b}" for b in bboxes_cmr())
     nueva = ["ecostress", rel, "NASA JPL / LP DAAC (Earthdata Cloud)",
              "ECO_L2T_LSTE.002 (LST, QC, cloud) + ECO_L3T_JET.002 (ETdaily) + ECO_L4T_ESI.002 (ESI)",
              "002", date.today().isoformat(),
-             f"{CMR}?short_name=ECO_L3T_JET&version=002&bounding_box={BBOX}&temporal={mes} ; "
+             f"{CMR}?short_name=ECO_L3T_JET&version=002&{cajas}&options[bounding_box][or]=true&temporal={mes} ; "
              f"COG por rango en {LPDAAC}/<producto>/<granulo>/<granulo>_<capa>.tif, ventana 32x32 px por condado"]
     filas = [f for f in filas if not (len(f) > 1 and f[1] == rel)] + [nueva]
     with open(MANIFEST, "w", encoding="utf-8", newline="") as fh:

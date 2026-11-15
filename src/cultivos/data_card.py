@@ -4,11 +4,14 @@ Uso: python src/cultivos/data_card.py  (después de process.py)
 """
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO))
+from src.zona_texto import lista_estados  # noqa: E402
 OUT = REPO / "data" / "processed" / "cultivos"
 CARD = REPO / "docs" / "datasets" / "cultivos.md"
 
@@ -75,7 +78,7 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
 `data/raw/cultivos/nass/`.
 
 - Bajada: `python src/cultivos/download.py` (reanudable, registra en `manifest.csv`).
-- Proceso: `python src/cultivos/process.py` (filtra cada archivo a IA, IL, IN una vez y guarda
+- Proceso: `python src/cultivos/process.py` (filtra cada archivo a {estados} una vez y guarda
   el filtrado en `data/interim/cultivos/*.filtrado.tsv`).
 - Este data card: `python src/cultivos/data_card.py`.
 
@@ -150,7 +153,7 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
 - **Denominador de las transiciones (cambio del 2026-11-14, entrega v1.1 para ML)**: antes
   eran todos los píxeles del cultivo del anio. En 2024-2025 el CDL de 10 m llevado a 30 m no
   tiene los bordes de lote donde los tiene el de 30 m de 2023, y muchos píxeles de borde
-  parecían venir de pasto, caminos o bosque: la mediana de los 293 condados del % de maíz que
+  parecían venir de pasto, caminos o bosque: la mediana de los 293 condados de la primera tanda (IA, IL e IN) del % de maíz que
   venía de maíz o soja caía de 96,9 % (2023) a 91,3 % (2024). Con el denominador nuevo queda
   en 98,0 %, como en 2015-2023 (97,3-98,5 %), salvo 2020, que sigue más bajo con las dos
   definiciones (94,4 % con la nueva). Las cuatro columnas suben 0,7-2,8 puntos en promedio en
@@ -211,7 +214,7 @@ def main():
             hasta = llenos.max() if len(llenos) else ""
             filas.append(f"| {archivo} | {nombre} | {desc} | {unidad} | {fuente} | {cid} | {desde} | {hasta} | {falt:.1f} |")
     CARD.parent.mkdir(parents=True, exist_ok=True)
-    CARD.write_text(TEXTO.replace("{tabla}", "\n".join(filas)), encoding="utf-8", newline="\n")
+    CARD.write_text(TEXTO.replace("{tabla}", "\n".join(filas)).replace("{estados}", lista_estados()), encoding="utf-8", newline="\n")
     print(f"escrito {CARD.relative_to(REPO).as_posix()} ({len(filas)} columnas)")
 
 

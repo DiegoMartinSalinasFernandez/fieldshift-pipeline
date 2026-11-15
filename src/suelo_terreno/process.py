@@ -7,7 +7,8 @@ Suelo (data/raw/suelo_terreno/sda/):
   primera restricción que limita raíces, el fondo del perfil y 150 cm.
 - Componente → unidad cartográfica (MUKEY): media ponderada por comppct_r.
 - MUKEY → condado: media ponderada por muacres de la unidad en el área de relevamiento del
-  condado (areasymbol IA169 = fips 19169). Clases (drenaje, grupo hidrológico): la de mayor
+  condado (areasymbol IA169 = fips 19169; las áreas que no siguen esa regla están en
+  AREAS_ESPECIALES). Clases (drenaje, grupo hidrológico): la de mayor
   superficie.
 Terreno (data/raw/suelo_terreno/nasadem/): ver terreno.py.
 """
@@ -34,6 +35,14 @@ RESTRICCIONES_RAICES = {"Lithic bedrock", "Paralithic bedrock", "Densic material
                         "Ortstein", "Manufactured layer", "Cemented horizon"}
 PROF_RAICES_MAX = 150.0
 TEXTURA_TOLERANCIA = 3.0
+# Áreas de relevamiento que no son "estado + código de condado" (consultado en SDA, tabla legend,
+# 2026-11-15, para IA, IL, IN, OH, NE, MN y KS: solo hay en MN). St. Louis (27137) está partido en
+# cinco áreas y Koochiching (27071) tiene un área propia. MN627 (Voyageurs National Park) cae en los
+# dos condados y no es agrícola: se deja afuera (None).
+AREAS_ESPECIALES = {
+    "MN613": "27137", "MN615": "27137", "MN617": "27137", "MN619": "27137", "MN621": "27137",
+    "MN625": "27071", "MN627": None,
+}
 NCCPI = {
     "NCCPI - National Commodity Crop Productivity Index (Ver 3.0)": "nccpi_general",
     "NCCPI - NCCPI Corn Submodel (I)": "nccpi_maiz",
@@ -116,6 +125,9 @@ def main() -> None:
     mu["aws0100_mm"] = mu["aws0100wta"] * 10  # muaggatt en cm
     mu["aws0150_mm"] = mu["aws0150wta"] * 10
     mu["fips"] = mu["areasymbol"].map(fips_de_area)
+    sin_condado = sorted(set(mu.loc[mu["fips"].isna(), "areasymbol"]) - set(AREAS_ESPECIALES))
+    if sin_condado:
+        print(f"AVISO: áreas de relevamiento sin condado (quedan afuera): {sin_condado}", flush=True)
     mu = mu.dropna(subset=["fips"])
     num = vars_comp + ["aws0100_mm", "aws0150_mm", "wtdepannmin"]
     cond = media_pond(mu, "fips", "muacres", num)
@@ -175,6 +187,9 @@ def main() -> None:
 def fips_de_area(area: str):
     estados = {alfa: e["fips"] for alfa, e in estados_config().items()}
     alfa, cod = area[:2], area[2:]
+    if area in AREAS_ESPECIALES:
+        f = AREAS_ESPECIALES[area]
+        return f if f is not None and alfa in estados else np.nan
     if alfa in estados and cod.isdigit() and len(cod) == 3:
         return estados[alfa] + cod
     return np.nan
