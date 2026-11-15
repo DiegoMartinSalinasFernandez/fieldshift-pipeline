@@ -33,6 +33,10 @@ COLS = {
          "adim.", DS, "D25"),
         ("dias_sm_saturado", "Días del mes con sm_rootzone diaria del condado >= 0,40 m3/m3", "días", DS, "D26"),
     ],
+    "agua_estatico.csv": [
+        ("frac_celdas_excluidas", "Fracción del área del condado con dato SMAP cuyas celdas de 9 km descarta el filtro "
+         "0-0,60 m3/m3 de la capa SUB (turberas, suelos orgánicos); media sobre los días", "fracción", DS, ""),
+    ],
     "agua_semanal.csv": [
         ("gws_pctl", "Percentil de almacenamiento de agua subterránea (media ponderada por área del condado)",
          "percentil 0-100", G, "W01"),
@@ -77,6 +81,12 @@ TEXTO = """
 - Se excluyen celdas con valores fuera de 0-0,60 m3/m3 (rango físico de la definición de terminado
   del plan) antes de promediar; afecta ~1,5 % de las filas diarias (en la primera tanda: suelos
   orgánicos del NE de Indiana y DuPage, IL).
+- **`agua_estatico.csv` (`frac_celdas_excluidas`):** por condado y por cada día de la capa `SUB`, área de
+  las celdas que el filtro 0-0,60 m3/m3 de arriba descarta dividida por el área del condado con dato SMAP
+  (las celdas nodata, como los lagos, no cuentan ni arriba ni abajo; es la misma cuenta de
+  `docs/research/smap_costas.md`); después, la media sobre todos los días. Como esas celdas son fijas en
+  `SUB`, en la práctica es la misma fracción todos los días. La capa `TOP` no entra. Vacío si el condado no
+  tiene ninguna celda con dato. Es una propiedad del filtro, no de la humedad: no entra en las medias.
 - Mensual: solo meses con todos los días con dato; si falta un día, las columnas del mes quedan vacías.
   `anio` = año calendario del mes. El mes 2015-03 se omite (SMAP L4 empieza el 2015-03-31).
 - `sm_rootzone_anom_z`: z por condado y mes calendario con todos los años 2015-2025 disponibles
@@ -136,10 +146,10 @@ def main() -> None:
         if not ruta.exists():
             continue
         df = pd.read_csv(ruta, dtype={"fips": str})
-        tcol = "fecha" if "fecha" in df else ("mes" if "mes" in df else "anio")
+        tcol = next((t for t in ("fecha", "mes", "anio") if t in df), None)  # estático: sin columna de tiempo
         for c, desc, u, f, idc in cols:
             s = df[c]
-            ok = df.loc[s.notna(), tcol].astype(str)
+            ok = df.loc[s.notna(), tcol].astype(str) if tcol else pd.Series(dtype=str)
             desde, hasta = (ok.min(), ok.max()) if len(ok) else ("", "")
             falt = 100 * s.isna().mean()
             lineas.append(f"| {arch} | {c} | {desc} | {u} | {f} | {idc} | {desde} | {hasta} | {falt:.1f} |")

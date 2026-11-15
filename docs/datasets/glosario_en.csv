@@ -7,6 +7,7 @@ agua,agua_mensual.csv,sm_surface_min_m3m3,Monthly minimum of daily sm_surface,m3
 agua,agua_mensual.csv,sm_rootzone_min_m3m3,Monthly minimum of daily sm_rootzone,m3/m3,"NASA SMAP L4 SPL4SMGP 9 km, Crop-CASMA daily layers (USDA NASS / GMU)",S03
 agua,agua_mensual.csv,sm_rootzone_anom_z,"(month's sm_rootzone − calendar-month mean) / standard deviation, per county, 2015-2025",dimensionless,Derived from SMAP L4 (Crop-CASMA),D25
 agua,agua_mensual.csv,dias_sm_saturado,Days in the month with daily county sm_rootzone >= 0.40 m3/m3,days,Derived from SMAP L4 (Crop-CASMA),D26
+agua,agua_estatico.csv,frac_celdas_excluidas,"Fraction of the county area with SMAP data whose 9 km cells are dropped by the 0-0.60 m3/m3 filter on the SUB (root-zone) layer (peatlands, organic soils); mean over days",fraction,Derived from SMAP L4 (Crop-CASMA),
 agua,agua_semanal.csv,gws_pctl,Groundwater storage percentile (area-weighted county mean),percentile 0-100,"GRACE-DA-DM US (GRACEDADM_CLSM0125US_7D v030, nasagrace.unl.edu)",W01
 agua,agua_semanal.csv,rtzsm_pctl,Root-zone soil moisture percentile (area-weighted mean),percentile 0-100,"GRACE-DA-DM US (GRACEDADM_CLSM0125US_7D v030, nasagrace.unl.edu)",W02
 agua,agua_semanal.csv,sfsm_pctl,Surface soil moisture percentile (area-weighted mean),percentile 0-100,"GRACE-DA-DM US (GRACEDADM_CLSM0125US_7D v030, nasagrace.unl.edu)",W03

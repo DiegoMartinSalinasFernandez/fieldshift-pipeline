@@ -199,6 +199,10 @@ DESCRIPCIONES = {
         "(month's sm_rootzone − calendar-month mean) / standard deviation, per county, 2015-2025",
     "Días del mes con sm_rootzone diaria del condado >= 0,40 m3/m3":
         "Days in the month with daily county sm_rootzone >= 0.40 m3/m3",
+    "Fracción del área del condado con dato SMAP cuyas celdas de 9 km descarta el filtro 0-0,60 m3/m3 de la capa SUB "
+    "(turberas, suelos orgánicos); media sobre los días":
+        "Fraction of the county area with SMAP data whose 9 km cells are dropped by the 0-0.60 m3/m3 filter on the "
+        "SUB (root-zone) layer (peatlands, organic soils); mean over days",
     "Percentil de almacenamiento de agua subterránea (media ponderada por área del condado)":
         "Groundwater storage percentile (area-weighted county mean)",
     "Percentil de humedad del suelo en la zona radicular (media ponderada por área)":
