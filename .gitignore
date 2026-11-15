@@ -32,6 +32,7 @@ data/reference/*
 !data/reference/.gitkeep
 data/entregas/
 data/unido/
+data/demo_zips/
 manifest.csv
 
 # Copia de main que usa scripts/tareas.py para el tablero
