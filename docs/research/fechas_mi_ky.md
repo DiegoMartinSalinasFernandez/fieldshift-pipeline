@@ -231,6 +231,9 @@ fuera de esta tarea.
 - Los scripts anteriores que leen Crop Progress por estado (`nass_ky_crop_progress.py`, `nass_mi_nd_crop_progress.py`
   y otros) podrían tener el mismo error que corregí acá. No los revisé. Sus conclusiones sobre en qué tablas está
   cada estado coinciden con lo de acá (KY no está en trigo de invierno y MI no está en avena).
+  Revisado en T116: los tres `nass_*_crop_progress.py` no tienen el error (cierran la tabla en cualquier título
+  "- Selected States"); `ventanas_por_estado.py` sí lo tenía, pero sin efecto en sus 7 estados (ver
+  `ventanas_por_estado.md`).
 
 Fuentes:
 - [USDA NASS, Field Crops Usual Planting and Harvesting Dates, Agricultural Handbook 628 (octubre de 2010), págs. 39 y 40](https://downloads.usda.library.cornell.edu/usda-esmis/files/vm40xr56k/dv13zw65p/w9505297d/planting-10-29-2010.pdf), consultado 2026-11-15

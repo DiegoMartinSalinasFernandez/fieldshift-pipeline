@@ -128,6 +128,16 @@ que también es crítica por agua. Si se quiere solo el llenado de la semilla, u
 - Lo mismo vale para `ndvi_media_jul_ago` (paquete `lotes` / teledetección), que usa una ventana fija de julio
   y agosto. No lo analicé.
 
+**Revisión del parser (T116).** El bloque de cada tabla solo se cortaba en la fila de totales ("18 States") y
+solo después de haber encontrado alguno de los estados. Si ninguno de los estados figuraba en una tabla, el
+parser seguía leyendo hasta la tabla siguiente y le asignaba esa fila: el mismo error que T113 corrigió en
+`fechas_nd_cp.py`. Probado con Colorado y Texas, que no están en las tablas de soja, la versión vieja sacaba 175
+filas de soja falsas en 1998–2009 (por ejemplo, "CO soja *blooming* 1998-07-19 = 90", que es el trigo de
+invierno cosechado de la tabla siguiente). Ahora el bloque también se corta en el título de la tabla siguiente.
+**Los números de esta respuesta no cambian:** los 7 estados están en todas las tablas de maíz y soja, y con los
+1.119 reportes de ESMIS la serie semanal de la versión nueva es idéntica a la de la vieja, y los 756 cruces
+coinciden con `ventanas_por_estado.csv` (diferencias de redondeo de 0,05 días).
+
 Fuentes:
 - [Crop Progress – publicación semanal (USDA NASS, archivo ESMIS)](https://esmis.nal.usda.gov/publication/crop-progress),
   consultado 2026-11-15. Se usaron los 381 reportes en texto de junio a octubre de 2008–2025, por ejemplo:
