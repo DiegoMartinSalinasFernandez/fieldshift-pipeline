@@ -12,6 +12,10 @@ Por cada paquete controla:
   - que el data card tenga una fila (`| archivo | columna | ...`) por cada columna no clave de cada CSV;
   - si el zip trae su `.sha256` al lado, que coincida.
 
+El zip de base (`<release>_base.zip`, sin `data/processed/`) se controla aparte: que `condados.gpkg` se pueda
+leer (capa `condados`, EPSG:4326, `fips` de 5 dígitos sin repetir, geometrías no vacías), que `condados.csv`
+tenga los mismos `fips`, que venga `anios.csv` y que coincida el `.sha256`.
+
 Salida: un informe en Markdown por paquete (APTO / NO APTO con la lista de problemas). Sale con código 1 si
 algún paquete es NO APTO.
 
@@ -19,6 +23,7 @@ Uso:
   python scripts/verificar_entrega.py data/entregas/datos-ks_clima.zip data/entregas/datos-ks_cultivos.zip
   python scripts/verificar_entrega.py data/entregas/datos-ks/*.zip --salida data/entregas/informes
   python scripts/verificar_entrega.py data/unido/clima          # carpeta de scripts/unir_estados.py
+  python scripts/verificar_entrega.py data/entregas/datos-ks_base.zip   # zip de base (polígonos)
 
 En una carpeta unida, los CSV y los data cards (`<release>.md`) están en `data/unido/<paquete>/` y el
 `condados.csv` en `data/unido/`.
@@ -103,6 +108,92 @@ def _sha256(p: Path) -> str:
         for b in iter(lambda: f.read(1 << 20), b""):
             h.update(b)
     return h.hexdigest()
+
+
+def es_zip_base(z: Path) -> bool:
+    """Zip de base de entregar.py: `<release>_base.zip`, o un zip sin `data/processed/` que trae condados.gpkg."""
+    if z.name.endswith("_base.zip"):
+        return True
+    try:
+        with zipfile.ZipFile(z) as zf:
+            nombres = zf.namelist()
+    except zipfile.BadZipFile:
+        return False
+    return GPKG in nombres and not any(n.startswith("data/processed/") for n in nombres)
+
+
+GPKG = "data/reference/condados.gpkg"
+FIPS5 = re.compile(r"^\d{5}$")
+
+
+def verificar_base(z: Path) -> Informe:
+    """Controles del zip de base: condados.gpkg, condados.csv, anios.csv y .sha256."""
+    inf = Informe(z.name, "base")
+    sha = z.with_suffix(".zip.sha256")
+    if sha.exists():
+        if _sha256(z) != sha.read_text(encoding="utf-8").split()[0].lower():
+            inf.problemas.append(f"el sha256 no coincide con {sha.name} (zip corrupto o incompleto)")
+    else:
+        inf.avisos.append(f"no viene {sha.name}")
+    try:
+        zf = zipfile.ZipFile(z)
+    except zipfile.BadZipFile as e:
+        inf.problemas.append(f"no es un zip válido: {e}")
+        return inf
+    with zf, tempfile.TemporaryDirectory() as tmp:
+        nombres = zf.namelist()
+        for ref in ("data/reference/anios.csv", "README.md"):
+            if ref not in nombres:
+                inf.avisos.append(f"no viene {ref}")
+        fips_gpkg: set[str] | None = None
+        if GPKG not in nombres:
+            inf.problemas.append(f"falta {GPKG}")
+        else:
+            try:
+                import geopandas as gpd
+            except ImportError:
+                inf.avisos.append("falta geopandas: no se controla condados.gpkg por dentro")
+                gpd = None
+            if gpd is not None:
+                ruta = Path(tmp) / "condados.gpkg"
+                ruta.write_bytes(zf.read(GPKG))
+                try:
+                    g = gpd.read_file(ruta, layer="condados")
+                except Exception as e:  # noqa: BLE001
+                    inf.problemas.append(f"condados.gpkg: no se pudo leer la capa `condados`: {e}")
+                    g = None
+                if g is not None:
+                    inf.archivos.append(("condados.gpkg", len(g), len(g.columns)))
+                    if g.crs is None or g.crs.to_epsg() != 4326:
+                        inf.problemas.append(f"condados.gpkg: tiene que estar en EPSG:4326 (está en {g.crs})")
+                    if "fips" not in g.columns:
+                        inf.problemas.append("condados.gpkg: falta la columna fips")
+                    else:
+                        f = g["fips"].astype(str)
+                        malos = sorted(set(f[~f.str.match(FIPS5)]))
+                        if malos:
+                            inf.problemas.append(f"condados.gpkg: fips que no son de 5 dígitos: {malos[:5]}")
+                        if f.duplicated().any():
+                            inf.problemas.append(f"condados.gpkg: fips repetidos: {sorted(set(f[f.duplicated()]))[:5]}")
+                        fips_gpkg = set(f)
+                    vacias = int((g.geometry.isna() | g.geometry.is_empty).sum())
+                    if vacias:
+                        inf.problemas.append(f"condados.gpkg: {vacias} condados sin geometría")
+                    if len(g) == 0:
+                        inf.problemas.append("condados.gpkg: no tiene condados")
+        if "data/reference/condados.csv" not in nombres:
+            inf.problemas.append("falta data/reference/condados.csv")
+        else:
+            crudo = zf.read("data/reference/condados.csv")
+            fips_csv = _fips_de_condados(crudo)
+            inf.archivos.append(("condados.csv", len(fips_csv), 0))
+            if not fips_csv:
+                inf.problemas.append("condados.csv no tiene la columna fips")
+            elif fips_gpkg is not None and fips_csv != fips_gpkg:
+                solo_g, solo_c = sorted(fips_gpkg - fips_csv), sorted(fips_csv - fips_gpkg)
+                inf.problemas.append(f"condados.gpkg y condados.csv no tienen los mismos fips (solo en el gpkg: "
+                                     f"{solo_g[:5] or '-'}; solo en el csv: {solo_c[:5] or '-'})")
+    return inf
 
 
 def leer_zip(z: Path) -> list[Entrega]:
@@ -321,6 +412,9 @@ def verificar(rutas: list[Path]) -> list[Informe]:
     for r in rutas:
         if r.is_dir():
             entregas = leer_carpeta(r)
+        elif r.suffix == ".zip" and r.exists() and es_zip_base(r):
+            informes.append(verificar_base(r))
+            continue
         elif r.suffix == ".zip" and r.exists():
             entregas = leer_zip(r)
         else:

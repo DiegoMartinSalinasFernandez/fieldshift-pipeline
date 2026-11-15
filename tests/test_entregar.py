@@ -24,6 +24,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 import entregar as en  # noqa: E402
 import unir_estados as ue  # noqa: E402
+import verificar_entrega as ve  # noqa: E402
 
 # Condados inventados de Ohio (39) y Kansas (20), con ceros a la izquierda.
 FIPS = ["39001", "39003", "20005"]
@@ -374,6 +375,13 @@ class TestZipBase(EntornoEntregar):
         with self.assertRaises(SystemExit) as e:
             self.correr("clima")
         self.assertIn("4326", str(e.exception.code))
+
+    def test_verificar_entrega_da_apto_al_zip_de_base(self):
+        self.correr("clima")
+        informes = ve.verificar([self.zip_de("base")])
+        self.assertEqual(len(informes), 1)
+        self.assertTrue(informes[0].apto, informes[0].markdown())
+        self.assertEqual(informes[0].paquete, "base")
 
     def test_unir_estados_ignora_el_zip_de_base(self):
         self.correr("clima")
