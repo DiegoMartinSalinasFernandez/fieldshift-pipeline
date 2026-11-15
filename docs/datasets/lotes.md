@@ -142,7 +142,10 @@ GeoPackage y la tabla de abajo desde `data/raw` y `data/reference`, sin bajar na
   `prob >= 0,5`. Es una **estimación de modelo de 2017** (una sola fecha), no una observación: los puntos "sin tile"
   del entrenamiento salen de AgTile-US, y a nivel condado sobreestima en los condados muy drenados (Des Moines Lobe,
   donde están 3 lotes) (`docs/research/drenaje_tile.md`). Con la clase, la celda vale 0 también fuera de las zonas
-  agrícolas: 0 no prueba "sin caños".
+  agrícolas: 0 no prueba "sin caños". La probabilidad es float32 sin etiqueta de nodata y vale NaN fuera de lo
+  agrícola (ahí `tile_prob_seetiledrain` queda vacía y `tile_seetiledrain` en 0). En un recuadro de prueba de
+  ~1,2 × 1,1 km en Story (IA), las dos capas comparten la grilla y la clase coincide con `prob >= 0,5` en el
+  99,75 % de las celdas con probabilidad.
 - **HLS S30 2015-2019 desde LP DAAC**: Planetary Computer no tiene `hls2-s30` antes de 2020 en la zona; esos años se
   buscan en CMR-STAC (`LPCLOUD`, colección `HLSS30_2.0`, filtro de nubes < 80 % del lado del cliente) y se leen los
   COG de `data.lpdaac.earthdatacloud.nasa.gov` con Earthdata. Mismo recorte, mismas bandas y mismo Fmask que en PC
