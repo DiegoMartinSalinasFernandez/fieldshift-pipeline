@@ -49,8 +49,8 @@ Paquete `agua` de Field Shift (CLAUDE.md §6.4): humedad del suelo y agua subter
   (rasterizado a una grilla 10 veces más fina); cada condado usa el recorte de su propio estado.
   **No se aplicó la máscara agrícola** (celdas de 9 km mezclan usos).
 - Se excluyen celdas con valores fuera de 0-0,60 m3/m3 (rango físico de la definición de terminado
-  del plan) antes de promediar; afecta ~1,5 % de las filas diarias (suelos orgánicos del NE de
-  Indiana y DuPage, IL).
+  del plan) antes de promediar; afecta ~1,5 % de las filas diarias (en la primera tanda: suelos
+  orgánicos del NE de Indiana y DuPage, IL).
 - Mensual: solo meses con todos los días con dato; si falta un día, las columnas del mes quedan vacías.
   `anio` = año calendario del mes. El mes 2015-03 se omite (SMAP L4 empieza el 2015-03-31).
 - `sm_rootzone_anom_z`: z por condado y mes calendario con todos los años 2015-2025 disponibles
@@ -82,14 +82,15 @@ Paquete `agua` de Field Shift (CLAUDE.md §6.4): humedad del suelo y agua subter
   de Crop-CASMA. No se pudo confirmar si la capa `SMAP-9KM-DAILY-*_<fecha>_013000` es la media
   diaria o el campo de las 01:30 UTC (el sufijo sugiere la hora); a validar contra `SPL4SMGP` cuando
   haya Earthdata. No es el producto 3-horario: no hay ciclo diario.
-- Celdas de 9 km con valores > 0,60 m3/m3 (hasta ~0,92) en el noreste de Indiana (Allen, Whitley,
+- Primera tanda: celdas de 9 km con valores > 0,60 m3/m3 (hasta ~0,92) en el noreste de Indiana (Allen, Whitley,
   Steuben, Jay, Miami) y DuPage (IL): suelos orgánicos o fracción de agua alta en el modelo. Se
   excluyen celda a celda (ver Supuestos); en esos condados la media usa menos celdas o queda vacía.
 - `dias_sm_saturado` con umbral fijo de 0,40 m3/m3 (provisorio): en suelos con porosidad alta cuenta
   más días que en suelos arenosos. Mejor sería porosidad del modelo (`SPL4SMLM`) menos 0,05 m3/m3,
   que requiere Earthdata.
 - SMAP 2015-03-31 a 2025-12-31 completo salvo **2016-12-15**: el WPS de Crop-CASMA responde
-  `bad request` para las dos capas y los tres estados (probado 3 veces en dos rondas). Ese día queda
+  `bad request` para las dos capas en IA, IL e IN (probado 3 veces en dos rondas; en otros estados, revisar
+  si el día está en `agua_diario.csv`). Ese día queda
   sin fila en `agua_diario.csv` y diciembre de 2016 queda vacío en `agua_mensual.csv` (los meses
   incompletos no se agregan).
 - `python src/agua/download.py` es reanudable: si una descarga se corta, completa lo que falta.

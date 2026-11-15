@@ -6,7 +6,7 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
 `data/raw/cultivos/nass/`.
 
 - Bajada: `python src/cultivos/download.py` (reanudable, registra en `manifest.csv`).
-- Proceso: `python src/cultivos/process.py` (filtra cada archivo a IA, IL, IN una vez y guarda
+- Proceso: `python src/cultivos/process.py` (filtra cada archivo a KS una vez y guarda
   el filtrado en `data/interim/cultivos/*.filtrado.tsv`).
 - Este data card: `python src/cultivos/data_card.py`.
 
@@ -14,16 +14,16 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
 
 | archivo | columna | descripcion | unidad | fuente | id_catalogo | desde | hasta | faltantes_pct |
 |---|---|---|---|---|---|---|---|---|
-| produccion_anual.csv | sup_sembrada_ac | Superficie sembrada (AREA PLANTED, todos los usos) | acres | USDA NASS Quick Stats (SURVEY, condado) | Y01 | 2000 | 2025 | 24.2 |
-| produccion_anual.csv | sup_cosechada_ac | Superficie cosechada (AREA HARVESTED; maíz: grano) | acres | USDA NASS Quick Stats (SURVEY, condado) | Y02 | 2000 | 2025 | 1.5 |
-| produccion_anual.csv | produccion_bu | Producción (PRODUCTION en BU; maíz: grano). Alfalfa y heno se miden en toneladas: vacía | bu | USDA NASS Quick Stats (SURVEY, condado) | Y03 | 2000 | 2025 | 24.2 |
-| produccion_anual.csv | rend_bu_ac | Rendimiento (YIELD en BU / ACRE; maíz: grano). Alfalfa y heno: vacía | bu/ac | USDA NASS Quick Stats (SURVEY, condado) | Y04 | 2000 | 2025 | 24.2 |
-| produccion_anual.csv | rend_kgha | rend_bu_ac × factor de config.yaml (bu_ac_a_kgha) | kg/ha | Derivada de NASS Quick Stats | Y04 | 2000 | 2025 | 24.2 |
-| produccion_anual.csv | sup_sembrada_ha | sup_sembrada_ac × 0,4047 (acres_a_ha) | ha | Derivada de NASS Quick Stats | Y01 | 2000 | 2025 | 24.2 |
-| produccion_anual.csv | ratio_cosechada | sup_cosechada_ac / sup_sembrada_ac | fracción | Derivada de NASS Quick Stats | Y05 | 2000 | 2025 | 24.2 |
-| produccion_anual.csv | flag_nass | Código original de NASS cuando el valor está oculto: (D), (Z), (NA)… (separados por ;) | texto | USDA NASS Quick Stats (SURVEY, condado) |  | 2013 | 2013 | 98.5 |
-| fenologia_estado.csv | doy_50_sembrado | Día del año en que se cruza el 50 % sembrado (PCT PLANTED, interpolado) | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) | CT03 | 2000 | 2025 | 0.6 |
-| fenologia_estado.csv | doy_50_emergido | Día del año en que se cruza el 50 % emergido (PCT EMERGED) | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) |  | 2000 | 2025 | 1.3 |
+| produccion_anual.csv | sup_sembrada_ac | Superficie sembrada (AREA PLANTED, todos los usos) | acres | USDA NASS Quick Stats (SURVEY, condado) | Y01 | 2000 | 2025 | 31.6 |
+| produccion_anual.csv | sup_cosechada_ac | Superficie cosechada (AREA HARVESTED; maíz: grano) | acres | USDA NASS Quick Stats (SURVEY, condado) | Y02 | 2000 | 2025 | 1.0 |
+| produccion_anual.csv | produccion_bu | Producción (PRODUCTION en BU; maíz: grano). Alfalfa y heno se miden en toneladas: vacía | bu | USDA NASS Quick Stats (SURVEY, condado) | Y03 | 2000 | 2025 | 31.6 |
+| produccion_anual.csv | rend_bu_ac | Rendimiento (YIELD en BU / ACRE; maíz: grano). Alfalfa y heno: vacía | bu/ac | USDA NASS Quick Stats (SURVEY, condado) | Y04 | 2000 | 2025 | 31.6 |
+| produccion_anual.csv | rend_kgha | rend_bu_ac × factor de config.yaml (bu_ac_a_kgha) | kg/ha | Derivada de NASS Quick Stats | Y04 | 2000 | 2025 | 31.6 |
+| produccion_anual.csv | sup_sembrada_ha | sup_sembrada_ac × 0,4047 (acres_a_ha) | ha | Derivada de NASS Quick Stats | Y01 | 2000 | 2025 | 31.6 |
+| produccion_anual.csv | ratio_cosechada | sup_cosechada_ac / sup_sembrada_ac | fracción | Derivada de NASS Quick Stats | Y05 | 2000 | 2025 | 31.6 |
+| produccion_anual.csv | flag_nass | Código original de NASS cuando el valor está oculto: (D), (Z), (NA)… (separados por ;) | texto | USDA NASS Quick Stats (SURVEY, condado) |  | 2013 | 2013 | 99.0 |
+| fenologia_estado.csv | doy_50_sembrado | Día del año en que se cruza el 50 % sembrado (PCT PLANTED, interpolado) | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) | CT03 | 2000 | 2025 | 0.0 |
+| fenologia_estado.csv | doy_50_emergido | Día del año en que se cruza el 50 % emergido (PCT EMERGED) | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) |  | 2000 | 2025 | 0.0 |
 | fenologia_estado.csv | doy_50_floracion | Día del año del 50 % en floración (maíz PCT SILKING, soja PCT BLOOMING) | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) | CT05 | 2000 | 2025 | 0.0 |
 | fenologia_estado.csv | doy_50_cosechado | Día del año del 50 % cosechado (maíz: grano) | día del año | USDA NASS Quick Stats Crop Progress (SURVEY, estado) | CT04 | 2000 | 2025 | 0.0 |
 | rotacion_anual.csv | pct_maiz | % del área agrícola del condado con maíz (CDL 1) | % | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) | R04 | 2008 | 2025 | 0.0 |
@@ -35,8 +35,8 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
 | rotacion_anual.csv | pct_barbecho | % del área agrícola en barbecho (CDL 61) | % | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) | R14 | 2008 | 2025 | 0.0 |
 | rotacion_anual.csv | pct_maiz_tras_soja | % de los píxeles de maíz del anio que tenían soja en anio−1 (sobre los que en anio−1 tenían clase agrícola) | % | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) | R03 | 2009 | 2025 | 5.6 |
 | rotacion_anual.csv | pct_maiz_tras_maiz | % de los píxeles de maíz del anio que tenían maíz en anio−1 (sobre los que en anio−1 tenían clase agrícola) | % | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) | R03 | 2009 | 2025 | 5.6 |
-| rotacion_anual.csv | pct_soja_tras_maiz | % de los píxeles de soja del anio que tenían maíz en anio−1 (sobre los que en anio−1 tenían clase agrícola) | % | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) | R03 | 2009 | 2025 | 5.6 |
-| rotacion_anual.csv | pct_soja_tras_soja | % de los píxeles de soja del anio que tenían soja en anio−1 (sobre los que en anio−1 tenían clase agrícola) | % | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) | R03 | 2009 | 2025 | 5.6 |
+| rotacion_anual.csv | pct_soja_tras_maiz | % de los píxeles de soja del anio que tenían maíz en anio−1 (sobre los que en anio−1 tenían clase agrícola) | % | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) | R03 | 2009 | 2025 | 5.9 |
+| rotacion_anual.csv | pct_soja_tras_soja | % de los píxeles de soja del anio que tenían soja en anio−1 (sobre los que en anio−1 tenían clase agrícola) | % | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) | R03 | 2009 | 2025 | 5.9 |
 | rotacion_secuencia.csv | pct_maiz_soja_alternado | % de los píxeles agrícolas los 8 años con maíz y soja alternados todos los años | % | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) |  | 2008-2015 | 2018-2025 | 0.0 |
 | rotacion_secuencia.csv | pct_maiz_continuo | % de los píxeles agrícolas los 8 años con maíz 3 o más años seguidos | % | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) | R13 | 2008-2015 | 2018-2025 | 0.0 |
 | rotacion_secuencia.csv | pct_soja_continua | % de los píxeles agrícolas los 8 años con soja 3 o más años seguidos | % | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) | R13 | 2008-2015 | 2018-2025 | 0.0 |
@@ -44,10 +44,10 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
 | rotacion_secuencia.csv | pct_rotacion_alfalfa | % de los píxeles agrícolas los 8 años con alfalfa (CDL 36) al menos un año | % | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) | R10 | 2008-2015 | 2018-2025 | 0.0 |
 | rotacion_secuencia.csv | cultivos_por_anio | N° de cultivos de la secuencia / 8 años (doble cultivo = 2, barbecho = 0), media de los píxeles | cultivos/año | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) | R05 | 2008-2015 | 2018-2025 | 0.0 |
 | rotacion_secuencia.csv | diversidad_shannon | Índice de Shannon (ln) sobre las clases del CDL de la secuencia de 8 años, media de los píxeles | índice | USDA NASS Cropland Data Layer 30 m (Planetary Computer usda-cdl 2008-2021; CroplandCROS 2022-2025) | R11 | 2008-2015 | 2018-2025 | 0.0 |
-| practicas_censo.csv | pct_cobertura | COVER CROP PLANTED, (EXCL CRP) / AG LAND, CROPLAND × 100 | % | USDA NASS Censo Agropecuario (Quick Stats CENSUS) |  | 2017 | 2022 | 33.6 |
+| practicas_censo.csv | pct_cobertura | COVER CROP PLANTED, (EXCL CRP) / AG LAND, CROPLAND × 100 | % | USDA NASS Censo Agropecuario (Quick Stats CENSUS) |  | 2017 | 2022 | 35.2 |
 | practicas_censo.csv | pct_labranza_cero | CONSERVATION TILLAGE, NO-TILL / AG LAND, CROPLAND × 100 | % | USDA NASS Censo Agropecuario (Quick Stats CENSUS) |  | 2017 | 2022 | 33.3 |
-| practicas_censo.csv | pct_drenaje_tile | DRAINED BY TILE / AG LAND, CROPLAND × 100 | % | USDA NASS Censo Agropecuario (Quick Stats CENSUS) |  | 2017 | 2022 | 34.2 |
-| practicas_censo.csv | pct_riego | AG LAND, IRRIGATED / AG LAND, CROPLAND × 100 | % | USDA NASS Censo Agropecuario (Quick Stats CENSUS) |  | 2012 | 2022 | 15.8 |
+| practicas_censo.csv | pct_drenaje_tile | DRAINED BY TILE / AG LAND, CROPLAND × 100 | % | USDA NASS Censo Agropecuario (Quick Stats CENSUS) |  | 2017 | 2022 | 65.1 |
+| practicas_censo.csv | pct_riego | AG LAND, IRRIGATED / AG LAND, CROPLAND × 100 | % | USDA NASS Censo Agropecuario (Quick Stats CENSUS) |  | 2012 | 2022 | 5.1 |
 
 ## Supuestos
 
@@ -114,7 +114,7 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
 - **Denominador de las transiciones (cambio del 2026-11-14, entrega v1.1 para ML)**: antes
   eran todos los píxeles del cultivo del anio. En 2024-2025 el CDL de 10 m llevado a 30 m no
   tiene los bordes de lote donde los tiene el de 30 m de 2023, y muchos píxeles de borde
-  parecían venir de pasto, caminos o bosque: la mediana de los 293 condados del % de maíz que
+  parecían venir de pasto, caminos o bosque: la mediana de los 293 condados de la primera tanda (IA, IL e IN) del % de maíz que
   venía de maíz o soja caía de 96,9 % (2023) a 91,3 % (2024). Con el denominador nuevo queda
   en 98,0 %, como en 2015-2023 (97,3-98,5 %), salvo 2020, que sigue más bajo con las dos
   definiciones (94,4 % con la nueva). Las cuatro columnas suben 0,7-2,8 puntos en promedio en
@@ -156,3 +156,11 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
   Las transiciones lo corrigen con su denominador (ver Supuestos), pero los % de área
   (`pct_maiz`, `pct_soja`, …) y las máscaras `mascara_maiz_<anio>` / `mascara_soja_<anio>`
   de esos años pueden diferir algo de lo que daría un CDL de 30 m.
+
+## Kansas (T013, max-2, 2026-11-15)
+
+- `validar_csv()` marca 1 rendimiento de maíz fuera de 20-300 bu/ac: Russell (`20167`), 2002, 18,0 bu/ac
+  (16.000 bu en 900 acres cosechados, de 1.400 sembrados). Es el valor publicado por NASS en un año de
+  sequía en el oeste de Kansas, con maíz de secano: no se modifica. Ver la propuesta de rangos para los
+  estados nuevos (`docs/research/rangos_estados_nuevos.md`).
+- `fenologia_estado.csv` tiene una sola clave (`fips_estado` 20), como corresponde a Crop Progress.
