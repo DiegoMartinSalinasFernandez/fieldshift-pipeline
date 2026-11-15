@@ -1,9 +1,9 @@
 # Data card — clima
 
 Paquete `clima` (CLAUDE.md §6.1): NASA POWER diario (comunidad AG) en el centroide de cada
-condado de IA, IL e IN (293 condados), 1981-2025 en `data/raw/clima/power/` (un CSV por condado,
+condado de KS (105 condados), 1981-2025 en `data/raw/clima/power/` (un CSV por condado,
 tal cual lo devuelve la API), y GPM IMERG diario 2000-2025 servido por la misma API de POWER
-(`IMERG_PRECTOT`), una consulta por celda de 0,1° en `data/raw/clima/imerg_power/` (4.121 celdas).
+(`IMERG_PRECTOT`), una consulta por celda de 0,1° en `data/raw/clima/imerg_power/` (2.193 celdas).
 Los CSV procesados cubren el período de `config.yaml` (2000-2025);
 1981-1999 se usa solo como base de SPI, anomalías y tendencias.
 
@@ -98,8 +98,8 @@ Los CSV procesados cubren el período de `config.yaml` (2000-2025);
   del mismo día cubren ventanas desplazadas unas 6 h.
 - Media del condado de IMERG: promedio simple (sin ponderar por área ni por máscara agrícola)
   de las celdas de 0,1° cuyo centro cae dentro del polígono del condado (`src/clima/celdas.py`;
-  entre 3 y 32 celdas por condado). Si un condado no tuviera ningún centro adentro se usaría la
-  celda de su centroide; en IA/IL/IN no pasa. No se agrega `frac_pixeles_validos` porque la
+  entre 5 y 42 celdas por condado). Si un condado no tiene ningún centro adentro se usa
+  la celda de su centroide: no le pasa a ninguno. No se agrega `frac_pixeles_validos` porque la
   columna no está en el esquema de clima.
 - Las variables derivadas de lluvia (SPI, días de lluvia, Rx1day, rachas, déficit) siguen
   usando POWER (PRECTOTCORR), que existe desde 1981 y da la base larga que necesita el SPI.
@@ -146,29 +146,7 @@ Los CSV procesados cubren el período de `config.yaml` (2000-2025);
 - PRISM (opcional, validación) no se bajó.
 - La radiación de POWER (CERES) empieza en 1984; el resto de la meteorología en 1981.
 - `validar_csv()` (src/common) marca `deficit_mm` de `clima_mensual.csv` porque hay un valor
-  real de −99,99 mm (fips 18065, 2011-07: lluvia − ETo), que coincide con su lista de códigos de
+  real de −99,99 mm (en la primera tanda: fips 18065, 2011-07: lluvia − ETo), que coincide con su lista de códigos de
   relleno. Es un falso positivo: el valor sale del cálculo y no se modifica. Propuesta en
   `loop/notes/decisiones.md`.
 - POWER en un punto: condados vecinos dentro de la misma celda MERRA-2 tienen series idénticas.
-- **`doy_primera_helada` (y `doy_ultima_helada`, `periodo_libre_heladas_dias`) no ve heladas locales de los
-  bajos.** Sale de `tmin_c` de POWER en el centroide del condado, que es la media de una celda de 0,5° × 0,625°
-  (MERRA-2): una helada de radiación en los bajos queda promediada con el resto de la celda y no baja de 0 °C.
-  Ejemplo: la helada temprana del 20–21 de agosto de 2004 en el norte de MN no aparece; POWER da `tmin_c`
-  mínima de 2,4 °C (Kittson, 27069), 2,8 °C (Koochiching, 27071) y 2,9 °C (St. Louis, 27137) del 19 al 22 de
-  agosto, y los 87 condados de MN tienen `doy_primera_helada` 275–276 (1–2 de octubre) ese año. Tomalo como
-  helada "regional", no del lote; puede llegar días o semanas tarde en los bajos fríos. (QA de OH/NE/MN,
-  `docs/qa/oh_ne_mn.md`, problema 5.)
-- **IMERG llueve más que POWER, y más en OH.** Razón de la lluvia anual `prec_imerg_mm` / `prec_power_mm`
-  (suma de los 12 meses de `clima_mensual.csv`, por condado-año, 2000–2025, release `datos-oh-ne-mn`):
-
-  | estado | mediana | percentil 10–90 | lluvia anual mediana IMERG / POWER (mm) |
-  |---|---|---|---|
-  | OH | 1,18 | 1,10–1,32 | 1.148 / 962 |
-  | NE | 1,07 | 0,97–1,21 | 682 / 634 |
-  | MN | 1,07 | 0,97–1,24 | 773 / 707 |
-
-  No es un error del proceso: son dos productos distintos (IMERG satelital con ajuste a pluviómetros; POWER
-  `PRECTOTCORR` de MERRA-2 corregido). No mezcles las dos columnas en una misma serie ni compares la lluvia de
-  un estado medida con una contra la de otro medida con la otra; en OH la diferencia entre fuentes es de
-  ≈ 18 % (≈ 190 mm por año). No se calculó para IA, IL, IN ni KS (no tienen
-  release de `clima` en este repo).

@@ -49,12 +49,12 @@ Los datos solo existen por estado (NASS) o por región (ERS): la clave es `fips_
 
 | archivo | columna | descripcion | unidad | fuente | id_catalogo | desde | hasta | faltantes_pct |
 |---|---|---|---|---|---|---|---|---|
-| economia_anual.csv | precio_usd_bu | Precio recibido por el productor, promedio del año comercial (NASS PRICE RECEIVED, MARKETING YEAR, estado) | USD/bu | USDA NASS Quick Stats (volcado qs.crops) | MK01 | 2000 | 2025 | 3.3 |
-| economia_anual.csv | valor_produccion_usd_ac | Valor bruto de la producción por acre sembrado (ERS 'Total, gross value of production', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns |  | 2000 | 2025 | 5.2 |
-| economia_anual.csv | costo_operativo_usd_ac | Costos operativos por acre sembrado (ERS 'Total, operating costs', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK03 | 2000 | 2025 | 5.2 |
-| economia_anual.csv | costo_total_usd_ac | Costos totales listados por acre sembrado (ERS 'Total, costs listed', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK03 | 2000 | 2025 | 5.2 |
-| economia_anual.csv | margen_operativo_usd_ac | Valor de la producción menos costos operativos (ERS 'Value of production less operating costs', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK02 | 2000 | 2025 | 5.2 |
-| economia_anual.csv | flag_nass | Código original de NASS cuando el precio no se publica ((D), (S), (NA)); vacío si hay valor | texto | USDA NASS Quick Stats (volcado qs.crops) |  | 2019 | 2019 | 99.7 |
+| economia_anual.csv | precio_usd_bu | Precio recibido por el productor, promedio del año comercial (NASS PRICE RECEIVED, MARKETING YEAR, estado) | USD/bu | USDA NASS Quick Stats (volcado qs.crops) | MK01 | 2000 | 2025 | 0.0 |
+| economia_anual.csv | valor_produccion_usd_ac | Valor bruto de la producción por acre sembrado (ERS 'Total, gross value of production', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns |  | 2000 | 2025 | 7.7 |
+| economia_anual.csv | costo_operativo_usd_ac | Costos operativos por acre sembrado (ERS 'Total, operating costs', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK03 | 2000 | 2025 | 7.7 |
+| economia_anual.csv | costo_total_usd_ac | Costos totales listados por acre sembrado (ERS 'Total, costs listed', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK03 | 2000 | 2025 | 7.7 |
+| economia_anual.csv | margen_operativo_usd_ac | Valor de la producción menos costos operativos (ERS 'Value of production less operating costs', regiones ponderadas por área sembrada) | USD/ac | USDA ERS Commodity Costs and Returns | MK02 | 2000 | 2025 | 7.7 |
+| economia_anual.csv | flag_nass | Código original de NASS cuando el precio no se publica ((D), (S), (NA)); vacío si hay valor | texto | USDA NASS Quick Stats (volcado qs.crops) |  |  |  | 100.0 |
 | economia_forrajes_anual.csv | precio_usd_ton | Precio recibido por el productor, promedio del año comercial (NASS PRICE RECEIVED, MARKETING YEAR, estado) | USD/ton corta | USDA NASS Quick Stats (volcado qs.crops) | MK01 | 2000 | 2025 | 0.0 |
 | economia_forrajes_anual.csv | flag_nass | Código original de NASS cuando el precio no se publica ((D), (S), (NA)); vacío si hay valor | texto | USDA NASS Quick Stats (volcado qs.crops) |  |  |  | 100.0 |
 
@@ -67,58 +67,10 @@ por condado en el período). Se guardan también en `data/interim/economia/pesos
 
 | fips_estado | cultivo | region_ers | acres | base | peso |
 |---|---|---|---|---|---|
-| 17 | avena | Heartland | 497,000 | acres_sembrados | 1.000 |
-| 17 | maiz | Heartland | 285,364,500 | acres_sembrados | 1.000 |
-| 17 | soja | Heartland | 243,634,500 | acres_sembrados | 1.000 |
-| 17 | trigo_invierno | Heartland | 16,333,600 | acres_sembrados | 1.000 |
-| 18 | avena | Heartland | 92 | condados | 1.000 |
-| 18 | maiz | Heartland | 137,460,500 | acres_sembrados | 1.000 |
-| 18 | soja | Heartland | 135,131,400 | acres_sembrados | 1.000 |
-| 18 | trigo_invierno | Heartland | 7,814,700 | acres_sembrados | 1.000 |
-| 19 | avena | Heartland | 2,953,650 | acres_sembrados | 1.000 |
-| 19 | maiz | Heartland | 331,100,400 | acres_sembrados | 1.000 |
-| 19 | soja | Heartland | 243,078,600 | acres_sembrados | 1.000 |
-| 19 | trigo_invierno | Heartland | 102,640 | acres_sembrados | 1.000 |
 | 20 | avena | Prairie Gateway | 118,800 | acres_sembrados | 1.000 |
 | 20 | maiz | Prairie Gateway | 92,894,900 | acres_sembrados | 1.000 |
 | 20 | soja | Prairie Gateway | 86,408,000 | acres_sembrados | 1.000 |
 | 20 | trigo_invierno | Prairie Gateway | 198,429,100 | acres_sembrados | 1.000 |
-| 27 | avena | Heartland | 2,184,200 | acres_sembrados | 0.438 |
-| 27 | avena | Northern Crescent | 2,042,800 | acres_sembrados | 0.410 |
-| 27 | avena | Northern Great Plains | 756,200 | acres_sembrados | 0.152 |
-| 27 | maiz | Heartland | 145,207,500 | acres_sembrados | 0.742 |
-| 27 | maiz | Northern Crescent | 41,365,600 | acres_sembrados | 0.211 |
-| 27 | maiz | Northern Great Plains | 9,225,800 | acres_sembrados | 0.047 |
-| 27 | soja | Heartland | 117,225,100 | acres_sembrados | 0.656 |
-| 27 | soja | Northern Great Plains | 33,971,200 | acres_sembrados | 0.190 |
-| 27 | soja | Northern Crescent | 27,562,600 | acres_sembrados | 0.154 |
-| 27 | trigo_invierno | Northern Great Plains | 137,900 | acres_sembrados | 0.873 |
-| 27 | trigo_invierno | Northern Crescent | 11,100 | acres_sembrados | 0.070 |
-| 27 | trigo_invierno | Heartland | 9,000 | acres_sembrados | 0.057 |
-| 31 | avena | Heartland | 679,300 | acres_sembrados | 0.460 |
-| 31 | avena | Northern Great Plains | 419,800 | acres_sembrados | 0.284 |
-| 31 | avena | Prairie Gateway | 378,600 | acres_sembrados | 0.256 |
-| 31 | maiz | Prairie Gateway | 113,861,100 | acres_sembrados | 0.511 |
-| 31 | maiz | Heartland | 91,070,800 | acres_sembrados | 0.409 |
-| 31 | maiz | Northern Great Plains | 17,838,400 | acres_sembrados | 0.080 |
-| 31 | soja | Heartland | 65,459,200 | acres_sembrados | 0.547 |
-| 31 | soja | Prairie Gateway | 50,829,700 | acres_sembrados | 0.424 |
-| 31 | soja | Northern Great Plains | 3,476,500 | acres_sembrados | 0.029 |
-| 31 | trigo_invierno | Prairie Gateway | 17,710,500 | acres_sembrados | 0.524 |
-| 31 | trigo_invierno | Northern Great Plains | 15,494,100 | acres_sembrados | 0.458 |
-| 31 | trigo_invierno | Heartland | 593,800 | acres_sembrados | 0.018 |
-| 39 | avena | Northern Crescent | 428,700 | acres_sembrados | 0.607 |
-| 39 | avena | Eastern Uplands | 188,300 | acres_sembrados | 0.267 |
-| 39 | avena | Heartland | 89,200 | acres_sembrados | 0.126 |
-| 39 | maiz | Heartland | 65,112,700 | acres_sembrados | 0.750 |
-| 39 | maiz | Northern Crescent | 17,832,700 | acres_sembrados | 0.205 |
-| 39 | maiz | Eastern Uplands | 3,828,000 | acres_sembrados | 0.044 |
-| 39 | soja | Heartland | 90,686,700 | acres_sembrados | 0.777 |
-| 39 | soja | Northern Crescent | 23,658,400 | acres_sembrados | 0.203 |
-| 39 | soja | Eastern Uplands | 2,418,600 | acres_sembrados | 0.021 |
-| 39 | trigo_invierno | Heartland | 12,669,300 | acres_sembrados | 0.732 |
-| 39 | trigo_invierno | Northern Crescent | 4,337,500 | acres_sembrados | 0.251 |
-| 39 | trigo_invierno | Eastern Uplands | 290,800 | acres_sembrados | 0.017 |
 
 ## Supuestos
 
@@ -141,6 +93,10 @@ por condado en el período). Se guardan también en `data/interim/economia/pesos
 - **Sin área por condado.** Si NASS no publica `ACRES PLANTED` por condado de un cultivo en un
   estado (avena en IN), el peso de cada región es su proporción de condados (`base = condados`
   en la tabla de pesos; la columna `acres` trae entonces la cantidad de condados).
+- **Códigos de condado viejos en `reglink.xls`.** La planilla de ERS trae a Oglala Lakota (SD)
+  con el código de Shannon County (46113); el Census lo cambió a 46102 en 2015 (Census Bureau,
+  "Substantial Changes to Counties and County Equivalent Entities: 2010-present"). Al leerla se
+  pasa 46113 → 46102. Es el único cambio de código desde 2000 en los estados de la zona.
 - **Condados combinados.** Las filas de NASS de `OTHER (COMBINED) COUNTIES` no tienen condado
   y no entran en los pesos. Los códigos `(D)` y similares cuentan como sin dato.
 - **Trigo.** ERS publica costos de trigo en general (no separa el de invierno). Se asignan a
