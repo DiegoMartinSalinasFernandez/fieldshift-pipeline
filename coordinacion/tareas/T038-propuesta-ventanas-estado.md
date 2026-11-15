@@ -1,9 +1,9 @@
 ---
 id: T038
 titulo: 'Propuesta: ventanas críticas por estado (floración y llenado)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 03:20
-actualizada: 2026-11-15 03:20
+actualizada: 2026-11-15 03:13
 ---
 
 ## Qué hacer
@@ -38,3 +38,4 @@ esquemas:** es una propuesta para el humano.
 La propuesta en un PR.
 
 ## Notas
+- 2026-11-15 03:13 · pro-3: tomada
