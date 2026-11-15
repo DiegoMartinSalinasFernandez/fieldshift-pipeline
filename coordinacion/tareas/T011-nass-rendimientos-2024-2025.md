@@ -1,7 +1,7 @@
 ---
 id: T011
 titulo: 'Research: rendimientos de condado de NASS 2024 y 2025 en los 7 estados'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados:
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:15
-actualizada: 2026-11-15 02:13
+actualizada: 2026-11-15 02:18
 ---
 
 ## Qué hacer
@@ -34,3 +34,4 @@ El research escrito, con fuentes, fecha de consulta y confianza, en un PR.
 
 ## Notas
 - 2026-11-15 02:13 · pro-2: tomada
+- 2026-11-15 02:18 · pro-2: terminada por el trabajador: PR #6, falta la revisión de max-1
