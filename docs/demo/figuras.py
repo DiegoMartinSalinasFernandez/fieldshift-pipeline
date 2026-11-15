@@ -238,6 +238,8 @@ def pie(fig, fuentes: list[str], extra: str = "") -> None:
 
 def guardar(fig, salida: Path, nombre: str) -> None:
     salida.mkdir(parents=True, exist_ok=True)
+    if NOTA:  # una línea más de pie: subir los ejes para que no se pise con el título del eje x
+        fig.subplots_adjust(bottom=fig.subplotpars.bottom + 0.04)
     if SUFIJO:
         nombre = nombre.replace(".png", f"_{SUFIJO}.png")
     fig.savefig(salida / nombre, dpi=150)
@@ -275,7 +277,7 @@ def fig_lluvia_julio(prod, clima, salida: Path) -> None:
     ax.set_title("County corn yield vs July rainfall: 2012 against all other years")
     ax.legend(loc="lower right", fontsize=8)
     ax.grid(alpha=0.3)
-    fig.subplots_adjust(bottom=0.16)
+    fig.subplots_adjust(bottom=0.19)
     pie(fig, [SRC_NASS, SRC_POWER], f"One point per county-year; n = {len(m)} "
         f"({len(a12)} in 2012). States: {', '.join(ests)}. Yields: ALL PRODUCTION PRACTICES"
         + (" (mixes irrigated and rainfed corn; large irrigated share in NE and KS)." if {"NE", "KS"} & set(ests)
