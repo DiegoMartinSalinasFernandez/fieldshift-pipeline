@@ -1,14 +1,14 @@
 ---
 id: T025
 titulo: Script para controlar un zip de entrega contra el contrato (scripts/verificar_entrega.py)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-4
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 02:50
-actualizada: 2026-11-15 02:32
+actualizada: 2026-11-15 02:35
 ---
 
 ## Qué hacer
@@ -35,3 +35,4 @@ El script y sus pruebas en un PR.
 
 ## Notas
 - 2026-11-15 02:32 · pro-4: tomada
+- 2026-11-15 02:35 · pro-4: terminada: PR #11 (scripts/verificar_entrega.py + tests/test_verificar_entrega.py, 24 pruebas OK)
