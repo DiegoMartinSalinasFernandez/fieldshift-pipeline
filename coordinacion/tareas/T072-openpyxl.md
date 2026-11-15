@@ -1,14 +1,14 @@
 ---
 id: T072
 titulo: Agregar openpyxl a requirements.txt y probar los scripts que leen .xlsx
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 05:42
-actualizada: 2026-11-15 06:08
+actualizada: 2026-11-15 06:09
 ---
 
 ## Qué hacer
@@ -25,3 +25,4 @@ El cambio en un PR, con la lista de scripts probados.
 
 ## Notas
 - 2026-11-15 06:08 · pro-3: tomada
+- 2026-11-15 06:09 · pro-3: terminada por el trabajador: PR #67, falta la revisión de max-1
