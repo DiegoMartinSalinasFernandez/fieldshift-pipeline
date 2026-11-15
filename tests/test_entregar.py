@@ -80,7 +80,9 @@ class TestEntregarSoloZip(unittest.TestCase):
     def escribir(self, rel: str, txt: str) -> None:
         p = self.repo / rel
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(txt, encoding="utf-8")
+        p.write_bytes(txt.encode("utf-8"))  # sin pasar 
+ a 
+ en Windows
 
     def correr(self, *args: str) -> str:
         out = io.StringIO()
