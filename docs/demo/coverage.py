@@ -125,9 +125,12 @@ def contar_csv(z: zipfile.ZipFile, nombre: str) -> dict:
 def resumir(zips: list[Path]) -> dict:
     paquetes, fips, anios, tam = {}, set(), set(), 0
     for p in sorted(zips):
-        tam += p.stat().st_size
         with zipfile.ZipFile(p) as z:
             csvs = sorted(n for n in z.namelist() if n.startswith("data/processed/") and n.endswith(".csv"))
+        if not csvs and p.name.endswith("_base.zip"):
+            continue                    # zip de base (polígonos y referencia), no es un paquete
+        tam += p.stat().st_size
+        with zipfile.ZipFile(p) as z:
             filas = [contar_csv(z, n) for n in csvs]
         paquete = csvs[0].split("/")[2] if csvs else p.stem
         paquetes[paquete] = {"zip": p.name, "mb": p.stat().st_size / 1e6, "csv": filas}
