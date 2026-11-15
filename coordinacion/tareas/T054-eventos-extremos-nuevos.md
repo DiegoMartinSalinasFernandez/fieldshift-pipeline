@@ -1,9 +1,9 @@
 ---
 id: T054
 titulo: 'Research: eventos extremos conocidos en OH, NE, MN y KS (2000–2025)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - OH
 - NE
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 04:17
-actualizada: 2026-11-15 04:17
+actualizada: 2026-11-15 04:18
 ---
 
 ## Qué hacer
@@ -35,3 +35,4 @@ Escribí `docs/research/eventos_extremos_nuevos.md`.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 04:18 · pro-2: tomada
