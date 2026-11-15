@@ -1,7 +1,7 @@
 ---
 id: T010
 titulo: Sacar del código y los data cards los supuestos de IA, IL e IN
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:15
-actualizada: 2026-11-15 02:10
+actualizada: 2026-11-15 02:16
 ---
 
 ## Qué hacer
@@ -37,3 +37,4 @@ Un PR con los arreglos y, en el resultado, la lista de lo que se encontró y lo 
 
 ## Notas
 - 2026-11-15 02:10 · pro-1: tomada
+- 2026-11-15 02:16 · pro-1: terminada por el trabajador: PR #5, falta la revisión de max-1
