@@ -1,14 +1,14 @@
 ---
 id: T057
 titulo: Borrador de la página del proyecto para el envío (inglés)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:30
-actualizada: 2026-11-15 04:35
+actualizada: 2026-11-15 04:39
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ El documento en un PR.
 
 ## Notas
 - 2026-11-15 04:35 · pro-5: tomada
+- 2026-11-15 04:39 · pro-5: terminada por el trabajador: PR #52, falta la revisión de max-1
