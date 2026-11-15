@@ -1,7 +1,7 @@
 ---
 id: T019
 titulo: 'Research: NASS Crop Progress en los estados nuevos'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:40
-actualizada: 2026-11-15 02:27
+actualizada: 2026-11-15 02:36
 ---
 
 ## Qué hacer
@@ -39,3 +39,4 @@ El research en un PR, con una tabla por estado y cultivo de etapas y años.
 
 ## Notas
 - 2026-11-15 02:27 · pro-1: tomada
+- 2026-11-15 02:36 · pro-1: terminada por el trabajador: PR #12, falta la revisión de max-1
