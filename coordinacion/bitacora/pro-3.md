@@ -18,3 +18,4 @@
 - 04:44 T060: tomada por el trabajador
 - 04:49 T060: terminada, PR #56
 - 04:50 T066: tomada por el trabajador
+- 04:55 T066: terminada, PR #59
