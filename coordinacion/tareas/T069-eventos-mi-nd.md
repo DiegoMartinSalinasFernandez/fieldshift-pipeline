@@ -1,7 +1,7 @@
 ---
 id: T069
 titulo: 'Research: eventos extremos conocidos en Michigan y Dakota del Norte (2000–2025)'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -10,7 +10,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 05:42
-actualizada: 2026-11-15 05:56
+actualizada: 2026-11-15 06:04
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ El research en un PR.
 
 ## Notas
 - 2026-11-15 05:56 · pro-1: tomada
+- 2026-11-15 06:04 · pro-1: terminada por el trabajador: PR #63, falta la revisión de max-1
