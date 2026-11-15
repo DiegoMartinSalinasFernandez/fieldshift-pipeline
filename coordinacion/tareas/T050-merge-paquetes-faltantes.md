@@ -1,14 +1,14 @@
 ---
 id: T050
 titulo: 'Propuesta: qué paquetes y columnas le faltan a merge.py'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:17
-actualizada: 2026-11-15 04:17
+actualizada: 2026-11-15 04:20
 ---
 
 ## Qué hacer
@@ -32,3 +32,4 @@ propuesta para el humano.
 La propuesta en un PR.
 
 ## Notas
+- 2026-11-15 04:20 · pro-5: tomada
