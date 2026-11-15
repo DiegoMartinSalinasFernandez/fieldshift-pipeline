@@ -1,14 +1,14 @@
 ---
 id: T042
 titulo: Pruebas de scripts/trabajador.py (orden de tareas y tiempo)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:00
-actualizada: 2026-11-15 04:00
+actualizada: 2026-11-15 03:29
 ---
 
 ## Qué hacer
@@ -31,3 +31,4 @@ las barras de las rutas y con `\r\n`).
 Las pruebas en un PR.
 
 ## Notas
+- 2026-11-15 03:29 · pro-2: tomada
