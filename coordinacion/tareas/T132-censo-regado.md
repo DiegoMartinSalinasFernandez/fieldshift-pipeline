@@ -1,14 +1,14 @@
 ---
 id: T132
 titulo: Riego por cultivo del Censo en `practicas_censo.csv` (código listo, espera OK)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:24
-actualizada: 2026-11-15 09:44
+actualizada: 2026-11-15 09:51
 ---
 
 ## Qué hacer
@@ -30,3 +30,4 @@ El código, las pruebas sin red y el data card en un PR con CI en verde, retenid
 
 ## Notas
 - 2026-11-15 09:44 · pro-2: tomada
+- 2026-11-15 09:51 · pro-2: terminada por el trabajador: PR #123, falta la revisión de max-1
