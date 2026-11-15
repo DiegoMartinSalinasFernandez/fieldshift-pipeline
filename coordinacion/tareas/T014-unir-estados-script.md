@@ -1,7 +1,7 @@
 ---
 id: T014
 titulo: Script para juntar los releases de cada estado (scripts/unir_estados.py)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados:
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:40
-actualizada: 2026-11-15 02:19
+actualizada: 2026-11-15 02:21
 ---
 
 ## Qué hacer
@@ -43,3 +43,4 @@ El script y su prueba en un PR, con el uso en el docstring.
 
 ## Notas
 - 2026-11-15 02:19 · pro-2: tomada
+- 2026-11-15 02:21 · pro-2: terminada por el trabajador: PR #7, falta la revisión de max-1
