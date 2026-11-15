@@ -52,7 +52,8 @@ SRC_MODIS = "NASA MODIS MOD13Q1 NDVI 250 m (CDL corn/soy pixel masks)"
 SRC_SMAP = "NASA SMAP L4 SPL4SMGP (Crop-CASMA daily layers)"
 SRC_PROG = "USDA NASS Crop Progress (state, weekly)"
 SRC_CDL = "USDA NASS Cropland Data Layer 30 m"
-SRC_IMERG = "NASA GPM IMERG Final V07 daily (county mean)"
+SRC_IMERG = ("GPM IMERG Final V07, served by the NASA POWER API (IMERG_PRECTOT; Late V07 for 2025-10 to "
+             "2025-12), daily, county mean of 0.1° cells")
 ORIGEN = "published release CSVs"             # con --entrega se cambia por el nombre del zip
 NOTA = ""                                     # p. ej. "Only OH, NE and MN"; va en el pie de cada figura
 SUFIJO = ""                                   # se agrega al nombre de cada PNG
