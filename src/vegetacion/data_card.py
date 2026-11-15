@@ -68,14 +68,18 @@ TEXTO = """
 - **MOD13Q1 v061** (Terra, índices de vegetación 16 días, 250 m) y **MOD11A2 v061** (Terra, LST 8 días,
   1 km), COGs públicos de Microsoft Planetary Computer (colecciones `modis-13Q1-061` y
   `modis-11A2-061`), firmados con el token SAS anónimo. Teselas {teselas}.
-- `src/vegetacion/download.py` lee solo la ventana de cada tesela que cubre los condados y la guarda
+- `src/vegetacion/download.py` busca con un bbox por estado (los bbox de estados vecinos que se tocan,
+  con 0,05° de margen, se juntan en uno: IA+IL+IN queda en un solo grupo; OH, MN y KS+NE en tres).
+  Una tesela que cae en dos grupos se baja una sola vez, con la unión de sus bbox. Lee solo esa ventana y la guarda
   tal cual en `data/raw/vegetacion/<producto>/<anio>/<item>.tif` (una fila por archivo en `manifest.csv`).
 - `src/vegetacion/process.py` rasteriza los condados en la grilla sinusoidal de cada tesela, filtra
   calidad y promedia por condado (suma de todas las teselas que tocan el condado).
 - **NLDAS-2 Noah mensual v2.0** (`NLDAS_NOAH0125_M`, NASA GES DISC, 0,125°, CMR
   `C1887990023-GES_DISC`), variables `Evap` (kg m-2, suma del mes) y `PotEvap` (W m-2, media del mes),
   recortadas al rectángulo de los condados con Harmony (`harmony.earthdata.nasa.gov`, login Earthdata).
-  `src/vegetacion/download_nldas.py` guarda un NetCDF por mes en `data/raw/vegetacion/nldas_noah_m/<anio>/`.
+  `src/vegetacion/download_nldas.py` guarda un NetCDF por mes y grupo de estados en
+  `data/raw/vegetacion/nldas_noah_m/<anio>/` (`..._zona.nc` si hay un solo grupo; si no, con los estados
+  en el nombre, por ejemplo `..._KS-NE.nc`); cada condado se promedia con el recorte de su grupo.
 
 ## Supuestos
 

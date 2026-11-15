@@ -116,6 +116,8 @@ TEXTO = """# Data card — nldas
 NLDAS-2 (North American Land Data Assimilation System, fase 2), modelo de superficie Noah, producto
 mensual `NLDAS_NOAH0125_M` versión 2.0 (NASA GES DISC, colección CMR `C1887990023-GES_DISC`),
 grilla de 0,125°, desde 1979-01. Completa a SMAP (paquete `agua`), que empieza en 2015-03.
+Se baja un recorte por mes y grupo de estados contiguos (`..._zona.nc` si hay un solo grupo, como IA,
+IL e IN; si no, `..._KS-NE.nc`, `..._MN.nc`, `..._OH.nc`); cada condado usa el recorte de su grupo.
 
 ## Archivos
 
