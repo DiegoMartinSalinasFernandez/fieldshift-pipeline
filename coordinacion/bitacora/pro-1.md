@@ -71,3 +71,4 @@
 - 10:34 T144: terminada, PR #141
 - 10:34 T146: tomada por el trabajador
 - 10:37 T146: terminada, PR #142
+- 10:52 T104: tomada por el trabajador
