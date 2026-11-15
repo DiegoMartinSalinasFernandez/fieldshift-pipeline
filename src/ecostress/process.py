@@ -5,18 +5,25 @@ Uso: python src/ecostress/process.py
 """
 from __future__ import annotations
 
+import sys
 import time
 from pathlib import Path
 
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO))
+from src.common.config import estados_config  # noqa: E402
+from src.zona_texto import lista_estados  # noqa: E402
+
 RAW = REPO / "data/raw/ecostress"
 OUT = REPO / "data/processed/ecostress"
 CARD = REPO / "docs/datasets/ecostress.md"
 MIN_PX = 10  # píxeles agrícolas válidos mínimos para que una pasada cuente en el condado
-# meses bajados en r005-r006 con un bbox que dejaba afuera el oeste de Iowa (ver download.py)
-MESES_BBOX_ESTE = ["2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10"]
+# meses bajados en r005-r006 con un bbox que dejaba afuera el oeste de Iowa (ver download.py); solo
+# existen en la máquina de la primera tanda (IA, IL, IN)
+MESES_BBOX_ESTE = (["2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10"]
+                   if "IA" in estados_config() else [])
 
 S = "NASA JPL ECOSTRESS colección 2 (LP DAAC), 70 m"
 COLS = [
@@ -89,7 +96,8 @@ TEXTO = """
   `ECO_L4T_ESI.002` (capa `ESI`). Nombres de producto y capa verificados en la API de productos de
   AppEEARS (`/api/product/<producto>`) y en los nombres de archivo de CMR.
 - `src/ecostress/download.py` busca en CMR las pasadas de `ECO_L3T_JET` de cada mes sobre el bbox de
-  IA, IL e IN, empareja cada una con la LSTE y la ESI de la misma órbita, escena y tesela, y lee de
+  los condados de {estados} (un bbox por estado, de `data/reference/condados.gpkg`, con 0,1° de margen), empareja cada
+  una con la LSTE y la ESI de la misma órbita, escena y tesela, y lee de
   los COG (lectura por rango HTTP con token de Earthdata, sin bajar la tesela entera) una ventana de
   32x32 píxeles alrededor del punto agrícola de cada condado. Guarda por condado y pasada el número de
   píxeles agrícolas, de píxeles válidos y la media de LST, ETdaily y ESI en
@@ -103,7 +111,7 @@ TEXTO = """
 - **Acceso directo a LP DAAC en lugar de AppEEARS.** La API de AppEEARS pide un login propio con
   usuario y contraseña; el token de Earthdata da 403. Se leen los COG de LP DAAC directo.
 - **Ventana de muestra, no el condado entero.** Las teselas completas de 2018 a 2025 son cientos de
-  miles de archivos (CMR: ~221 000 granulos LSTE y ~81 000 JET/ESI sobre el bbox) y pasarían de lejos
+  miles de archivos (CMR: ~221 000 granulos LSTE y ~81 000 JET/ESI sobre el bbox de IA, IL e IN) y pasarían de lejos
   los 5 GB. Por condado se usa una ventana de 32x32 píxeles de 70 m (2,24 km de lado) centrada en el
   píxel agrícola (máscara `data/reference/mascara_agricola.tif`, CDL) más cercano al centroide de los
   píxeles agrícolas del condado (`data/interim/ecostress/puntos_condados.csv`). Dentro de la ventana
@@ -126,10 +134,12 @@ TEXTO = """
 - La descarga es larga (~100 pasadas/min con 40 hilos; un mes tiene de ~100 a ~750 pasadas sobre los
   condados): la cobertura crece ronda a ronda. Solo están los meses que aparecen en `data/raw/ecostress/`.
 - Condados con poca superficie agrícola cerca del punto tienen pocas píxeles válidos o ninguno.
-- El orden de los meses y el bbox de CMR salen de `download.py`, no de `config/config.yaml`.
-- **Oeste de Iowa (corregido en r007).** En r005-r006 el bbox de CMR era `-91.6,37.0,-84.8,43.5` y dejaba
-  afuera las teselas del oeste de Iowa (83 condados nunca tenían pasada). El bbox ahora es
-  `-96.7,37.0,-84.7,43.6`. Los meses bajados con el bbox angosto (2025-04 a 2025-10) se completan con
+- El orden de los meses sale de `download.py`, no de `config/config.yaml`.
+{oeste}"""
+
+OESTE_IOWA = """- **Oeste de Iowa (corregido en r007).** En r005-r006 el bbox de CMR era `-91.6,37.0,-84.8,43.5` y dejaba
+  afuera las teselas del oeste de Iowa (83 condados nunca tenían pasada). Desde r007 el bbox cubre los
+  tres estados de la primera tanda. Los meses bajados con el bbox angosto (2025-04 a 2025-10) se completan con
   `ecostress_extraccion_<AAAA-MM>_oeste.csv` (solo las escenas que faltaban); mientras un mes no tenga su
   suplemento, los condados que no aparecen en su extracción quedan con `n_pasadas_ecostress` vacío (no 0).
 """
@@ -149,7 +159,8 @@ def data_card(m: pd.DataFrame) -> None:
         falt = 100 * s.isna().mean()
         lineas.append(f"| ecostress_mensual.csv | {c} | {desc} | {u} | {f} | {idc} | {desde} | {hasta} | {falt:.1f} |")
     CARD.parent.mkdir(parents=True, exist_ok=True)
-    CARD.write_text("\n".join(lineas) + "\n" + TEXTO, encoding="utf-8")
+    texto = TEXTO.format(estados=lista_estados(), oeste=OESTE_IOWA if MESES_BBOX_ESTE else "")
+    CARD.write_text("\n".join(lineas) + "\n" + texto, encoding="utf-8")
 
 
 def main() -> None:
