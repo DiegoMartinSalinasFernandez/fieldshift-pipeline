@@ -267,7 +267,7 @@ Narration can be in another language with English subtitles. ~12–14 words per 
 | 0:10–0:15 | Three rotation cards (corn–soybean, continuous corn, diversified) with ranges **[TBD: from ML team]** | "Pick your field and compare three rotations — with ranges, evidence and open risks." |
 | 0:15–0:20 | One loess-hills field: NASADEM relief → per-pixel NDVI from Landsat and HLS (`lotes`) **[TBD: needs the `fieldshift_lotes_v1` release, not published; otherwise replace with `fig1_corn_yield_july_rain_oh_ne_mn.png`]** | "Inside each field, NASA elevation and imagery separate dry knolls from wet swales." |
 | 0:20–0:25 | `fig3_smap_may_vs_planting_oh_ne_mn.png` (real: SMAP May moisture vs planting date), then the text "rain vs gauges: r = 0.93–0.94" (IA/IL/IN, `validacion.md`; no scatter PNG yet) | "SMAP, ECOSTRESS and GPM show stress; we check them against ground gauges." |
-| 0:25–0:30 | Text credits: "Data: NASA POWER, GPM IMERG, SMAP, MODIS, NASADEM, NLDAS, GRACE · USDA" (add ECOSTRESS and HLS only if their releases are published) + repo link **[TBD]** | "Open NASA data, an open pipeline — and the farmer still makes the call." |
+| 0:25–0:30 | Text credits: "Data: NASA POWER, GPM IMERG, SMAP, MODIS, NASADEM, NLDAS, GRACE · USDA" (add ECOSTRESS and HLS only if their releases are published) + repo link (github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline) | "Open NASA data, an open pipeline — and the farmer still makes the call." |
 
 Video checks: ≤ 30 s total (trim, do not speed up); English subtitles if narrated in Spanish; watermark on any
 AI-generated image or voice; no NASA logos modified; hosted on a public link (YouTube/Vimeo/Drive) and tested in a
