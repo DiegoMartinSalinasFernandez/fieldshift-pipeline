@@ -1,7 +1,7 @@
 ---
 id: T108
 titulo: 'Research: calendario de siembra y cosecha de Dakota del Norte (para cultivos_estado.csv)'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-3
 estados:
@@ -9,7 +9,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T07:32
-actualizada: 2026-11-15 07:54
+actualizada: 2026-11-15 08:03
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ El research en un PR.
 
 ## Notas
 - 2026-11-15 07:54 · pro-3: tomada
+- 2026-11-15 08:03 · pro-3: terminada por el trabajador: PR #101, falta la revisión de max-1
