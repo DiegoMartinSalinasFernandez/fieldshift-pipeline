@@ -1,4 +1,4 @@
-"""T038: ventanas de floración del maíz y llenado de la soja por estado, desde Crop Progress (NASS).
+"""T038 (y T114, 6 estados más): ventanas de floración del maíz y llenado de la soja por estado, desde Crop Progress (NASS).
 
 Baja de ESMIS los reportes semanales de junio a octubre de 2008-2025 a una carpeta de trabajo (fuera del
 repo), toma el % de la semana actual de cada estado en las tablas de maíz (silking, dough, dented) y soja
@@ -34,7 +34,8 @@ for u in sorted(urls):
         subprocess.run(['curl', '-sL', '-m', '60', BASE + u, '-o', destino])
 
 # 2. parseo
-ST={'Iowa':'IA','Illinois':'IL','Indiana':'IN','Ohio':'OH','Nebraska':'NE','Minnesota':'MN','Kansas':'KS'}
+ST={'Iowa':'IA','Illinois':'IL','Indiana':'IN','Ohio':'OH','Nebraska':'NE','Minnesota':'MN','Kansas':'KS',
+    'Missouri':'MO','Wisconsin':'WI','South Dakota':'SD','North Dakota':'ND','Michigan':'MI','Kentucky':'KY'}  # T114
 CODES=set(ST.values())
 MON={m:i+1 for i,m in enumerate(['January','February','March','April','May','June','July','August','September','October','November','December'])}
 TABS={('corn','silking'):'maiz_silking',('corn','dough'):'maiz_dough',('corn','dented'):'maiz_dented',
