@@ -1,14 +1,14 @@
 ---
 id: T033
 titulo: Pruebas del tablero (tests/test_tareas.py)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 03:00
-actualizada: 2026-11-15 03:00
+actualizada: 2026-11-15 02:57
 ---
 
 ## Qué hacer
@@ -31,3 +31,4 @@ Si una prueba muestra un error real, marcala `expectedFailure` y explicalo en "P
 Las pruebas en un PR, pasando (salvo las marcadas).
 
 ## Notas
+- 2026-11-15 02:57 · pro-1: tomada
