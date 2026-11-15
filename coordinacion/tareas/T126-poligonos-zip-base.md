@@ -1,14 +1,14 @@
 ---
 id: T126
 titulo: Sumar `condados.gpkg` al zip de base de los releases (scripts/entregar.py)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:11
-actualizada: 2026-11-15T09:11
+actualizada: 2026-11-15 09:22
 ---
 
 ## Qué hacer
@@ -35,3 +35,4 @@ No toques releases publicados: el coordinador sube el zip de base a `datos-oh-ne
 El cambio y la prueba en un PR, con CI en verde.
 
 ## Notas
+- 2026-11-15 09:22 · pro-1: tomada
