@@ -1,7 +1,7 @@
 ---
 id: T086
 titulo: 'Data card de agua: área que saca el filtro de 0,6 m³/m³ por condado'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -10,7 +10,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T06:27
-actualizada: 2026-11-15 06:36
+actualizada: 2026-11-15 06:37
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ El cambio en los data cards en un PR. No cambies código ni esquema.
 
 ## Notas
 - 2026-11-15 06:36 · pro-1: tomada
+- 2026-11-15 06:37 · pro-1: terminada por el trabajador: PR #78, falta la revisión de max-1
