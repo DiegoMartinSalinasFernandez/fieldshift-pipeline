@@ -31,6 +31,7 @@ COLS = {
         ("sup_sembrada_ha", "sup_sembrada_ac × 0,4047 (acres_a_ha)", "ha", D, "Y01"),
         ("ratio_cosechada", "sup_cosechada_ac / sup_sembrada_ac", "fracción", D, "Y05"),
         ("flag_nass", "Código original de NASS cuando el valor está oculto: (D), (Z), (NA)… (separados por ;)", "texto", QS, ""),
+        ("fila_nass", "1 = la fila viene de NASS; 0 = NASS no publicó ese condado, año y cultivo y la fila se completó vacía (T138)", "0/1", D, ""),
     ],
     "fenologia_estado.csv": [
         ("doy_50_sembrado", "Día del año en que se cruza el 50 % sembrado (PCT PLANTED, interpolado)", "día del año", CP, "CT03"),
