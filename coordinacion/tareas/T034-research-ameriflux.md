@@ -1,9 +1,9 @@
 ---
 id: T034
 titulo: 'Research: sitios AmeriFlux del Corn Belt para validar la ET'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 03:20
-actualizada: 2026-11-15 03:20
+actualizada: 2026-11-15 03:04
 ---
 
 ## Qué hacer
@@ -39,3 +39,4 @@ Escribí `docs/research/ameriflux.md`, con una tabla por sitio.
 El research en un PR, con una propuesta de qué sitios usar. La descarga, si pide registro, la hace el humano.
 
 ## Notas
+- 2026-11-15 03:04 · pro-4: tomada
