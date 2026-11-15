@@ -55,7 +55,7 @@ couple of minutes.
 **Quick check (no credentials, ~12 MB download):** tests and package 0 for one state.
 
 ```bash
-git clone https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline.git && cd fieldshift-pipeline
+git clone <this repository URL> fieldshift-pipeline && cd fieldshift-pipeline
 python3.11 -m venv .venv               # or: uv venv --python 3.11
 .venv/bin/pip install -r requirements.txt   # or: uv pip install -r requirements.txt
 .venv/bin/python -m pytest tests/      # ~10 s, no network
