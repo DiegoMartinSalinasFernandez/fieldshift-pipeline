@@ -1,14 +1,14 @@
 ---
 id: T133
 titulo: '`cdl_precision.csv` como tabla de referencia para ML (código listo, espera OK)'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-4
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:33
-actualizada: 2026-11-15 09:48
+actualizada: 2026-11-15 09:52
 ---
 
 ## Qué hacer
@@ -33,3 +33,4 @@ El código, las pruebas sin red y el data card en un PR con CI en verde, retenid
 
 ## Notas
 - 2026-11-15 09:48 · pro-4: tomada
+- 2026-11-15 09:52 · pro-4: terminada por el trabajador: PR #124, falta la revisión de max-1
