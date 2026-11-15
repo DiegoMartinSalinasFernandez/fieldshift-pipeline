@@ -25,7 +25,7 @@ Items in **[TBD]** are for the team: project name and tagline, team name, repo l
 
 | # | Time | Shot | Figure | Judging criterion it serves |
 |---|---|---|---|---|
-| 1 | 0:00–0:03 | Title and team | none (text card) | Presentation |
+| 1 | 0:00–0:03 | Title, team and study area | `fig0_mapa.png` (on `main` since T094) | Presentation, Impact |
 | 2 | 0:03–0:07 | The problem: weather years swing corn yield | `fig5_corn_yield_by_year_oh_ne_mn.png` | Impact |
 | 3 | 0:07–0:11 | The rotation farmers actually run | `fig4_corn_after_soy_vs_corn_oh_ne_mn.png` | Relevance (existing rotation), Creativity |
 | 4 | 0:11–0:15 | NASA SMAP sees wet springs that delay planting | `fig3_smap_may_vs_planting_oh_ne_mn.png` | Relevance (NASA data core), Impact |
@@ -39,8 +39,10 @@ Total: **30 s**. Narration: **71 words** (about 70 fit in 30 s; see the word cou
 
 ## Shot 1 — 0:00 to 0:03 · Title and team
 
-- **On screen:** dark background, county outlines are optional only if a real map exists (none in
-  `docs/demo/fig/` yet; do not draw one by hand). Text appears in two lines.
+- **On screen:** `docs/demo/fig/fig0_mapa.png` (task T094): the counties of the study states, solid where the
+  data release is published (OH, NE, MN) and hatched where it is in progress. Title text over a dark band at
+  the top. **Re-run `docs/demo/figuras.py --solo-mapa` before the final cut** so the solid/hatched status is
+  current. Do not draw a map by hand.
 - **On-screen text:**
   - Line 1 (large): **[TBD: project name]**
   - Line 2 (small): *Team [TBD] · NASA Space Apps 2026 · Field Shift: Adapting Farms with NASA Data*
@@ -87,7 +89,8 @@ Total: **30 s**. Narration: **71 words** (about 70 fit in 30 s; see the word cou
 
 - **On screen:** `docs/demo/fig/fig6_lluvia_oh_ne_mn.png`, full width, the three panel titles readable.
 - **On-screen text:** **Monthly rain by county, GPM IMERG vs NASA POWER: r = 0.94–0.96**
-- **Small credit:** *Two NASA products compared with each other, not with rain gauges · 83,616 county-months*
+- **Small credit:** *GPM IMERG Final V07 via the NASA POWER API · two NASA products compared with each other,
+  not with rain gauges · 83,616 county-months*
 - **Narration (9 words):** "We cross-check every source, and say where they differ."
 - **Subtitle (2 lines):**
   - `We cross-check every source,`
@@ -117,7 +120,7 @@ Total: **30 s**. Narration: **71 words** (about 70 fit in 30 s; see the word cou
 
 - **On screen:** plain-text card, no logos.
 - **On-screen text:**
-  - **Built on open NASA data:** POWER · GPM IMERG · SMAP · GRACE-DA-DM · MODIS · NLDAS-2 · NASADEM
+  - **Built on open NASA data:** POWER · GPM IMERG (via POWER) · SMAP · GRACE-DA-DM · MODIS · NLDAS-2 · NASADEM
   - *+ USDA NASS, NRCS, ERS · 268 counties published (OH, NE, MN), 2000–2025*
   - **[TBD: repo URL]**
 - **Narration (13 words):** "Open NASA data, an open pipeline, and the farmer still makes the call."
@@ -212,11 +215,13 @@ ffmpeg -i demo.mp4 -vf subtitles=demo_en.srt -c:v libx264 -preset veryfast -crf 
 
 ## Sources for every number
 
-All numbers were recounted on 2026-11-15 from the zips of the published release `datos-oh-ne-mn` (in
+All numbers were recounted on 2026-11-15 from the zips (the yield, rotation, planting-date and IMERG–POWER
+numbers were checked again by pro-3; the SMAP May value comes from fig3, because the `agua` zip was not local) of the published release `datos-oh-ne-mn` (in
 `data/demo_zips/`, SHA-256 checked by `coverage.py`).
 
 | Number | Where it comes from |
 |---|---|
+| Study-area map, solid = published release | `docs/demo/fig/fig0_mapa.png` (T094), checked 2026-11-15: only `datos-oh-ne-mn` published |
 | 268 counties (OH, NE, MN), 2000–2025; 83,616 county-months in `clima_mensual.csv` | `docs/demo/coverage.md`, release table |
 | 7 NASA product families in the published release | `docs/demo/coverage.md`, "NASA products in the data" (packages `clima`, `agua`, `vegetacion`, `nldas`, `suelo_terreno`) |
 | Median county corn yield 138.4 bu/ac in 2012 (238 counties) vs 160.6 bu/ac in the other years (5,987 county-years in total), not detrended | `produccion_anual.csv`, `cultivo = maiz`, `rend_bu_ac`; figure fig5 |
