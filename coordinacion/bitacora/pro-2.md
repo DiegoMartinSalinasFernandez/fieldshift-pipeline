@@ -51,3 +51,4 @@
 - 04:18 T054: tomada por el trabajador
 - 04:24 T054: tomada por el trabajador
 - 04:29 T054: terminada, PR #47
+- 04:45 T061: tomada por el trabajador
