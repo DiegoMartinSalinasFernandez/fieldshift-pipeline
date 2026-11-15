@@ -1,9 +1,9 @@
 ---
 id: T081
 titulo: Control de calidad de MO, WI y SD con el release publicado
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados:
 - MO
 - WI
@@ -12,7 +12,7 @@ depende_de:
 - T062
 rama: null
 creada: 2026-11-15T06:18
-actualizada: 2026-11-15T06:18
+actualizada: 2026-11-15 10:52
 ---
 
 ## Qué hacer
@@ -38,3 +38,4 @@ Escribí `docs/qa/mo_wi_sd.md` con APTO / NO APTO por paquete y abrí una tarea 
 El informe en un PR.
 
 ## Notas
+- 2026-11-15 10:52 · pro-3: tomada
