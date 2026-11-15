@@ -9,6 +9,10 @@ Arma un zip por paquete con:
 y lo sube al release `datos-<estados>` (por ejemplo `datos-ks` o `datos-oh-ne-mn`), reemplazando la versión
 anterior del mismo paquete. Cada zip lleva al lado su .sha256.
 
+Las notas del release se reescriben en cada entrega: la lista de paquetes que tiene el release y la declaración
+de uso de IA en inglés y en castellano, leída del README.md en ese momento (secciones "## Use of AI" y
+"## Uso de IA"), para que no se desincronice.
+
 Uso:
   python scripts/entregar.py                     # todos los paquetes de data/processed/
   python scripts/entregar.py cultivos clima      # solo esos
@@ -97,19 +101,73 @@ def armar_zip(paquete: str, etiqueta: str) -> Path:
     return z
 
 
+SECCIONES_IA = {"en": "## Use of AI", "es": "## Uso de IA"}
+ENLACE_MD = re.compile(r"\[([^\]]+)\]\([^)]+\)")
+
+
+def seccion_readme(texto: str, titulo: str) -> str:
+    """Cuerpo de la sección `titulo` (línea exacta) del README, hasta el siguiente encabezado o `---`.
+
+    Los enlaces de markdown quedan como su texto: los relativos del README no andan en la página del release.
+    """
+    lineas = texto.splitlines()
+    try:
+        i = next(n for n, l in enumerate(lineas) if l.strip() == titulo)
+    except StopIteration:
+        sys.exit(f"README.md: falta la sección '{titulo}' (de ahí sale la declaración de IA del release)")
+    cuerpo = []
+    for l in lineas[i + 1:]:
+        if l.startswith("#") or l.strip() == "---":
+            break
+        cuerpo.append(l)
+    parrafo = " ".join(l.strip() for l in cuerpo if l.strip())
+    if not parrafo:
+        sys.exit(f"README.md: la sección '{titulo}' está vacía")
+    return ENLACE_MD.sub(r"\1", parrafo)
+
+
+def paquetes_de_assets(etiqueta: str, nombres: list[str]) -> list[str]:
+    """Paquetes de un release a partir de los nombres de sus assets (`<etiqueta>_<paquete>.zip`)."""
+    pre = f"{etiqueta}_"
+    return sorted({n[len(pre):-len(".zip")] for n in nombres if n.startswith(pre) and n.endswith(".zip")})
+
+
+def notas_release(estados: list[str], paquetes: list[str], readme: str) -> str:
+    """Notas del release en inglés y castellano: paquetes y declaración de uso de IA tomada del README."""
+    ia_en = seccion_readme(readme, SECCIONES_IA["en"])
+    ia_es = seccion_readme(readme, SECCIONES_IA["es"])
+    lista = "\n".join(f"- `{p}`" for p in sorted(paquetes)) or "- (none yet / ninguno todavía)"
+    est = ", ".join(estados)
+    return (f"Processed CSVs by package for {est}, published with `scripts/entregar.py` (see `MAQUINAS.md`).\n"
+            f"CSV procesados por paquete de {est}, publicados con `scripts/entregar.py` (ver `MAQUINAS.md`).\n\n"
+            f"## Packages / Paquetes\n\n{lista}\n\n"
+            f"## Use of AI\n\n{ia_en}\n\n"
+            f"## Uso de IA\n\n{ia_es}\n")
+
+
 def gh(*args: str, check: bool = True) -> subprocess.CompletedProcess:
     return subprocess.run(["gh", *args], cwd=REPO, capture_output=True, text=True, check=check)
 
 
 def subir(etiqueta: str, zips: list[Path], estados: list[str]) -> None:
+    readme = (REPO / "README.md").read_text(encoding="utf-8")
+    notas_release(estados, [], readme)  # corta antes de subir si al README le falta la declaración de IA
+    nuevos = [z.name[len(etiqueta) + 1:-len(".zip")] for z in zips]
     if gh("release", "view", etiqueta, check=False).returncode != 0:
         gh("release", "create", etiqueta, "--title", f"Datos procesados: {', '.join(estados)}",
-           "--notes", "CSV procesados por paquete, publicados con scripts/entregar.py. Ver MAQUINAS.md.")
+           "--notes", notas_release(estados, nuevos, readme))
     rutas = [str(p) for z in zips for p in (z, z.with_suffix(".zip.sha256"))]
     r = gh("release", "upload", etiqueta, *rutas, "--clobber", check=False)
     if r.returncode != 0:
         sys.exit(f"gh release upload falló:\n{r.stderr.strip()}")
     print(f"subido al release {etiqueta}: {', '.join(z.name for z in zips)}")
+    # Notas al día con todos los paquetes del release (también los de entregas anteriores).
+    v = gh("release", "view", etiqueta, "--json", "assets", "--jq", ".assets[].name", check=False)
+    paquetes = paquetes_de_assets(etiqueta, v.stdout.split()) if v.returncode == 0 else []
+    r = gh("release", "edit", etiqueta, "--notes", notas_release(estados, sorted(set(paquetes) | set(nuevos)), readme),
+           check=False)
+    if r.returncode != 0:
+        print(f"aviso: no se pudieron actualizar las notas del release:\n{r.stderr.strip()}", file=sys.stderr)
 
 
 def main() -> None:
