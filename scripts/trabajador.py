@@ -33,6 +33,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 import tareas  # noqa: E402
+import yaml  # noqa: E402
 
 DIR = REPO / ".trabajador"
 LOG = DIR / "trabajador.log"
@@ -40,7 +41,8 @@ STOP = DIR / "STOP"
 ESTADO = DIR / "estado.json"
 ES_WINDOWS = os.name == "nt"
 
-RE_LIMITE = re.compile(r"(usage limit|rate.?limit|limit reached|hit your limit|\bresets?\s+(at\s+|in\s+)?\d|"
+RE_LIMITE = re.compile(r"(usage limit|rate.?limit|limit reached|hit your (\w+ )?limit|weekly limit|"
+                       r"\bresets?\s+(on\s+)?(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d|\bresets?\s+(at\s+|in\s+)?\d|"
                        r"\b429\b|overloaded|quota|too many requests)", re.I)
 RE_AUTH = re.compile(r"(invalid api key|please run /login|not logged in|log ?in again|unauthori[sz]ed|\b401\b)", re.I)
 # Variables de una sesión de Claude Code que haya lanzado al trabajador: no pasan al agente.
@@ -115,6 +117,14 @@ def parse_reinicio(texto: str):
     m = re.search(r"\|(\d{10})\b", texto)
     if m:
         return dt.datetime.fromtimestamp(int(m.group(1)))
+    # "resets Nov 16, 9am": límite semanal, con fecha
+    m = re.search(r"resets?\s+(?:on\s+)?([a-z]{3})[a-z]*\.?\s+(\d{1,2}),?\s+(?:at\s+)?(\d{1,2})(?::(\d{2}))?\s*([ap])\.?\s?m\b",
+                  texto, re.I)
+    meses = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+    if m and m.group(1).lower() in meses:
+        h = int(m.group(3)) % 12 + (12 if m.group(5).lower() == "p" else 0)
+        c = dt.datetime(ahora().year, meses.index(m.group(1).lower()) + 1, int(m.group(2)), h, int(m.group(4) or 0))
+        return c.replace(year=c.year + 1) if c < ahora() - dt.timedelta(days=1) else c
     m = re.search(r"resets?\s+(?:at\s+)?(\d{1,2})(?::(\d{2}))?\s*([ap])\.?\s?m\b", texto, re.I)
     if m:
         h = int(m.group(1)) % 12 + (12 if m.group(3).lower() == "p" else 0)
@@ -162,6 +172,16 @@ def llamar(fn, *a) -> str | None:
         return None
     except SystemExit as e:
         return str(e.code)
+
+
+def pausada(maquina: str) -> bool:
+    """`pausada: true` en coordinacion/maquinas.yaml (del tablero actualizado): la máquina no toma tareas."""
+    tareas.traer(False)
+    try:
+        datos = yaml.safe_load(tareas.MAQUINAS.read_text(encoding="utf-8")) or {}
+    except (OSError, yaml.YAMLError):
+        return False
+    return bool((datos.get("maquinas", {}).get(maquina) or {}).get("pausada"))
 
 
 def elegir_y_tomar(maquina: str, plan: str, estados: list[str], solo: str | None) -> tuple[str, dict, str] | None:
@@ -341,6 +361,11 @@ def hacer_tarea(claude: str, tid: str, meta: dict, texto_tarea: str, maquina: st
             anotar(tid, maquina, None, f"corte por el límite de uso de Claude; {n} commits guardados en {rama}. "
                                        "El trabajador sigue cuando se renueve.")
             hasta = parse_reinicio(res["texto"]) or (ahora() + dt.timedelta(minutes=30))
+            if hasta - ahora() > dt.timedelta(hours=1):
+                # límite largo (semanal): la tarea vuelve a la cola para otra máquina
+                anotar(tid, maquina, "libre", f"soltada: {maquina} sin cuota de Claude hasta {hasta:%d/%m %H:%M}")
+                dormir(hasta + dt.timedelta(minutes=2), fin, "límite de uso de Claude")
+                return
             dormir(hasta + dt.timedelta(minutes=2), fin, "límite de uso de Claude")
             if STOP.exists() or ahora() >= fin:
                 anotar(tid, maquina, "libre", f"soltada: el trabajador paró con la tarea a medias (rama {rama})")
@@ -400,6 +425,9 @@ def correr(a) -> None:
             if a.max_tareas and hechas >= a.max_tareas:
                 log(f"llegué al tope de {a.max_tareas} tareas")
                 break
+            if pausada(maquina):
+                dormir(ahora() + dt.timedelta(minutes=15), fin, "pausada en coordinacion/maquinas.yaml")
+                continue
             elegida = elegir_y_tomar(maquina, plan, estados, a.solo)
             if not elegida:
                 if a.solo:

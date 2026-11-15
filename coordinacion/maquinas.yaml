@@ -1,5 +1,6 @@
 # Quién es quién. Nombres genéricos: el repo es público, no van nombres, mails ni usuarios.
 # plan: max o pro (cambia qué tareas puede tomar y cómo trabaja; ver MAQUINAS.md).
+# pausada: true hace que el trabajador de esa máquina no tome tareas (lo lee en cada vuelta).
 # estados: lo mismo que el FIELDSHIFT_ESTADOS de la máquina.
 #   - En Max son los estados que baja y procesa: no se repiten entre máquinas.
 #   - En Pro no se bajan ni procesan datos: solo ordenan qué tareas toma primero (research de esos estados).
@@ -19,6 +20,7 @@ maquinas:
   pro-2:
     plan: pro
     rol: research y código chico (T005 hecha, PR 2)
+    pausada: true   # sin cuota semanal de Claude hasta el 16/11 9:00; sacar esta línea para reactivarla
     estados: [NE, KS]   # preferencia: riego, trigo de invierno
   pro-3:
     plan: pro
