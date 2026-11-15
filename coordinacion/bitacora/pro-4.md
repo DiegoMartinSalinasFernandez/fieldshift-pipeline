@@ -15,3 +15,4 @@
 - 03:15 T036: tomada por el trabajador
 - 03:17 T036: terminada, PR #30
 - 04:02 T047: tomada por el trabajador
+- 04:17 T047: terminada, PR #41
