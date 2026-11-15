@@ -127,3 +127,46 @@ Los datos no van en git: son muchos GB y GitHub no acepta archivos de más de 10
 - Dos tareas abiertas no tocan los mismos archivos. Si te pasa, anotalo en la tarea y avisá al coordinador.
 - Antes de abrir un PR: `git pull origin main` y resolver los conflictos en tu rama.
 - `data/raw/` no se modifica, y no se inventan datos (CLAUDE.md, sección 1).
+
+## 6. Trabajador automático (en segundo plano)
+
+En lugar de pedirle cada tarea a Claude a mano, cada máquina puede dejar corriendo un **trabajador** que toma
+tareas del tablero y las hace solo durante horas, sin ventana. La máquina queda libre para usarla, y Claude
+también.
+
+**Iniciarlo** (desde la carpeta del repo, con las variables de la sección 1 ya definidas):
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 iniciar -Horas 7
+```
+
+La primera vez crea una copia del repo solo para él, al lado de la tuya (`fieldshift-pipeline-trabajador`),
+con su propio `.venv`. Nunca toca tu carpeta.
+
+**Ver qué hace** y **pararlo:**
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 estado
+```
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 parar
+```
+
+`parar` deja terminar la tarea en curso; `parar -Ya` la corta en el momento.
+
+**Qué hace en cada vuelta**
+1. Toma la próxima tarea libre para su plan (primero las de sus estados). No toma las que dicen `auto: false`.
+2. Crea la rama `tarea/<id>-auto` y lanza Claude sin intervención (`claude -p`, Opus 5.5, esfuerzo medium) con
+   las instrucciones de `coordinacion/prompt_trabajador.md`. Tope: 60 min por tarea en Pro, 150 en Max.
+3. Sube la rama, abre el PR con el resultado del agente y marca la tarea como hecha. Si quedó a medias, la
+   suelta con una nota y la rama queda para que otro siga.
+4. Si se acaba el uso de Claude, espera a que se renueve y sigue con la misma tarea.
+5. Si no hay tareas libres, vuelve a mirar cada 15 minutos.
+
+Los logs quedan en `fieldshift-pipeline-trabajador\.trabajador\`. El trabajador nunca une PRs ni hace push a
+`main` salvo el tablero y la bitácora; los PRs los revisa `max-1`.
+
+**Ojo con el uso en Pro:** el trabajador gasta el mismo límite de la cuenta que usa la persona cuando trabaja a
+mano. Conviene dejarlo de noche o cuando no estés usando Claude. Mientras corre, Windows no se suspende (la
+pantalla sí se puede apagar).

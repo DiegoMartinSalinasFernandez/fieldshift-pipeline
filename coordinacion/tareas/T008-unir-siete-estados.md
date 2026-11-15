@@ -17,8 +17,9 @@ depende_de:
 - T007
 rama: null
 creada: 2026-11-14 23:59
-actualizada: 2026-11-14 23:59
+actualizada: 2026-11-15 01:15
 sugerida_para: max-1
+auto: false
 ---
 
 ## Qué hacer
@@ -32,3 +33,4 @@ claves son por condado), correr `src/merge.py` sobre el conjunto y armar la entr
 Tablas unidas de los 7 estados validadas, y la entrega publicada para el equipo de ML.
 
 ## Notas
+- 2026-11-15 01:15 · max-1: no la toma el trabajador automático: la hace max-1, que coordina

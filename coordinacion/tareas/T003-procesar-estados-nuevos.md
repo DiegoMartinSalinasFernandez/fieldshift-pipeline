@@ -14,7 +14,8 @@ depende_de:
 - T002
 rama: null
 creada: 2026-11-14 23:59
-actualizada: 2026-11-14 23:59
+actualizada: 2026-11-15 01:15
+auto: false
 ---
 
 ## Qué hacer
@@ -29,3 +30,4 @@ Un release `datos-<estados>` por grupo, con todos los paquetes que procesan, y l
 con la cobertura real de cada estado.
 
 ## Notas
+- 2026-11-15 01:15 · max-1: no la toma el trabajador automático: necesita los crudos que están en max-1
