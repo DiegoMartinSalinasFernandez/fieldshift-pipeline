@@ -1,0 +1,81 @@
+# Eventos de la QA de OH, NE y MN (T073), para scripts/qa_release.py --eventos.
+# Fuentes de lo esperado: docs/research/eventos_extremos.md y docs/research/eventos_extremos_nuevos.md.
+# Tipos: ver serie_evento() en scripts/qa_release.py.
+eventos:
+  - titulo: "`spi3` de agosto (jun–ago)"
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: spi3
+    meses: [8]
+    anios: [2002, 2004, 2011, 2012, 2013, 2019, 2021, 2022]
+  - titulo: "`prec_jul_mm`"
+    paquete: clima
+    archivo: clima_anual.csv
+    columna: prec_jul_mm
+    anios: [2002, 2004, 2011, 2012, 2013, 2019, 2021, 2022]
+  - titulo: "`ndvi_anom_z` de julio–agosto"
+    paquete: vegetacion
+    archivo: vegetacion_mensual.csv
+    columna: ndvi_anom_z
+    meses: [7, 8]
+    anios: [2002, 2004, 2011, 2012, 2013, 2019, 2021, 2022]
+  - titulo: "`sm_0_100cm_anom_z` (NLDAS) de julio–agosto"
+    paquete: nldas
+    archivo: nldas_mensual.csv
+    columna: sm_0_100cm_anom_z
+    meses: [7, 8]
+    anios: [2002, 2004, 2011, 2012, 2013, 2019, 2021, 2022]
+  - titulo: "`sm_rootzone_anom_z` (SMAP, desde 2015) de julio–agosto"
+    paquete: agua
+    archivo: agua_mensual.csv
+    columna: sm_rootzone_anom_z
+    meses: [7, 8]
+    anios: [2015, 2017, 2019, 2020, 2021, 2022, 2023]
+  - titulo: "`prec_power_mm` de mayo+junio (suma, media de condados)"
+    tipo: suma_meses
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: prec_power_mm
+    meses: [5, 6]
+    anios: [2011, 2013, 2015, 2019, 2021, 2023]
+  - titulo: "`prec_power_mm` de marzo (NE: inundación 2019)"
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: prec_power_mm
+    meses: [3]
+    anios: [2017, 2018, 2019, 2020]
+  - titulo: "`doy_primera_helada` (MN 2004: agosto en el norte)"
+    paquete: clima
+    archivo: clima_anual.csv
+    columna: doy_primera_helada
+    anios: [2003, 2004, 2005, 2021]
+  - titulo: "`tmin_c` de julio (2011)"
+    paquete: clima
+    archivo: clima_mensual.csv
+    columna: tmin_c
+    meses: [7]
+    anios: [2010, 2011, 2012]
+  - titulo: "Rendimiento implícito de maiz (bu/ac, suma de condados)"
+    tipo: rend_implicito
+    cultivo: maiz
+    anios: [2001, 2002, 2011, 2012, 2019, 2021, 2022]
+  - titulo: "Rendimiento de maiz: diferencia % contra la media de los 5 años previos"
+    tipo: rend_dif5
+    cultivo: maiz
+    anios: [2002, 2012, 2019, 2021, 2022]
+  - titulo: "Rendimiento implícito de soja (bu/ac, suma de condados)"
+    tipo: rend_implicito
+    cultivo: soja
+    anios: [2001, 2002, 2011, 2012, 2019, 2021, 2022]
+  - titulo: "Rendimiento de soja: diferencia % contra la media de los 5 años previos"
+    tipo: rend_dif5
+    cultivo: soja
+    anios: [2002, 2012, 2019, 2021, 2022]
+  - titulo: "Superficie sembrada de maíz, suma de condados (miles de ac)"
+    tipo: suma_condados
+    paquete: cultivos
+    archivo: produccion_anual.csv
+    cultivo: maiz
+    columna: sup_sembrada_ac
+    escala: 1000
+    anios: [2017, 2018, 2019, 2020, 2021]
