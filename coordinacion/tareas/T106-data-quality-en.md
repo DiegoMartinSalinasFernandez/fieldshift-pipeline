@@ -1,14 +1,14 @@
 ---
 id: T106
 titulo: Data quality page in English for the submission
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T07:32
-actualizada: 2026-11-15 07:49
+actualizada: 2026-11-15 07:51
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ La página en un PR.
 
 ## Notas
 - 2026-11-15 07:49 · pro-3: tomada
+- 2026-11-15 07:51 · pro-3: terminada por el trabajador: PR #99, falta la revisión de max-1
