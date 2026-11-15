@@ -58,8 +58,9 @@ tab): **[TBD]**. Local event: **[TBD]**.
 Sources for the numbers: period, products and the 268 counties from the release `datos-oh-ne-mn`; planned
 states `CLAUDE.md` §2. ECOSTRESS, HLS and Landsat were taken out of the summary because their packages
 (`ecostress`, `lotes`, `teledeteccion`) have no published release; put them back if they are published.
-**[TBD]** rotation penalty `docs/research/efecto_rotacion.md` §2
-(Seifert et al. 2017). **[TBD: add one sentence on what the user sees, for example a web app or a notebook,
+Rotation penalty: continuous corn yields 4.3 % less than rotated corn on rainfed fields and 1.7 % less on
+irrigated ones, continuous soybean 10.3 % and 9.6 % less, and the corn penalty is largest in dry, low-yield
+areas `[src: docs/research/efecto_rotacion.md §2, Seifert, Roberts & Lobell 2017]`. **[TBD: add one sentence on what the user sees, for example a web app or a notebook,
 once the frontend or ML team confirms it.]**
 
 ---
@@ -74,13 +75,16 @@ project from Global Judging (`space_apps_criterios.md` §2). The draft is in `do
 
 ## 4. Link to Final Project
 
-- **Code:** **[TBD: public GitHub repository URL]**. The repo is public (`CLAUDE.md` §1, rule 8).
+- **Code:** **[TBD: repo URL]** (the public GitHub URL of this repository; see `pendientes_humano.md` #2b). The repo is public (`CLAUDE.md` §1, rule 8).
 - **Data:** processed CSVs are published as GitHub Releases, one per group of states (`datos-<states>`, made by
   `scripts/entregar.py`), plus a separate field-level release (`fieldshift_lotes_v1`, `CLAUDE.md` §6.6).
   What is published today, with states, counties, years and rows counted from the zips:
-  `docs/demo/coverage.md` (refresh with `docs/demo/coverage.py`). **[TBD: release URLs]**
+  `docs/demo/coverage.md` (refresh with `docs/demo/coverage.py`). Published release (Ohio, Nebraska, Minnesota):
+  <repo URL>/releases/tag/datos-oh-ne-mn · all releases: <repo URL>/releases `[src: coverage.md, 2026-11-15; add the
+  other datos-<states> tags only once they are published]`
 - **English documentation for judges:** `docs/datasets/README_en.md` (data summary, sources, quality control,
-  limitations). **[TBD: link]** How the data is checked and what the QA of the Ohio, Nebraska and Minnesota
+  limitations): [`docs/datasets/README_en.md`](../datasets/README_en.md)
+  (../datasets/README_en.md). How the data is checked and what the QA of the Ohio, Nebraska and Minnesota
   release found: [`docs/demo/data_quality.md`](data_quality.md).
 - **Tool / frontend:** **[TBD: link, if there is one]**.
 
@@ -194,7 +198,9 @@ vulnerability maps.]**
 >   elements.
 >
 > This statement is repeated in the repository README and in the metadata of the published data releases.
-> **[TBD: make sure that is true before submitting]**
+> **[TBD: README — yes, section "Use of AI" (checked 2026-11-15, T118). Release metadata — not yet: the notes
+> that `scripts/entregar.py` writes do not mention AI. Add the statement to the release notes by hand, or drop
+> "and in the metadata of the published data releases".]**
 
 Rules behind this text are in `space_apps_criterios.md` §4: code and data generated with SI "must acknowledge SI
 generation in descriptive text and metadata", images and video need a visible watermark, and SI must not be used
@@ -214,7 +220,7 @@ Products 1–9 are in the published release `datos-oh-ne-mn`, and the coverage d
 
 | # | NASA product | Version | DOI | What we use it for (package: columns) | Coverage in our CSVs |
 |---|---|---|---|---|---|
-| 1 | **NASA POWER** (Prediction Of Worldwide Energy Resources), AG community, daily point API | Daily 2.x **[TBD: exact version]** | no DOI (acknowledgement below) | `clima`: temperature, precipitation, humidity, wind, radiation, soil wetness, plus FAO-56 ETo, GDD, frost dates, SPI and anomalies; `lotes`: field-centroid weather | 2000–2025 (1981 on, as the SPI and anomaly baseline) |
+| 1 | **NASA POWER** (Prediction Of Worldwide Energy Resources), AG community, daily point API | Daily 2.x (API v2.10.3) `[src: manifest.csv of release datos-oh-ne-mn]` | no DOI (acknowledgement below) | `clima`: temperature, precipitation, humidity, wind, radiation, soil wetness, plus FAO-56 ETo, GDD, frost dates, SPI and anomalies; `lotes`: field-centroid weather | 2000–2025 (1981 on, as the SPI and anomaly baseline) |
 | 2 | **GPM IMERG Final** Precipitation L3 1 day 0.1° (`GPM_3IMERGDF`), through POWER | V07 | [10.5067/GPM/IMERGDF/DAY/07](https://doi.org/10.5067/GPM/IMERGDF/DAY/07) | `clima`, `lotes`: `prec_imerg_mm` | to 2025-09-30 |
 | 3 | **GPM IMERG Late** Precipitation L3 1 day 0.1° (`GPM_3IMERGDL`), through POWER | V07 | [10.5067/GPM/IMERGDL/DAY/07](https://doi.org/10.5067/GPM/IMERGDL/DAY/07) | same column, months not yet covered by the Final Run | 2025-10-01 to 2025-12-31 |
 | 4 | **SMAP L4** Global 3-hourly 9 km Surface and Root Zone Soil Moisture (`SPL4SMGP`), daily layers from Crop-CASMA | V8 (cited; Crop-CASMA does not state the version, and V8 is certain from 2025-07-04) | [10.5067/T5RUATAQREF8](https://doi.org/10.5067/T5RUATAQREF8) | `agua`: surface and root-zone soil moisture, anomalies, saturated days; `lotes`: field soil moisture | 2015-03-31 to 2025-12-31 |
@@ -242,7 +248,11 @@ Short version for the form, if the table does not paste well:
 
 > "The data was obtained from National Aeronautics and Space Administration (NASA) Langley Research Center's
 > Prediction Of Worldwide Energy Resources (POWER) project funded through the NASA Earth Science Division."
-> "The data was obtained from the POWER Project's Daily 2.x.x version on **[TBD: YYYY/MM/DD]**."
+> "The data was obtained from the POWER Project's Daily 2.x.x version on 2026/11/14."
+
+`[src: manifest.csv inside the datos-oh-ne-mn zips: every POWER request is dated 2026-11-14; the IMERG_PRECTOT
+requests record "POWER API v2.10.3", the weather requests only "v2 (API)". Check the date again if the IA/IL/IN or
+KS releases, downloaded on other days, are added.]`
 
 **Landsat Collection 2 Level-2** is a joint USGS–NASA mission distributed and cited by USGS. It is listed under
 References (section 8), not here, following `citas_nasa.md` §2. **[TBD: the team may also mention it here as
@@ -264,8 +274,9 @@ lists V4.0.
 ### Space agency partner data
 
 - **ESA Copernicus Sentinel-2**, through **NASA HLS S30 V2.0** (Sentinel-2 MSI reflectance harmonized by NASA),
-  doi:10.5067/HLS/HLSS30.002. Used in `lotes`. **[TBD: add the Copernicus attribution text once task T060
-  verifies it (e.g. "contains modified Copernicus Sentinel data [year]").]**
+  doi:10.5067/HLS/HLSS30.002. Used in `lotes`. Attribution: "Contains modified Copernicus Sentinel data
+  2016–2025, processed by NASA (HLS S30 v2.0)." `[src: docs/research/licencias_fuentes.md, task T060 done; keep
+  only if the lotes release is published]`
 - ERA5 (ECMWF) was not used (`space_apps_criterios.md` §3).
 
 ### Other data (non-NASA)
