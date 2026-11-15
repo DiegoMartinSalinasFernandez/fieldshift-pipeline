@@ -1,16 +1,16 @@
 ---
 id: T113
 titulo: 'Research: calendario de siembra y cosecha de Michigan y Kentucky (para cultivos_estado.csv)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados:
 - MI
 - KY
 depende_de: []
 rama: null
 creada: 2026-11-15T08:11
-actualizada: 2026-11-15T08:11
+actualizada: 2026-11-15 08:13
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ Formato de research de la sección 8 del CLAUDE.md. Escribí `docs/research/fech
 El research en un PR.
 
 ## Notas
+- 2026-11-15 08:13 · pro-4: tomada
