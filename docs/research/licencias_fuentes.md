@@ -222,5 +222,6 @@ Impacto:
 - Space Apps form: "NASA Data" and "Space Agency Partner Data and Other References" fields (§1.5 and §3).
 - Demo / slides (`field-shift-video` skill) and frontend: credit lines under figures with HLS, PRISM or CoCoRaHS.
 - Proposal: add the Copernicus line to `docs/datasets/lotes.md` and to the README of the `fieldshift_lotes_v1`
-  Release, and the CC BY 4.0 note to `docs/datasets/validacion.md`. Done in another task.
+  Release, and the CC BY 4.0 note to `docs/datasets/validacion.md`. Done in T146 (waits for para_decidir #30):
+  the texts live in `src/common/atribuciones.py` and go to both data cards and to the release notes.
 - Closes the "not verified" item of `space_apps_criterios.md` §5 and §Confianza on the Copernicus attribution.
