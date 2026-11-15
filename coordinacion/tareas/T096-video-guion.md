@@ -1,9 +1,9 @@
 ---
 id: T096
 titulo: Guion del video de 30 segundos (inglés) con las figuras reales
-estado: tomada
+estado: libre
 plan_minimo: pro
-maquina: pro-2
+maquina: null
 estados: []
 depende_de: []
 rama: null
@@ -26,3 +26,4 @@ El guion en un PR.
 ## Notas
 - 2026-11-15 07:10 · pro-2: tomada
 - 2026-11-15 07:12 · pro-2: corte por el límite de uso de Claude; 1 commits guardados en tarea/T096-auto. El trabajador sigue cuando se renueve.
+- 2026-11-15 07:12 · pro-2: soltada: pro-2 sin cuota de Claude hasta 15/11 09:10
