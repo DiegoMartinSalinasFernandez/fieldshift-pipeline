@@ -1,16 +1,16 @@
 ---
 id: T067
 titulo: 'Research: cobertura de NASS y Crop Progress en Michigan y Dakota del Norte'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - MI
 - ND
 depende_de: []
 rama: null
 creada: 2026-11-15 05:42
-actualizada: 2026-11-15 05:42
+actualizada: 2026-11-15 05:56
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ Escribí `docs/research/nass_mi_nd.md`.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 05:56 · pro-2: tomada
