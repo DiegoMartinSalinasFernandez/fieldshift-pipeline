@@ -1,16 +1,16 @@
 ---
 id: T102
 titulo: 'Research: SSURGO y NASADEM en Dakota del Norte y Michigan'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados:
 - ND
 - MI
 depende_de: []
 rama: null
 creada: 2026-11-15T07:25
-actualizada: 2026-11-15T07:25
+actualizada: 2026-11-15 07:27
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ Escribí `docs/research/suelo_nd_mi.md`.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 07:27 · pro-4: tomada
