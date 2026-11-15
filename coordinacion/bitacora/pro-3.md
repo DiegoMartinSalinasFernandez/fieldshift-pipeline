@@ -39,3 +39,4 @@
 - 07:08 T094: tomada por el trabajador
 - 07:11 T094: terminada, PR #92
 - 07:11 T097: tomada por el trabajador
+- 07:20 T097: terminada, PR #93
