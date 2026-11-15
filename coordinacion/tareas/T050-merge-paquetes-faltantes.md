@@ -1,14 +1,14 @@
 ---
 id: T050
 titulo: 'Propuesta: qué paquetes y columnas le faltan a merge.py'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:17
-actualizada: 2026-11-15 04:20
+actualizada: 2026-11-15 04:24
 ---
 
 ## Qué hacer
@@ -33,3 +33,4 @@ La propuesta en un PR.
 
 ## Notas
 - 2026-11-15 04:20 · pro-5: tomada
+- 2026-11-15 04:24 · pro-5: terminada por el trabajador: PR #43, falta la revisión de max-1

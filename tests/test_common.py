@@ -267,7 +267,7 @@ def test_validar_csv_fips_estado(repo_falso, monkeypatch):
 
 def test_cargar_config_sin_variable_trae_todos():
     estados = cargar_config()["zona"]["estados"]
-    assert set(estados) == {"IA", "IL", "IN", "OH", "NE", "MN", "KS"}
+    assert set(estados) == {"IA", "IL", "IN", "OH", "NE", "MN", "KS", "MO", "WI", "SD", "ND"}
 
 
 def test_cargar_config_filtra(monkeypatch):
@@ -286,7 +286,7 @@ def test_cargar_config_un_estado(monkeypatch):
 
 def test_cargar_config_variable_vacia_trae_todos(monkeypatch):
     monkeypatch.setenv(VAR_ESTADOS, " , ")
-    assert len(cargar_config()["zona"]["estados"]) == 7
+    assert len(cargar_config()["zona"]["estados"]) == 11
 
 
 def test_cargar_config_estado_desconocido(monkeypatch):

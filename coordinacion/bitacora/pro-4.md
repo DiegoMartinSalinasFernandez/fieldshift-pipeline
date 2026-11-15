@@ -17,3 +17,33 @@
 - 04:02 T047: tomada por el trabajador
 - 04:17 T047: terminada, PR #41
 - 04:17 T052: tomada por el trabajador
+- 04:28 T055: tomada por el trabajador
+- 04:30 T055: terminada, PR #48
+- 04:45 T063: tomada por el trabajador
+- 05:11 T063: terminada, PR #60
+- 05:56 T070: tomada por el trabajador
+- 06:13 T070: terminada, PR #69
+- 06:28 trabajador actualizado desde main
+- 06:28 T084: tomada por el trabajador
+- 07:27 T084: terminada, PR #96
+- 07:27 T102: tomada por el trabajador
+- 07:34 T102: terminada, PR #97
+- 07:34 T103: tomada por el trabajador
+- 08:12 T103: terminada, PR #104
+- 08:13 T113: tomada por el trabajador
+- 08:18 T113: terminada, PR #105
+- 08:19 T114: tomada por el trabajador
+- 09:01 T114: terminada, PR #111
+- 09:01 T120: tomada por el trabajador
+- 09:06 T120: terminada, PR #114
+- 09:21 T124: tomada por el trabajador
+- 09:32 T124: terminada, PR #119
+- 09:32 T125: tomada por el trabajador
+- 09:48 T125: terminada, PR #122
+- 09:48 T133: tomada por el trabajador
+- 09:52 T133: terminada, PR #124
+- 09:52 T135: tomada por el trabajador
+- 09:57 T135: terminada, PR #126
+- 09:57 T138: tomada por el trabajador
+- 10:01 T138: terminada, PR #129
+- 10:01 T139: tomada por el trabajador

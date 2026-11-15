@@ -1,0 +1,317 @@
+# Field Shift — demo draft (7 slides + 30 s video script)
+
+Draft for the NASA Space Apps Challenge 2026 submission, challenge **"Field Shift: Adapting Farms with NASA
+Data"**. Built from the demo proposal in `docs/research/space_apps_criterios.md` §6 (order: title and team,
+problem, (1) rotation map, (2) rotation comparison, (3) a field inside, (4)+(5) stress and satellite vs ground,
+sources). Citations come from `docs/research/citas_nasa.md`.
+
+Rules for whoever finishes this draft:
+
+- **Limits:** at most **7 slides** (title and intro count) **or** a video of **30 s or less**. Going over either
+  limit removes the project from Global Judging. Everything in English. Public links, no login.
+- **Deadline:** Sunday 2026-11-15, 23:59 local event time.
+- **No invented numbers.** Every figure below says where it comes from (`[src: ...]`). Anything we do not have
+  yet is marked **[TBD]**. The `[src: ...]` notes are for the team: remove them from the final slides, but keep
+  the short data credit under each figure.
+- **Coverage (checked 2026-11-15, tasks T089 and T104).** Two data releases are published on GitHub:
+  **`datos-oh-ne-mn`: Ohio, Nebraska and Minnesota, 268 counties (OH 88, NE 93, MN 87), 2000–2025**, 8 packages,
+  169 data columns in 19 CSV files (`[src: release datos-oh-ne-mn, data/reference/condados.csv and CSV
+  headers]`), and **`datos-mo-wi-sd`: Missouri, Wisconsin and South Dakota, 253 counties (MO 115, WI 72, SD 66),
+  2000–2025**, the same 8 packages and 19 CSV files (`[src: release datos-mo-wi-sd, docs/demo/coverage.md]`).
+  Together: **6 states, 521 counties published**. There is **no published release** for Iowa, Illinois and
+  Indiana (first batch, 293 counties, built in an earlier repo and described in `docs/datasets/clima.md` and
+  `validacion.md`), for Kansas (105 counties), or for the field-level `fieldshift_lotes_v1`. So: **do not say
+  "919 counties" or "10 states" as delivered**; say "10 states planned, 6 published (521 counties)" until the
+  other releases exist. Numbers that come only from repo data cards (IA/IL/IN validation, the 10 fields,
+  ECOSTRESS) are marked as such below.
+- **Figures.** Real PNGs are in `docs/demo/fig/` (task T074), built by `docs/demo/figuras.py` from the
+  `datos-oh-ne-mn` release. They show **only OH, NE and MN**, and each caption says so (MO, WI and SD are not in
+  fig1–fig8 yet; only the map, fig0, includes them).
+- **AI disclosure.** Any AI-generated image or voice needs a visible watermark ("AI-generated"). Do not use or
+  modify NASA logos with AI; use plain-text credits (`space_apps_criterios.md` §4 and §6).
+- No images, video, audio or likeness of anyone under 18.
+
+---
+
+## Slide 1 — Title and team
+
+**Title:** Field Shift: Rotations Read from Space *(working title — [TBD: final project name and tagline])*
+
+**Text:**
+- Team **[TBD: team name]** · **[TBD: members, max. 6]** · **[TBD: local event]**
+- NASA Space Apps Challenge 2026 — Challenge: *Field Shift: Adapting Farms with NASA Data*
+- A decision-support tool that compares crop rotations for U.S. Corn Belt farms using NASA Earth observations,
+  soil and crop data.
+
+**Figure:** `docs/demo/fig/fig0_mapa.png` — the 919 counties of the 10 states in `config/config.yaml`, colored by
+state group (IA/IL/IN, OH/NE/MN, KS, MO/WI/SD; Okabe-Ito colorblind-safe palette). Solid fill = data release
+published, hatched = release in progress.
+- From: US Census Cartographic Boundary Files 2024, 1:500k, and the GitHub releases page (checked 2026-11-15:
+  `datos-oh-ne-mn` and `datos-mo-wi-sd` published, 521 counties; IA/IL/IN and KS in progress, 398 counties).
+  Built by `docs/demo/figuras.py --mapa --solo-mapa` (tasks T094 and T104).
+- **Re-run before the final slides** so the release status is current.
+
+![Field Shift study area](fig/fig0_mapa.png)
+
+**Data credit:** County boundaries: U.S. Census Bureau, Cartographic Boundary Files 2024.
+
+---
+
+## Slide 2 — The problem
+
+**Title:** One rotation, one risk
+
+**Text:**
+- Most Corn Belt cropland runs a corn–soybean rotation. Continuous corn and continuous soybean pay a yield
+  penalty, and that penalty grows in dry and low-yield years.
+- On farmer fields (748,374 insurance records, 2007–2012), continuous corn yielded **4.3 % less** (rainfed) and
+  **1.7 % less** (irrigated); continuous soybean, about **10 % less** (Seifert et al. 2017).
+  `[src: docs/research/efecto_rotacion.md, table §2]`
+- Farmers need field-level evidence, not a single number, to decide whether a third crop is worth it.
+
+**Figure:** simple bar chart of the rotation penalties above (rainfed vs irrigated, corn and soybean), labelled
+"literature, not our model".
+- From: `docs/research/efecto_rotacion.md` (Seifert, Roberts & Lobell 2017, Agronomy Journal 109:541–548).
+
+**Data credit:** Seifert et al. (2017), Agronomy Journal 109:541–548.
+
+**Note for the team:** this slide uses published literature, not our CSVs. Say so on the slide.
+
+---
+
+## Slide 3 — The existing rotation, mapped (demo point 1)
+
+**Title:** What farmers actually rotate
+
+**Text:**
+- Pixel-by-pixel crop history (30 m, 2008–2025) tells us, for every county, how much corn follows soybean and how
+  much corn follows corn.
+- 8-year sequences show where the corn–soybean alternation dominates and where continuous corn or small grains
+  and alfalfa appear.
+- Corn after corn in 2025 (share of 2025 corn pixels that were corn in 2024), 266 counties of Ohio, Nebraska and
+  Minnesota: county median **24.5 %**, from **0 %** to **98.5 %**. State medians: Ohio **11.0 %**, Minnesota
+  **23.9 %**, Nebraska **46.5 %**. Corn after soybean: county median **64.6 %**.
+  `[src: release datos-oh-ne-mn, rotacion_anual.csv, anio = 2025, columns pct_maiz_tras_maiz and
+  pct_maiz_tras_soja; 2 of 268 counties have no value]`
+- Note for the speaker: Nebraska's high corn-after-corn share comes with irrigation (`CLAUDE.md` §2); do not
+  read it as a rainfed result.
+
+**Figure:** `docs/demo/fig/fig4_corn_after_soy_vs_corn_oh_ne_mn.png` (real, T074): corn after soybean vs corn
+after corn by county, 2024→2025, OH/NE/MN.
+- `docs/demo/fig/fig7_county_maps_corn_after_corn_imerg_oh_ne_mn.png` (real, T121): two county maps of the
+  same 268 counties, 2025. Left: `pct_maiz_tras_maiz` (2024→2025 CDL, fixed 0–100 % scale). Right: July 2025
+  rainfall from NASA GPM IMERG, county median **127.5 mm**, from **52.4** to **201.8 mm**. Caption: "Corn after
+  corn (USDA CDL) and July rainfall (NASA GPM IMERG), by county, Ohio, Nebraska and Minnesota, 2025. Grey = no
+  value." `[src: release datos-oh-ne-mn, rotacion_anual.csv anio = 2025 and clima_mensual.csv mes = 2025-07;
+  county polygons: U.S. Census Cartographic Boundary 2024, 1:500k]` This is the slide's NASA layer, so Relevance
+  does not rest only on USDA data; the two maps sit side by side, they are not a model or a correlation.
+
+**Data credit:** USDA NASS Cropland Data Layer and Crop Sequence Boundaries · NASA GPM IMERG V07
+(doi:10.5067/GPM/IMERGDF/DAY/07), via the POWER API · U.S. Census Bureau Cartographic Boundary Files.
+
+---
+
+## Slide 4 — Comparing three rotations (demo point 2)
+
+**Title:** Three strategies, with their evidence and their gaps
+
+**Text:**
+- For each county the tool compares at least three strategies: the current **corn–soybean**, **continuous
+  corn**, and a **diversified rotation** with wheat, oats or alfalfa.
+- Each one shows why it was suggested, the evidence behind it, expected benefits, data gaps and risks that need
+  local review — as a **range, not a single number**.
+- Field trials behind the diversified option: corn +4 % and soybean +16 % vs corn–soybean in 3–4-year rotations
+  at Marsden Farm, Iowa, with 86–91 % less mineral N; and 14 %–90 % smaller yield losses in drought years across
+  11 long-term trials (Bowles et al. 2020). `[src: docs/research/efecto_rotacion.md]`
+- *This tool supports, and does not replace, farmer judgment and local agronomic expertise.*
+
+**Figure:** a three-column card (one per rotation) for one example county: predicted yield range, margin range
+and risk notes.
+- From: model outputs built on `data/processed/tabla_anual.csv` (NASS yield + POWER/IMERG climate + SSURGO
+  soil + CDL rotation + MODIS phenology), plus `economia_anual.csv` for margins.
+- **[TBD: model results and uncertainty ranges from the ML team.** This repo does not train models; do not put
+  numbers on this card until the ML team delivers them.]
+- Until the card exists, use the real data figures (T074, OH/NE/MN only) to show why ranges matter:
+  `docs/demo/fig/fig5_corn_yield_by_year_oh_ne_mn.png` (county corn yields by year, 2012 highlighted),
+  `fig1_corn_yield_july_rain_oh_ne_mn.png` (corn yield vs July rain, NASA POWER) and
+  `fig2_ndvi_max_vs_yield_oh_ne_mn.png` (peak MODIS NDVI vs yield).
+- Number for the speaker: median county corn yield in OH/NE/MN was **138.4 bu/ac in 2012** (drought) against
+  **160.6 bu/ac** in all other years 2000–2025 pooled, not detrended. `[src: release datos-oh-ne-mn,
+  produccion_anual.csv, cultivo = maiz, rend_bu_ac, 5,987 county-years]`
+
+**Data credit:** NASA POWER · NASA GPM IMERG V07 (doi:10.5067/GPM/IMERGDF/DAY/07) · NASA MODIS MOD13Q1 V061 ·
+USDA NASS Quick Stats · USDA NRCS SSURGO · USDA ERS Commodity Costs and Returns.
+
+---
+
+## Slide 5 — Inside one field (demo point 3)
+
+**Title:** Dry knolls and wet swales, pixel by pixel
+
+**Text:**
+- **Not in a published release yet** (`fieldshift_lotes_v1` does not exist on GitHub as of 2026-11-15): the
+  numbers on this slide come from the repo data card `docs/datasets/lotes.md` only. Publish the release before
+  using this slide, or drop it. **[TBD]**
+- 10 demonstration fields (Iowa, Illinois, Indiana), each split into 30 m pixels with terrain, soil, crop
+  history and every clear Landsat / Sentinel-2 observation since 2000.
+  `[src: docs/datasets/lotes.md, field table]`
+- Relief inside a field ranges from about **4 m** (flat Champaign control fields) to **31 m** (loess hills)
+  in NASADEM. `[src: docs/datasets/lotes.md, "Relieve" table]`
+- NASA HLS (Sentinel-2) and Landsat agree on the same pixel: mean NDVI difference **−0.017** (s.d. 0.048) over
+  343,925 pairs within 3 days. `[src: docs/datasets/lotes.md, "Coherencia Landsat–Sentinel-2"]`
+- **[TBD: sector map (dry knoll / mid-slope / wet swale) from the ML team.** This repo only delivers the
+  pixels.]
+
+**Figure:** one loess-hills field (e.g. `19165_191825002368896`, Shelby County, IA): left, NASADEM elevation
+(`terreno_px.csv`, `elevacion_m`); middle, July NDVI per pixel (`vegetacion_px_obs.csv` or
+`vegetacion_px_anual.csv`); right, SSURGO map units (`suelo_px.csv`). Release `fieldshift_lotes_v1`.
+
+**Data credit:** NASA NASADEM V001 (doi:10.5067/MEASURES/NASADEM/NASADEM_HGT.001) · NASA HLS S30 V2.0, derived
+from ESA Copernicus Sentinel-2 (doi:10.5067/HLS/HLSS30.002) · USGS Landsat Collection 2 Level-2 · USDA NRCS
+SSURGO · USDA NASS CSB and CDL.
+
+---
+
+## Slide 6 — Stress in the season, and satellite vs ground (demo points 4 + 5)
+
+**Title:** Seeing stress — and checking it on the ground
+
+**Text:**
+- Left: root-zone soil moisture from **SMAP** (2015–2025) and evaporative stress from **ECOSTRESS** (2025,
+  April–October), with July (corn silking) highlighted. Wet springs delay planting; dry Julys cut yield.
+- Real figure for the left side, published data: `docs/demo/fig/fig3_smap_may_vs_planting_oh_ne_mn.png` — May
+  SMAP L4 root-zone moisture vs the day 50 % of corn was planted (NASS Crop Progress), by state and year,
+  OH/NE/MN, 2015–2025. `[src: release datos-oh-ne-mn, agua_mensual.csv and fenologia_estado.csv]`
+- ECOSTRESS: data card only (`docs/datasets/ecostress.md`, IA/IL/IN, 2025-04 to 2025-10); **not in any
+  published release**. Mention it only if that release is published. **[TBD]**
+- Right: satellite rainfall vs ground gauges, monthly by county (IA, IL, IN, 2000–2025): NASA POWER vs PRISM,
+  r = **0.944**, bias **−3.5 mm/month**; GPM IMERG vs PRISM, r = **0.932**, bias **+5.6 mm/month** (91,416
+  county-months); against CoCoRaHS volunteer gauges, r = **0.907** (POWER) and **0.890** (IMERG) (42,798
+  county-months). `[src: docs/datasets/validacion.md, validation table — repo data card only; the validacion
+  package is not in a published release]`
+- Right, published data (OH, NE, MN): the two NASA rainfall products we use, against each other, monthly by
+  county, 2000-01 to 2025-12. Ratio of totals IMERG / POWER: Ohio **1.19** (r = **0.94**, 27,456
+  county-months), Nebraska **1.08** (r = **0.96**, 29,016), Minnesota **1.09** (r = **0.95**, 27,144). IMERG
+  runs wetter than POWER everywhere, most in Ohio (the QA note gives 1.18 for Ohio as the median of annual
+  county ratios, `docs/qa/oh_ne_mn.md`). This compares two satellite/reanalysis products; **it is not a
+  check against gauges.** `[src: release datos-oh-ne-mn, clima_mensual.csv, columns prec_imerg_mm and
+  prec_power_mm; figure fig6_lluvia_oh_ne_mn.png]`
+- Satellites see every county every day; gauges are points. We show both, and their difference.
+
+**Figure:**
+- Left: `fig3_smap_may_vs_planting_oh_ne_mn.png` (real). Alternative (real, T121):
+  `fig8_county_monthly_smap_imerg_oh_ne_mn.png`, monthly IMERG rainfall (bars) and SMAP root-zone soil moisture
+  (line) for Stearns County, Minnesota (FIPS 27145), 2019–2023, with May–August 2021 shaded as the 2021
+  Minnesota drought. SMAP root-zone moisture falls from **0.240** m³/m³ (April 2021) to **0.148** (August 2021),
+  below the county's own same-month mean for 2015–2025 (dotted line). Caption: "One county, five years: NASA
+  rainfall and soil moisture through the 2021 drought, Stearns County, Minnesota." `[src: release
+  datos-oh-ne-mn, agua_mensual.csv and clima_mensual.csv, fips 27145; event from docs/qa/oh_ne_mn.md]`
+- Right: `docs/demo/fig/fig6_lluvia_oh_ne_mn.png` (real, T095): monthly `prec_imerg_mm` vs `prec_power_mm`,
+  one point per county-month, one panel per state (OH, NE, MN), 1:1 line, ratio of totals and r in each
+  title. Caption: "GPM IMERG vs NASA POWER monthly rainfall by county, Ohio, Nebraska and Minnesota,
+  2000–2025. Two NASA products compared with each other, not with rain gauges. IMERG: GPM IMERG Final V07,
+  served by the NASA POWER API (IMERG_PRECTOT)."
+- Still to make: the same scatter against `prec_prism_mm` (`validacion_mensual.csv`). **[TBD: needs the
+  IA/IL/IN validacion data, which is not in a published release. Until then, give the PRISM r values above as
+  text only, and say they are IA/IL/IN.]**
+
+**Data credit:** NASA SMAP L4 V8 (doi:10.5067/T5RUATAQREF8), via USDA NASS Crop-CASMA · NASA ECOSTRESS L4T_ESI
+V002 (doi:10.5067/ECOSTRESS/ECO_L4T_ESI.002) · NASA POWER · NASA GPM IMERG V07 (via the POWER API) · PRISM
+Group, Oregon State University · CoCoRaHS.
+
+---
+
+## Slide 7 — NASA data and sources
+
+**Title:** Built on open NASA data
+
+**Text (plain text, no logos):**
+- **NASA data (12 products with DOI + POWER, `docs/research/citas_nasa.md` §1).** Of these, the published
+  release `datos-oh-ne-mn` contains **8**: POWER, GPM IMERG V07 (Final and Late, via POWER), SMAP L4, GRACE-DA-DM
+  U.S., MODIS MOD13Q1, MODIS MOD11A2, NLDAS-2 Noah and NASADEM (`[src: data cards inside the release zips]`).
+  ECOSTRESS (3 products) and HLS S30 are only in unpublished packages (`ecostress`, `lotes`): keep them in the
+  list only if those releases are published before submitting. **[TBD]**
+  - NASA POWER, Daily API, AG community (no DOI; acknowledgement below)
+  - GPM IMERG Final Daily V07 — doi:10.5067/GPM/IMERGDF/DAY/07 (Late Run V07 for 2025-10 to 2025-12 —
+    doi:10.5067/GPM/IMERGDL/DAY/07), via POWER
+  - SMAP L4 SPL4SMGP V8 — doi:10.5067/T5RUATAQREF8, via Crop-CASMA
+  - GRACE-DA-DM U.S. V4.0 — doi:10.5067/UH653SEZR9VQ
+  - MODIS MOD13Q1 V061 — doi:10.5067/MODIS/MOD13Q1.061 · MOD11A2 V061 — doi:10.5067/MODIS/MOD11A2.061
+  - NLDAS-2 Noah Monthly V2.0 — doi:10.5067/WB224IA3PVOJ
+  - NASADEM V001 — doi:10.5067/MEASURES/NASADEM/NASADEM_HGT.001
+  - ECOSTRESS V002: L2T_LSTE — doi:10.5067/ECOSTRESS/ECO_L2T_LSTE.002 · L3T_JET —
+    doi:10.5067/ECOSTRESS/ECO_L3T_JET.002 · L4T_ESI — doi:10.5067/ECOSTRESS/ECO_L4T_ESI.002
+  - HLS S30 V2.0 (derived from ESA Copernicus Sentinel-2) — doi:10.5067/HLS/HLSS30.002
+- **POWER acknowledgement (required):** "The data was obtained from National Aeronautics and Space
+  Administration (NASA) Langley Research Center's Prediction Of Worldwide Energy Resources (POWER) project funded
+  through the NASA Earth Science Division." "The data was obtained from the POWER Project's Daily 2.10.3 version
+  on 2026/11/14." `[src: manifest.csv inside the datos-oh-ne-mn zips: all POWER requests dated 2026-11-14;
+  IMERG_PRECTOT requests record POWER API v2.10.3. Recheck if releases downloaded on other days are added]`
+- **Other sources:** USGS Landsat C2 L2, 3DEP and Annual NLCD · USDA NASS (Quick Stats, Crop Progress, Census,
+  CDL, CSB, Crop-CASMA) · USDA ERS · USDA NRCS SSURGO · U.S. Census Bureau · PRISM (Oregon State University) ·
+  CoCoRaHS · AgTile-US.
+- **Open pipeline:** <repo URL> · data in the GitHub Releases: <repo URL>/releases (published:
+  <repo URL>/releases/tag/datos-oh-ne-mn and <repo URL>/releases/tag/datos-mo-wi-sd) `[src: git remote get-url origin; docs/demo/coverage.md, 2026-11-15]`.
+- AI disclosure line: "Pipeline code and documentation were written with the help of AI coding agents (Claude);
+  all data are downloaded from the cited sources, not generated by AI." **[TBD: team confirms wording.]**
+
+**Figure:** none (text only). Optional: a small diagram "NASA data → county / field tables → rotation
+comparison".
+
+**Open points to check before publishing** (`citas_nasa.md`):
+- SMAP version: Crop-CASMA does not state it; V8 is certain from 2025-07-04 onwards and is the recommended
+  citation.
+- GRACE-DA-DM: files say `030`, CMR lists V4.0; cite V4.0.
+- Copernicus attribution for Sentinel-2, checked in task T060: "Contains modified Copernicus Sentinel data
+  2016–2025, processed by NASA (HLS S30 v2.0)." Use it only if HLS stays in the list (release `lotes`).
+  `[src: docs/research/licencias_fuentes.md]`
+
+---
+
+## 30-second video script
+
+Use this if the team submits a video instead of slides (only one of the two is needed; either one must stay
+within its limit). Structure follows the Project Submission Guide timeline (`space_apps_criterios.md` §2).
+Narration can be in another language with English subtitles. ~12–14 words per 5 s.
+
+| Time | What is on screen | What is said (EN) |
+|---|---|---|
+| 0:00–0:05 | Team name, member names **[TBD]**, then the challenge title "Field Shift: Adapting Farms with NASA Data" | "We're team [TBD]. We chose Field Shift because rotations decide farm risk." |
+| 0:05–0:10 | Project name and tagline **[TBD]** over `fig4_corn_after_soy_vs_corn_oh_ne_mn.png` (real), then `fig2_ndvi_max_vs_yield_oh_ne_mn.png` (MODIS NDVI) | "[Project name]: comparing crop rotations with NASA satellites, county by county." |
+| 0:10–0:15 | Three rotation cards (corn–soybean, continuous corn, diversified) with ranges **[TBD: from ML team]** | "Pick your field and compare three rotations — with ranges, evidence and open risks." |
+| 0:15–0:20 | One loess-hills field: NASADEM relief → per-pixel NDVI from Landsat and HLS (`lotes`) **[TBD: needs the `fieldshift_lotes_v1` release, not published; otherwise replace with `fig1_corn_yield_july_rain_oh_ne_mn.png`]** | "Inside each field, NASA elevation and imagery separate dry knolls from wet swales." |
+| 0:20–0:25 | `fig3_smap_may_vs_planting_oh_ne_mn.png` (real: SMAP May moisture vs planting date), then the text "rain vs gauges: r = 0.93–0.94" (IA/IL/IN, `validacion.md`; no scatter PNG yet) | "SMAP, ECOSTRESS and GPM show stress; we check them against ground gauges." |
+| 0:25–0:30 | Text credits: "Data: NASA POWER, GPM IMERG, SMAP, MODIS, NASADEM, NLDAS, GRACE · USDA" (add ECOSTRESS and HLS only if their releases are published) + repo link (<repo URL>) | "Open NASA data, an open pipeline — and the farmer still makes the call." |
+
+Video checks: ≤ 30 s total (trim, do not speed up); English subtitles if narrated in Spanish; watermark on any
+AI-generated image or voice; no NASA logos modified; hosted on a public link (YouTube/Vimeo/Drive) and tested in a
+private window.
+
+---
+
+## Sources for every number in this draft
+
+| Number | Where it comes from |
+|---|---|
+| 4.3 % / 1.7 % continuous-corn penalty, ~10 % continuous-soybean penalty, 748,374 records | `docs/research/efecto_rotacion.md` (Seifert, Roberts & Lobell 2017) |
+| Marsden +4 % corn, +16 % soybean, −86 % to −91 % mineral N | `docs/research/efecto_rotacion.md` (ISU Marsden Farm; Davis et al. 2012) |
+| 14 %–90 % smaller drought losses, 11 trials | `docs/research/efecto_rotacion.md` (Bowles et al. 2020) |
+| 268 counties (OH 88, NE 93, MN 87), 2000–2025, 8 packages, 19 CSV files, 169 data columns | release `datos-oh-ne-mn` (checked with `.sha256` on 2026-11-15): `condados.csv` and CSV headers |
+| 253 counties (MO 115, WI 72, SD 66), 2000–2025, 8 packages, 19 CSV files; 6 states and 521 counties published in total; 398 counties (IA/IL/IN, KS) in progress | release `datos-mo-wi-sd` (checked with `.sha256` on 2026-11-15), `docs/demo/coverage.md` and `fig0_mapa.png` (T104) |
+| Corn after corn 2025: median 24.5 %, 0–98.5 %, OH 11.0 %, MN 23.9 %, NE 46.5 %; corn after soybean median 64.6 %; 266 counties | release `datos-oh-ne-mn`, `rotacion_anual.csv` |
+| Median county corn yield 138.4 bu/ac (2012) vs 160.6 bu/ac (other years), 5,987 county-years | release `datos-oh-ne-mn`, `produccion_anual.csv` |
+| 8 NASA products in the published release | data cards inside the `datos-oh-ne-mn` zips |
+| Figures fig1–fig5 | `docs/demo/fig/` (T074), from release `datos-oh-ne-mn` |
+| Figures fig7 (county maps) and fig8 (Stearns, MN monthly series); July 2025 IMERG median 127.5 mm, 52.4–201.8 mm | `docs/demo/fig/` (T121), from release `datos-oh-ne-mn` |
+| 10 fields; relief 4.00–31.03 m (NASADEM) | `docs/datasets/lotes.md`, field and relief tables (release not published) |
+| NDVI Landsat − HLS: −0.0173 ± 0.0477, 343,925 pairs | `docs/datasets/lotes.md`, "Coherencia Landsat–Sentinel-2" |
+| Rainfall r and bias (POWER, IMERG vs PRISM: 91,416 county-months; vs CoCoRaHS: 42,798) — IA/IL/IN, not in a published release | `docs/datasets/validacion.md`, validation table |
+| SMAP 2015-03-31 to 2025-12-31; ECOSTRESS 2025-04 to 2025-10 | `docs/datasets/agua.md`, `docs/datasets/ecostress.md` |
+| 12 NASA products with DOI + POWER; all DOIs | `docs/research/citas_nasa.md` §1 |
+| 293 counties (IA, IL, IN, not published); 666 counties in 7 states (planned, not delivered) | `docs/datasets/clima.md`; `CLAUDE.md` §2 |
+| Demo limits, deadline, criteria | `docs/research/space_apps_criterios.md` §1–§2 |
+
+Still **[TBD]**: project name and tagline, team name and members, local event, model results and uncertainty
+ranges (ML team), sector maps (ML team), the rainfall scatter against gauges for slide 6, and the releases still
+missing (IA/IL/IN, KS, `fieldshift_lotes_v1`, `ecostress`, `validacion`). When they are published, redo the
+numbers above for all states (T089 used only `datos-oh-ne-mn`).

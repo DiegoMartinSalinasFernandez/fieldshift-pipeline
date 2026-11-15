@@ -78,10 +78,15 @@ def verificar(z: Path) -> None:
 
 
 def zips_de(release: str, carpeta: Path) -> dict[str, Path]:
-    """paquete -> zip del release, sacando el paquete del nombre `<release>_<paquete>.zip`."""
+    """paquete -> zip del release, sacando el paquete del nombre `<release>_<paquete>.zip`.
+
+    `<release>_base.zip` (polígonos y referencia, de entregar.py) no es un paquete: queda afuera.
+    """
     out = {}
     for z in sorted(carpeta.glob(f"{release}_*.zip")):
-        out[z.name[len(release) + 1:-len(".zip")]] = z
+        paquete = z.name[len(release) + 1:-len(".zip")]
+        if paquete != "base":
+            out[paquete] = z
     if not out:
         raise ErrorUnion(f"{release}: no hay zips {release}_*.zip en {carpeta}")
     return out

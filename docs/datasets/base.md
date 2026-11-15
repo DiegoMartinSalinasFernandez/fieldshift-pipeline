@@ -20,6 +20,13 @@ las ventanas fijas de los archivos anuales y funciones comunes de `src/common/`.
 - `data/reference/condados.csv`: una fila por condado (293: IA 99, IL 102, IN 92).
 - `data/reference/anios.csv`: una fila por año de 2000 a 2025.
 
+## En los releases
+
+`scripts/entregar.py` sube a cada release `datos-<estados>` un `datos-<estados>_base.zip` (con su `.sha256`)
+con `data/reference/condados.gpkg` (filtrado a los estados del release si trae más), `condados.csv` (las
+mismas filas), `anios.csv` y un `README.md`. Los zips de cada paquete siguen trayendo `condados.csv` y
+`anios.csv`, sin polígonos. Los releases publicados antes de T126 no tienen el zip de base.
+
 ## Diccionario de columnas
 
 | archivo | columna | descripcion | unidad | fuente | id_catalogo | desde | hasta | faltantes_pct |

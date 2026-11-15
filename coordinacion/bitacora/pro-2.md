@@ -49,3 +49,68 @@
 - 04:14 T049: tomada por el trabajador
 - 04:18 T049: terminada, PR #42
 - 04:18 T054: tomada por el trabajador
+- 04:24 T054: tomada por el trabajador
+- 04:29 T054: terminada, PR #47
+- 04:45 T061: tomada por el trabajador
+- 04:48 T061: terminada, PR #55
+- 04:48 T065: tomada por el trabajador
+- 04:55 T065: terminada, PR #58
+- 05:56 T067: tomada por el trabajador
+- 06:04 T067: terminada, PR #64
+- 06:04 T074: tomada por el trabajador
+- 06:07 T074: terminada, PR #65
+- 06:07 T071: tomada por el trabajador
+- 06:11 T071: terminada, PR #68
+- 06:26 trabajador actualizado desde main
+- 06:26 T078: tomada por el trabajador
+- 06:31 T078: terminada, PR #75
+- 06:31 T085: tomada por el trabajador
+- 06:34 T085: a medias, PR #76
+- 06:34 T085: tomada por el trabajador
+- 06:35 T085: a medias, PR #76 actualizado
+- 06:36 T085: tomada por el trabajador
+- 06:37 T085: a medias, PR #76 actualizado
+- 06:38 T085: tomada por el trabajador
+- 06:39 T085: a medias, PR #76 actualizado
+- 06:39 T085: tomada por el trabajador
+- 06:40 T085: no pude publicar (push falló: To github.com:DiegoMartinSalinasFernandez/fieldshift-pipeline.git
+ ! [rejected]        tarea/T085-auto -> ta)
+- 06:40 T087: tomada por el trabajador
+- 06:46 T087: terminada, PR #82
+- 06:46 T089: tomada por el trabajador
+- 06:51 T089: terminada, PR #85
+- 06:51 T093: tomada por el trabajador
+- 06:53 T093: terminada, PR #87
+- 07:09 T101: tomada por el trabajador
+- 07:10 T101: terminada, PR #91
+- 07:10 T096: tomada por el trabajador
+- 09:12 T127: tomada por el trabajador
+- 09:43 T127: terminada, PR #121
+- 09:44 T132: tomada por el trabajador
+- 09:52 T132: terminada, PR #123
+- 09:52 T137: tomada por el trabajador
+- 09:59 T137: terminada, PR #127
+- 09:59 T142: tomada por el trabajador
+- 10:06 T142: terminada, PR #130
+- 10:06 T139: tomada por el trabajador
+- 10:11 T139: terminada, PR #131
+- 10:11 T140: tomada por el trabajador
+- 10:16 T140: a medias, PR #133
+- 10:17 T140: tomada por el trabajador
+- 10:20 T140: a medias, PR #136
+- 10:21 T140: tomada por el trabajador
+- 10:23 T140: a medias, PR #137
+- 10:23 T140: tomada por el trabajador
+- 10:24 T140: a medias, PR #137 actualizado
+- 10:25 T140: tomada por el trabajador
+- 10:26 T140: a medias, PR #137 actualizado
+- 10:26 T140: tomada por el trabajador
+- 10:27 T140: a medias, PR #137 actualizado
+- 10:28 T140: tomada por el trabajador
+- 10:29 T140: terminada, PR #138
+- 10:29 T143: tomada por el trabajador
+- 10:32 T143: terminada, PR #140
+- 10:32 T145: tomada por el trabajador
+- 10:38 T145: terminada, PR #143
+- 10:54 T148: tomada por el trabajador
+- 10:56 T148: terminada, PR #145

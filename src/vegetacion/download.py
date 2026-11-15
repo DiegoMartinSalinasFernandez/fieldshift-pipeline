@@ -9,6 +9,11 @@ ventana que cubre los condados y se guarda tal cual como GeoTIFF en data/raw/veg
 - MOD11A2: LST día y noche, overview 0 del COG (factor 2, ~2 km) para no pasar los 5 GB; el
   overview promedia los píxeles válidos (los sin dato, 0, quedan como nodata).
 
+Relleno (T119): los compuestos que están en CMR de LP DAAC y no en PC se bajan de LP DAAC con el login de
+Earthdata de ~/.netrc (src/vegetacion/lpdaac.py) y quedan como <granulo>.lpdaac.tif. Solo corre con
+FIELDSHIFT_RELLENO_LPDAAC=1: son ~8-14 GB de transferencia para los 10 estados, más de los 5 GB que necesitan
+el OK del humano (CLAUDE.md, regla 6; tarea T100). Sin esa variable, o sin ~/.netrc, se sigue solo con PC.
+
 Reanudable: si el GeoTIFF ya existe en raw no se vuelve a bajar. Se escribe en interim (.part)
 y se mueve a raw al terminar. Uso: python src/vegetacion/download.py [mod13q1|mod11a2] [anio_desde anio_hasta]
 """
@@ -33,6 +38,7 @@ from rasterio.windows import from_bounds
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 from src.common.config import cargar_config  # noqa: E402
+from src.vegetacion import lpdaac  # noqa: E402
 
 RAW = REPO / "data" / "raw" / "vegetacion"
 INTERIM = REPO / "data" / "interim" / "vegetacion"
@@ -199,6 +205,8 @@ def registrar_manifest(prod_key: str) -> None:
         ya = {r["archivo"] for r in csv.DictReader(f)}
     filas = []
     for p in sorted((RAW / prod["prefijo"].lower()).rglob("*.tif")):
+        if p.name.endswith(f".{lpdaac.SUFIJO}.tif"):  # los de LP DAAC los anota lpdaac.registrar_manifest
+            continue
         rel = p.relative_to(REPO).as_posix()
         if rel in ya:
             continue
@@ -212,6 +220,29 @@ def registrar_manifest(prod_key: str) -> None:
             csv.writer(f).writerows(filas)
 
 
+def rellenar_lpdaac(pk: str, anio: int, grupos: list, items_pc: list[dict], sesion) -> int:
+    """Baja de LP DAAC lo que está en CMR y no en PC para ese año. Devuelve la cantidad de errores."""
+    prod = PRODUCTOS[pk]
+    try:
+        falta = lpdaac.faltantes_grupos(prod["prefijo"], grupos, anio, items_pc)
+    except Exception as e:  # CMR caído: se reintenta en la próxima corrida
+        log(f"ERROR CMR {pk} {anio}: {type(e).__name__}: {str(e)[:200]}")
+        return 1
+    pend = [(g, bb) for g, bb in falta if not lpdaac.ruta_salida(pk, g["id"], RAW).exists()]
+    log(f"{pk} {anio}: {len(falta)} granulos en CMR y no en PC, {len(pend)} pendientes (LP DAAC)")
+    errores = 0
+    with ThreadPoolExecutor(4) as ex:
+        futs = {ex.submit(lpdaac.bajar_granulo, g, pk, prod["overview"], bb, sesion, RAW): g["id"] for g, bb in pend}
+        for fu in as_completed(futs):
+            try:
+                fu.result()
+            except Exception as e:
+                errores += 1
+                log(f"ERROR LP DAAC {futs[fu]}: {type(e).__name__}: {str(e)[:200]}")
+    lpdaac.registrar_manifest(pk, prod["prefijo"], RAW)
+    return errores
+
+
 def main() -> None:
     prods = [sys.argv[1]] if len(sys.argv) > 1 else list(PRODUCTOS)
     cfg = cargar_config()
@@ -220,6 +251,16 @@ def main() -> None:
     grupos = grupos_bbox()
     log("grupos de estados: " + "; ".join(f"{'+'.join(e)} {[round(v, 2) for v in b]}" for e, b in grupos))
     errores = 0
+    sesion = None
+    if os.environ.get("FIELDSHIFT_RELLENO_LPDAAC") != "1":
+        log("relleno desde LP DAAC apagado (FIELDSHIFT_RELLENO_LPDAAC=1 para prenderlo; necesita el OK de T100)")
+    else:
+        sesion = lpdaac.sesion_earthdata()
+    if os.environ.get("FIELDSHIFT_RELLENO_LPDAAC") == "1" and sesion is None:
+        msg = ("AVISO: sin login de Earthdata (urs.earthdata.nasa.gov en ~/.netrc): no se rellenan desde LP DAAC "
+               "los compuestos que faltan en Planetary Computer (T119). Se sigue solo con PC.")
+        print(msg, file=sys.stderr)
+        log(msg)
     for pk in prods:
         prod = PRODUCTOS[pk]
         for anio in range(max(a0, prod["desde"]), a1 + 1):
@@ -238,6 +279,8 @@ def main() -> None:
                         errores += 1
                         log(f"ERROR {futs[fu]}: {type(e).__name__}: {str(e)[:200]}")
             registrar_manifest(pk)
+            if sesion is not None:
+                errores += rellenar_lpdaac(pk, anio, grupos, [it for it, _ in items], sesion)
             log(f"{pk} {anio}: listo")
     if errores:
         log(f"terminó con {errores} archivos sin bajar: volver a correr")

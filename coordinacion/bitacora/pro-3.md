@@ -11,3 +11,50 @@
 - 03:56 T043: tomada por el trabajador
 - 04:04 T043: terminada, PR #37
 - 04:04 T044: tomada por el trabajador
+- 04:27 T044: tomada por el trabajador
+- 04:34 T044: a medias, PR #50
+- 04:35 T044: tomada por el trabajador
+- 04:44 T044: terminada, PR #50 actualizado
+- 04:44 T060: tomada por el trabajador
+- 04:49 T060: terminada, PR #56
+- 04:50 T066: tomada por el trabajador
+- 04:55 T066: terminada, PR #59
+- 05:56 T068: tomada por el trabajador
+- 06:02 T068: terminada, PR #62
+- 06:02 T076: tomada por el trabajador
+- 06:08 T076: terminada, PR #66
+- 06:08 T072: tomada por el trabajador
+- 06:09 T072: terminada, PR #67
+- 06:10 T075: tomada por el trabajador
+- 06:16 T075: terminada, PR #71
+- 06:31 trabajador actualizado desde main
+- 06:31 T079: tomada por el trabajador
+- 06:37 T079: terminada, PR #79
+- 06:37 T083: tomada por el trabajador
+- 06:43 T083: terminada, PR #80
+- 06:43 T088: tomada por el trabajador
+- 06:47 T088: terminada, PR #84
+- 06:48 T091: tomada por el trabajador
+- 06:53 T091: terminada, PR #86
+- 07:08 T094: tomada por el trabajador
+- 07:11 T094: terminada, PR #92
+- 07:11 T097: tomada por el trabajador
+- 07:20 T097: terminada, PR #93
+- 07:20 T096: tomada por el trabajador
+- 07:21 T096: terminada, PR #94
+- 07:22 T098: tomada por el trabajador
+- 07:24 T098: terminada, PR #95
+- 07:39 T105: tomada por el trabajador
+- 07:49 T105: terminada, PR #98
+- 07:49 T106: tomada por el trabajador
+- 07:51 T106: terminada, PR #99
+- 07:51 T107: tomada por el trabajador
+- 07:54 T107: terminada, PR #100
+- 07:54 T108: tomada por el trabajador
+- 08:03 T108: terminada, PR #101
+- 08:03 T112: tomada por el trabajador
+- 08:05 T112: no pude publicar (push falló: To https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline.git
+ ! [remote rejected] tarea/T112-au)
+- 08:20 T115: tomada por el trabajador
+- 10:52 T081: tomada por el trabajador
+- 10:59 T081: terminada, PR #146

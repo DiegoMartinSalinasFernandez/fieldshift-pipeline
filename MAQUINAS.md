@@ -122,7 +122,9 @@ Los datos no van en git: son muchos GB y GitHub no acepta archivos de más de 10
   ella con los mismos scripts. Los archivos nacionales (la base completa de NASS, GRACE-DA-DM de EE.UU.) se
   pueden copiar de una máquina que ya los tenga, con sus filas de `manifest.csv`.
 - **Procesados:** `python scripts/entregar.py` arma un zip por paquete con los CSV, el data card, los
-  condados y el `manifest.csv`, y lo sube al release `datos-<estados>` (reemplaza la versión anterior). Para
+  condados y el `manifest.csv`, y lo sube al release `datos-<estados>` (reemplaza la versión anterior). Además
+  sube `datos-<estados>_base.zip` con los polígonos de los condados (`condados.gpkg`, EPSG:4326),
+  `condados.csv`, `anios.csv` y un README; `python scripts/entregar.py base` arma y sube solo ese. Para
   usarlos en otra máquina:
   ```bash
   gh release download datos-ks --dir data/entregas

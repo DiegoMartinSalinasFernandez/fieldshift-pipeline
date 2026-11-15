@@ -67,6 +67,83 @@ def armar(carpeta: Path, paquete: str, archivos: dict[str, str | bytes], *, data
     return z
 
 
+def armar_base(carpeta: Path, fips: list[str] = FIPS, *, fips_csv: list[str] | None = None, crs: int = 4326,
+               con_gpkg: bool = True, sha: str = "ok", nombre: str = "datos-ks-ne_base.zip") -> Path:
+    """Zip de base como el de entregar.py: condados.gpkg (un cuadrado por condado), condados.csv y anios.csv."""
+    import geopandas as gpd
+    from shapely.geometry import box
+
+    carpeta.mkdir(parents=True, exist_ok=True)
+    z = carpeta / nombre
+    gpkg = carpeta / "tmp_condados.gpkg"
+    gpd.GeoDataFrame({"fips": fips, "estado": ["XX"] * len(fips)},
+                     geometry=[box(-90 + i, 40, -89 + i, 41) for i in range(len(fips))],
+                     crs="EPSG:4326").to_crs(crs).to_file(gpkg, layer="condados", driver="GPKG")
+    with zipfile.ZipFile(z, "w") as zf:
+        if con_gpkg:
+            zf.write(gpkg, "data/reference/condados.gpkg")
+        zf.writestr("data/reference/condados.csv",
+                    "fips,estado,condado\n" + "".join(f"{f},XX,C{f}\n" for f in (fips_csv or fips)))
+        zf.writestr("data/reference/anios.csv", ANIOS)
+        zf.writestr("README.md", "# base\n")
+    gpkg.unlink()
+    h = hashlib.sha256(z.read_bytes()).hexdigest() if sha == "ok" else "0" * 64
+    z.with_suffix(".zip.sha256").write_text(f"{h}  {z.name}\n", encoding="utf-8")
+    return z
+
+
+class TestZipBase(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def uno(self, z: Path) -> ve.Informe:
+        informes = ve.verificar([z])
+        self.assertEqual(len(informes), 1)
+        return informes[0]
+
+    def test_base_bueno(self):
+        inf = self.uno(armar_base(self.dir))
+        self.assertTrue(inf.apto, inf.markdown())
+        self.assertEqual(inf.paquete, "base")
+        self.assertIn(("condados.gpkg", 3, 3), inf.archivos)
+
+    def test_base_junto_a_paquetes(self):
+        zips = [armar_base(self.dir), armar(self.dir, "clima", {"clima_anual.csv": ANUAL,
+                                                               "clima_mensual.csv": MENSUAL}, data_card=CARD_CLIMA)]
+        informes = ve.verificar(zips)
+        self.assertEqual([i.paquete for i in informes], ["base", "clima"])
+        self.assertTrue(all(i.apto for i in informes), [i.markdown() for i in informes])
+
+    def test_base_sin_gpkg(self):
+        inf = self.uno(armar_base(self.dir, con_gpkg=False))
+        self.assertFalse(inf.apto)
+        self.assertIn("falta data/reference/condados.gpkg", "\n".join(inf.problemas))
+
+    def test_base_otro_crs(self):
+        inf = self.uno(armar_base(self.dir, crs=5070))
+        self.assertIn("EPSG:4326", "\n".join(inf.problemas))
+
+    def test_base_fips_distintos_del_csv(self):
+        inf = self.uno(armar_base(self.dir, fips_csv=FIPS[:2] + ["31999"]))
+        todo = "\n".join(inf.problemas)
+        self.assertIn("no tienen los mismos fips", todo)
+        self.assertIn("31005", todo)
+
+    def test_base_fips_mal_escrito_y_repetido(self):
+        inf = self.uno(armar_base(self.dir, fips=["20001", "20001", "2003"]))
+        todo = "\n".join(inf.problemas)
+        self.assertIn("5 dígitos", todo)
+        self.assertIn("repetidos", todo)
+
+    def test_base_sha_malo(self):
+        inf = self.uno(armar_base(self.dir, sha="malo"))
+        self.assertIn("sha256 no coincide", "\n".join(inf.problemas))
+
+
 class TestVerificarEntrega(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -210,6 +287,32 @@ class TestVerificarEntrega(unittest.TestCase):
     def test_sha256_malo(self):
         self.assertNoApto(self.clima(sha="malo"), "sha256")
         self.assertTrue(self.uno(self.clima(sha="no")).apto)  # sin .sha256 al lado no se controla
+
+    def escribir_sha(self, z: Path, fin: bytes, h: str | None = None) -> None:
+        """Escribe el .sha256 en bytes (write_text en Windows pasaría LF a CRLF)."""
+        h = h or hashlib.sha256(z.read_bytes()).hexdigest()
+        z.with_suffix(".zip.sha256").write_bytes(f"{h}  {z.name}".encode("utf-8") + fin)
+
+    def test_sha256_con_lf_y_con_crlf(self):
+        # El release datos-oh-ne-mn tiene .sha256 con CRLF (hechos en Windows); los nuevos salen con LF.
+        for nombre, fin in (("LF", b"\n"), ("CRLF", b"\r\n")):
+            with self.subTest(fin=nombre):
+                z = self.clima()
+                self.escribir_sha(z, fin)
+                self.assertEqual(z.with_suffix(".zip.sha256").read_bytes().endswith(b"\r\n"), nombre == "CRLF")
+                inf = self.uno(z)
+                self.assertTrue(inf.apto, inf.markdown())
+                self.assertNotIn("sha256", "\n".join(inf.problemas))
+
+    def test_sha256_malo_con_crlf_igual_se_detecta(self):
+        z = self.clima()
+        self.escribir_sha(z, b"\r\n", h="0" * 64)
+        self.assertNoApto(z, "sha256")
+
+    def test_sha256_en_mayusculas_con_crlf(self):
+        z = self.clima()
+        self.escribir_sha(z, b"\r\n", h=hashlib.sha256(z.read_bytes()).hexdigest().upper())
+        self.assertTrue(self.uno(z).apto)
 
     # --- línea de comandos ---
 

@@ -14,6 +14,9 @@ Tablas (una por estado, en data/raw/suelo_terreno/sda/<tabla>_<estado>.csv):
             dbthirdbar_r y volumen de fragmentos (suma de chfrags.fragvol_r)
 - restricciones: cokey, reskind, resdept_r (corestrictions)
 - nccpi: cokey, rulename, interphr (cointerp, NCCPI ver. 3.0 general, maíz y soja)
+- solape: areasymbol, condado (p. ej. KY015), mukey, areaovacres (laoverlap 'County or Parish' +
+          muaoverlap): superficie de cada unidad dentro de cada condado. process.py la usa para
+          repartir las áreas que juntan varios condados o tienen código propio (KY601, KY646, …).
 
 Idempotente: si el archivo ya está en raw no se vuelve a bajar. Escribe en interim (.part)
 y mueve a raw al terminar. Registra cada archivo en manifest.csv.
@@ -73,6 +76,12 @@ CONSULTAS = {
         "AND i.mrulename = 'NCCPI - National Commodity Crop Productivity Index (Ver 3.0)' "
         "AND i.rulename IN ('NCCPI - National Commodity Crop Productivity Index (Ver 3.0)', "
         "'NCCPI - NCCPI Corn Submodel (I)', 'NCCPI - NCCPI Soybeans Submodel (I)')"
+    ),
+    "solape": (
+        "SELECT l.areasymbol, lo.areasymbol AS condado, mo.mukey, mo.areaovacres "
+        "FROM laoverlap lo INNER JOIN legend l ON l.lkey = lo.lkey "
+        "INNER JOIN muaoverlap mo ON mo.lareaovkey = lo.lareaovkey "
+        "WHERE l.areasymbol IN ({areas}) AND lo.areatypename = 'County or Parish'"
     ),
 }
 

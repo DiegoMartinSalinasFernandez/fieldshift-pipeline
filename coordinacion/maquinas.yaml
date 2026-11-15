@@ -7,8 +7,8 @@
 maquinas:
   max-1:
     plan: max
-    rol: coordinación, unión de estados y entregas a ML; procesa OH, NE y MN (T003)
-    estados: [OH, NE, MN]
+    rol: coordinación, unión de estados y entregas a ML; procesa OH, NE y MN (T003), MO, WI y SD (T062) y ND (T149)
+    estados: [OH, NE, MN, MO, WI, SD, ND]
   max-2:
     plan: max
     rol: Kansas de punta a punta (T013); notebook con RTX 4060
