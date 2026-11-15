@@ -1,15 +1,15 @@
 ---
 id: T078
 titulo: 'Research: precisión del CDL en Kentucky'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - KY
 depende_de: []
 rama: null
 creada: 2026-11-15T06:18
-actualizada: 2026-11-15T06:18
+actualizada: 2026-11-15 06:26
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ Escribí `docs/research/cdl_precision_ky.md`.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 06:26 · pro-2: tomada
