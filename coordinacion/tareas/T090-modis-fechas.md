@@ -1,14 +1,14 @@
 ---
 id: T090
 titulo: 'Research: fechas de MOD13Q1 que faltan en 2023–2025 (Planetary Computer vs. LP DAAC)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T06:44
-actualizada: 2026-11-15T06:44
+actualizada: 2026-11-15 06:47
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ Formato de research de la sección 8 del CLAUDE.md. Escribí `docs/research/modi
 El research en un PR.
 
 ## Notas
+- 2026-11-15 06:47 · pro-1: tomada

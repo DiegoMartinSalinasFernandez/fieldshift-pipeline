@@ -18,7 +18,8 @@ Rules for whoever pastes this into the form:
   Illinois and Indiana (first batch, 293 counties, `docs/datasets/clima.md`), Kansas, the field-level
   `fieldshift_lotes_v1` and the `ecostress`, `teledeteccion` and `validacion` packages have **no published
   release**: their numbers below come from repo data cards only and are marked. Do not claim 7 states or 666
-  counties as delivered until those releases exist.
+  counties as delivered until those releases exist. `docs/demo/coverage.md` lists the published releases with
+  counted numbers: rerun `docs/demo/coverage.py` before pasting.
 - **Model results.** This repo builds the data only and trains no models (`CLAUDE.md`). Any claim about model
   accuracy or recommended rotations has to come from the ML or frontend team. **[TBD]**
 - Field order follows the form. The demo text itself is in `docs/demo/slides.md` (task T056).
@@ -76,7 +77,8 @@ project from Global Judging (`space_apps_criterios.md` §2). The draft is in `do
 - **Code:** **[TBD: public GitHub repository URL]**. The repo is public (`CLAUDE.md` §1, rule 8).
 - **Data:** processed CSVs are published as GitHub Releases, one per group of states (`datos-<states>`, made by
   `scripts/entregar.py`), plus a separate field-level release (`fieldshift_lotes_v1`, `CLAUDE.md` §6.6).
-  **[TBD: release URLs]**
+  What is published today, with states, counties, years and rows counted from the zips:
+  `docs/demo/coverage.md` (refresh with `docs/demo/coverage.py`). **[TBD: release URLs]**
 - **English documentation for judges:** `docs/datasets/README_en.md` (data summary, sources, quality control,
   limitations). **[TBD: link]**
 - **Tool / frontend:** **[TBD: link, if there is one]**.

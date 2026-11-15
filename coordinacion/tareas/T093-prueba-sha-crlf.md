@@ -1,14 +1,14 @@
 ---
 id: T093
 titulo: 'Prueba: verificar_entrega.py acepta .sha256 con CRLF y LF'
-estado: libre
+estado: hecha
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T06:44
-actualizada: 2026-11-15T06:44
+actualizada: 2026-11-15 06:53
 ---
 
 ## Qué hacer
@@ -24,3 +24,5 @@ un error.
 Las pruebas en un PR.
 
 ## Notas
+- 2026-11-15 06:51 · pro-2: tomada
+- 2026-11-15 06:53 · pro-2: terminada por el trabajador: PR #87, falta la revisión de max-1

@@ -33,6 +33,7 @@ data/reference/*
 data/entregas/
 data/unido/
 data/demo_zips/
+data/coverage_zips/
 manifest.csv
 
 # Copia de main que usa scripts/tareas.py para el tablero
