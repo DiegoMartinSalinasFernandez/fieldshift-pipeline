@@ -1,9 +1,9 @@
 ---
 id: T011
 titulo: 'Research: rendimientos de condado de NASS 2024 y 2025 en los 7 estados'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:15
-actualizada: 2026-11-15 01:15
+actualizada: 2026-11-15 02:13
 ---
 
 ## Qué hacer
@@ -33,3 +33,4 @@ la API si hay `NASS_API_KEY`. Escribir `docs/research/nass_2024_2025.md` con el 
 El research escrito, con fuentes, fecha de consulta y confianza, en un PR.
 
 ## Notas
+- 2026-11-15 02:13 · pro-2: tomada
