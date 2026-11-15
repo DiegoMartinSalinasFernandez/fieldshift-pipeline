@@ -96,3 +96,11 @@ git push
 ```
 
 Y agregar al cuerpo del PR 135 la fila de la tabla de arriba.
+
+## Cuarta sesión de pro-2 (2026-11-15, 10:2x)
+
+Revisado de nuevo después de `git fetch`: `origin/integracion/retenidos` sigue en `d92f9cd`, `origin/tarea/T141-auto`
+en `2b69192`, y `git merge-tree` vuelve a dar el mismo árbol `2a4377d2b5` sin conflictos. Los PR abiertos llegan
+hasta el 137; 133, 136 y 137 son intentos de esta misma tarea (T140) y 135 es la rama de integración, así que el
+único retenido que falta sumar sigue siendo el 134. No hay ramas `tarea/T143`–`T147` en el remoto. Los cuatro
+comandos de arriba siguen valiendo.
