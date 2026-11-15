@@ -23,6 +23,14 @@ RANGOS_PREFIJO = [  # (regex, (min, max))
 RENDIMIENTO_BU_AC = {"maiz": (20, 300), "soja": (5, 100)}
 RELLENOS = {-9999, -999, -99.99, -999.9, -9999.9, -99999}
 TEXTO = {"estado", "condado", "cultivo", "flag_nass", "ventana"}
+# Columnas numéricas por nombre (prefijo o unidad al final, CLAUDE.md §4). Aunque todos sus valores
+# sean texto (por ejemplo "(D)" o "(Z)" de NASS sin pasar a vacío), no se toman por columna de texto:
+# se avisa. Las columnas en TEXTO o que empiezan con "clase" no se revisan.
+NUMERICAS_PATRON = re.compile(
+    r"^(rend|sup|produccion|prec|dias|pct|doy|gdd)_"
+    r"|_(mm|c|ac|ha|bu|kgha|m3m3|pct|km2|m)$"
+    r"|_usd_"
+)
 
 _RE_FIPS = re.compile(r"^\d{5}$")
 _RE_FECHA = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -115,10 +123,13 @@ def validar_csv(ruta) -> list[str]:
         if llenos.str.contains(r"^-?\d+,\d+$", regex=True).any():
             errores.append(f"{c}: hay decimales con coma")
         num = pd.to_numeric(llenos, errors="coerce")
-        if num.isna().all():
+        numerica = bool(NUMERICAS_PATRON.search(c))
+        if num.isna().all() and not numerica:
             continue  # columna de texto
         if num.isna().any():
-            errores.append(f"{c}: hay valores no numéricos {llenos[num.isna()].unique()[:3].tolist()}")
+            por_nombre = " (es numérica por su nombre)" if numerica and num.isna().all() else ""
+            errores.append(f"{c}: hay valores no numéricos{por_nombre} "
+                           f"{llenos[num.isna()].unique()[:3].tolist()}")
         if num.isin(RELLENOS).any():
             errores.append(f"{c}: hay valores de relleno (-999/-9999); van vacíos")
         rango = RANGOS_EXACTOS.get(c)
