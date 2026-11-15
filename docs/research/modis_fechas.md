@@ -99,7 +99,7 @@ o el log de descarga (`data/interim/vegetacion/download.log`), porque en PC est�
 
 | Vía | ¿Login? | ¿Tiene los 11? | Notas |
 |---|---|---|---|
-| ORNL DAAC MODIS Web Service (`modis.ornl.gov/rst/api/v1/MOD13Q1/subset`) | No | Sí (`/dates` lista `A2023049`, `A2024225`, `A2024353`, `A2025193`…`A2025305`; probé un pixel en Story, IA: `A2023049` da NDVI 2775 ×0,0001, y `A2025193`…`A2025305` dan 7767, 7739, 7562, 6977, 5003, 5295, 5752 y 5230, tesela h11v04, con fechas de producción iguales a las de LP DAAC) | Máximo ±100 km alrededor de un punto y 10 compuestos por pedido (los dos límites se comprobaron: la API devuelve error si se pasan). Una banda por pedido. Devuelve JSON con valores en la grilla sinusoidal nativa (231,66 m) |
+| ORNL DAAC MODIS Web Service (`modis.ornl.gov/rst/api/v1/MOD13Q1/subset`) | No | Sí (`/dates` lista `A2023049`, `A2024225`, `A2024353`, `A2025193`…`A2025305`; probé un pixel en Story, IA: `A2023049` da NDVI 2775 ×0,0001, y `A2025193`…`A2025305` dan 7767, 7739, 7562, 6977, 5003, 5295, 5752 y 5230, tesela h11v04, con fechas de producción de 2–3 semanas después de cada compuesto, como en LP DAAC) | Máximo ±100 km alrededor de un punto y 10 compuestos por pedido (los dos límites se comprobaron: la API devuelve error si se pasan). Una banda por pedido. Devuelve JSON con valores en la grilla sinusoidal nativa (231,66 m) |
 | LP DAAC Data Pool / Earthdata Cloud (`data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/…`) | Sí, Earthdata | Sí | Es la fuente oficial (HDF4). Los enlaces salen en CMR |
 | OPeNDAP de Earthdata | Sí | Sí | |
 | AppEEARS | Sí | Sí | Además va en cola |
