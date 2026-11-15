@@ -39,10 +39,14 @@ Rules for whoever finishes this draft:
 - A decision-support tool that compares crop rotations for U.S. Corn Belt farms using NASA Earth observations,
   soil and crop data.
 
-**Figure:** background map of the Corn Belt counties (outline only) with the study states highlighted.
-- From: `data/reference/condados.gpkg` (US Census Cartographic Boundary Files 2024, 1:500k).
-- **[TBD: not made yet.** No map PNG exists in `docs/demo/fig/`. Highlight the 3 published states (OH, NE, MN)
-  differently from the 4 planned ones (IA, IL, IN, KS).]**
+**Figure:** `docs/demo/fig/fig0_mapa.png` — the 919 counties of the 10 states in `config/config.yaml`, colored by
+state group (IA/IL/IN, OH/NE/MN, KS, MO/WI/SD; Okabe-Ito colorblind-safe palette). Solid fill = data release
+published, hatched = release in progress.
+- From: US Census Cartographic Boundary Files 2024, 1:500k, and the GitHub releases page (checked 2026-11-15:
+  only `datos-oh-ne-mn` published, 268 counties). Built by `docs/demo/figuras.py --solo-mapa` (task T094).
+- **Re-run before the final slides** so the release status is current.
+
+![Field Shift study area](fig/fig0_mapa.png)
 
 **Data credit:** County boundaries: U.S. Census Bureau, Cartographic Boundary Files 2024.
 
