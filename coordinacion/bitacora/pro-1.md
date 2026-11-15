@@ -56,3 +56,4 @@
 - 07:00 T095: terminada, PR #89
 - 07:00 T099: tomada por el trabajador
 - 07:03 T099: terminada, PR #90
+- 07:03 T101: tomada por el trabajador
