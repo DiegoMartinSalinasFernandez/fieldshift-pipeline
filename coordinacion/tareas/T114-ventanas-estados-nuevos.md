@@ -1,9 +1,9 @@
 ---
 id: T114
 titulo: 'Research: ventanas de floración del maíz y llenado de la soja en MO, WI, SD, ND, MI y KY'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados:
 - MO
 - WI
@@ -14,7 +14,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T08:11
-actualizada: 2026-11-15T08:11
+actualizada: 2026-11-15 08:18
 ---
 
 ## Qué hacer
@@ -34,3 +34,4 @@ Formato de research de la sección 8 del CLAUDE.md, en una sección nueva de `ve
 El research en un PR.
 
 ## Notas
+- 2026-11-15 08:18 · pro-4: tomada
