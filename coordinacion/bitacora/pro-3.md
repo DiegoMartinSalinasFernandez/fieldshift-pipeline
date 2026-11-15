@@ -47,3 +47,4 @@
 - 07:39 T105: tomada por el trabajador
 - 07:49 T105: terminada, PR #98
 - 07:49 T106: tomada por el trabajador
+- 07:51 T106: terminada, PR #99
