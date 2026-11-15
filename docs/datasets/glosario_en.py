@@ -297,8 +297,8 @@ DESCRIPCIONES = {
     "rend_bu_ac × factor de config.yaml (bu_ac_a_kgha)": "rend_bu_ac × conversion factor from config.yaml (bu_ac_a_kgha)",
     "sup_sembrada_ac × 0,4047 (acres_a_ha)": "sup_sembrada_ac × 0.4047 (acres_a_ha)",
     "sup_cosechada_ac / sup_sembrada_ac": "sup_cosechada_ac / sup_sembrada_ac (harvested/planted ratio)",
-    "Código original de NASS cuando el valor está oculto: (D), (Z), (NA)… (separados por ;)":
-        "Original NASS code when the value is withheld: (D), (Z), (NA)… (separated by ;)",
+    "Código original de NASS cuando el valor está oculto: (D), (Z), (NA)…; `0_sin_cosecha_grano` cuando NASS da rendimiento 0 sin superficie cosechada para grano (separados por ;)":
+        "Original NASS code when the value is withheld: (D), (Z), (NA)…; `0_sin_cosecha_grano` when NASS reports a yield of 0 with no area harvested for grain (separated by ;)",
     "Día del año en que se cruza el 50 % sembrado (PCT PLANTED, interpolado)":
         "Day of year when 50 % planted is reached (PCT PLANTED, interpolated)",
     "Día del año en que se cruza el 50 % emergido (PCT EMERGED)":
