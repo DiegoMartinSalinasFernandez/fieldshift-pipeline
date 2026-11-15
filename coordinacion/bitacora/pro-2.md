@@ -50,3 +50,4 @@
 - 04:18 T049: terminada, PR #42
 - 04:18 T054: tomada por el trabajador
 - 04:24 T054: tomada por el trabajador
+- 04:29 T054: terminada, PR #47
