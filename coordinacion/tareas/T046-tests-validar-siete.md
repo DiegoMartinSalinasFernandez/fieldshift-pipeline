@@ -1,14 +1,14 @@
 ---
 id: T046
 titulo: Pruebas de validar_csv() con los 7 estados (sin cambiar src/common)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:05
-actualizada: 2026-11-15 04:05
+actualizada: 2026-11-15 04:11
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ explicalo en "Para decidir". Las pruebas tienen que pasar en Windows y en Linux.
 Las pruebas en un PR.
 
 ## Notas
+- 2026-11-15 04:11 · pro-2: tomada
