@@ -9,6 +9,11 @@ existen), los lee sin descomprimir a disco y guarda PNG en `docs/demo/fig/`:
   fig4_corn_after_soy_vs_corn.png    % del maíz tras soja vs % tras maíz, por condado
   fig5_corn_yield_by_year.png        rendimiento de maíz por condado y año (cajas), 2012 resaltado
   fig6_lluvia.png                    lluvia mensual IMERG vs POWER por condado-mes, un panel por estado
+  fig7_county_maps_corn_after_corn_imerg.png
+                                     mapas por condado: % de maíz tras maíz (CDL) y lluvia IMERG de julio,
+                                     mismo año (polígonos del Census CB 1:500k; los releases no traen el .gpkg)
+  fig8_county_monthly_smap_imerg.png serie mensual de un condado (Stearns, MN): SMAP zona radicular e IMERG,
+                                     sequía de 2021 sombreada
   fig0_mapa.png                      condados de los estados de config.yaml, por grupo y estado del release
                                      (solo con --mapa: baja el Census CB 1:500k y consulta la API de releases)
 
@@ -581,6 +586,157 @@ def fig_mapa(carpeta: Path, salida: Path) -> None:
     guardar(fig, salida, nombre)
 
 
+# --------------------------------------------------------------------------- mapas por condado y serie de un condado
+
+def leer_poligonos(carpeta: Path, fips: set[str]):
+    """Polígonos de los condados `fips` (Census CB 1:500k, el mismo zip que src/base y fig0), en EPSG:5070.
+
+    Los releases no traen `condados.gpkg` (solo `condados.csv`, con centroides): la geometría sale del Census y
+    los valores, de los zips publicados. None si no se puede bajar o falta geopandas.
+    """
+    try:
+        import geopandas as gpd
+    except ImportError:
+        aviso("mapas por condado: falta geopandas")
+        return None
+    z = bajar_cb(URL_CB, carpeta)
+    if z is None:
+        return None
+    cond = gpd.read_file(f"zip://{z}")
+    cond = cond[cond["GEOID"].isin(fips)].rename(columns={"GEOID": "fips"})
+    return cond[["fips", "geometry"]].to_crs(5070)
+
+
+def fig_mapas_condado(rot, clima_m, poligonos, salida: Path, mes_nasa: int = 7) -> None:
+    """Dos mapas de los mismos condados y el mismo año: % de maíz tras maíz (CDL) y lluvia IMERG del mes `mes_nasa`.
+
+    El año es el último con `pct_maiz_tras_maiz`. Cada color es el valor publicado del condado, sin clases ni
+    suavizado; los condados sin valor van en gris claro.
+    """
+    nombre = "fig7_county_maps_corn_after_corn_imerg.png"
+    if faltan(rot, ["fips", "anio", "pct_maiz_tras_maiz"], nombre) or \
+            faltan(clima_m, ["fips", "mes", "prec_imerg_mm"], nombre):
+        return
+    if poligonos is None or len(poligonos) == 0:
+        aviso(f"{nombre}: se saltea (no hay polígonos de condados)")
+        return
+    r = rot[["fips", "anio", "pct_maiz_tras_maiz"]].dropna()
+    if r.empty:
+        aviso(f"{nombre}: se saltea (no hay pct_maiz_tras_maiz)")
+        return
+    anio = int(r["anio"].max())
+    mes = f"{anio}-{mes_nasa:02d}"
+    r = r[r["anio"] == anio]
+    c = clima_m.loc[clima_m["mes"].astype(str) == mes, ["fips", "prec_imerg_mm"]].dropna()
+    if c.empty:
+        aviso(f"{nombre}: se saltea (no hay prec_imerg_mm de {mes})")
+        return
+    fips_datos = set(r["fips"]) | set(c["fips"])
+    g = poligonos[poligonos["fips"].isin(fips_datos)].merge(r[["fips", "pct_maiz_tras_maiz"]], on="fips", how="left")
+    g = g.merge(c, on="fips", how="left")
+    sin_poligono = len(fips_datos - set(poligonos["fips"]))
+    ests = sorted(estado(g["fips"]).unique())
+    mes_txt = pd.Timestamp(f"{mes}-01").strftime("%B %Y")
+    paneles = [("pct_maiz_tras_maiz", "YlOrRd", f"Corn after corn, {anio}",
+                f"% of {anio} corn pixels that were corn in {anio - 1}", (0, 100)),
+               ("prec_imerg_mm", "YlGnBu", f"NASA GPM IMERG rainfall, {mes_txt}",
+                f"Precipitation in {mes_txt} (mm)", None)]
+    fig, axs = plt.subplots(1, 2, figsize=(14, 6.2))
+    for ax, (col, cmap, titulo, etiqueta, lim) in zip(axs, paneles):
+        vmin, vmax = lim if lim else (float(g[col].min()), float(g[col].max()))
+        g.plot(ax=ax, column=col, cmap=cmap, vmin=vmin, vmax=vmax, edgecolor="white", linewidth=0.2,
+               legend=True, legend_kwds={"label": etiqueta, "orientation": "horizontal", "shrink": 0.7,
+                                         "pad": 0.02},
+               missing_kwds={"color": "#e0e0e0", "edgecolor": "white", "linewidth": 0.2})
+        n = int(g[col].notna().sum())
+        ax.set_title(f"{titulo} (n = {n} counties)", fontsize=11)
+        ax.set_axis_off()
+    fig.suptitle(f"Same counties, same year ({anio}): a USDA rotation layer and a NASA layer ({', '.join(ests)})",
+                 fontsize=12)
+    fig.subplots_adjust(left=0.01, right=0.99, top=0.9, bottom=0.12, wspace=0.03)
+    extra = (f"Left: rotacion_anual.csv (pixel-by-pixel CDL transition {anio - 1}→{anio}). Right: clima_mensual.csv "
+             f"({mes}). Grey = no value. County polygons: U.S. Census Bureau Cartographic Boundary Files "
+             f"{ANIO_CB} (1:500k), EPSG:5070.")
+    if sin_poligono:
+        extra += f" {sin_poligono} counties with data have no polygon."
+    pie(fig, [SRC_CDL, SRC_IMERG], extra)
+    guardar(fig, salida, nombre)
+
+
+# Condado y evento de la serie mensual: Stearns (MN), sequía de 2021 (docs/qa/oh_ne_mn.md, tabla de eventos:
+# MN 2021, SMAP sm_rootzone_anom_z −1,49 a nivel estado). Stearns es un condado agrícola del centro de MN.
+SERIE_FIPS = "27145"
+SERIE_EVENTO = ("2021-05", "2021-08", "2021 drought in Minnesota (docs/qa/oh_ne_mn.md)")
+SERIE_DESDE, SERIE_HASTA = "2019-01", "2023-12"
+
+
+def fig_serie_condado(agua, clima_m, salida: Path, fips: str = SERIE_FIPS, evento=SERIE_EVENTO,
+                      desde: str = SERIE_DESDE, hasta: str = SERIE_HASTA, nombre_condado: str | None = None) -> None:
+    """Serie mensual de un condado: lluvia IMERG (barras) y humedad SMAP de la zona radicular (línea), con el
+    evento sombreado. La línea punteada es la media del mismo mes calendario en todos los años SMAP publicados
+    del condado (media simple, sin ajuste)."""
+    nombre = "fig8_county_monthly_smap_imerg.png"
+    if faltan(agua, ["fips", "mes", "sm_rootzone_m3m3"], nombre) or \
+            faltan(clima_m, ["fips", "mes", "prec_imerg_mm"], nombre):
+        return
+    a = agua.loc[agua["fips"] == fips, ["mes", "sm_rootzone_m3m3"]].dropna().copy()
+    c = clima_m.loc[clima_m["fips"] == fips, ["mes", "prec_imerg_mm"]].dropna().copy()
+    if a.empty or c.empty:
+        aviso(f"{nombre}: se saltea (el condado {fips} no tiene SMAP o IMERG)")
+        return
+    a["mes"], c["mes"] = a["mes"].astype(str), c["mes"].astype(str)
+    a["mm"] = a["mes"].str[5:7]
+    clim = a.groupby("mm")["sm_rootzone_m3m3"].mean()
+    anios_smap = f"{a['mes'].min()} to {a['mes'].max()}"
+    a = a[(a["mes"] >= desde) & (a["mes"] <= hasta)]
+    c = c[(c["mes"] >= desde) & (c["mes"] <= hasta)]
+    if a.empty or c.empty:
+        aviso(f"{nombre}: se saltea (sin datos del condado {fips} entre {desde} y {hasta})")
+        return
+    fa, fc = pd.to_datetime(a["mes"] + "-15"), pd.to_datetime(c["mes"] + "-15")
+    fig, ax = plt.subplots(figsize=(11, 6))
+    ax.bar(fc, c["prec_imerg_mm"], width=25, color="#90caf9", label="Monthly rainfall, GPM IMERG (mm, left axis)")
+    ax.set_ylabel("Monthly precipitation (mm), GPM IMERG")
+    ax2 = ax.twinx()
+    ax2.plot(fa, a["sm_rootzone_m3m3"], color="#5d4037", lw=1.8, marker="o", ms=3,
+             label="Root-zone soil moisture, SMAP L4 (m³/m³, right axis)")
+    ax2.plot(fa, a["mm"].map(clim), color="#5d4037", lw=1, ls=":",
+             label=f"SMAP mean of the same calendar month ({anios_smap})")
+    ax2.set_ylabel("Root-zone soil moisture (m³/m³), SMAP L4")
+    ini, fin, etiqueta = evento
+    ax.axvspan(pd.Timestamp(f"{ini}-01"), pd.Timestamp(f"{fin}-01") + pd.offsets.MonthEnd(0), color="#ef9a9a",
+               alpha=0.35, label=etiqueta, zorder=0)
+    h1, l1 = ax.get_legend_handles_labels()
+    h2, l2 = ax2.get_legend_handles_labels()
+    ax.legend(h1 + h2, l1 + l2, loc="upper center", bbox_to_anchor=(0.5, -0.12), ncol=2, fontsize=7.5,
+              frameon=False)
+    ax.grid(axis="y", alpha=0.3)
+    ax.set_xlabel("Month")
+    quien = f"{nombre_condado} ({FIPS_ESTADO.get(fips[:2], fips[:2])}, FIPS {fips})" if nombre_condado \
+        else f"county FIPS {fips}"
+    ax.set_title(f"Monthly rainfall and root-zone soil moisture, {quien}, {desde[:4]}–{hasta[:4]}")
+    fig.subplots_adjust(bottom=0.27, top=0.93)
+    pie(fig, [SRC_SMAP, SRC_IMERG], f"County means from agua_mensual.csv and clima_mensual.csv. Shaded: "
+        f"{ini} to {fin}.")
+    guardar(fig, salida, nombre)
+
+
+def nombre_de_condado(zips: Path | list[Path], fips: str) -> str | None:
+    """Nombre del condado según `data/reference/condados.csv` de cualquier zip publicado."""
+    carpetas = zips if isinstance(zips, list) else [zips]
+    for z in sorted(x for c in carpetas for x in c.rglob("*.zip")):
+        try:
+            with zipfile.ZipFile(z) as zf:
+                if "data/reference/condados.csv" in zf.namelist():
+                    df = pd.read_csv(io.BytesIO(zf.read("data/reference/condados.csv")), dtype={"fips": str})
+                    fila = df.loc[df["fips"] == fips, "condado"]
+                    if len(fila):
+                        return str(fila.iloc[0])
+        except zipfile.BadZipFile:
+            continue
+    return None
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--zips", type=Path, default=ZIPS, help="carpeta para los zips bajados")
@@ -596,6 +752,8 @@ def main() -> None:
     ap.add_argument("--mapa", action="store_true",
                     help="dibujar también fig0_mapa.png (baja el Census CB 1:500k y consulta los releases)")
     ap.add_argument("--solo-mapa", action="store_true", help="dibujar solo fig0_mapa.png")
+    ap.add_argument("--sin-mapas-condado", action="store_true",
+                    help="no dibujar fig7 (evita bajar los polígonos del Census CB)")
     a = ap.parse_args()
     if a.mapa or a.solo_mapa:
         # antes de fijar NOTA y SUFIJO: el mapa cubre todos los estados y no lleva esa nota ni sufijo
@@ -609,6 +767,7 @@ def main() -> None:
         global ORIGEN
         ORIGEN = f"data release {a.entrega.stem}"
         d = leer_entrega(a.entrega)
+        fuente: list[Path] = []                # la entrega unida no trae condados.csv: la serie va sin nombre
         prod, clima, fen, agua, fenest, rot, clima_m = (d[k] for k in ("prod", "clima", "fen", "agua", "fenest",
                                                                        "rot", "clima_m"))
     else:
@@ -632,6 +791,10 @@ def main() -> None:
     fig_rotacion(rot, a.salida)
     fig_rend_por_anio(prod, a.salida)
     fig_lluvia_imerg_power(clima_m, a.salida)
+    if not a.sin_mapas_condado and rot is not None:
+        fips = set(rot["fips"].astype(str).str.zfill(5))
+        fig_mapas_condado(rot, clima_m, leer_poligonos(a.zips / "census_cb", fips), a.salida)
+    fig_serie_condado(agua, clima_m, a.salida, nombre_condado=nombre_de_condado(fuente, SERIE_FIPS))
 
 
 if __name__ == "__main__":
