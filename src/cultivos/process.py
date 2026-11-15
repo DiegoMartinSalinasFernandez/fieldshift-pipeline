@@ -2,7 +2,8 @@
 
 Salidas (data/processed/cultivos/):
 - produccion_anual.csv  (fips, anio, cultivo, ...) — encuesta por condado.
-- fenologia_estado.csv  (fips_estado, anio, cultivo, doy_50_*) — Crop Progress por estado.
+- fenologia_estado.csv  (fips_estado, anio, cultivo, doy_50_*, flag_hueco_50) — Crop Progress por estado
+  (maíz, soja, avena y trigo de invierno; ver src/cultivos/fenologia.py).
 - practicas_censo.csv   (fips, anio_censo, pct_*) — Censo Agropecuario 2012/2017/2022.
 
 Paso intermedio: cada archivo de raw se filtra una vez a los estados de config.yaml y se guarda
@@ -24,6 +25,7 @@ sys.path.insert(0, str(REPO))
 
 from src.common.config import cargar_config, estados_config  # noqa: E402
 from src.common.conversiones import acres_a_ha, bu_ac_a_kgha  # noqa: E402
+from src.cultivos.fenologia import fenologia_estado  # noqa: E402
 
 RAW = REPO / "data" / "raw" / "cultivos" / "nass"
 INTERIM = REPO / "data" / "interim" / "cultivos"
@@ -125,51 +127,10 @@ def produccion(crops: pd.DataFrame) -> pd.DataFrame:
     return ancho[cols].sort_values(["fips", "anio", "cultivo"]).reset_index(drop=True)
 
 
-def doy_cruce_50(g: pd.DataFrame) -> float:
-    """Día del año en que el % acumulado cruza 50 (interpolación lineal entre semanas)."""
-    g = g.sort_values("doy")
-    x, y = g["doy"].to_numpy(float), g["pct"].to_numpy(float)
-    if len(y) == 0 or y.max() < 50:
-        return np.nan
-    i = int(np.argmax(y >= 50))
-    if i == 0:
-        return float(x[0]) if y[0] == 50 else np.nan
-    return round(float(x[i - 1] + (50 - y[i - 1]) * (x[i] - x[i - 1]) / (y[i] - y[i - 1])), 1)
-
-
 def fenologia(crops: pd.DataFrame) -> pd.DataFrame:
+    """fenologia_estado.csv: la lógica está en src/cultivos/fenologia.py (T135)."""
     cfg = cargar_config()["periodo"]
-    d = crops[(crops["SOURCE_DESC"] == "SURVEY") & (crops["AGG_LEVEL_DESC"] == "STATE")
-              & (crops["STATISTICCAT_DESC"] == "PROGRESS") & (crops["DOMAIN_DESC"] == "TOTAL")
-              & (crops["WEEK_ENDING"] != "")]
-    etapas = {  # columna -> {cultivo: (COMMODITY, UNIT_DESC)}
-        "doy_50_sembrado": {"maiz": ("CORN", "PCT PLANTED"), "soja": ("SOYBEANS", "PCT PLANTED")},
-        "doy_50_emergido": {"maiz": ("CORN", "PCT EMERGED"), "soja": ("SOYBEANS", "PCT EMERGED")},
-        "doy_50_floracion": {"maiz": ("CORN", "PCT SILKING"), "soja": ("SOYBEANS", "PCT BLOOMING")},
-        "doy_50_cosechado": {"maiz": ("CORN", "PCT HARVESTED"), "soja": ("SOYBEANS", "PCT HARVESTED")},
-    }
-    # el maíz se cosecha para grano o silaje: el % cosechado es el de grano
-    util = {("CORN", "PCT HARVESTED"): "GRAIN"}
-    filas = []
-    for col, por_cultivo in etapas.items():
-        for cultivo, (com, unidad) in por_cultivo.items():
-            dv = d[(d["COMMODITY_DESC"] == com) & (d["UNIT_DESC"] == unidad)
-                   & (d["UTIL_PRACTICE_DESC"] == util.get((com, unidad), "ALL UTILIZATION PRACTICES"))].copy()
-            if dv.empty:
-                continue
-            fecha = pd.to_datetime(dv["WEEK_ENDING"].str[:10])
-            dv["anio"] = fecha.dt.year
-            dv["doy"] = fecha.dt.day_of_year
-            dv["pct"] = valor(dv["VALUE"])[0]
-            dv = dv.dropna(subset=["pct"]).drop_duplicates(["STATE_FIPS_CODE", "anio", "doy"])
-            dv = dv[(dv["anio"] >= cfg["anio_inicio"]) & (dv["anio"] <= cfg["anio_fin"])]
-            for (est, anio), g in dv.groupby(["STATE_FIPS_CODE", "anio"]):
-                filas.append({"fips_estado": est.zfill(2), "anio": int(anio), "cultivo": cultivo,
-                              "col": col, "doy": doy_cruce_50(g)})
-    largo = pd.DataFrame(filas)
-    ancho = largo.pivot(index=["fips_estado", "anio", "cultivo"], columns="col", values="doy")
-    ancho = ancho.reindex(columns=list(etapas)).reset_index()
-    return ancho.sort_values(["fips_estado", "anio", "cultivo"]).reset_index(drop=True)
+    return fenologia_estado(crops, cfg["anio_inicio"], cfg["anio_fin"])
 
 
 # Censo: columna -> SHORT_DESC del numerador (acres). Denominador: tierra de cultivo total.
