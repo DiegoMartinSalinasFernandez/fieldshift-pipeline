@@ -210,7 +210,7 @@ Columnas agregadas al final de `produccion_anual.csv` por `src/cultivos/riego_na
   Censo (superficie cosechada con riego, sin rendimiento; propuesta 2 de `para_decidir.md`).
 - La muestra de 2008–2018 está sesgada hacia los condados que siguieron publicando por práctica.
 - **Rendimientos de secano muy bajos o 0:** NASS publica `0` en el secano de algunos condados del oeste en
-  sequías (maíz: NE Dawes, Loup, Garfield, Morrill 2002, Cherry 2004, Blaine y Rock 2007; KS Clark 2000; soja:
+  sequías (maíz: NE Dawes, Loup, Garfield, Morrill 2002, Dawes y Cherry 2004, Dawes, Blaine y Rock 2007; KS Clark 2000; soja:
   KS Harper 2002, Gray 2003, Rooks 2002) y maíz de secano entre 7 y 19 bu/ac en 2002 y 2012. Son valores
   publicados (pérdida casi total), no faltantes: quedan como vienen. Están por debajo del rango de
   `validar_csv()` para el maíz (20–300), que hoy solo mira `rend_bu_ac`.
