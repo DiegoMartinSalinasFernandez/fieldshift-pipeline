@@ -2,7 +2,7 @@
 id: T134
 titulo: Rendimiento y superficie con riego y en secano de NASS en `produccion_anual.csv` (NE y KS, código listo,
   espera OK)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-5
 estados:
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T09:33
-actualizada: 2026-11-15 09:34
+actualizada: 2026-11-15 09:54
 ---
 
 ## Qué hacer
@@ -35,3 +35,4 @@ El código, las pruebas sin red y el data card en un PR con CI en verde, retenid
 
 ## Notas
 - 2026-11-15 09:34 · pro-5: tomada
+- 2026-11-15 09:54 · pro-5: terminada por el trabajador: PR #125, falta la revisión de max-1
