@@ -1,9 +1,9 @@
 ---
 id: T006
 titulo: Calendario de siembra y cosecha de los estados nuevos
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - OH
 - NE
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-14 23:59
-actualizada: 2026-11-14 23:59
+actualizada: 2026-11-15 00:34
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ Progress). No inventar: lo que no se encuentre queda vacío y anotado.
 `config/cultivos.csv` y el research actualizados en una rama con PR (cambiar `config/` se consulta con el humano).
 
 ## Notas
+- 2026-11-15 00:34 · pro-1: tomada
