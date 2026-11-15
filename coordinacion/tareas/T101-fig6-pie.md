@@ -1,9 +1,9 @@
 ---
 id: T101
 titulo: 'Pie de fig6: IMERG viene por la API de POWER'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - OH
 - NE
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T07:02
-actualizada: 2026-11-15T07:02
+actualizada: 2026-11-15 07:03
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ the NASA POWER API (IMERG_PRECTOT)"), regenerá el PNG con los datos del release
 El PNG y el texto en un PR.
 
 ## Notas
+- 2026-11-15 07:03 · pro-1: tomada
