@@ -27,3 +27,4 @@
 - 06:28 T084: tomada por el trabajador
 - 07:27 T084: terminada, PR #96
 - 07:27 T102: tomada por el trabajador
+- 07:34 T102: terminada, PR #97
