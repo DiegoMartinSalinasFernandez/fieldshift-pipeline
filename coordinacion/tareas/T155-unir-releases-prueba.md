@@ -32,3 +32,4 @@ PR con CI en verde y lo que se encontró en el cuerpo del PR.
 
 ## Notas
 - 2026-11-15 12:03 · max-1: tomada
+- 2026-11-15 12:03 · max-1: La toma max-1 a pedido del humano: además de probar unir_estados.py, que todos los nombres de columna coincidan entre la v3 (IA/IL/IN, loop) y los releases por paquete.
