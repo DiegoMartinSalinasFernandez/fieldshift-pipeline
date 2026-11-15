@@ -1,14 +1,14 @@
 ---
 id: T131
 titulo: SEETileDrain por píxel en el paquete `lotes` (código listo, espera OK)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:24
-actualizada: 2026-11-15 09:31
+actualizada: 2026-11-15 10:12
 ---
 
 ## Qué hacer
@@ -30,3 +30,4 @@ El código, las pruebas sin red y el data card en un PR con CI en verde, retenid
 
 ## Notas
 - 2026-11-15 09:31 · pro-1: tomada
+- 2026-11-15 10:12 · pro-1: terminada por el trabajador: PR #132, falta la revisión de max-1
