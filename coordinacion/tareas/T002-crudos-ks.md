@@ -1,7 +1,7 @@
 ---
 id: T002
 titulo: Bajar los crudos de KS
-estado: tomada
+estado: hecha
 plan_minimo: max
 maquina: max-1
 estados:
@@ -9,7 +9,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-14 23:59
-actualizada: 2026-11-14 23:59
+actualizada: 2026-11-15 01:31
 ---
 
 ## Qué hacer
@@ -23,3 +23,4 @@ Igual que T001.
 
 ## Notas
 - 2026-11-14 23:59 · max-1: tomada (en curso en esta máquina)
+- 2026-11-15 01:31 · max-1: terminada: crudos de KS completos en max-1 (11 GB, copia local ResearchAgent-kansas): clima, IMERG (los 9 errores del primer pase se recuperaron en el segundo), suelo_terreno, cultivos (NASS y CDL), economia, agua, MODIS, NLDAS y paisaje. Falta validacion (PRISM, opcional): el script no estaba en el commit de la copia. Quedan de respaldo: T013 en max-2 los baja de nuevo de punta a punta.
