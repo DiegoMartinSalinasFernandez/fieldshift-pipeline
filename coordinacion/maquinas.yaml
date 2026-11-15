@@ -5,11 +5,11 @@ maquinas:
   max-1:
     plan: max
     rol: coordinación, unión de estados y entregas a ML
-    estados: [OH, NE, MN, KS]   # descargas en curso desde el 2026-11-14
+    estados: [OH, NE, MN]   # Kansas pasa a max-2 (T013)
   max-2:
     plan: max
-    rol: sin asignar
-    estados: []
+    rol: Kansas de punta a punta (T013); notebook con RTX 4060
+    estados: [KS]
   pro-1:
     plan: pro
     rol: research (T006 hecha, PR 1)

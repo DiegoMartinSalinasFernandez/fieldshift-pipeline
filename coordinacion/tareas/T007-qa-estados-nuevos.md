@@ -11,6 +11,7 @@ estados:
 - KS
 depende_de:
 - T003
+- T013
 rama: null
 creada: 2026-11-14 23:59
 actualizada: 2026-11-14 23:59

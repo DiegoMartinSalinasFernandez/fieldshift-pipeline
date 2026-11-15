@@ -1,7 +1,7 @@
 ﻿<#
 Lanzador del trabajador automático (scripts/trabajador.py) en segundo plano, sin ventana.
 
-  powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 iniciar [-Horas 7] [-Solo T009]
+  powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 iniciar [-Horas 7] [-Solo T009] [-MinutosTarea 400]
   powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 estado
   powershell -ExecutionPolicy Bypass -File scripts\trabajador.ps1 parar [-Ya]
 
@@ -15,6 +15,7 @@ param(
     [string]$Solo = "",
     [string]$Modelo = "opus",
     [string]$Effort = "medium",
+    [double]$MinutosTarea = 0,
     [switch]$Ya
 )
 $ErrorActionPreference = "Stop"
@@ -83,6 +84,7 @@ Remove-Item -Force -ErrorAction SilentlyContinue (Join-Path $dir "STOP")
 $script = '"' + (Join-Path $trab "scripts\trabajador.py") + '"'
 $argumentos = @("-X", "utf8", $script, "correr", "--horas", "$Horas", "--modelo", $Modelo, "--effort", $Effort)
 if ($Solo) { $argumentos += @("--solo", $Solo) }
+if ($MinutosTarea -gt 0) { $argumentos += @("--minutos-tarea", "$MinutosTarea") }
 $p = Start-Process -FilePath $py -ArgumentList $argumentos -WorkingDirectory $trab -WindowStyle Hidden -PassThru `
     -RedirectStandardOutput (Join-Path $dir "salida.txt") -RedirectStandardError (Join-Path $dir "errores.txt")
 Set-Content -Path $pidf -Value $p.Id -Encoding ascii

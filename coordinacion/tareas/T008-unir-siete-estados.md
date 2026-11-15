@@ -15,6 +15,7 @@ estados:
 depende_de:
 - T003
 - T007
+- T013
 rama: null
 creada: 2026-11-14 23:59
 actualizada: 2026-11-15 01:15

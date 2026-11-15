@@ -1,6 +1,6 @@
 ---
 id: T003
-titulo: Procesar los estados nuevos y publicar sus zips
+titulo: Procesar OH, NE y MN y publicar sus zips
 estado: libre
 plan_minimo: max
 maquina: null
@@ -8,13 +8,12 @@ estados:
 - OH
 - NE
 - MN
-- KS
 depende_de:
 - T001
 - T002
 rama: null
 creada: 2026-11-14 23:59
-actualizada: 2026-11-15 01:15
+actualizada: 2026-11-15 01:25
 auto: false
 ---
 
@@ -31,3 +30,4 @@ con la cobertura real de cada estado.
 
 ## Notas
 - 2026-11-15 01:15 · max-1: no la toma el trabajador automático: necesita los crudos que están en max-1
+- 2026-11-15 01:25 · max-1: Kansas pasa a T013 (max-2, de punta a punta); esta queda para OH, NE y MN en max-1
