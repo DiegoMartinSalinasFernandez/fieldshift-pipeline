@@ -1,7 +1,7 @@
 ---
 id: T127
 titulo: 'Riego por condado y año desde LANID (`cultivos`): código listo, espera OK'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados:
@@ -10,7 +10,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T09:11
-actualizada: 2026-11-15 09:12
+actualizada: 2026-11-15 09:43
 ---
 
 ## Qué hacer
@@ -41,3 +41,4 @@ El código, las pruebas y el data card en un PR con CI en verde, retenido como d
 
 ## Notas
 - 2026-11-15 09:12 · pro-2: tomada
+- 2026-11-15 09:43 · pro-2: terminada por el trabajador: PR #121, falta la revisión de max-1
