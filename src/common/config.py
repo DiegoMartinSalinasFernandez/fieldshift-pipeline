@@ -24,11 +24,21 @@ def estados_elegidos() -> list[str] | None:
     return [s.strip().upper() for s in v.split(",") if s.strip()] or None
 
 
-@lru_cache(maxsize=1)
 def cargar_config() -> dict:
+    """config.yaml con `zona.estados` filtrado por FIELDSHIFT_ESTADOS.
+
+    La caché usa los estados elegidos como clave: si la variable cambia dentro del mismo proceso
+    (un notebook, una prueba), la configuración se recarga sola. `cargar_config.cache_clear()`
+    sigue sirviendo para forzar una relectura de config.yaml.
+    """
+    elegidos = estados_elegidos()
+    return _cargar_config(tuple(elegidos) if elegidos else None)
+
+
+@lru_cache(maxsize=8)
+def _cargar_config(elegidos: tuple[str, ...] | None) -> dict:
     with open(CONFIG, encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
-    elegidos = estados_elegidos()
     if elegidos:
         todos = cfg["zona"]["estados"]
         faltan = [s for s in elegidos if s not in todos]
@@ -36,6 +46,9 @@ def cargar_config() -> dict:
             raise ValueError(f"{VAR_ESTADOS}: estados que no están en config.yaml: {faltan}")
         cfg["zona"]["estados"] = {s: todos[s] for s in elegidos}
     return cfg
+
+
+cargar_config.cache_clear = _cargar_config.cache_clear  # type: ignore[attr-defined]
 
 
 def estados_config() -> dict:

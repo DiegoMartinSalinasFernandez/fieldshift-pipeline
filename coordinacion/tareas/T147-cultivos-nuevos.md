@@ -2,7 +2,7 @@
 id: T147
 titulo: Sumar cultivos nuevos al esquema (maíz para silo, trigo de primavera, cebada, girasol, canola, frijol seco)
   (código listo, espera OK)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -13,7 +13,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T10:17
-actualizada: 2026-11-15 10:17
+actualizada: 2026-11-15 10:30
 ---
 
 ## Qué hacer
@@ -41,3 +41,4 @@ El cambio, las pruebas sin red y la documentación en un PR con CI en verde, ret
 
 ## Notas
 - 2026-11-15 10:17 · pro-1: tomada
+- 2026-11-15 10:30 · pro-1: terminada por el trabajador: PR #139, falta la revisión de max-1
