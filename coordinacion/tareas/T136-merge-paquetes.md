@@ -2,14 +2,14 @@
 id: T136
 titulo: '`src/merge.py`: sumar economía, paisaje, NLDAS, ECOSTRESS, teledetección, censo y secuencias (código listo,
   espera OK)'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:51
-actualizada: 2026-11-15 09:54
+actualizada: 2026-11-15 10:00
 ---
 
 ## Qué hacer
@@ -40,3 +40,4 @@ El código, las pruebas sin red y la documentación en un PR con CI en verde, re
 
 ## Notas
 - 2026-11-15 09:54 · pro-5: tomada
+- 2026-11-15 10:00 · pro-5: terminada por el trabajador: PR #128, falta la revisión de max-1
