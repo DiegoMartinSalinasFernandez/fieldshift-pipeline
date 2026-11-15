@@ -13,3 +13,4 @@
 - 02:27 T019: tomada por el trabajador
 - 02:36 T019: terminada, PR #12
 - 02:36 T020: tomada por el trabajador
+- 02:41 T020: terminada, PR #15
