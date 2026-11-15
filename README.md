@@ -11,7 +11,7 @@ for the US Corn Belt, and writes them as CSV tables ready for the team that buil
 
 | | |
 |---|---|
-| Area | 7 Corn Belt states, all counties (666): IA, IL, IN, OH, NE, MN, KS (`config/config.yaml`). A third batch (MO, WI, SD) was approved on 2026-11-15 and is in progress [TBD] |
+| Area | 7 Corn Belt states, all counties (666): IA, IL, IN, OH, NE, MN, KS (`config/config.yaml`). A third batch (MO, WI, SD) was approved on 2026-11-15 and is in progress (no published release yet on 2026-11-15, see [`docs/demo/coverage.md`](docs/demo/coverage.md)) |
 | Period | 2000–2025; crop rotations from 2008 (first year the Cropland Data Layer covers the whole US) |
 | Units | County (5-digit FIPS) × year; monthly, daily and 8/16-day files where relevant |
 | Crops | Corn, soybean, winter wheat, oats, alfalfa, other hay; cover crops as a practice (Census of Agriculture) |
@@ -31,7 +31,9 @@ validate NASA rain and temperature against ground data).
 - **Processed data:** not stored in git. They are published as zip files in the [Releases](../../releases),
   one release per group of states (`datos-<states>`, e.g. `datos-ks`), one zip per package with its `.sha256`,
   data card and `manifest.csv` (one row per downloaded file: source, product, version, date, query).
-  Current list of releases: [TBD].
+  Published so far (2026-11-15): [`datos-oh-ne-mn`](../../releases/tag/datos-oh-ne-mn) (Ohio, Nebraska,
+  Minnesota; 268 counties, 2000–2025). The other groups of states are in progress. Counted rows, columns and
+  years per file: [`docs/demo/coverage.md`](docs/demo/coverage.md).
 - **Data cards** (column dictionary, units, real coverage, % missing, assumptions, known problems; in Spanish):
   [`docs/datasets/<package>.md`](docs/datasets). Merged tables: [`docs/datasets/merge.md`](docs/datasets/merge.md)
   (run of 2026-11-14, first batch IA/IL/IN: `tabla_anual.csv` 25,070 rows × 73 columns, `tabla_mensual.csv`
