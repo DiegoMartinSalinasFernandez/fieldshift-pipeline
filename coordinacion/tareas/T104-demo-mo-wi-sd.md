@@ -1,7 +1,7 @@
 ---
 id: T104
 titulo: Actualizar coverage, mapa y láminas cuando se publique datos-mo-wi-sd
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -12,7 +12,7 @@ depende_de:
 - T062
 rama: null
 creada: 2026-11-15T07:25
-actualizada: 2026-11-15 10:52
+actualizada: 2026-11-15 10:55
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ Los documentos y el mapa actualizados en un PR.
 
 ## Notas
 - 2026-11-15 10:52 · pro-1: tomada
+- 2026-11-15 10:55 · pro-1: terminada por el trabajador: PR #144, falta la revisión de max-1
