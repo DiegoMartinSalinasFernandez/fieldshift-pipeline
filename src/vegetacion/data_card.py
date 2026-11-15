@@ -128,7 +128,8 @@ TEXTO = """
   (`modis.ornl.gov/rst/api/v1`, ~57 s por pedido de 10 fechas y por punto, errores 502: inviable).
 - NLDAS trae valores fuera del rango del contrato en muy pocas filas y se dejan como vienen: ET y PET
   apenas negativas (hasta −0,5 mm) en enero de 2006 en el noroeste de Iowa (condensación/escarcha neta
-  en el modelo) y PET > 500 mm en julio de 2012 (sequía) en 5 condados. `et_pet_ratio` queda vacío
+  en el modelo) y PET > 500 mm en julio de 2012 (sequía) en 5 condados (visto en la primera tanda,
+  IA, IL e IN). `et_pet_ratio` queda vacío
   cuando `pet_mm` <= 1 mm.- MCD12Q1 no se bajó (la máscara agrícola del CDL ya existe).
 - 2025 incompleto en origen: Planetary Computer no tiene los compuestos de mediados de 2025
   (MOD13Q1 entre A2025193 y A2025305; MOD11A2 entre A2025185 y A2025321; revisado el 2026-11-14).

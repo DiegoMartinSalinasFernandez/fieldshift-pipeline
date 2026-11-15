@@ -8,6 +8,7 @@ agrícola. Escribe data/processed/paisaje/paisaje_anual.csv y la tabla de docs/d
 Uso: python src/paisaje/process.py
 """
 import re
+import sys
 import time
 from pathlib import Path
 
@@ -18,6 +19,8 @@ import rasterio
 from rasterio.features import rasterize
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+from src.zona_texto import lista_estados  # noqa: E402
 RAW = ROOT / "data/raw/paisaje"
 OUT = ROOT / "data/processed/paisaje"
 CARD = ROOT / "docs/datasets/paisaje.md"
@@ -122,7 +125,7 @@ def escribir_card(df):
     tabla = "\n".join(filas)
     anios = sorted(df["anio"].unique()) if len(df) else []
     cobertura = f"{len(df)} filas, {df['fips'].nunique() if len(df) else 0} condados, años {anios[0] if anios else ''}-{anios[-1] if anios else ''}"
-    CARD.write_text(TEXTO.format(tabla=tabla, cobertura=cobertura), encoding="utf-8")
+    CARD.write_text(TEXTO.format(tabla=tabla, cobertura=cobertura, estados=lista_estados()), encoding="utf-8")
 
 
 TEXTO = """# Data card — paisaje
@@ -145,7 +148,7 @@ agua, y la superficie impermeable media.
   y `Annual_NLCD_FctImp_<anio>_CU_C1V1.tif` (COG). Originales en `s3://usgs-landcover/annual-nlcd/c1/v1/cu/mosaic/`
   (requester-pays); se leen sin login desde el mirror público de Source Cooperative
   `https://data.source.coop/kylebarron/usgs-landcover/annual-nlcd/c1/v1/cu/mosaic/`.
-- `src/paisaje/download.py` lee por ventana solo el bbox de cada estado (IA, IL, IN) y lo guarda tal cual
+- `src/paisaje/download.py` lee por ventana solo el bbox de cada estado ({estados}) y lo guarda tal cual
   (mismos valores, misma grilla de 30 m) en `data/raw/paisaje/Annual_NLCD_<producto>_<anio>_<estado>_C1V1.tif`.
 
 ## Supuestos
