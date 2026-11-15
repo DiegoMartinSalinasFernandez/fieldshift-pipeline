@@ -32,7 +32,7 @@ How to read it:
 | Release | States (counties) | Counties | Years (county files) | Packages | Zips (MB) | Published | Status |
 |---|---|---|---|---|---|---|---|
 | `datos-ia-il-in` | Iowa, Illinois, Indiana (first batch) | | | | | | in progress |
-| `datos-oh-ne-mn` | MN (87), NE (93), OH (88) | 268 | 2000–2025 | 8 | 91.2 | 2026-11-15 | published |
+| `datos-oh-ne-mn` | MN (87), NE (93), OH (88) | 268 | 2000–2025 | 8 | 91.0 | 2026-11-15 | published |
 | `datos-ks` | Kansas | | | | | | in progress |
 | `datos-mo-wi-sd` | Missouri, Wisconsin, South Dakota | | | | | | in progress |
 | `fieldshift_lotes_v1` | 10 demonstration fields, per 30 m pixel (CLAUDE.md §6.6) | | | | | | in progress |
@@ -57,9 +57,9 @@ How to read it:
 | `nldas` (1.8 MB zip) | `nldas_mensual.csv` | 83,616 | 9 | fips | 268 | 2000–2025 (26 years) |
 | `paisaje` (0.5 MB zip) | `paisaje_anual.csv` | 6,700 | 9 | fips | 268 | 2000–2024 (25 years) |
 | `suelo_terreno` (0.4 MB zip) | `suelo_terreno_estatico.csv` | 268 | 25 | fips | 268 |  |
-| `vegetacion` (5.2 MB zip) | `fenologia_anual.csv` | 6,968 | 12 | fips | 268 | 2000–2025 (26 years) |
-| `vegetacion` (5.2 MB zip) | `vegetacion_16d.csv` | 154,368 | 8 | fips | 268 | 2000–2025 (26 years) |
-| `vegetacion` (5.2 MB zip) | `vegetacion_mensual.csv` | 82,276 | 16 | fips | 268 | 2000–2025 (26 years) |
+| `vegetacion` (5.0 MB zip) | `fenologia_anual.csv` | 6,968 | 12 | fips | 268 | 2000–2025 (26 years) |
+| `vegetacion` (5.0 MB zip) | `vegetacion_16d.csv` | 156,512 | 8 | fips | 268 | 2000–2025 (26 years) |
+| `vegetacion` (5.0 MB zip) | `vegetacion_mensual.csv` | 82,276 | 16 | fips | 268 | 2000–2025 (26 years) |
 
 <!-- coverage:end -->
 
