@@ -49,9 +49,11 @@ Cómo llegan los datos al equipo de machine learning. Sale de las reglas que ver
 | NLDAS-2 | `nldas_mensual` | condado y mes |
 | USGS NWIS (pozos y aforos) | `hidrologia_mensual` | condado y mes |
 
-- `tabla_anual.csv` junta todos los archivos anuales y estáticos. Los que son por estado (`fenologia_estado`, `economia_*`) se unen por los dos primeros dígitos de `fips`.
-- `tabla_mensual.csv` junta todos los `*_mensual.csv`.
-- `rotacion_secuencia.csv` (ventanas de 8 años) y `practicas_censo.csv` (solo años de censo) quedan aparte porque tienen otra granularidad.
+- `tabla_anual.csv` junta los archivos anuales y estáticos que une `src/merge.py`: `produccion_anual` (base), `clima_anual`, `rotacion_anual`, `fenologia_anual`, `fenologia_estado`, `suelo_terreno_estatico` y, desde T136 (espera el OK de `para_decidir.md` #27), `economia_anual` + `economia_forrajes_anual`, `paisaje_anual`, `teledeteccion_anual` y `practicas_censo`. Los que son por estado (`fenologia_estado`, `economia_*`) se unen por los dos primeros dígitos de `fips`. `aptitud_estatico` todavía no tiene código y no entra.
+- `tabla_mensual.csv` junta `clima_mensual`, `vegetacion_mensual`, `agua_mensual` y, desde T136, `nldas_mensual` y `ecostress_mensual`. `validacion_mensual` (PRISM, CoCoRaHS: no son de la NASA) y `hidrologia_mensual` (sin código) no entran.
+- `practicas_censo.csv` entra en `tabla_anual` con el **último censo con `anio_censo` ≤ `anio`** (2012–2016 → 2012, 2017–2021 → 2017, 2022+ → 2022; antes de 2012, vacío) y la columna `anio_censo_ref` con el año del censo usado. Así no se usan datos del futuro.
+- `rotacion_secuencia.csv` (ventanas de 8 años) queda aparte: qué ventana corresponde a cada año es una decisión de modelado (`docs/research/merge_faltantes.md` §3).
+- Choques de nombres: las columnas que ya salían no cambian. Una columna nueva que choca lleva el paquete adelante (`flag_nass` de economía → `economia_flag_nass`), y `frac_pixeles_validos` lleva siempre el prefijo (`teledeteccion_frac_pixeles_validos`). Detalle en `docs/datasets/merge.md`.
 
 ## Cómo se publican y se unen los 7 estados
 
@@ -243,10 +245,10 @@ X = anual.merge(ancho.reset_index(), on=["fips", "anio"], how="left")
 | `costo_operativo_usd_ac` *(nombre propuesto)* | Costos operativos por acre sembrado (ERS, Heartland) | USD/acre sembrado | MK03 · Baja | 10 a 1.500 | 2000 |
 | `costo_total_usd_ac` *(nombre propuesto)* | Costos totales listados por acre sembrado (ERS, Heartland) | USD/acre sembrado | MK03 · Baja | 20 a 2.500 | 2000 |
 | `margen_operativo_usd_ac` *(nombre propuesto)* | Valor de la producción − costos operativos (ERS, Heartland) | USD/acre sembrado | MK02 · Media | −1.500 a 2.500 | 2000 |
-| `flag_nass` | Código original de NASS cuando el valor está oculto: (D), (Z) | código | — | — | 2000 |
+| `flag_nass` | Código original de NASS cuando el valor está oculto: (D), (Z). En `tabla_anual` sale como `economia_flag_nass` | código | — | — | 2000 |
 | **economia_forrajes_anual.csv** | claves: `fips_estado`, `anio`, `cultivo` | | | | |
 | `precio_usd_ton` *(nombre propuesto)* | Precio recibido del año comercial (NASS, por estado) | USD/tonelada corta | MK01 · Media | 10 a 700 | 2000 |
-| `flag_nass` | Código original de NASS cuando el valor está oculto: (D), (Z) | código | — | — | 2000 |
+| `flag_nass` | Código original de NASS cuando el valor está oculto: (D), (Z). En `tabla_anual` sale como `economia_flag_nass` | código | — | — | 2000 |
 | **aptitud_estatico.csv** | claves: `fips` | | | | |
 | `aptitud_maiz_1981_2010` *(nombre propuesto)* | Índice de aptitud agroclimática por cultivo | índice 0–100 | Z01 · Media | 0 a 100 | fijo |
 | `aptitud_soja_1981_2010` *(nombre propuesto)* | Índice de aptitud agroclimática por cultivo | índice 0–100 | Z01 · Media | 0 a 100 | fijo |
@@ -279,7 +281,7 @@ X = anual.merge(ancho.reset_index(), on=["fips", "anio"], how="left")
 | `bsi_abr_may` *(nombre propuesto)* | Índice de suelo desnudo (BSI) medio, abril–mayo | índice −1 a 1 | H05 · Media | −1 a 1 | 2008 |
 | `ndvi_max_30m` *(nombre propuesto)* | NDVI máximo abril–septiembre a 30 m | índice −1 a 1 | H02 · Media | −1 a 1 | 2008 |
 | `n_escenas_validas` *(nombre propuesto)* | Escenas Landsat / Sentinel-2 usadas | escenas | — | 0 a 5.000 | 2008 |
-| `frac_pixeles_validos` | Máscara de nubes (Fmask) | fracción 0–1 | H06 · Media | 0 a 1 | 2008 |
+| `frac_pixeles_validos` | Máscara de nubes (Fmask). En `tabla_anual` sale como `teledeteccion_frac_pixeles_validos` | fracción 0–1 | H06 · Media | 0 a 1 | 2008 |
 
 ### Archivos de `tabla_mensual.csv`
 
