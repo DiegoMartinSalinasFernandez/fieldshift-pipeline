@@ -1,9 +1,9 @@
 ---
 id: T017
 titulo: 'Research: dónde hay drenaje con caños (tile) por condado y por píxel'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:40
-actualizada: 2026-11-15 01:40
+actualizada: 2026-11-15 02:22
 ---
 
 ## Qué hacer
@@ -39,3 +39,4 @@ Escribí `docs/research/drenaje_tile.md`.
 El research en un PR, con una recomendación de cuál usar (o ninguno) y por qué.
 
 ## Notas
+- 2026-11-15 02:22 · pro-1: tomada
