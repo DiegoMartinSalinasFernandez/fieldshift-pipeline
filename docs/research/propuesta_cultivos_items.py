@@ -4,7 +4,8 @@ Pide a la interfaz web pública de Quick Stats (sin clave) un CSV por estado, cu
 2000–2025, a nivel condado y estado. Los CSV quedan en la carpeta que se le pasa (fuera del repo) y no se vuelven
 a bajar. Después resume, por estado y Data Item (= short_desc) con Domain TOTAL:
   - nivel condado: años con al menos un condado (sin OTHER COUNTIES), primer y último año, máximo de condados;
-  - nivel estado: media 2020–2025 del valor (para la superficie sembrada, el peso del cultivo en el estado).
+  - nivel estado (solo superficie sembrada y cosechada): media 2020–2025, el peso del cultivo en el estado.
+El nivel condado se pide solo en ND, SD, MN y WI (más KS girasol y NE silo, frijol y girasol).
 
 Uso:
   .venv/bin/python -X utf8 docs/research/propuesta_cultivos_items.py <carpeta_csv> > items.csv
@@ -26,6 +27,9 @@ COMMODITIES = {"CORN": {"util_practice_desc": "SILAGE"}, "WHEAT": {}, "SUNFLOWER
                "BARLEY": {}, "BEANS": {}}
 STATS = ["YIELD", "AREA PLANTED", "AREA HARVESTED", "PRODUCTION"]
 ANIOS = [str(a) for a in range(2000, 2026)]
+# Condado: solo donde el cultivo pesa (en el resto basta la superficie del estado), para que entre en el tiempo.
+CONDADO = {"ND", "SD", "MN", "WI"}
+CONDADO_EXTRA = {("KS", "SUNFLOWER"), ("NE", "BEANS"), ("NE", "CORN"), ("NE", "SUNFLOWER")}
 UA = {"User-Agent": "Mozilla/5.0 (fieldshift-research)"}
 
 
@@ -60,6 +64,10 @@ def main() -> None:
         for com in COMMODITIES:
             for stat in STATS:
                 for nivel in ("COUNTY", "STATE"):
+                    if nivel == "COUNTY" and est not in CONDADO and (est, com) not in CONDADO_EXTRA:
+                        continue
+                    if nivel == "STATE" and stat not in ("AREA PLANTED", "AREA HARVESTED"):
+                        continue
                     try:
                         p = bajar(carpeta, est, com, stat, nivel)
                     except Exception as e:  # se anota y se sigue
