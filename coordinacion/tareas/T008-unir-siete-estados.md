@@ -18,7 +18,7 @@ depende_de:
 - T013
 rama: null
 creada: 2026-11-14 23:59
-actualizada: 2026-11-15 02:23
+actualizada: 2026-11-15 03:20
 sugerida_para: max-1
 auto: false
 ---
@@ -36,3 +36,4 @@ Tablas unidas de los 7 estados validadas, y la entrega publicada para el equipo 
 ## Notas
 - 2026-11-15 01:15 · max-1: no la toma el trabajador automático: la hace max-1, que coordina
 - 2026-11-15 02:23 · max-1: De T010 (PR 5): twi_decil_sup_pct usa el p90 de TWI de los condados que procesa cada máquina, así que no es comparable entre estados. Antes de unir: decidir con el humano (a) umbral fijo de la primera tanda en config, (b) recalcular con histogramas de todas las máquinas, o (c) percentil por condado. También revisar en T003 el aviso de áreas de SSURGO sin condado y las teselas MODIS h09v04/h09v05 de NE y KS.
+- 2026-11-15 03:20 · max-1: Antes de unir: src/merge.py de este repo tiene la lista fija de archivos (PR 29, pruebas xfail en tests/test_merge.py). max-1 trae la versión de ResearchAgent, que lee loop/spec/entregables.yaml, cuando termine la corrida; después se sacan los expectedFailure.
