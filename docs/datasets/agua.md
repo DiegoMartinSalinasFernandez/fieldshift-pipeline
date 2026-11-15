@@ -20,6 +20,14 @@ Paquete `agua` de Field Shift (CLAUDE.md §6.4): humedad del suelo y agua subter
 
 ## Fuentes y acceso
 
+- **DOI de los productos de la NASA:**
+  - SMAP L4 `SPL4SMGP` Version 8 (NSIDC DAAC): https://doi.org/10.5067/T5RUATAQREF8. Crop-CASMA no
+    informa la versión. Desde el 2025-07-04 es V8 seguro, porque la V7 termina el 2025-07-03 en CMR. Antes
+    de esa fecha puede ser V7 (https://doi.org/10.5067/EVKPQZ4AFC4D) o la V8 reprocesada.
+  - Servicio Crop-CASMA: Zhang et al. (2022), https://doi.org/10.1016/j.jag.2022.102902
+  - GRACE-DA-DM EE.UU. V4.0 (`GRACEDADM_CLSM0125US_7D`, GES DISC): https://doi.org/10.5067/UH653SEZR9VQ
+- Citas completas: `docs/research/citas_nasa.md`.
+
 - **GRACE-DA-DM, versión solo EE.UU.** (`GRACEDADM_CLSM0125US_7D`, versión 030 en el nombre del
   archivo; atributo `version` = 040 dentro del archivo), 0,125°, semanal. NASA GSFC Hydrological Sciences
   Lab, modelo Catchment con asimilación de GRACE/GRACE-FO. Se bajó del servidor público del National

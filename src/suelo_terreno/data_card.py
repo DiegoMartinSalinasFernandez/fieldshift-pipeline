@@ -50,6 +50,11 @@ COLS = {
 TEXTO = """
 ## Fuentes y acceso
 
+- **DOI:** NASADEM Merged DEM Global 1 arc second V001 (`NASADEM_HGT`, LP DAAC):
+  https://doi.org/10.5067/MEASURES/NASADEM/NASADEM_HGT.001. SSURGO (USDA NRCS) no tiene DOI: se cita como
+  pide Soil Data Access.
+- Citas completas: `docs/research/citas_nasa.md`.
+
 - **SSURGO** (USDA NRCS) por **Soil Data Access** (`https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest`,
   sin login). `src/suelo_terreno/download.py` consulta por estado las tablas `mapunit` + `muaggatt`,
   `component`, `chorizon` (+ suma de `chfrags.fragvol_r`), `corestrictions` y `cointerp` (NCCPI 3.0) y
