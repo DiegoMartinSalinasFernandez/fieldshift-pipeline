@@ -25,3 +25,4 @@
 - 03:24 T040: tomada por el trabajador
 - 03:25 T040: a medias, PR #33
 - 03:25 T040: tomada por el trabajador
+- 03:25 T040: a medias, PR #33 actualizado
