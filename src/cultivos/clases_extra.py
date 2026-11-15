@@ -15,10 +15,12 @@ Este módulo:
 3. CLI:
    - `python -m src.cultivos.clases_extra --escribir` reescribe `clases_cdl.csv` con los grupos.
    - `python -m src.cultivos.clases_extra --efecto <cdl1.tif> [<cdl2.tif> ...]` mide el efecto
-     en recortes del CDL (EPSG:5070) usando `data/reference/condados.gpkg`.
+     en recortes del CDL (EPSG:5070) usando `data/reference/condados.gpkg`. Con `--sumar` junta
+     los conteos de todas las teselas (condados completos).
 
 No cambia `rotacion_anual()` ni las máscaras: las clases 27 y 58 ya cuentan como área agrícola
-(`AGRICOLA` de `process.py`, códigos 1–61) y el 0 ya queda fuera del denominador. Lo que cambia
+(`AGRICOLA` de `process.py`, códigos 1–61) y el 0 ya queda fuera del denominador. Sí cambia la
+columna `cultivo` de `src/lotes/process.py`, que sale de `grupo`. Lo que cambia
 cada escenario se documenta en `docs/datasets/cultivos.md` (sección T139).
 """
 from __future__ import annotations
