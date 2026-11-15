@@ -1,0 +1,4 @@
+# Bitácora de pro-4
+
+## 2026-11-15
+- 02:35 Máquina preparada (uv, .venv 3.11, gh). T025 hecha: scripts/verificar_entrega.py controla zips de entregar.py o carpetas de unir_estados.py contra el contrato; PR #11. Sirve para T007 y T008: usa los fips del condados.csv del zip e ignora FIELDSHIFT_ESTADOS mientras valida. Falta: anotar pro-4 en coordinacion/maquinas.yaml.
