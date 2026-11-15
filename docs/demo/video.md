@@ -17,7 +17,8 @@ Rules this script follows (`docs/research/space_apps_criterios.md` §1–§2):
 - No NASA logos (and no AI-modified logos): credits are plain text. Any AI-generated image or voice carries a
   visible "AI-generated" watermark. No people under 18.
 
-Items in **[TBD]** are for the team: project name and tagline, team name, repo link.
+Items in **[TBD]** are for the team: project name and tagline, team name. The open list is in
+[`pendientes_humano.md`](pendientes_humano.md).
 
 ---
 
@@ -122,7 +123,7 @@ Total: **30 s**. Narration: **71 words** (about 70 fit in 30 s; see the word cou
 - **On-screen text:**
   - **Built on open NASA data:** POWER · GPM IMERG (via POWER) · SMAP · GRACE-DA-DM · MODIS · NLDAS-2 · NASADEM
   - *+ USDA NASS, NRCS, ERS · 268 counties published (OH, NE, MN), 2000–2025*
-  - **[TBD: repo URL]**
+  - https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline `[src: git remote get-url origin, 2026-11-15]`
 - **Narration (13 words):** "Open NASA data, an open pipeline, and the farmer still makes the call."
 - **Subtitle (2 lines):**
   - `Open NASA data, an open pipeline,`
