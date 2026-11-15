@@ -1,14 +1,14 @@
 ---
 id: T140
 titulo: 'Rama de integración con todos los PR retenidos (117 a 126 y los que sigan): conflictos y pruebas'
-estado: tomada
+estado: libre
 plan_minimo: pro
-maquina: pro-2
+maquina: null
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:59
-actualizada: 2026-11-15 10:21
+actualizada: 2026-11-15 10:23
 ---
 
 ## Qué hacer
@@ -44,3 +44,4 @@ El PR en borrador abierto con la tabla y las pruebas en verde (o la lista exacta
 - 2026-11-15 10:20 · pro-2: terminada: Hecha por max-1: PR en borrador 135 (integracion/retenidos).
 - 2026-11-15 10:20 · pro-2: soltada: quedó a medias, PR #136. INCOMPLETA: la combinación de los 16 PR retenidos (117–132) está resuelta y probada (422 pasan), pero sigue siendo una simulación. En las dos sesiones `git merge`, `git worktree` y `gh` estuvieron bloqueados por permisos, y el trabajador no puede cambiar de rama ni abrir PR. Falta crear la rama `int
 - 2026-11-15 10:21 · pro-2: tomada
+- 2026-11-15 10:23 · pro-2: soltada: quedó a medias, PR #137. INCOMPLETA: falta sumar el PR 134 (T141) a la rama real `integracion/retenidos` y agregar su fila al PR 135. El merge está probado (limpio, 430 pruebas pasan), pero esta sesión no puede cambiar de rama, crear commits en otra rama, hacer push ni usar `gh`. Son 4 comandos y están en `docs/qa/integraci
