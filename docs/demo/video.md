@@ -123,7 +123,7 @@ Total: **30 s**. Narration: **71 words** (about 70 fit in 30 s; see the word cou
 - **On-screen text:**
   - **Built on open NASA data:** POWER · GPM IMERG (via POWER) · SMAP · GRACE-DA-DM · MODIS · NLDAS-2 · NASADEM
   - *+ USDA NASS, NRCS, ERS · 268 counties published (OH, NE, MN), 2000–2025*
-  - https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline `[src: git remote get-url origin, 2026-11-15]`
+  - <repo URL> (the public GitHub URL of this repository)
 - **Narration (13 words):** "Open NASA data, an open pipeline, and the farmer still makes the call."
 - **Subtitle (2 lines):**
   - `Open NASA data, an open pipeline,`

@@ -13,6 +13,7 @@ exige (sin eso el proyecto no entra a Global Judging), después lo que cambia lo
 |---|---|---|---|---|
 | 1 | `project_page.md` | 70 | Link público a la demo: video de ≤ 30 s **o** hasta 7 láminas, fuera del sitio de Space Apps | Equipo (subir el video o las láminas) |
 | 2 | `project_page.md` | 31 | Nombre final del proyecto (título provisorio: *Field Shift: Rotations Read from Space*) | Equipo |
+| 2b | `project_page.md`, `slides.md`, `video.md` | 78; 239–240, 270; 126 | Pegar la URL pública del repo donde dice `<repo URL>` (en el formulario, la lámina 7 y los créditos del video). En el repo no se escribe el usuario de GitHub: el repo es público | Humano |
 | 3 | `project_page.md` | 34–35 | Nombre del equipo, integrantes (6 como máximo) y evento local | Equipo |
 | 4 | `slides.md` | 34, 37 | Lo mismo en la lámina 1: nombre, lema, equipo, integrantes y evento | Equipo |
 | 5 | `slides.md` | 265–266 | Guion del video: nombres del equipo, del proyecto y lema | Equipo |

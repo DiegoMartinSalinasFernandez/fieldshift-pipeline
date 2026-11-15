@@ -75,16 +75,16 @@ project from Global Judging (`space_apps_criterios.md` §2). The draft is in `do
 
 ## 4. Link to Final Project
 
-- **Code:** https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline `[src: git remote get-url origin, 2026-11-15]`. The repo is public (`CLAUDE.md` §1, rule 8).
+- **Code:** **[TBD: repo URL]** (the public GitHub URL of this repository; see `pendientes_humano.md` #2b). The repo is public (`CLAUDE.md` §1, rule 8).
 - **Data:** processed CSVs are published as GitHub Releases, one per group of states (`datos-<states>`, made by
   `scripts/entregar.py`), plus a separate field-level release (`fieldshift_lotes_v1`, `CLAUDE.md` §6.6).
   What is published today, with states, counties, years and rows counted from the zips:
   `docs/demo/coverage.md` (refresh with `docs/demo/coverage.py`). Published release (Ohio, Nebraska, Minnesota):
-  https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline/releases/tag/datos-oh-ne-mn · all releases: https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline/releases `[src: coverage.md, 2026-11-15; add the
+  <repo URL>/releases/tag/datos-oh-ne-mn · all releases: <repo URL>/releases `[src: coverage.md, 2026-11-15; add the
   other datos-<states> tags only once they are published]`
 - **English documentation for judges:** `docs/datasets/README_en.md` (data summary, sources, quality control,
   limitations): [`docs/datasets/README_en.md`](../datasets/README_en.md)
-  (https://github.com/DiegoMartinSalinasFernandez/fieldshift-pipeline/blob/main/docs/datasets/README_en.md). How the data is checked and what the QA of the Ohio, Nebraska and Minnesota
+  (../datasets/README_en.md). How the data is checked and what the QA of the Ohio, Nebraska and Minnesota
   release found: [`docs/demo/data_quality.md`](data_quality.md).
 - **Tool / frontend:** **[TBD: link, if there is one]**.
 
