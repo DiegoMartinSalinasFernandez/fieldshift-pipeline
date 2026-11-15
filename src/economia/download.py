@@ -2,8 +2,9 @@
 
 Baja los CSV por cultivo (maíz, soja, trigo, avena) de la página de ERS a
 data/raw/economia/ers/. Los links se leen del HTML de la página (llevan un `?v=` que cambia
-con cada versión). Si el archivo ya está en raw, no se vuelve a bajar. Registra cada archivo
-en manifest.csv.
+con cada versión). Baja también `reglink.xls`, la tabla oficial de ERS que asigna cada condado
+(FIPS) a una Farm Resource Region. Si el archivo ya está en raw, no se vuelve a bajar.
+Registra cada archivo en manifest.csv.
 
 Los precios recibidos de NASS no se bajan: process.py los lee del volcado de Quick Stats
 que ya bajó el paquete cultivos (data/raw/cultivos/nass/qs.crops_*.txt.gz).
@@ -36,6 +37,10 @@ CSVS = {
     "wheat.csv": "Commodity Costs and Returns - Wheat",
     "oats.csv": "Commodity Costs and Returns - Oats",
 }
+# tabla condado -> Farm Resource Region (enlazada desde la documentación de Commodity Costs and Returns)
+REGLINK = "reglink.xls"
+REGLINK_URL = BASE + "/sites/default/files/images/reglink.xls"
+REGLINK_DOC = PAGINA + "/documentation"
 
 
 def links_pagina() -> dict[str, str]:
@@ -98,6 +103,23 @@ def main() -> None:
             "fecha_descarga": hoy,
             "consulta_o_url": url or PAGINA,
         })
+    destino = RAW / REGLINK
+    if not destino.exists():
+        r = requests.get(REGLINK_URL, headers={"User-Agent": UA}, timeout=(15, 120))
+        r.raise_for_status()
+        part = INTERIM / (REGLINK + ".part")
+        part.write_bytes(r.content)
+        part.replace(destino)
+        print(f"bajado {REGLINK} ({len(r.content)} bytes)")
+    filas.append({
+        "paquete": "economia",
+        "archivo": destino.relative_to(REPO).as_posix(),
+        "fuente": "USDA ERS",
+        "producto": "Farm Resource Regions - county to region link (reglink)",
+        "version": "",
+        "fecha_descarga": hoy,
+        "consulta_o_url": REGLINK_URL,
+    })
     upsert_manifest(filas)
 
 
