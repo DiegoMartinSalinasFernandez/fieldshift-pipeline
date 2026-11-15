@@ -58,3 +58,4 @@
 - 05:56 T067: tomada por el trabajador
 - 06:04 T067: terminada, PR #64
 - 06:04 T074: tomada por el trabajador
+- 06:07 T074: terminada, PR #65
