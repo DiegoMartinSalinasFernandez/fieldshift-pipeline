@@ -1,14 +1,14 @@
 ---
 id: T055
 titulo: 'Prueba de la descarga de MODIS: token renovado y código de salida'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:17
-actualizada: 2026-11-15 04:17
+actualizada: 2026-11-15 04:28
 ---
 
 ## Qué hacer
@@ -30,3 +30,4 @@ PR. Las pruebas tienen que pasar en Windows y en Linux.
 Las pruebas en un PR.
 
 ## Notas
+- 2026-11-15 04:28 · pro-4: tomada
