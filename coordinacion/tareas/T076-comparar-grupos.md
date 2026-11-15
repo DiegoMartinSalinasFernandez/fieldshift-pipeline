@@ -1,7 +1,7 @@
 ---
 id: T076
 titulo: 'Comparar OH/NE/MN con IA/IL/IN: qué cambia para el modelo'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-3
 estados:
@@ -14,7 +14,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 05:59
-actualizada: 2026-11-15 06:02
+actualizada: 2026-11-15 06:07
 ---
 
 ## Qué hacer
@@ -36,3 +36,4 @@ El documento y el script en un PR.
 
 ## Notas
 - 2026-11-15 06:02 · pro-3: tomada
+- 2026-11-15 06:07 · pro-3: terminada por el trabajador: PR #66, falta la revisión de max-1
