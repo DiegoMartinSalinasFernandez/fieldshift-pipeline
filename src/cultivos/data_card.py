@@ -68,7 +68,7 @@ COLS = {
         ("pct_maiz_regado", "CORN, GRAIN, IRRIGATED / CORN, GRAIN - ACRES HARVESTED × 100", "%", CE, ""),
         ("pct_soja_regada", "SOYBEANS, IRRIGATED / SOYBEANS - ACRES HARVESTED × 100", "%", CE, ""),
         ("pct_cosechado_regado", "AG LAND, CROPLAND, HARVESTED, IRRIGATED / AG LAND, CROPLAND, HARVESTED × 100", "%", CE, ""),
-        ("flag_nass", "Valores ocultos de las tres columnas de riego por cultivo: `columna=(D)` separados por ; (numerador o denominador)", "texto", CE, ""),
+        ("flag_nass", "Valores ocultos de las tres columnas de riego por cultivo: `columna=(D)` separados por `;` (numerador o denominador)", "texto", CE, ""),
     ],
 }
 TIEMPO = {"produccion_anual.csv": "anio", "fenologia_estado.csv": "anio", "rotacion_anual.csv": "anio",
