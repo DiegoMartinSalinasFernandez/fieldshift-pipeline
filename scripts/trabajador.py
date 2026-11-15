@@ -332,6 +332,10 @@ def hacer_tarea(claude: str, tid: str, meta: dict, texto_tarea: str, maquina: st
     resultado_p = DIR / f"{tid}.resultado.md"
     intentos_fallidos = 0
     while True:
+        if fin - ahora() < dt.timedelta(minutes=15):
+            # no alcanza para un intento: la tarea vuelve a la cola en vez de lanzar a Claude pasado el fin
+            anotar(tid, maquina, "libre", f"soltada: {maquina} llegó al fin de su turno")
+            return
         continua = preparar_rama(rama)
         resultado_p.unlink(missing_ok=True)
         minutos = minutos_para(meta, a, fin)
