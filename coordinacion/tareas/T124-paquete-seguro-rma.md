@@ -1,14 +1,15 @@
 ---
 id: T124
-titulo: 'Paquete nuevo `seguro`: causas de pérdida y superficie asegurada de RMA por condado (código listo, espera OK)'
-estado: libre
+titulo: 'Paquete nuevo `seguro`: causas de pérdida y superficie asegurada de RMA por condado (código listo, espera
+  OK)'
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:11
-actualizada: 2026-11-15T09:11
+actualizada: 2026-11-15 09:21
 ---
 
 ## Qué hacer
@@ -42,3 +43,4 @@ dice que sí al despertarse, está listo para unir y correr en las máquinas Max
 El código, las pruebas y el data card en un PR con CI en verde, retenido como dice arriba.
 
 ## Notas
+- 2026-11-15 09:21 · pro-4: tomada
