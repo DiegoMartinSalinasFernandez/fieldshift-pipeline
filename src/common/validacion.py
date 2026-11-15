@@ -20,7 +20,14 @@ RANGOS_PREFIJO = [  # (regex, (min, max))
     (r"^sup_", (0, None)), (r"^produccion_", (0, None)), (r"^area_", (0, None)),
 ]
 # Rendimientos por cultivo en bu/ac (formato largo, columna `cultivo`)
-RENDIMIENTO_BU_AC = {"maiz": (20, 300), "soja": (5, 100)}
+RENDIMIENTO_BU_AC = {"maiz": (20, 300), "soja": (5, 100),
+                     # T147: rangos amplios de plausibilidad, revisados con la serie de condado de NASS
+                     "trigo_primavera": (5, 120), "trigo_durum": (5, 100), "cebada": (5, 150)}
+# Rendimientos en otras unidades de NASS (T147): lb/acre y tonelada corta/acre (silo, peso húmedo)
+RENDIMIENTO_LB_AC = {"girasol": (100, 4000), "canola": (100, 4500), "frijol_seco": (100, 5000)}
+RENDIMIENTO_TON_AC = {"maiz_silo": (1, 40)}
+RENDIMIENTOS = {"rend_bu_ac": RENDIMIENTO_BU_AC, "rend_lb_ac": RENDIMIENTO_LB_AC,
+                "rend_ton_ac": RENDIMIENTO_TON_AC}
 RELLENOS = {-9999, -999, -99.99, -999.9, -9999.9, -99999}
 TEXTO = {"estado", "condado", "cultivo", "flag_nass", "ventana"}
 
@@ -136,11 +143,14 @@ def validar_csv(ruta) -> list[str]:
                 fuera |= num > hi
             if fuera.any():
                 errores.append(f"{c}: {int(fuera.sum())} valores fuera del rango físico {rango}")
-    if "rend_bu_ac" in cols and "cultivo" in cols:
-        rend = pd.to_numeric(df["rend_bu_ac"], errors="coerce")
-        for cult, (lo, hi) in RENDIMIENTO_BU_AC.items():
+    for col_rend, rangos in RENDIMIENTOS.items():
+        if col_rend not in cols or "cultivo" not in cols:
+            continue
+        unidad = col_rend.removeprefix("rend_").replace("_", "/")
+        rend = pd.to_numeric(df[col_rend], errors="coerce")
+        for cult, (lo, hi) in rangos.items():
             r = rend[(df["cultivo"] == cult) & rend.notna()]
             n = int(((r < lo) | (r > hi)).sum())
             if n:
-                errores.append(f"rend_bu_ac de {cult}: {n} valores fuera de {lo}-{hi} bu/ac")
+                errores.append(f"{col_rend} de {cult}: {n} valores fuera de {lo}-{hi} {unidad}")
     return errores

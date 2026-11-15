@@ -49,6 +49,15 @@ cultivos:
   avena: Avena
   alfalfa: Alfalfa
   heno: Heno (otros)
+  # Cultivos del norte y de la lechería (T147, propuesta de docs/research/propuesta_cultivos.md, T103).
+  # Pesan sobre todo en ND, MN, SD y WI; donde NASS no publica, no hay filas.
+  maiz_silo: Maíz para silo
+  trigo_primavera: Trigo de primavera (sin durum)
+  trigo_durum: Trigo durum
+  cebada: Cebada
+  girasol: Girasol aceitero
+  canola: Canola
+  frijol_seco: Frijol seco (sin garbanzo)
 
 # Cultivos de cobertura: solo como práctica (Censo) y para la tabla de cultivos de research
 cultivos_cobertura:
@@ -58,7 +67,11 @@ cultivos_cobertura:
 
 # Conversiones de unidades (CLAUDE.md §4). El valor original se guarda siempre con su unidad.
 conversiones:
-  bu_ac_a_kgha: {maiz: 62.77, soja: 67.25, trigo_invierno: 67.25, avena: 35.87}
+  # bu/ac -> kg/ha = peso del bushel (lb) × 1,12085 (AH-697: 1 lb/ac = 1,12085 kg/ha)
+  bu_ac_a_kgha: {maiz: 62.77, soja: 67.25, trigo_invierno: 67.25, avena: 35.87,
+                 trigo_primavera: 67.25, trigo_durum: 67.25, cebada: 53.80}
+  lb_ac_a_kgha: 1.12085      # girasol, canola y frijol seco (NASS los da en LB / ACRE)
+  ton_ac_a_tha: 2.2417       # maíz para silo: tonelada corta (2.000 lb) por acre -> t/ha, peso húmedo
   acre_a_ha: 0.4047
 
 crs:

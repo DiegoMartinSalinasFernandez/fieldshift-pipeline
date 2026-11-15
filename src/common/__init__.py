@@ -4,9 +4,9 @@
 """
 from src.common.config import cargar_config, estados_config, REPO
 from src.common.fechas import fecha_a_anio
-from src.common.conversiones import bu_ac_a_kgha, acres_a_ha
+from src.common.conversiones import bu_ac_a_kgha, acres_a_ha, rend_a_kgha
 from src.common.zonal import zonal_mean
 from src.common.validacion import validar_csv
 
 __all__ = ["cargar_config", "estados_config", "REPO", "fecha_a_anio", "zonal_mean",
-           "bu_ac_a_kgha", "acres_a_ha", "validar_csv"]
+           "bu_ac_a_kgha", "acres_a_ha", "rend_a_kgha", "validar_csv"]

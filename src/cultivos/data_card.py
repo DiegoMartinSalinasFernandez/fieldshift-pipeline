@@ -27,15 +27,20 @@ COLS = {
         ("sup_cosechada_ac", "Superficie cosechada (AREA HARVESTED; maíz: grano)", "acres", QS, "Y02"),
         ("produccion_bu", "Producción (PRODUCTION en BU; maíz: grano). Alfalfa y heno se miden en toneladas: vacía", "bu", QS, "Y03"),
         ("rend_bu_ac", "Rendimiento (YIELD en BU / ACRE; maíz: grano). Alfalfa y heno: vacía", "bu/ac", QS, "Y04"),
-        ("rend_kgha", "rend_bu_ac × factor de config.yaml (bu_ac_a_kgha)", "kg/ha", D, "Y04"),
+        ("rend_kgha", "Rendimiento original × factor de config.yaml (rend_a_kgha: bu/ac según el bushel de cada cultivo, lb/ac × 1,12085, ton/ac × 2.241,7). Maíz para silo: peso húmedo", "kg/ha", D, "Y04"),
         ("sup_sembrada_ha", "sup_sembrada_ac × 0,4047 (acres_a_ha)", "ha", D, "Y01"),
         ("ratio_cosechada", "sup_cosechada_ac / sup_sembrada_ac", "fracción", D, "Y05"),
         ("flag_nass", "Código original de NASS cuando el valor está oculto: (D), (Z), (NA)… (separados por ;)", "texto", QS, ""),
+        ("rend_lb_ac", "Rendimiento (YIELD en LB / ACRE): girasol aceitero, canola y frijol seco (T147)", "lb/ac", QS, "Y04"),
+        ("produccion_lb", "Producción (PRODUCTION en LB): girasol aceitero y canola (T147)", "lb", QS, "Y03"),
+        ("produccion_cwt", "Producción (PRODUCTION en CWT, 100 lb): frijol seco (T147)", "cwt", QS, "Y03"),
+        ("rend_ton_ac", "Rendimiento (YIELD en TONS / ACRE, tonelada corta, peso húmedo): maíz para silo (T147)", "ton/ac", QS, "Y04"),
+        ("produccion_ton", "Producción (PRODUCTION en TONS, tonelada corta, peso húmedo): maíz para silo (T147)", "ton", QS, "Y03"),
     ],
     "fenologia_estado.csv": [
         ("doy_50_sembrado", "Día del año en que se cruza el 50 % sembrado (PCT PLANTED, interpolado)", "día del año", CP, "CT03"),
         ("doy_50_emergido", "Día del año en que se cruza el 50 % emergido (PCT EMERGED)", "día del año", CP, ""),
-        ("doy_50_floracion", "Día del año del 50 % en floración (maíz PCT SILKING, soja PCT BLOOMING)", "día del año", CP, "CT05"),
+        ("doy_50_floracion", "Día del año del 50 % en floración (maíz PCT SILKING; soja, girasol, canola y frijol PCT BLOOMING; trigos y cebada: espigado, PCT HEADED)", "día del año", CP, "CT05"),
         ("doy_50_cosechado", "Día del año del 50 % cosechado (maíz: grano)", "día del año", CP, "CT04"),
     ],
     "rotacion_anual.csv": [
@@ -50,6 +55,12 @@ COLS = {
         ("pct_maiz_tras_maiz", "% de los píxeles de maíz del anio que tenían maíz en anio−1 (sobre los que en anio−1 tenían clase agrícola)", "%", CDL, "R03"),
         ("pct_soja_tras_maiz", "% de los píxeles de soja del anio que tenían maíz en anio−1 (sobre los que en anio−1 tenían clase agrícola)", "%", CDL, "R03"),
         ("pct_soja_tras_soja", "% de los píxeles de soja del anio que tenían soja en anio−1 (sobre los que en anio−1 tenían clase agrícola)", "%", CDL, "R03"),
+        ("pct_trigo_primavera", "% del área agrícola con trigo de primavera (CDL 23; T147)", "%", CDL, "R04"),
+        ("pct_trigo_durum", "% del área agrícola con trigo durum (CDL 22; T147)", "%", CDL, "R04"),
+        ("pct_cebada", "% del área agrícola con cebada (CDL 21; T147)", "%", CDL, "R04"),
+        ("pct_girasol", "% del área agrícola con girasol (CDL 6, aceitero y confitero; T147)", "%", CDL, "R04"),
+        ("pct_canola", "% del área agrícola con canola (CDL 31; T147)", "%", CDL, "R04"),
+        ("pct_frijol_seco", "% del área agrícola con frijol seco (CDL 42; T147)", "%", CDL, "R04"),
     ],
     "rotacion_secuencia.csv": [
         ("pct_maiz_soja_alternado", "% de los píxeles agrícolas los 8 años con maíz y soja alternados todos los años", "%", CDL, ""),
@@ -103,6 +114,25 @@ Progress) y `qs.census<anio>.txt.gz` (Censo Agropecuario), guardados tal cual en
   (`UTIL_PRACTICE_DESC=GRAIN`), así que `ratio_cosechada` del maíz excluye el silaje.
 - Alfalfa y heno: NASS los mide en toneladas, no en bushels; `produccion_bu`, `rend_bu_ac` y
   `rend_kgha` quedan vacías para esos cultivos. NASS no publica superficie sembrada de heno.
+- Cultivos del norte (T147, `docs/research/propuesta_cultivos.md`): maíz para silo CORN /
+  ALL CLASSES con `UTIL_PRACTICE_DESC=SILAGE`; trigo de primavera WHEAT / SPRING, (EXCL DURUM);
+  durum WHEAT / SPRING, DURUM; cebada BARLEY; girasol SUNFLOWER / OIL TYPE (el confitero queda
+  afuera: `ALL CLASSES` solo tiene condado hasta 2008); canola CANOLA; frijol seco BEANS /
+  DRY EDIBLE, (EXCL CHICKPEAS) desde 2019 y DRY EDIBLE, INCL CHICKPEAS hasta 2018 (NASS cambió
+  el Data Item; si un año tuviera los dos, se usa el primero). Solo hay filas donde NASS publica
+  condado: sobre todo ND, MN, SD y WI.
+- Unidades originales: trigos y cebada en bu/ac (`rend_bu_ac`, `produccion_bu`); girasol, canola
+  y frijol en lb/ac (`rend_lb_ac`; producción en `produccion_lb`, frijol en `produccion_cwt`);
+  maíz para silo en tonelada corta (`rend_ton_ac`, `produccion_ton`). Factores a kg/ha de AH-697
+  (USDA ERS): bushel de trigo 60 lb (67,25), de cebada 48 lb (53,80), 1 lb/ac = 1,12085 kg/ha,
+  1 ton/ac = 2.241,7 kg/ha.
+- **Maíz para silo: peso húmedo** (AH-697 no da humedad estándar y no se supone una), así que su
+  `rend_kgha` no se compara con el del grano. NASS no publica superficie sembrada para silo (solo
+  la del maíz para todos los usos): `sup_sembrada_ac`, `sup_sembrada_ha` y `ratio_cosechada`
+  quedan vacías. En el CDL el silo va dentro de maíz (clase 1).
+- Rangos de `validar_csv` de los cultivos nuevos (amplios, de plausibilidad): trigo de primavera
+  5-120, durum 5-100 y cebada 5-150 bu/ac; girasol 100-4.000, canola 100-4.500 y frijol 100-5.000
+  lb/ac; silo 1-40 ton/ac.
 - Valores ocultos de NASS (`(D)`, `(Z)`, `(NA)`, etc.) quedan vacíos con el código en
   `flag_nass`. La tendencia del rendimiento no se saca.
 - Las filas OTHER (COMBINED) COUNTIES (`COUNTY_CODE` 998) quedan afuera; también todo fips que

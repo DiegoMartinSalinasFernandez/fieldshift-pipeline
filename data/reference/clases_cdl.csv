@@ -5,15 +5,15 @@ codigo,nombre,grupo
 3,Rice,otro
 4,Sorghum,otro
 5,Soybeans,soja
-6,Sunflower,otro
+6,Sunflower,girasol
 10,Peanuts,otro
 11,Tobacco,otro
 12,Sweet Corn,otro
 13,Pop or Orn Corn,otro
 14,Mint,otro
-21,Barley,otro
-22,Durum Wheat,otro
-23,Spring Wheat,otro
+21,Barley,cebada
+22,Durum Wheat,trigo_durum
+23,Spring Wheat,trigo_primavera
 24,Winter Wheat,trigo_invierno
 25,Other Small Grains,otro
 26,Dbl Crop WinWht/Soybeans,doble_trigo_soja
@@ -21,7 +21,7 @@ codigo,nombre,grupo
 28,Oats,avena
 29,Millet,otro
 30,Speltz,otro
-31,Canola,otro
+31,Canola,canola
 32,Flaxseed,otro
 33,Safflower,otro
 34,Rape Seed,otro
@@ -31,7 +31,7 @@ codigo,nombre,grupo
 38,Camelina,otro
 39,Buckwheat,otro
 41,Sugarbeets,otro
-42,Dry Beans,otro
+42,Dry Beans,frijol_seco
 43,Potatoes,otro
 44,Other Crops,otro
 45,Sugarcane,otro
