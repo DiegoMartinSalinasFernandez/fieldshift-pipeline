@@ -215,8 +215,8 @@ de cada uno):
   riego y secano en Nebraska. NLDAS-2 no simula riego ni drenaje con caños. Mientras no haya columnas de
   riego, conviene usar el estado como variable o evaluar NE y KS por separado.
 - **Trigo de invierno (sobre todo Kansas).** En 2020 hay rendimiento de trigo de invierno en 94 de los 105
-  condados de Kansas, y en 337 condados en total en los 7 estados. En Iowa y Minnesota NASS no lo estima por
-  condado en ningún año, y en 2024 solo está Illinois (`docs/research/nass_2024_2025.md`). El `anio` es el de
+  condados de Kansas, y en 337 condados en total en los 7 estados. En Iowa NASS no lo estima por condado en
+  ningún año; en Minnesota, solo en 22 condados entre 2000 y 2008. En 2024 solo está Illinois (`docs/research/nass_2024_2025.md`). El `anio` es el de
   la cosecha (junio–julio): se siembra en el otoño del `anio − 1`, así que pesa más el invierno previo que la
   temporada de abril a septiembre. `fenologia_estado` no trae trigo (solo maíz y soja), aunque Crop Progress
   lo publica para OH, NE y KS (`docs/research/crop_progress_estados_nuevos.md`). En el CDL, el trigo de
