@@ -1,9 +1,9 @@
 ---
 id: T009
 titulo: Fechas de siembra y cosecha por estado (config/cultivos_estado.csv)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:07
-actualizada: 2026-11-15 01:07
+actualizada: 2026-11-15 02:07
 ---
 
 ## Qué hacer
@@ -45,3 +45,4 @@ cosecha_activa_inicio, cosecha_activa_fin, cosecha_fin, fuente, pagina`
 avena, alfalfa, heno), cada celda con su cita, y un PR a `main`.
 
 ## Notas
+- 2026-11-15 02:07 · pro-1: tomada
