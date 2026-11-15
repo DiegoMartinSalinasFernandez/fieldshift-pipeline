@@ -3,6 +3,7 @@ id: T013
 titulo: 'Kansas de punta a punta: bajar, procesar y publicar datos-ks'
 estado: libre
 plan_minimo: max
+minutos: 400
 maquina: null
 estados:
 - KS

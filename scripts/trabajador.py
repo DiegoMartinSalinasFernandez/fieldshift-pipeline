@@ -180,8 +180,10 @@ def elegir_y_tomar(maquina: str, plan: str, estados: list[str], solo: str | None
         if any(d not in hechas for d in (m.get("depende_de") or [])):
             continue
         propios = bool(set(m.get("estados") or []) & set(estados))
-        cands.append((not propios, tid))
-    for _, tid in sorted(cands):
+        # Max deja las tareas Pro para las Pro: primero las que solo puede hacer una Max
+        de_otro_plan = plan == "max" and m.get("plan_minimo") != "max"
+        cands.append((de_otro_plan, not propios, tid))
+    for *_, tid in sorted(cands):
         err = llamar(tareas.cmd_tomar, ns(id=tid, maquina=maquina))
         if err is None:
             p, meta, cuerpo = tareas.buscar(tid)
@@ -306,7 +308,9 @@ def hacer_tarea(claude: str, tid: str, meta: dict, texto_tarea: str, maquina: st
     while True:
         continua = preparar_rama(rama)
         resultado_p.unlink(missing_ok=True)
-        minutos = max(10.0, min(a.minutos_tarea, (fin - ahora()).total_seconds() / 60 - 5))
+        # tope: el de la línea de comandos si se pasó; si no, el campo `minutos` de la tarea; si no, el del plan
+        tope = a.minutos_tarea if a.minutos_cli else float(meta.get("minutos") or a.minutos_tarea)
+        minutos = max(10.0, min(tope, (fin - ahora()).total_seconds() / 60 - 5))
         python = ".venv/Scripts/python" if ES_WINDOWS else ".venv/bin/python"   # sirve en PowerShell y Git Bash
         plantilla = git("show", "origin/main:coordinacion/prompt_trabajador.md").stdout
         prompt = (plantilla.replace("{maquina}", maquina).replace("{plan}", plan).replace("{minutos}", f"{minutos:.0f}")
@@ -380,6 +384,7 @@ def correr(a) -> None:
     estados = [s.strip().upper() for s in os.environ.get("FIELDSHIFT_ESTADOS", "").split(",") if s.strip()]
     tareas.traer(False)
     plan = tareas.plan_de(maquina) or ("max" if maquina.startswith("max") else "pro")
+    a.minutos_cli = a.minutos_tarea is not None
     if a.minutos_tarea is None:
         a.minutos_tarea = 150 if plan == "max" else 60
     claude = encontrar_claude()

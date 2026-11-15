@@ -42,7 +42,7 @@ para el equipo de ML. El humano decide lo que el CLAUDE.md le reserva: estados, 
      echo 'export FIELDSHIFT_MAQUINA=pro-1' >> ~/.bashrc
      ```
      ```bash
-     echo 'export FIELDSHIFT_ESTADOS=OH,NE,MN,KS' >> ~/.bashrc
+     echo 'export FIELDSHIFT_ESTADOS=NE,KS' >> ~/.bashrc
      ```
    - En **Windows**, con `setx` y una terminal nueva:
      ```bash
@@ -52,7 +52,12 @@ para el equipo de ML. El humano decide lo que el CLAUDE.md le reserva: estados, 
      setx FIELDSHIFT_ESTADOS KS
      ```
    `FIELDSHIFT_ESTADOS` es la lista de `coordinacion/maquinas.yaml` (por ejemplo `OH,NE,MN`). Con ella todos los
-   scripts bajan y procesan solo esos estados. No edites `config/config.yaml` para eso.
+   scripts bajan y procesan solo esos estados. No edites `config/config.yaml` para eso. En las **Max** los
+   estados no se repiten entre máquinas (cada una procesa los suyos). En las **Pro**, que no procesan datos,
+   solo deciden qué tareas toma primero. Para cambiarla, borrá la línea vieja antes de agregar la nueva:
+   ```bash
+   sed -i '/FIELDSHIFT_ESTADOS/d' ~/.bashrc
+   ```
 5. **Credenciales, solo si tu tarea las pide.** Casi todo se baja sin login. Earthdata (ECOSTRESS, LP DAAC) va
    en `~/.netrc` con tu propia cuenta; la clave de NASS Quick Stats, si la tenés, en `.env` como
    `NASS_API_KEY`. Las dos quedan fuera de git.
@@ -156,13 +161,15 @@ con su propio `.venv`. Nunca toca tu carpeta. Después de iniciarlo podés cerra
 medium por defecto (en Linux se cambian con `FIELDSHIFT_MODELO` y `FIELDSHIFT_EFFORT`).
 
 **Qué hace en cada vuelta**
-1. Toma la próxima tarea libre para su plan (primero las de sus estados). No toma las que dicen `auto: false`.
+1. Toma la próxima tarea libre para su plan: en Max, primero las que solo puede hacer una Max; después, las
+   de sus estados. No toma las que dicen `auto: false`.
 2. Crea la rama `tarea/<id>-auto` y lanza Claude sin intervención (`claude -p`, Opus 5.5, esfuerzo medium) con
-   las instrucciones de `coordinacion/prompt_trabajador.md`. Tope: 60 min por tarea en Pro, 150 en Max.
+   las instrucciones de `coordinacion/prompt_trabajador.md`. Tope: 60 min por tarea en Pro, 150 en Max, salvo
+   que la tarea diga otro en `minutos:` (por ejemplo T013, 400) o que se pase `--minutos-tarea`.
 3. Sube la rama, abre el PR con el resultado del agente y marca la tarea como hecha. Si quedó a medias, la
    suelta con una nota y la rama queda para que otro siga.
 4. Si se acaba el uso de Claude, espera a que se renueve y sigue con la misma tarea.
-5. Si no hay tareas libres, vuelve a mirar cada 15 minutos.
+5. Si no hay tareas libres, vuelve a mirar cada 15 minutos. `max-1` agrega tareas cuando la cola se achica.
 
 Los logs quedan en `fieldshift-pipeline-trabajador/.trabajador/`. El trabajador nunca une PRs ni hace push a
 `main` salvo el tablero y la bitácora; los PRs los revisa `max-1`.

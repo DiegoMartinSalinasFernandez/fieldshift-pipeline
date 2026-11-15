@@ -1,20 +1,22 @@
 # Quién es quién. Nombres genéricos: el repo es público, no van nombres, mails ni usuarios.
 # plan: max o pro (cambia qué tareas puede tomar y cómo trabaja; ver MAQUINAS.md).
-# estados: los que la máquina baja y procesa (lo mismo que su FIELDSHIFT_ESTADOS).
+# estados: lo mismo que el FIELDSHIFT_ESTADOS de la máquina.
+#   - En Max son los estados que baja y procesa: no se repiten entre máquinas.
+#   - En Pro no se bajan ni procesan datos: solo ordenan qué tareas toma primero (research de esos estados).
 maquinas:
   max-1:
     plan: max
-    rol: coordinación, unión de estados y entregas a ML
-    estados: [OH, NE, MN]   # Kansas pasa a max-2 (T013)
+    rol: coordinación, unión de estados y entregas a ML; procesa OH, NE y MN (T003)
+    estados: [OH, NE, MN]
   max-2:
     plan: max
     rol: Kansas de punta a punta (T013); notebook con RTX 4060
     estados: [KS]
   pro-1:
     plan: pro
-    rol: research (T006 hecha, PR 1)
-    estados: [OH, NE, MN, KS]   # activa desde el 2026-11-15
+    rol: research y código chico (T006 hecha, PR 1)
+    estados: [NE, KS]   # preferencia: riego, trigo de invierno
   pro-2:
     plan: pro
-    rol: research y código de un paquete (T005 hecha, PR 2)
-    estados: [OH, NE, MN, KS]   # activa desde el 2026-11-15
+    rol: research y código chico (T005 hecha, PR 2)
+    estados: [OH, MN]   # preferencia
