@@ -137,14 +137,59 @@ class TestEntregarSoloZip(unittest.TestCase):
         clima = man[man["paquete"] == "clima"]
         self.assertEqual(sorted(clima["archivo"]), ["data/raw/clima/a.json", "data/raw/clima/c.nc4"])
 
-    @unittest.expectedFailure
     def test_manifest_solo_filas_del_paquete(self):
-        # La tarea pide "las filas de manifest.csv del paquete"; entregar.py mete el manifest.csv entero
-        # (con las filas de todos los paquetes). Ver "Para decidir" en el PR de T036.
         self.correr("clima")
         with zipfile.ZipFile(self.zip_de("clima")) as zf, zf.open("manifest.csv") as f:
             man = pd.read_csv(f, dtype=str, keep_default_na=False)
         self.assertEqual(set(man["paquete"]), {"clima"})
+
+    def test_manifest_mismo_encabezado_orden_y_fin_de_linea(self):
+        self.correr("clima")
+        lineas = MANIFEST.splitlines(keepends=True)
+        esperado = lineas[0] + "".join(l for l in lineas[1:] if l.startswith("clima,"))
+        with zipfile.ZipFile(self.zip_de("clima")) as zf:
+            crudo = zf.read("manifest.csv")
+        self.assertNotIn(b"\r", crudo)
+        self.assertEqual(crudo.decode("utf-8"), esperado)
+
+    def test_manifest_paquete_sin_filas_solo_encabezado(self):
+        self.escribir("data/processed/agua/agua_mensual.csv", MENSUAL)
+        self.correr("agua")
+        with zipfile.ZipFile(self.zip_de("agua")) as zf:
+            self.assertEqual(zf.read("manifest.csv").decode("utf-8"), MANIFEST.splitlines(keepends=True)[0])
+
+    def test_clave_en_manifest_corta_sin_mostrarla(self):
+        secreto = "INVENTADO123secreto"
+        for param in ("key", "api_key", "apikey", "token", "API_KEY", "access_token"):
+            with self.subTest(param=param):
+                self.escribir("manifest.csv", MANIFEST
+                              + f"clima,data/raw/clima/d.json,NASA,POWER,v2,2026-11-15,"
+                                f"https://power.example/d?x=1&{param}={secreto}\n")
+                out, err = io.StringIO(), io.StringIO()
+                with self.assertRaises(SystemExit) as e, contextlib.redirect_stderr(err):
+                    self.correr("clima")
+                msg = str(e.exception.code)
+                self.assertIn("clima", msg)
+                self.assertIn("consulta_o_url", msg)
+                self.assertNotIn(secreto, msg)
+                self.assertNotIn(secreto, err.getvalue())
+                self.assertFalse(self.zip_de("clima").exists())
+
+    def test_clave_de_otro_paquete_no_frena(self):
+        # solo se revisan las filas del paquete que se entrega; la del otro tampoco entra al zip
+        self.escribir("manifest.csv", MANIFEST
+                      + "cultivos,data/raw/cultivos/e.json,USDA NASS,Quick Stats,1,2026-11-15,"
+                        "https://nass.example/e?key=INVENTADO\n")
+        self.correr("clima")
+        with zipfile.ZipFile(self.zip_de("clima")) as zf:
+            self.assertNotIn("INVENTADO", zf.read("manifest.csv").decode("utf-8"))
+
+    def test_parametros_parecidos_no_son_clave(self):
+        self.escribir("manifest.csv", MANIFEST
+                      + "clima,data/raw/clima/f.json,NASA,POWER,v2,2026-11-15,"
+                        "https://power.example/f?monkey=1&keyword=maiz&tokens_n=3\n")
+        self.correr("clima")
+        self.assertTrue(self.zip_de("clima").exists())
 
     def test_subcarpetas_de_processed(self):
         self.escribir("data/processed/clima/por_estado/clima_anual_oh.csv", ANUAL)
