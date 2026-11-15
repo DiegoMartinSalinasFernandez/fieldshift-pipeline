@@ -1,14 +1,14 @@
 ---
 id: T041
 titulo: Guía de las tablas unidas para el equipo de ML (docs/guia_tablas.md)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:00
-actualizada: 2026-11-15 04:00
+actualizada: 2026-11-15 03:29
 ---
 
 ## Qué hacer
@@ -35,3 +35,4 @@ No inventes columnas: si dudás de una, mirá el spec. Solo documentación: no t
 La guía en un PR.
 
 ## Notas
+- 2026-11-15 03:29 · pro-2: tomada
