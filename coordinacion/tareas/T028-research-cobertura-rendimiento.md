@@ -1,9 +1,9 @@
 ---
 id: T028
 titulo: 'Research: efecto de los cultivos de cobertura en el rendimiento siguiente'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 03:00
-actualizada: 2026-11-15 03:00
+actualizada: 2026-11-15 02:49
 ---
 
 ## Qué hacer
@@ -41,3 +41,4 @@ Escribí `docs/research/cobertura_rendimiento.md`, con una tabla de estudios.
 El research en un PR, con valores citados usables como reglas y su incertidumbre.
 
 ## Notas
+- 2026-11-15 02:49 · pro-4: tomada
