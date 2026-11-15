@@ -1,7 +1,7 @@
 ---
 id: T084
 titulo: 'Data cards de cultivos y clima: cobertura de NASS por año y límites de POWER'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-4
 estados:
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T06:27
-actualizada: 2026-11-15 06:35
+actualizada: 2026-11-15 07:27
 ---
 
 ## Qué hacer
@@ -37,3 +37,4 @@ El cambio en los data cards en un PR. No cambies código ni esquema.
 ## Notas
 - 2026-11-15 06:28 · pro-4: tomada
 - 2026-11-15 06:35 · pro-4: corte por el límite de uso de Claude; 1 commits guardados en tarea/T084-auto. El trabajador sigue cuando se renueve.
+- 2026-11-15 07:27 · pro-4: terminada por el trabajador: PR #96, falta la revisión de max-1
