@@ -60,3 +60,4 @@
 - 09:22 T126: tomada por el trabajador
 - 09:27 T126: terminada, PR #116
 - 09:27 T129: tomada por el trabajador
+- 09:31 T129: terminada, PR #118
