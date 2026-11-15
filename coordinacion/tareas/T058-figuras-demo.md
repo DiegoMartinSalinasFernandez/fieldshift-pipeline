@@ -1,14 +1,14 @@
 ---
 id: T058
 titulo: Script de figuras para la demo con los datos publicados
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:30
-actualizada: 2026-11-15 04:30
+actualizada: 2026-11-15 04:39
 ---
 
 ## Qué hacer
@@ -32,3 +32,4 @@ El envío a Space Apps cierra el **domingo 2026-11-15 a las 23:59 hora del event
 El script y las figuras en un PR.
 
 ## Notas
+- 2026-11-15 04:39 · pro-5: tomada
