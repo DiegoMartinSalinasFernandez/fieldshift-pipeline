@@ -8,7 +8,7 @@ estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T06:55
-actualizada: 2026-11-15 07:10
+actualizada: 2026-11-15 07:12
 ---
 
 ## Qué hacer
@@ -25,3 +25,4 @@ El guion en un PR.
 
 ## Notas
 - 2026-11-15 07:10 · pro-2: tomada
+- 2026-11-15 07:12 · pro-2: corte por el límite de uso de Claude; 1 commits guardados en tarea/T096-auto. El trabajador sigue cuando se renueve.
