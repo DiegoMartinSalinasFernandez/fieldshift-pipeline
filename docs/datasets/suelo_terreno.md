@@ -68,6 +68,15 @@ Paquete `suelo_terreno` de Field Shift (CLAUDE.md §6.5): suelo (SSURGO) y terre
   `areasymbol` = estado + código de condado: IA169 → 19169), y dentro de cada unidad por
   `comppct_r` de los componentes con dato. Sin el raster de MUKEY no se pudo cruzar con
   `data/reference/mascara_agricola.tif`: incluye superficie no agrícola.
+- **Áreas de levantamiento que no son un condado** (en KY, 39 de 84: `KY601`–`KY645` juntan dos o
+  tres condados, `KY646`/`KY647` tienen código propio y `KY648`/`KY709` son áreas especiales como
+  Mammoth Cave): se reparten con `laoverlap` (`areatypename = 'County or Parish'`) y `muaoverlap` de
+  SDA (tabla `solape_<estado>.csv`). En esas áreas cada unidad pesa por `areaovacres`, su superficie
+  dentro de cada condado, en lugar de `muacres`; un condado partido entre dos áreas (Barren, Edmonson,
+  Hart, Whitley en KY) junta las unidades de ambas. Se supone que la superficie tabular de SDA
+  representa bien la del raster (no se contó en píxeles). Las áreas `XX` + código de condado y las de
+  MN siguen igual que antes: en MN y KS se comparó contra SDA el reparto viejo y el nuevo (2026-11-15)
+  y dan idéntico. Un área sin condado ni solape queda afuera con un aviso.
 - Horizontes 0–30 cm: media ponderada por el espesor de cada horizonte dentro de la capa. La textura
   usa solo horizontes con arena, limo y arcilla que suman 100 ± 3 (quedan fuera los horizontes
   orgánicos, por ejemplo los suelos muck del norte de Indiana, donde la textura no está definida).
