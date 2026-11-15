@@ -1,16 +1,16 @@
 ---
 id: T086
 titulo: 'Data card de agua: área que saca el filtro de 0,6 m³/m³ por condado'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - MN
 - OH
 depende_de: []
 rama: null
 creada: 2026-11-15T06:27
-actualizada: 2026-11-15T06:27
+actualizada: 2026-11-15 06:36
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ condados de la sección 3 de ese research. La opción (b), una columna nueva, qu
 El cambio en los data cards en un PR. No cambies código ni esquema.
 
 ## Notas
+- 2026-11-15 06:36 · pro-1: tomada
