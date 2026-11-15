@@ -5,3 +5,4 @@
 - 02:37 T023: tomada por el trabajador
 - 02:44 T023: terminada, PR #17
 - 02:45 T026: tomada por el trabajador
+- 02:49 T026: terminada, PR #18
