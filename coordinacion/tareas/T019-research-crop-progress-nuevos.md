@@ -1,9 +1,9 @@
 ---
 id: T019
 titulo: 'Research: NASS Crop Progress en los estados nuevos'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - OH
 - NE
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:40
-actualizada: 2026-11-15 01:40
+actualizada: 2026-11-15 02:27
 ---
 
 ## Qué hacer
@@ -38,3 +38,4 @@ Escribí `docs/research/crop_progress_estados_nuevos.md`. La consulta a Quick St
 El research en un PR, con una tabla por estado y cultivo de etapas y años.
 
 ## Notas
+- 2026-11-15 02:27 · pro-1: tomada
