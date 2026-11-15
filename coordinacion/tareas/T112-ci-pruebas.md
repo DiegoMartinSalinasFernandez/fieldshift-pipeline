@@ -1,14 +1,14 @@
 ---
 id: T112
 titulo: 'CI: correr las pruebas en GitHub Actions (Windows y Linux)'
-estado: bloqueada
+estado: hecha
 plan_minimo: pro
 maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T08:00
-actualizada: 2026-11-15 08:05
+actualizada: 2026-11-15 08:11
 ---
 
 ## Qué hacer
@@ -32,3 +32,4 @@ El workflow en un PR, con la corrida de Actions del PR en verde en los dos siste
 - 2026-11-15 08:05 · pro-3: bloqueada: el trabajo quedó en la rama tarea/T112-auto pero push falló: To <remoto origin>
  ! [remote rejected] tarea/T112-auto -> tarea/T112-auto (refusing to allow a Personal Access Token to create or update workflow `.github/workflows/pruebas.yml` without `workflow` scope)
 error: falló el empuje de algunas refere
+- 2026-11-15 08:11 · pro-3: terminada: Cerrada por max-1 (coordinador): el token de pro-3 no tiene permiso workflow; max-1 armó el workflow en el PR 103, unido con Actions en verde en Linux y Windows.
