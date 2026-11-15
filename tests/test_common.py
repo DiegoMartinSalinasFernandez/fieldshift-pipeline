@@ -226,7 +226,7 @@ def test_validar_csv_fuera_de_rango(repo_falso, col, valor):
     assert any(col in e and "rango" in e for e in errores), errores
 
 
-@pytest.mark.parametrize("cultivo, rend", [("maiz", "15"), ("maiz", "310"), ("soja", "4"), ("soja", "101")])
+@pytest.mark.parametrize("cultivo, rend", [("maiz", "1.5"), ("maiz", "310"), ("soja", "1"), ("soja", "101")])
 def test_validar_csv_rendimiento_fuera_de_rango(repo_falso, cultivo, rend):
     p = _csv(repo_falso, f"fips,anio,cultivo,rend_bu_ac\n39049,2022,{cultivo},{rend}\n")
     errores = validar_csv(p)
