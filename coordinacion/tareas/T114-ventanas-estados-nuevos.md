@@ -14,7 +14,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T08:11
-actualizada: 2026-11-15 08:18
+actualizada: 2026-11-15 08:44
 ---
 
 ## Qué hacer
@@ -35,3 +35,4 @@ El research en un PR.
 
 ## Notas
 - 2026-11-15 08:18 · pro-4: tomada
+- 2026-11-15 08:44 · max-1: Importante: el PR 107 (T116, ya en main) corrige ventanas_por_estado.py, que tomaba la fila de la tabla siguiente cuando el estado no figuraba en una tabla. Para MO, WI, SD, ND, MI y KY eso puede pasar: traé main (git pull / rebase) antes de correr el script.
