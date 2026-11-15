@@ -29,3 +29,7 @@ maquinas:
     plan: pro
     rol: research y código chico (T025, PR 11); activa desde el 2026-11-15
     estados: [IA, IL, IN, OH, NE, MN, KS]   # sin preferencia: toma por orden
+  pro-5:
+    plan: pro
+    rol: research y código chico (T041, PR 35); activa desde el 2026-11-15
+    estados: [IA, IL, IN, OH, NE, MN, KS]   # sin preferencia: toma por orden
