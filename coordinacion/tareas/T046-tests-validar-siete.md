@@ -1,14 +1,14 @@
 ---
 id: T046
 titulo: Pruebas de validar_csv() con los 7 estados (sin cambiar src/common)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:05
-actualizada: 2026-11-15 04:11
+actualizada: 2026-11-15 04:13
 ---
 
 ## Qué hacer
@@ -30,3 +30,4 @@ Las pruebas en un PR.
 
 ## Notas
 - 2026-11-15 04:11 · pro-2: tomada
+- 2026-11-15 04:13 · pro-2: terminada por el trabajador: PR #40, falta la revisión de max-1
