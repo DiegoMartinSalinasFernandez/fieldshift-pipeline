@@ -11,10 +11,14 @@ Rules for whoever pastes this into the form:
 - **Everything in English.** All links must be **public, with no login**. Test them in a private window.
 - **No invented numbers.** Each figure has a `[src: ...]` note with the repo file it comes from. Delete those notes
   before pasting, but keep the numbers exactly as written. Anything we do not have yet is marked **[TBD]**.
-- **Coverage caveat.** Most data cards and the validation table describe the **first batch: Iowa, Illinois and
-  Indiana, 293 counties** (`docs/datasets/base.md`, `clima.md`, `validacion.md`). The 7-state, 666-county scope
-  comes from `CLAUDE.md` §2 and `docs/datasets/README_en.md` §1. Before claiming 666 counties as delivered,
-  check that the releases for OH, NE, MN and KS are published. **[TBD: confirm]**
+- **Coverage (checked 2026-11-15, task T089).** The only published data release is **`datos-oh-ne-mn`: Ohio,
+  Nebraska and Minnesota, 268 counties (OH 88, NE 93, MN 87), 2000–2025**, with 8 packages (`agua`, `clima`,
+  `cultivos`, `economia`, `nldas`, `paisaje`, `suelo_terreno`, `vegetacion`), 19 CSV files and 169 data columns
+  `[src: release datos-oh-ne-mn, condados.csv and CSV headers, zips checked against their .sha256]`. Iowa,
+  Illinois and Indiana (first batch, 293 counties, `docs/datasets/clima.md`), Kansas, the field-level
+  `fieldshift_lotes_v1` and the `ecostress`, `teledeteccion` and `validacion` packages have **no published
+  release**: their numbers below come from repo data cards only and are marked. Do not claim 7 states or 666
+  counties as delivered until those releases exist.
 - **Model results.** This repo builds the data only and trains no models (`CLAUDE.md`). Any claim about model
   accuracy or recommended rotations has to come from the ML or frontend team. **[TBD]**
 - Field order follows the form. The demo text itself is in `docs/demo/slides.md` (task T056).
@@ -40,15 +44,19 @@ tab): **[TBD]**. Local event: **[TBD]**.
 > show that continuous corn and continuous soybean yield less, and that the loss is larger in dry and low-yield
 > years. We built an open, reproducible data pipeline that brings together 26 years (2000–2025) of NASA Earth
 > observations, which are the core of the tool: weather and rainfall (NASA POWER, GPM IMERG), soil moisture (SMAP,
-> NLDAS-2, GRACE-DA-DM), vegetation and canopy temperature (MODIS, ECOSTRESS, HLS and Landsat) and terrain
-> (NASADEM). The pipeline combines them, county by county, with the crops actually grown on every 30 m pixel
+> NLDAS-2, GRACE-DA-DM), vegetation and land surface temperature (MODIS) and terrain (NASADEM). The first
+> published release covers 268 counties in Ohio, Nebraska and Minnesota; Iowa, Illinois, Indiana and Kansas
+> complete the planned 7-state study area. The pipeline combines them, county by county, with the crops actually grown on every 30 m pixel
 > (USDA Cropland Data Layer), county yields, soil surveys (SSURGO) and economics. On top of these tables, the
 > tool compares at least three rotations, starting with the farmer's current one. For each rotation it shows
 > the evidence, the expected benefits, the risks, the uncertainty and the data gaps. It goes down to individual
 > fields, where satellite and terrain data separate dry knolls from wet depressions. The tool supports farmers'
 > decisions and local expertise; it does not replace them.
 
-Sources for the numbers: period and states `CLAUDE.md` §2; rotation penalty `docs/research/efecto_rotacion.md` §2
+Sources for the numbers: period, products and the 268 counties from the release `datos-oh-ne-mn`; planned
+states `CLAUDE.md` §2. ECOSTRESS, HLS and Landsat were taken out of the summary because their packages
+(`ecostress`, `lotes`, `teledeteccion`) have no published release; put them back if they are published.
+**[TBD]** rotation penalty `docs/research/efecto_rotacion.md` §2
 (Seifert et al. 2017). **[TBD: add one sentence on what the user sees, for example a web app or a notebook,
 once the frontend or ML team confirms it.]**
 
@@ -78,9 +86,10 @@ project from Global Judging (`space_apps_criterios.md` §2). The draft is in `do
 
 ### What it does
 
-Field Shift is a decision-support tool for crop rotations in the U.S. Corn Belt. The study area is every county
-of Iowa, Illinois, Indiana, Ohio, Nebraska, Minnesota and Kansas, 666 counties in total, for 2000–2025
-`[src: CLAUDE.md §2]`. For a given county or field, the tool compares at least three rotation strategies,
+Field Shift is a decision-support tool for crop rotations in the U.S. Corn Belt. The planned study area is every
+county of Iowa, Illinois, Indiana, Ohio, Nebraska, Minnesota and Kansas, 666 counties, for 2000–2025
+`[src: CLAUDE.md §2]`. Published so far: Ohio, Nebraska and Minnesota, 268 counties, 2000–2025 `[src: release
+datos-oh-ne-mn]`. For a given county or field, the tool compares at least three rotation strategies,
 including the current one, as the challenge asks. These are the corn–soybean rotation, continuous corn and
 rotations that add a small grain or alfalfa. For each strategy it reports:
 
@@ -99,20 +108,30 @@ rotations that add a small grain or alfalfa. For each strategy it reports:
    rotations and practices (`cultivos`), vegetation (`vegetacion`), soil moisture and groundwater (`agua`,
    `nldas`), ECOSTRESS (`ecostress`), Landsat bare soil and winter cover (`teledeteccion`), soil and terrain
    (`suelo_terreno`), land cover (`paisaje`) and prices and costs (`economia`). `src/merge.py` joins them into one
-   annual table and one monthly table. For the first batch these have **25,070 rows × 73 columns** and **91,416
-   rows × 48 columns** `[src: docs/datasets/merge.md, run of 2026-11-14]`.
+   annual table and one monthly table. For the first batch (IA/IL/IN) these have **25,070 rows × 73 columns**
+   and **91,416 rows × 48 columns** `[src: docs/datasets/merge.md, run of 2026-11-14; not in a published
+   release]`. The published release `datos-oh-ne-mn` has the per-package files (19 CSVs, 169 data columns,
+   268 counties); the joined tables for it are not published. **[TBD: update when the 7-state merge (T008) is
+   released.]** Of the packages listed, `ecostress` and `teledeteccion` are not in a published release.
 3. **The real rotation.** Crop transitions are computed pixel by pixel from the 30 m Cropland Data Layer, as
    corn after soybean, corn after corn, and so on, from 2008 on. The pipeline also builds 8-year sequence classes
-   for each county `[src: docs/datasets/cultivos.md]`.
+   for each county `[src: docs/datasets/cultivos.md]`. In 2025, the county median share of corn pixels that
+   were corn the year before was **24.5 %** (Ohio 11.0 %, Minnesota 23.9 %, Nebraska 46.5 %, where much corn
+   is irrigated), and corn after soybean was **64.6 %** `[src: release datos-oh-ne-mn, rotacion_anual.csv, 266
+   counties]`. See `docs/demo/fig/fig4_corn_after_soy_vs_corn_oh_ne_mn.png`.
 4. **Field level.** For 10 demonstration fields (Crop Sequence Boundaries polygons of 30–120 ha, in counties where less than 5 % of cropland is irrigated),
    the pipeline delivers the data of every 30 m pixel. That includes NASADEM and USGS 3DEP terrain, Landsat and
    HLS clear observations, SSURGO soils, crop history and field weather. With it, the field can be split into
    management zones such as dry knoll, mid-slope and wet depression. The fields are in Iowa (Des Moines Lobe and
    loess hills), Illinois and Indiana `[src: docs/datasets/README_en.md §3.12, docs/datasets/lotes.md]`.
+   **[TBD: the `fieldshift_lotes_v1` release is not published yet; publish it or drop this point.]**
 5. **Satellite vs ground.** We checked NASA rainfall and temperature against ground data, as the challenge
    suggests. Monthly rainfall from POWER matched PRISM with Pearson r = 0.944 and from IMERG with r = 0.932.
    Against CoCoRaHS rain gauges, r was 0.907 for POWER and 0.890 for IMERG. POWER temperatures matched PRISM with
-   r ≥ 0.996 `[src: docs/datasets/validacion.md, IA/IL/IN, county-months 2000–2025]`.
+   r ≥ 0.996 `[src: docs/datasets/validacion.md, IA/IL/IN, 2000–2025: 91,416 county-months against PRISM,
+   42,798 against CoCoRaHS; repo data card only, the validacion package is not in a published release]`.
+   NASA SMAP also tracks planting delays: see `docs/demo/fig/fig3_smap_may_vs_planting_oh_ne_mn.png` (May
+   root-zone moisture vs the date 50 % of corn was planted, OH/NE/MN, 2015–2025, release `datos-oh-ne-mn`).
 6. **Model and interface.** A separate machine-learning team trains the yield and rotation models on these
    tables. To avoid leaking future information, trends and normalization are computed inside each training
    fold. **[TBD: describe the model, its validation and the user interface, with their own numbers.]**
@@ -180,8 +199,10 @@ to come up with the idea.
 *(Form prompt: "Provide specific details about what NASA data and resources you used.")*
 
 The list below has only the products that actually appear in our processed CSVs, each with its version, its DOI
-and what it gives us. Sources: `docs/research/citas_nasa.md` §1 and the data cards in `docs/datasets/`. The
-county coverage dates are those of the data cards (first batch, IA/IL/IN).
+and what it gives us. Sources: `docs/research/citas_nasa.md` §1 and the data cards in `docs/datasets/`.
+Products 1–9 are in the published release `datos-oh-ne-mn`, and the coverage dates of rows 4–8 match its CSVs
+(checked 2026-11-15, T089). **Products 10–13 (ECOSTRESS, HLS) are only in packages without a published release
+(`ecostress`, `lotes`); remove them from the form if those releases are not out before submitting. [TBD]**
 
 | # | NASA product | Version | DOI | What we use it for (package: columns) | Coverage in our CSVs |
 |---|---|---|---|---|---|
@@ -290,7 +311,9 @@ Citations from `docs/research/citas_nasa.md` §2.
 - [ ] Demo link public, ≤ 30 s video **or** ≤ 7 slides, in English (section 3).
 - [ ] Repo, release and tool links public, tested in a private window (section 4).
 - [ ] Every `[TBD]` and `[src: ...]` removed or resolved.
-- [ ] 666 counties claimed only if the 7-state releases are published.
+- [ ] 666 counties claimed only if the 7-state releases are published (as of 2026-11-15 only `datos-oh-ne-mn`,
+  268 counties).
+- [ ] ECOSTRESS, HLS, the 10 fields and the validation numbers kept only if their releases are published.
 - [ ] SI statement also in the README and release metadata (section 6).
 - [ ] POWER acknowledgement with the access date (section 7).
 - [ ] Copernicus attribution checked (section 8, task T060).
