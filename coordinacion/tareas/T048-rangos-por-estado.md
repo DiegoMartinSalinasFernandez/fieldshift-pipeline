@@ -1,9 +1,9 @@
 ---
 id: T048
 titulo: 'Propuesta: rangos físicos de los checks para los estados nuevos'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - IA
 - IL
@@ -15,7 +15,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 04:05
-actualizada: 2026-11-15 04:05
+actualizada: 2026-11-15 04:04
 ---
 
 ## Qué hacer
@@ -38,3 +38,4 @@ Formato de research de la sección 8 del CLAUDE.md. Solo fuentes que hayas abier
 La propuesta en un PR.
 
 ## Notas
+- 2026-11-15 04:04 · pro-1: tomada
