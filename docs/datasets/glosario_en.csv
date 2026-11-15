@@ -314,17 +314,17 @@ validacion,validacion_mensual.csv,tmin_prism_c,"Monthly mean minimum temperature
 validacion,validacion_mensual.csv,tmed_prism_c,"Monthly mean temperature (PRISM tmean = (tmax + tmin) / 2), county mean",°C,PRISM AN monthly 4 km (Oregon State University),
 validacion,validacion_mensual.csv,prec_cocorahs_mm,"Monthly precipitation: mean over the county's stations with at least 25 daily reports in the month (sum of reported days, inches × 25.4)",mm,CoCoRaHS daily reports (public export),
 validacion,validacion_mensual.csv,n_estaciones_cocorahs,County CoCoRaHS stations with at least 25 daily reports in the month (0 = none; empty before 2008),stations,CoCoRaHS daily reports (public export),
-vegetacion,vegetacion_16d.csv,ndvi,County mean NDVI (16-day composite; fecha = composite start date),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M01
-vegetacion,vegetacion_16d.csv,evi,County mean EVI,dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M02
-vegetacion,vegetacion_16d.csv,ndvi_maiz,Mean NDVI of pixels with >= 75 % corn (same-year CDL),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M01
-vegetacion,vegetacion_16d.csv,ndvi_soja,Mean NDVI of pixels with >= 75 % soybeans (same-year CDL),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M01
-vegetacion,vegetacion_16d.csv,frac_pixeles_validos,Pixels passing the quality filter / all county pixels,0-1,MODIS MOD13Q1 v061 (Planetary Computer),M03
-vegetacion,vegetacion_mensual.csv,ndvi,Mean of the 16-day composites starting in the month,dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M01
-vegetacion,vegetacion_mensual.csv,evi,Mean of the 16-day composites starting in the month,dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M02
-vegetacion,vegetacion_mensual.csv,ndvi_maiz,Monthly mean corn NDVI (CDL >= 75 %),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M01
-vegetacion,vegetacion_mensual.csv,ndvi_soja,Monthly mean soybean NDVI (CDL >= 75 %),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer),M01
-vegetacion,vegetacion_mensual.csv,lst_dia_c,Mean daytime land surface temperature (8-day composites starting in the month),°C,MODIS MOD11A2 v061 (Planetary Computer),M04
-vegetacion,vegetacion_mensual.csv,lst_noche_c,Mean nighttime land surface temperature,°C,MODIS MOD11A2 v061 (Planetary Computer),M05
+vegetacion,vegetacion_16d.csv,ndvi,County mean NDVI (16-day composite; fecha = composite start date),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
+vegetacion,vegetacion_16d.csv,evi,County mean EVI,dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M02
+vegetacion,vegetacion_16d.csv,ndvi_maiz,Mean NDVI of pixels with >= 75 % corn (same-year CDL),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
+vegetacion,vegetacion_16d.csv,ndvi_soja,Mean NDVI of pixels with >= 75 % soybeans (same-year CDL),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
+vegetacion,vegetacion_16d.csv,frac_pixeles_validos,Pixels passing the quality filter / all county pixels,0-1,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M03
+vegetacion,vegetacion_mensual.csv,ndvi,Mean of the 16-day composites starting in the month,dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
+vegetacion,vegetacion_mensual.csv,evi,Mean of the 16-day composites starting in the month,dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M02
+vegetacion,vegetacion_mensual.csv,ndvi_maiz,Monthly mean corn NDVI (CDL >= 75 %),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
+vegetacion,vegetacion_mensual.csv,ndvi_soja,Monthly mean soybean NDVI (CDL >= 75 %),dimensionless,MODIS MOD13Q1 v061 (Planetary Computer + LP DAAC),M01
+vegetacion,vegetacion_mensual.csv,lst_dia_c,Mean daytime land surface temperature (8-day composites starting in the month),°C,MODIS MOD11A2 v061 (Planetary Computer + LP DAAC),M04
+vegetacion,vegetacion_mensual.csv,lst_noche_c,Mean nighttime land surface temperature,°C,MODIS MOD11A2 v061 (Planetary Computer + LP DAAC),M05
 vegetacion,vegetacion_mensual.csv,et_mm,"Monthly total actual ET (NLDAS-2 Noah Evap, weighted county mean)",mm,"NLDAS-2 Noah monthly v2.0 (NASA GES DISC, replaces MOD16A2)",M06
 vegetacion,vegetacion_mensual.csv,pet_mm,"Monthly total potential ET (NLDAS-2 Noah PotEvap, W m-2 × 86400 × days / 2.501e6)",mm,"NLDAS-2 Noah monthly v2.0 (NASA GES DISC, replaces MOD16A2)",M07
 vegetacion,vegetacion_mensual.csv,et_pet_ratio,et_mm / pet_mm (actual/potential ET ratio),dimensionless,"NLDAS-2 Noah monthly v2.0 (NASA GES DISC, replaces MOD16A2)",
