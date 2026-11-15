@@ -29,3 +29,4 @@
 - 04:11 T045: tomada por el trabajador
 - 04:26 T045: tomada por el trabajador
 - 04:29 T045: terminada, PR #46
+- 04:44 T059: tomada por el trabajador
