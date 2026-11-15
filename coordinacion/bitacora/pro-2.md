@@ -91,3 +91,4 @@
 - 09:52 T137: tomada por el trabajador
 - 09:59 T137: terminada, PR #127
 - 09:59 T142: tomada por el trabajador
+- 10:06 T142: terminada, PR #130
