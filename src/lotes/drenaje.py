@@ -203,21 +203,18 @@ def recortar_miembro(leer: Rangos, tamanio_zip: int, miembro: str,
                      cabecera_max: int = 4 << 20) -> dict[str, Path]:
     """Infla `miembro` en flujo y escribe un GeoTIFF por recuadro (lon/lat EPSG:4326) en `destino(clave)`.
 
-    Para apenas pasa la última fila que necesita. Devuelve clave -> ruta escrita."""
+    Para apenas pasa la última tira que necesita. Devuelve clave -> ruta escrita."""
     met, comp, off = miembros_zip(leer, tamanio_zip)[miembro]
     flujo = flujo_miembro(leer, met, comp, off)
     with tempfile.TemporaryDirectory(dir=INTERIM if INTERIM.exists() else None) as tmp:
         disperso = Path(tmp) / "miembro.tif"
         cab = bytearray()
-        pos = 0
-        resto = b""
         for b in flujo:
             cab += b
-            pos += len(b)
             if len(cab) >= cabecera_max:
                 break
         offs, largos = tiras_tiff(bytes(cab))
-        h0 = int(offs.min())
+        h0 = int(offs[largos > 0].min())  # tiras vacías (offset 0) en archivos dispersos de GDAL
         fin_tiff = int((offs + largos).max())
         with open(disperso, "wb") as f:
             f.write(bytes(cab[:h0]))
@@ -297,6 +294,7 @@ def bajar(upsert_manifest, recuadros: dict[str, tuple[float, float, float, float
     faltan = {c: {k: v for k, v in recuadros.items() if not ruta_recorte(c, k).exists()} for c in CAPAS}
     if not any(faltan.values()):
         log("SEETileDrain: recortes ya presentes")
+        completo = completo and ZIP.exists()
     if completo:
         bajar_zip(log)
         leer = rangos_local(ZIP)
