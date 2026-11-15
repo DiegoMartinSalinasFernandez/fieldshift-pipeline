@@ -1,9 +1,9 @@
 ---
 id: T052
 titulo: 'Research: cómo marcar riego por condado en Nebraska y Kansas'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-4
 estados:
 - NE
 - KS
@@ -34,3 +34,4 @@ Escribí `docs/research/riego_ne_ks.md`.
 El research en un PR.
 
 ## Notas
+- 2026-11-15 04:17 · pro-4: tomada
