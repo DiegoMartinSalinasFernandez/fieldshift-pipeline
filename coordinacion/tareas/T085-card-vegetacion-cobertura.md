@@ -1,9 +1,9 @@
 ---
 id: T085
 titulo: 'Data card de vegetación: cobertura de ndvi_maiz y ndvi_soja por estado y año'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - OH
 - NE
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T06:27
-actualizada: 2026-11-15T06:27
+actualizada: 2026-11-15 06:31
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ chico sobre los datos que tengas a mano; si no tenés las máscaras del CDL, dec
 El cambio en los data cards en un PR. No cambies código ni esquema.
 
 ## Notas
+- 2026-11-15 06:31 · pro-2: tomada
