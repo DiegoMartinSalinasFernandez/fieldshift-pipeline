@@ -23,6 +23,7 @@ centro (vecino más cercano, como con AgTile-US).
 from __future__ import annotations
 
 import datetime as dt
+import math
 import struct
 import tempfile
 import zlib
@@ -190,8 +191,9 @@ def _filas_necesarias(ds_transform, alto: int, recuadros: dict[str, tuple[float,
     out = {}
     for k, (x0, y0, x1, y1) in recuadros.items():
         w = from_bounds(x0 - MARGEN_GRADOS, y0 - MARGEN_GRADOS, x1 + MARGEN_GRADOS, y1 + MARGEN_GRADOS, ds_transform)
-        w = w.round_offsets("floor").round_lengths("ceil")
-        out[k] = w
+        f0, c0 = math.floor(w.row_off), math.floor(w.col_off)
+        f1, c1 = math.ceil(w.row_off + w.height), math.ceil(w.col_off + w.width)
+        out[k] = Window(c0, f0, c1 - c0, f1 - f0)
     return out
 
 
