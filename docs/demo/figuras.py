@@ -15,6 +15,9 @@ archivo o una columna, esa figura se saltea con un aviso.
 Uso:
   .venv/bin/python -X utf8 docs/demo/figuras.py                 # baja (si hace falta) y dibuja
   .venv/bin/python -X utf8 docs/demo/figuras.py --sin-bajar     # usa los zips que ya están en --zips
+  .venv/bin/python -X utf8 docs/demo/figuras.py --https         # sin gh: urllib + URL pública, controla .sha256
+  .venv/bin/python -X utf8 docs/demo/figuras.py --https --etiquetas datos-oh-ne-mn --sufijo oh_ne_mn \
+      --nota "Only OH, NE and MN (release datos-oh-ne-mn); IA, IL, IN and KS not included."
   .venv/bin/python -X utf8 docs/demo/figuras.py --zips DIR --salida DIR
   .venv/bin/python -X utf8 docs/demo/figuras.py --entrega fieldshift_datos_v1.2.zip   # entrega unida, sin bajar
 """
@@ -49,6 +52,8 @@ SRC_SMAP = "NASA SMAP L4 SPL4SMGP (Crop-CASMA daily layers)"
 SRC_PROG = "USDA NASS Crop Progress (state, weekly)"
 SRC_CDL = "USDA NASS Cropland Data Layer 30 m"
 ORIGEN = "published release CSVs"             # con --entrega se cambia por el nombre del zip
+NOTA = ""                                     # p. ej. "Only OH, NE and MN"; va en el pie de cada figura
+SUFIJO = ""                                   # se agrega al nombre de cada PNG
 
 
 def aviso(msg: str) -> None:
@@ -70,51 +75,97 @@ def repo_github() -> str | None:
     return slug.removesuffix(".git") or None
 
 
-def bajar_https(et: str, d: Path) -> int:
-    """Plan B sin `gh`: baja `<et>_<paquete>.zip` de la URL pública del release (solo si el repo es público)."""
-    import urllib.error
+def _get(url: str, timeout: int = 120) -> bytes:
     import urllib.request
+
+    req = urllib.request.Request(url, headers={"User-Agent": "fieldshift-figuras"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return resp.read()
+
+
+def sha256_ok(z: Path) -> bool | None:
+    """Compara `z` con `z.sha256` (formato de sha256sum). None si no hay .sha256 al lado."""
+    import hashlib
+
+    f = z.with_name(z.name + ".sha256")
+    if not f.exists():
+        return None
+    esperado = f.read_text().split()[0].strip().lower()
+    h = hashlib.sha256()
+    with z.open("rb") as fh:
+        for bloque in iter(lambda: fh.read(1 << 20), b""):
+            h.update(bloque)
+    return h.hexdigest() == esperado
+
+
+def bajar_https(et: str, d: Path) -> int:
+    """Sin `gh` ni token: baja `<et>_<paquete>.zip` y su `.sha256` de la URL pública del release."""
+    import urllib.error
 
     slug = repo_github()
     if not slug:
+        aviso("HTTPS: el remoto origin no es de GitHub; no sé de dónde bajar")
         return 0
     n = 0
     for paq in PAQUETES:
         nombre = f"{et}_{paq}.zip"
         z = d / nombre
-        if z.exists():
-            n += 1
-            continue
-        url = f"https://github.com/{slug}/releases/download/{et}/{nombre}"
+        base = f"https://github.com/{slug}/releases/download/{et}/{nombre}"
         try:
-            with urllib.request.urlopen(url, timeout=60) as resp:
-                z.write_bytes(resp.read())
+            sha = d / (nombre + ".sha256")
+            if not sha.exists():
+                sha.write_bytes(_get(base + ".sha256"))
+            if not z.exists() or sha256_ok(z) is False:
+                tmp = z.with_name(z.name + ".part")
+                tmp.write_bytes(_get(base, timeout=600))
+                tmp.replace(z)
             n += 1
         except (urllib.error.URLError, TimeoutError) as e:
-            aviso(f"HTTPS: no se pudo bajar {url}: {e}")
+            aviso(f"HTTPS: no se pudo bajar {nombre} de {et}: {e}")
     return n
 
 
-def bajar(etiquetas: list[str], destino: Path) -> None:
+def controlar_sha256(d: Path) -> None:
+    """Saca de la carpeta (renombra a .malo) los zips cuyo .sha256 no coincide, para que no se lean."""
+    for z in sorted(d.glob("*.zip")):
+        ok = sha256_ok(z)
+        if ok is None:
+            aviso(f"{z.name}: no hay .sha256 para controlarlo")
+        elif not ok:
+            aviso(f"{z.name}: el sha256 NO coincide; se descarta")
+            z.replace(z.with_name(z.name + ".malo"))
+        else:
+            print(f"sha256 ok: {z.name}")
+
+
+def bajar(etiquetas: list[str], destino: Path, https: bool = False) -> None:
     for et in etiquetas:
         d = destino / et
         d.mkdir(parents=True, exist_ok=True)
-        try:
-            r = subprocess.run(["gh", "release", "download", et, "--pattern", "*.zip", "--dir", str(d),
-                                "--skip-existing"], capture_output=True, text=True)
-            ok, err = r.returncode == 0, r.stderr.strip() or r.stdout.strip()
-        except FileNotFoundError:
-            ok, err = False, "gh no está instalado"
-        if not ok:
-            aviso(f"gh no pudo bajar el release {et} ({err}); pruebo por HTTPS")
+        if https:
             bajar_https(et, d)
+        else:
+            patrones = []
+            for paq in PAQUETES:
+                patrones += ["--pattern", f"{et}_{paq}.zip", "--pattern", f"{et}_{paq}.zip.sha256"]
+            try:
+                r = subprocess.run(["gh", "release", "download", et, *patrones, "--dir", str(d),
+                                    "--skip-existing"], capture_output=True, text=True)
+                ok, err = r.returncode == 0, r.stderr.strip() or r.stdout.strip()
+            except FileNotFoundError:
+                ok, err = False, "gh no está instalado"
+            if not ok:
+                aviso(f"gh no pudo bajar el release {et} ({err}); pruebo por HTTPS")
+                bajar_https(et, d)
+        controlar_sha256(d)
         print(f"{et}: {len(list(d.glob('*.zip')))} zips en {d}")
 
 
-def leer(zips: Path, archivo: str) -> pd.DataFrame | None:
-    """Une `archivo` (p. ej. 'produccion_anual.csv') de todos los zips que haya bajo `zips`."""
+def leer(zips: Path | list[Path], archivo: str) -> pd.DataFrame | None:
+    """Une `archivo` (p. ej. 'produccion_anual.csv') de todos los zips que haya bajo `zips` (una o varias carpetas)."""
     partes = []
-    for z in sorted(zips.rglob("*.zip")):
+    carpetas = zips if isinstance(zips, list) else [zips]
+    for z in sorted(x for c in carpetas for x in c.rglob("*.zip")):
         try:
             with zipfile.ZipFile(z) as zf:
                 for n in zf.namelist():
@@ -180,11 +231,15 @@ def pie(fig, fuentes: list[str], extra: str = "") -> None:
     texto = "Source: " + "; ".join(fuentes) + f". Field Shift data pipeline, {ORIGEN}."
     if extra:
         texto += "\n" + extra
+    if NOTA:
+        texto += "\n" + NOTA
     fig.text(0.01, 0.01, texto, fontsize=7, color="#555555", ha="left", va="bottom", wrap=True)
 
 
 def guardar(fig, salida: Path, nombre: str) -> None:
     salida.mkdir(parents=True, exist_ok=True)
+    if SUFIJO:
+        nombre = nombre.replace(".png", f"_{SUFIJO}.png")
     fig.savefig(salida / nombre, dpi=150)
     plt.close(fig)
     print(f"guardada {salida / nombre}")
@@ -348,10 +403,16 @@ def main() -> None:
     ap.add_argument("--zips", type=Path, default=ZIPS, help="carpeta para los zips bajados")
     ap.add_argument("--salida", type=Path, default=SALIDA, help="carpeta de los PNG")
     ap.add_argument("--sin-bajar", action="store_true", help="no llamar a gh; usar los zips que ya están")
+    ap.add_argument("--https", action="store_true",
+                    help="bajar por la URL pública del release con urllib (sin gh ni token)")
     ap.add_argument("--etiquetas", nargs="+", default=ETIQUETAS)
+    ap.add_argument("--nota", default="", help="línea extra para el pie de todas las figuras")
+    ap.add_argument("--sufijo", default="", help="sufijo para los nombres de los PNG (p. ej. oh_ne_mn)")
     ap.add_argument("--entrega", type=Path,
                     help="zip de la entrega unida (fieldshift_datos_v1.x.zip); no baja nada")
     a = ap.parse_args()
+    global NOTA, SUFIJO
+    NOTA, SUFIJO = a.nota, a.sufijo
 
     if a.entrega:
         global ORIGEN
@@ -360,13 +421,17 @@ def main() -> None:
         prod, clima, fen, agua, fenest, rot = (d[k] for k in ("prod", "clima", "fen", "agua", "fenest", "rot"))
     else:
         if not a.sin_bajar:
-            bajar(a.etiquetas, a.zips)
-        prod = leer(a.zips, "produccion_anual.csv")
-        clima = leer(a.zips, "clima_anual.csv")
-        fen = leer(a.zips, "fenologia_anual.csv")
-        agua = leer(a.zips, "agua_mensual.csv")
-        fenest = leer(a.zips, "fenologia_estado.csv")
-        rot = leer(a.zips, "rotacion_anual.csv")
+            bajar(a.etiquetas, a.zips, https=a.https)
+        zips_dirs = [a.zips / et for et in a.etiquetas if (a.zips / et).is_dir()]
+        if not zips_dirs:
+            aviso(f"no hay carpetas de {a.etiquetas} bajo {a.zips}")
+        fuente = zips_dirs or a.zips
+        prod = leer(fuente, "produccion_anual.csv")
+        clima = leer(fuente, "clima_anual.csv")
+        fen = leer(fuente, "fenologia_anual.csv")
+        agua = leer(fuente, "agua_mensual.csv")
+        fenest = leer(fuente, "fenologia_estado.csv")
+        rot = leer(fuente, "rotacion_anual.csv")
 
     fig_lluvia_julio(prod, clima, a.salida)
     fig_ndvi_rend(prod, fen, a.salida)
