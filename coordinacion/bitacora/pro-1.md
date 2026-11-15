@@ -62,3 +62,4 @@
 - 09:27 T129: tomada por el trabajador
 - 09:31 T129: terminada, PR #118
 - 09:31 T131: tomada por el trabajador
+- 10:12 T131: terminada, PR #132
