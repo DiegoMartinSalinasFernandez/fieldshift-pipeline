@@ -13,3 +13,4 @@
 - 04:04 T044: tomada por el trabajador
 - 04:27 T044: tomada por el trabajador
 - 04:34 T044: a medias, PR #50
+- 04:35 T044: tomada por el trabajador
