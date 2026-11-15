@@ -14,6 +14,8 @@ Además arma `<etiqueta>_base.zip` (también con su .sha256), con la referencia 
                                     filtrado a los estados del release si trae más
   data/reference/condados.csv       las mismas filas, con centroides y área
   data/reference/anios.csv
+  data/reference/cdl_precision.csv  precisión del CDL por estado, año y clase, solo los estados del release
+                                    (si existe; la arma src/cultivos/precision_cdl.py)
   README.md                         qué trae el zip
 Si falta data/reference/condados.gpkg, avisa y sigue sin el zip de base. Los zips de paquete no cambian.
 
@@ -125,7 +127,7 @@ los paquetes del release `{etiqueta}` ({estados}).
   ({n} counties / condados).
 - `data/reference/anios.csv`: season and previous-winter windows per year / ventanas de temporada e invierno
   previo por año.
-
+{precision}
 Published with `scripts/entregar.py` (see `MAQUINAS.md`) / publicado con `scripts/entregar.py`.
 """
 
@@ -181,11 +183,28 @@ def armar_zip_base(etiqueta: str, estados: list[str]) -> Path | None:
             n = len(sub)
         if anios.exists():
             zf.write(anios, "data/reference/anios.csv")
-        zf.writestr("README.md", README_BASE.format(etiqueta=etiqueta, estados=", ".join(estados), n=n)
-                    .encode("utf-8"))
+        precision = ""
+        prec = ref / "cdl_precision.csv"
+        if prec.exists():                                            # T133: opcional, filtrada a los estados
+            tp = pd.read_csv(prec, dtype=str, keep_default_na=False)
+            if "estado" not in tp.columns:
+                sys.exit("data/reference/cdl_precision.csv: falta la columna estado")
+            tp = tp[tp["estado"].isin(pedidos)]
+            zf.writestr("data/reference/cdl_precision.csv",
+                        tp.to_csv(index=False, lineterminator="\n").encode("utf-8"))
+            precision = README_PRECISION.format(n_prec=len(tp))
+        zf.writestr("README.md", README_BASE.format(etiqueta=etiqueta, estados=", ".join(estados), n=n,
+                                                    precision=precision).encode("utf-8"))
     _escribir_sha(z)
     print(f"{z.relative_to(REPO)}: {z.stat().st_size / 1e6:.1f} MB, {n} condados")
     return z
+
+
+README_PRECISION = """- `data/reference/cdl_precision.csv`: Cropland Data Layer accuracy (producer's and user's, %) by state, year
+  and CDL class, from the NASS accuracy assessments / precisión del CDL (del productor y del usuario, %) por
+  estado, año y clase, de las evaluaciones de NASS ({n_prec} rows / filas; `src/cultivos/precision_cdl.py`,
+  `docs/datasets/cultivos.md`).
+"""
 
 
 SECCIONES_IA = {"en": "## Use of AI", "es": "## Uso de IA"}
