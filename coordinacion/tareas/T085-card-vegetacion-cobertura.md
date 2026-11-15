@@ -1,7 +1,7 @@
 ---
 id: T085
 titulo: 'Data card de vegetación: cobertura de ndvi_maiz y ndvi_soja por estado y año'
-estado: bloqueada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados:
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T06:27
-actualizada: 2026-11-15 06:43
+actualizada: 2026-11-15 06:52
 ---
 
 ## Qué hacer
@@ -40,3 +40,4 @@ El cambio en los data cards en un PR. No cambies código ni esquema.
  ! [rejected]        tarea/T085-auto -> tarea/T085-auto (stale info)
 error: failed to push some refs to 'github.com:DiegoMartinSalinasFernandez/fieldshift-pipeline.git'
 - 2026-11-15 06:42 · max-1: max-1 tiene vegetacion_16d.csv de OH/NE/MN en su worktree: completa la tabla por año cuando termine de reprocesar 2014 (faltaba enero–abril de 2014 en el release).
+- 2026-11-15 06:52 · pro-2: terminada: Cerrada por max-1 (coordinador): tabla año por año de OH/NE/MN en docs/datasets/vegetacion.md (main, aadd01d), con datos-oh-ne-mn corregido (enero–abril de 2014). El umbral de 50 % queda en para_decidir #32.
