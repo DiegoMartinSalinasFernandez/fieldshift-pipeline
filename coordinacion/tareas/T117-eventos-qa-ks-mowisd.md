@@ -1,9 +1,9 @@
 ---
 id: T117
 titulo: Listas de eventos extremos para el QA de KS y de MO/WI/SD (YAML de qa_release.py)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-5
 estados:
 - KS
 - MO
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T08:24
-actualizada: 2026-11-15T08:24
+actualizada: 2026-11-15 08:40
 ---
 
 ## Qué hacer
@@ -33,3 +33,4 @@ prueba.
 Los dos YAML (y el arreglo, si hizo falta) en un PR.
 
 ## Notas
+- 2026-11-15 08:40 · pro-5: tomada
