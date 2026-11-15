@@ -1,7 +1,7 @@
 ---
 id: T012
 titulo: 'Research: prácticas del Censo Agropecuario en los estados nuevos'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -12,7 +12,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15 01:15
-actualizada: 2026-11-15 02:17
+actualizada: 2026-11-15 02:22
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ El research actualizado en un PR, con lo que T003 tiene que tener en cuenta.
 
 ## Notas
 - 2026-11-15 02:17 · pro-1: tomada
+- 2026-11-15 02:22 · pro-1: terminada por el trabajador: PR #8, falta la revisión de max-1
