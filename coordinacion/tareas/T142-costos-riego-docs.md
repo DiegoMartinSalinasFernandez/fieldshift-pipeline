@@ -1,7 +1,7 @@
 ---
 id: T142
 titulo: Tabla de referencia de costos con riego (UNL, K-State) y FINBIN/KFMA en `docs/` (espera OK)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados:
@@ -10,7 +10,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T09:59
-actualizada: 2026-11-15 09:59
+actualizada: 2026-11-15 10:06
 ---
 
 ## Qué hacer
@@ -31,3 +31,4 @@ El documento en un PR, retenido como dice arriba.
 
 ## Notas
 - 2026-11-15 09:59 · pro-2: tomada
+- 2026-11-15 10:06 · pro-2: terminada por el trabajador: PR #130, falta la revisión de max-1
