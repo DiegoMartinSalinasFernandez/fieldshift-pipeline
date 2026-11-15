@@ -8,7 +8,7 @@ estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 02:35
-actualizada: 2026-11-15 02:29
+actualizada: 2026-11-15 02:32
 ---
 
 ## Qué hacer
@@ -32,3 +32,4 @@ Ningún `registrar` falla sin `manifest.csv`, con la prueba descrita en el PR.
 
 ## Notas
 - 2026-11-15 02:29 · pro-3: tomada
+- 2026-11-15 02:32 · pro-3: Rama tarea/T021-manifest empujada: asegurar_manifest() local en 12 paquetes (base ya andaba; clima no fallaba pero escribía filas sin encabezado). Prueba: tests/test_manifest_nuevo.py (12 casos, fallan sin el arreglo). Falta abrir el PR.
