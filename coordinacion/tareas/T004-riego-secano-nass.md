@@ -1,16 +1,16 @@
 ---
 id: T004
 titulo: Separar riego y secano de NASS en NE y KS
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados:
 - NE
 - KS
 depende_de: []
 rama: null
 creada: 2026-11-14 23:59
-actualizada: 2026-11-14 23:59
+actualizada: 2026-11-15 02:00
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ antes de tocar `src/cultivos/`.**
 Research escrito con fuentes y confianza, y una propuesta concreta de columnas aprobada o rechazada.
 
 ## Notas
+- 2026-11-15 02:00 · pro-2: tomada
