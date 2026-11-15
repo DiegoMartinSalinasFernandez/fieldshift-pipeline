@@ -1,14 +1,14 @@
 ---
 id: T036
 titulo: Pruebas de scripts/entregar.py (tests/test_entregar.py)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-4
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 03:20
-actualizada: 2026-11-15 03:15
+actualizada: 2026-11-15 03:17
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ Las pruebas en un PR.
 
 ## Notas
 - 2026-11-15 03:15 · pro-4: tomada
+- 2026-11-15 03:17 · pro-4: terminada por el trabajador: PR #30, falta la revisión de max-1
