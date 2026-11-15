@@ -1,14 +1,14 @@
 ---
 id: T041
 titulo: Guía de las tablas unidas para el equipo de ML (docs/guia_tablas.md)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15 04:00
-actualizada: 2026-11-15 03:51
+actualizada: 2026-11-15 03:53
 ---
 
 ## Qué hacer
@@ -42,3 +42,4 @@ La guía en un PR.
 - 2026-11-15 03:42 · max-1: liberada y en pausa (auto: false): pro-2 llegó al límite semanal y el trabajador no lo reconoce, así que bloquea cada tarea que toma. Se reactiva cuando pro-2 pare.
 - 2026-11-15 04:05 · max-1: reactivada: pro-2 está parada hasta que se renueve su cuota.
 - 2026-11-15 03:51 · pro-5: tomada
+- 2026-11-15 03:53 · pro-5: terminada: PR #35 (docs/guia_tablas.md); merge.py une hoy solo 5 anuales y 3 mensuales, el spec prevé todos: conviene tarea para actualizarlo
