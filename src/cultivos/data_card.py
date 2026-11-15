@@ -12,6 +12,7 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 from src.zona_texto import lista_estados  # noqa: E402
+from src.cultivos.riego_nass import COLS_DATA_CARD as RIEGO_COLS, SECCION_DATA_CARD as RIEGO_SECCION  # noqa: E402  T134
 OUT = REPO / "data" / "processed" / "cultivos"
 CARD = REPO / "docs" / "datasets" / "cultivos.md"
 
@@ -303,6 +304,8 @@ def main():
             continue
         df = pd.read_csv(ruta, dtype={"fips": str, "fips_estado": str, "flag_nass": str})
         t = df[TIEMPO[archivo]].astype(str)
+        if archivo == "produccion_anual.csv":  # T134: riego y secano, solo si el CSV ya las tiene
+            cols = cols + [c for c in RIEGO_COLS if c[0] in df.columns]
         for nombre, desc, unidad, fuente, cid in cols:
             s = df[nombre]
             falt = 100 * s.isna().mean()
@@ -311,7 +314,9 @@ def main():
             hasta = llenos.max() if len(llenos) else ""
             filas.append(f"| {archivo} | {nombre} | {desc} | {unidad} | {fuente} | {cid} | {desde} | {hasta} | {falt:.1f} |")
     CARD.parent.mkdir(parents=True, exist_ok=True)
-    CARD.write_text(TEXTO.replace("{tabla}", "\n".join(filas)).replace("{estados}", lista_estados()), encoding="utf-8", newline="\n")
+    texto = TEXTO.replace("{tabla}", "\n".join(filas)).replace("{estados}", lista_estados())
+    texto = texto.rstrip("\n") + "\n" + RIEGO_SECCION  # T134: sección de riego al final
+    CARD.write_text(texto, encoding="utf-8", newline="\n")
     print(f"escrito {CARD.relative_to(REPO).as_posix()} ({len(filas)} columnas)")
 
 
