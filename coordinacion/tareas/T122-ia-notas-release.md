@@ -1,14 +1,14 @@
 ---
 id: T122
 titulo: Declaración de IA en las notas de los releases (scripts/entregar.py)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-5
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T08:55
-actualizada: 2026-11-15T08:55
+actualizada: 2026-11-15 09:03
 ---
 
 ## Qué hacer
@@ -27,3 +27,4 @@ esto esté unido. Si hace falta, dejá en el PR el comando exacto.
 El cambio y la prueba en un PR, con CI en verde.
 
 ## Notas
+- 2026-11-15 09:03 · pro-5: tomada
