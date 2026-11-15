@@ -33,8 +33,20 @@ card, no la damos por existente.
 - `fips`: texto de 5 dígitos, 2 del estado y 3 del condado, con ceros a la izquierda (`19169` es Story, Iowa).
   **Leelo siempre como texto**: `pd.read_csv(..., dtype={"fips": str})`. Como número se pierde el cero
   inicial de los códigos que lo tengan y deja de servir para cruzar con otras tablas.
-- **El estado** se reconoce por los dos primeros dígitos: `fips.str[:2]`. Zona de estudio (7 estados, 666
-  condados según el `CLAUDE.md` §2): IA `19`, IL `17`, IN `18`, OH `39`, NE `31`, MN `27`, KS `20`.
+- **El estado** se reconoce por los dos primeros dígitos: `fips.str[:2]`. La zona de estudio son 7 estados
+  y 666 condados (campo `condados` de `config/config.yaml`; la zona sigue con `confirmada: false`):
+
+  | Estado | FIPS | Condados | Release de datos |
+  |---|---|---|---|
+  | Iowa (IA) | `19` | 99 | `datos-ia-il-in` |
+  | Illinois (IL) | `17` | 102 | `datos-ia-il-in` |
+  | Indiana (IN) | `18` | 92 | `datos-ia-il-in` |
+  | Ohio (OH) | `39` | 88 | `datos-oh-ne-mn` |
+  | Nebraska (NE) | `31` | 93 | `datos-oh-ne-mn` |
+  | Minnesota (MN) | `27` | 87 | `datos-oh-ne-mn` |
+  | Kansas (KS) | `20` | 105 | `datos-ks` |
+
+  Los mismos conteos están en `docs/research/regiones_ers.md` y `docs/research/nass_2024_2025.md`.
 - `anio`: año de la cosecha en la anual. En la mensual es el **año calendario del mes** (el mes `2023-11`
   tiene `anio = 2023`).
 - `cultivo` (solo anual): `maiz`, `soja`, `trigo_invierno`, `avena`, `alfalfa`, `heno`.
@@ -49,6 +61,25 @@ card, no la damos por existente.
 - `tabla_mensual` es un *outer join*: un mes aparece si está en cualquiera de los paquetes que se unen.
 - Los valores se copian como texto, sin reformatear. Al leer con pandas, el tipo de cada columna lo infiere
   pandas.
+- Techo de filas con los 7 estados: 666 × 26 años × 6 cultivos = 103.896 en la anual y 666 × 26 × 12 =
+  207.792 en la mensual.
+
+### De dónde vienen los 7 estados
+
+Cada máquina procesa un grupo de estados y lo publica por separado. Las tablas unidas salen de juntar esos
+grupos:
+
+1. `scripts/entregar.py` sube un zip por paquete al release `datos-<estados>` de su grupo (`datos-ia-il-in`,
+   `datos-oh-ne-mn`, `datos-ks`). Cada zip trae los CSV, el data card, `condados.csv`, `anios.csv`, las filas
+   del paquete en `manifest.csv` y su `.sha256`.
+2. `scripts/unir_estados.py --releases datos-ia-il-in,datos-oh-ne-mn,datos-ks` apila por filas los CSV del
+   mismo nombre en `data/unido/<paquete>/`, verifica los `.sha256` y controla que no haya claves duplicadas y
+   que cada `fips` venga de un solo release.
+3. `src/merge.py` arma las dos tablas. Lo corre la máquina coordinadora (max-1, tarea T008).
+
+Hay un **data card por grupo de estados**: `data/unido/<paquete>/<release>.md`. La cobertura real, los
+faltantes y los problemas conocidos pueden cambiar entre grupos, así que hay que leer el del estado que se
+usa. `scripts/verificar_entrega.py` controla zips o carpetas unidas contra el contrato de los CSV.
 
 ---
 
@@ -68,6 +99,8 @@ Esto importa para no contar de más al entrenar o evaluar:
   `fenologia_estado` tiene solo **maíz y soja**: en los demás cultivos las columnas `doy_50_*` quedan vacías.
 - Consecuencia práctica: al dividir en folds, agrupá por condado (o por año) y no por fila, o los valores
   repetidos se filtran entre entrenamiento y validación.
+- Con 7 estados, las columnas por estado tienen solo 7 valores distintos por año y cultivo. Si se valida
+  dejando un estado afuera, esas columnas no aportan nada que el modelo no pueda memorizar del propio estado.
 
 ---
 
@@ -173,8 +206,29 @@ de cada uno):
 
 - **Riego (Nebraska y Kansas).** Una parte grande del maíz y la soja se riega. El rendimiento de
   `ALL PRODUCTION PRACTICES` mezcla riego y secano, y no es comparable de forma directa con Iowa
-  (tarea T004). El riego por condado está en `practicas_censo.csv`, solo en años de censo. Los costos de ERS
-  tampoco separan riego y secano en Nebraska. NLDAS-2 no simula riego ni drenaje con caños.
+  (tarea T004). Según el Censo 2022, en Nebraska se riega cerca del 53 % del maíz grano cosechado y el 44 %
+  de la soja; en Kansas, el 25 % del maíz y el 8 % de la soja (`docs/research/censo_agropecuario.md`). El riego
+  por condado está en `practicas_censo.csv`, solo en años de censo, y `pct_riego` está calculado sobre el
+  cropland, así que subestima el peso del riego en el maíz. NASS publicó el rendimiento por condado separado
+  en riego y secano solo hasta la cosecha 2018 (maíz y soja) y 2019 (trigo); sumarlo a `produccion_anual`
+  está propuesto en `docs/research/riego_nass.md` y espera el OK del humano. Los costos de ERS tampoco separan
+  riego y secano en Nebraska. NLDAS-2 no simula riego ni drenaje con caños. Mientras no haya columnas de
+  riego, conviene usar el estado como variable o evaluar NE y KS por separado.
+- **Trigo de invierno (sobre todo Kansas).** En 2020 hay rendimiento de trigo de invierno en 94 de los 105
+  condados de Kansas, y en 337 condados en total en los 7 estados. En Iowa y Minnesota NASS no lo estima por
+  condado en ningún año, y en 2024 solo está Illinois (`docs/research/nass_2024_2025.md`). El `anio` es el de
+  la cosecha (junio–julio): se siembra en el otoño del `anio − 1`, así que pesa más el invierno previo que la
+  temporada de abril a septiembre. `fenologia_estado` no trae trigo (solo maíz y soja), aunque Crop Progress
+  lo publica para OH, NE y KS (`docs/research/crop_progress_estados_nuevos.md`). En el CDL, el trigo de
+  invierno es aceptable en KS, NE, OH e IN y malo en IA y MN (`docs/research/cdl_precision.md`).
+- **Condados sin publicar (NE y KS).** En 2025 hay rendimiento de maíz en el 49 % de los condados de Nebraska
+  y el 50 % de Kansas. Lo que NASS no publica va a la fila "OTHER (COMBINED) COUNTIES", que se descarta y llega
+  al 51 % de la superficie de maíz de Kansas. No falta al azar: son los condados con menos productores o menos
+  respuestas a la encuesta.
+- **Rendimientos muy bajos (KS y NE).** El maíz de secano puede quedar debajo del mínimo de 20 bu/ac que
+  controla `validar_csv()` (`docs/research/rangos_estados_nuevos.md`).
+- **`twi_decil_sup_pct` no es comparable entre grupos de estados.** Usa el percentil 90 del TWI de los
+  condados que procesó cada máquina. Está pendiente decidir cómo recalcularlo (nota de max-1 en T008).
 - **Rendimientos de 2024 y 2025.** NASS publicó tarde los rendimientos de condado de 2024, y los de 2025
   pueden estar incompletos. Revisá la columna `hasta` del data card de cultivos y cuántas filas tiene cada
   año antes de usarlos para validar.
@@ -203,7 +257,9 @@ de cada uno):
 - **ECOSTRESS (prevista).** Solo abril a octubre, desde 2018-08, sobre una ventana de muestra y no el condado
   entero. Fuera de ese rango las columnas van vacías.
 - **Economía (prevista).** NASS dejó de publicar el precio del trigo de invierno en Iowa después de 2019 y el
-  de la avena en Indiana después de 2015.
+  de la avena en Indiana después de 2015. Los costos son por región del ERS: IA, IL e IN están enteros en
+  Heartland y KS entero en Prairie Gateway, mientras que OH, NE y MN se reparten entre tres regiones cada uno
+  (`docs/research/regiones_ers.md`).
 - **Tablas viejas.** Las tablas reflejan los CSV de cada paquete al momento de correr `merge.py`. Si un
   paquete se reprocesa o se suma uno nuevo, hay que volver a correrlo: `python src/merge.py` (tarda poco y
   es determinista).
