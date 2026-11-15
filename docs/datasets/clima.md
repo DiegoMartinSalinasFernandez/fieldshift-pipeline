@@ -164,6 +164,6 @@ Los CSV procesados cubren el período de `config.yaml` (2000-2025);
 
   No es un error del proceso: son dos productos distintos (IMERG satelital con ajuste a pluviómetros; POWER
   `PRECTOTCORR` de MERRA-2 corregido). No mezcles las dos columnas en una misma serie ni compares la lluvia de
-  un estado medida con una contra la de otro medida con la otra; para OH, el sesgo entre fuentes (≈ 18 %) es
-  mayor que la diferencia entre muchos años secos y húmedos. No se calculó para IA, IL, IN ni KS (no tienen
+  un estado medida con una contra la de otro medida con la otra; en OH la diferencia entre fuentes es de
+  ≈ 18 % (≈ 190 mm por año). No se calculó para IA, IL, IN ni KS (no tienen
   release de `clima` en este repo).
