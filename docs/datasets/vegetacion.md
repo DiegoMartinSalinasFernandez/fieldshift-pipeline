@@ -125,10 +125,37 @@ muchos más faltantes en OH (maíz) y en la soja de los tres estados nuevos que 
 | NE | 73–88 | 41–66 |
 | MN | 47–69 | 41–66 |
 
-El QA dio la soja como un solo rango para los tres estados. **La tabla año por año (estado × año
-2008–2025) todavía no está:** la máquina que hizo esta tarea (pro-2, NE y KS) no tiene
-`vegetacion_16d.csv` de OH, NE ni MN, y no pudo bajarlo del release. La calcula
-`scripts/cobertura_ndvi_cultivo.py` en cualquier máquina que tenga el CSV:
+**OH, NE y MN, año por año** (% de condado-fechas de `vegetacion_16d.csv` con dato, calculado por max-1 con
+`scripts/cobertura_ndvi_cultivo.py` sobre `datos-oh-ne-mn` corregido el 2026-11-15, con enero–abril de 2014
+completos; OH 88, NE 93 y MN 87 condados):
+
+| año | maíz OH | maíz NE | maíz MN | soja OH | soja NE | soja MN |
+|---|---|---|---|---|---|---|
+| 2008 | 30 | 74 | 51 | 50 | 46 | 51 |
+| 2009 | 42 | 82 | 50 | 51 | 51 | 50 |
+| 2010 | 36 | 73 | 47 | 47 | 41 | 47 |
+| 2011 | 42 | 83 | 54 | 47 | 43 | 50 |
+| 2012 | 49 | 84 | 67 | 51 | 52 | 57 |
+| 2013 | 46 | 84 | 53 | 50 | 46 | 43 |
+| 2014 | 42 | 81 | 45 | 51 | 54 | 46 |
+| 2015 | 46 | 81 | 56 | 52 | 58 | 56 |
+| 2016 | 48 | 82 | 55 | 60 | 52 | 54 |
+| 2017 | 49 | 88 | 62 | 60 | 64 | 60 |
+| 2018 | 44 | 84 | 53 | 54 | 57 | 49 |
+| 2019 | 39 | 82 | 47 | 51 | 52 | 46 |
+| 2020 | 48 | 84 | 57 | 59 | 55 | 57 |
+| 2021 | 46 | 82 | 58 | 55 | 59 | 62 |
+| 2022 | 45 | 86 | 58 | 57 | 64 | 56 |
+| 2023 | 49 | 80 | 57 | 56 | 62 | 55 |
+| 2024 | 44 | 82 | 69 | 59 | 56 | 66 |
+| 2025 | 41 | 86 | 62 | 52 | 58 | 58 |
+
+Fechas de 16 días por año: 23, salvo 2000 (20, MOD13Q1 empieza el 18-2-2000), 2023 (22), 2024 (21) y 2025
+(15). Pasa igual en IA/IL/IN: son fechas que no devuelve la búsqueda de Planetary Computer (se investiga en
+T090). Hasta el 2026-11-15 el release `datos-oh-ne-mn` tampoco tenía enero–abril de 2014 (la descarga retomada
+arrancó en 2015); el zip de vegetación se republicó corregido ese día.
+
+Para recalcularla en otra máquina que tenga el CSV:
 
 ```
 .venv/bin/python -X utf8 scripts/cobertura_ndvi_cultivo.py
