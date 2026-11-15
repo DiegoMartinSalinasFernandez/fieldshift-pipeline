@@ -55,12 +55,19 @@ COLS = {
     ],
 }
 
+def teselas_bajadas() -> str:
+    """Teselas MODIS presentes en data/raw/vegetacion (antes fijas: h10v04, h10v05, h11v04, h11v05 de IA, IL, IN)."""
+    raw = REPO / "data" / "raw" / "vegetacion"
+    ts = sorted({p.name.split(".")[2] for p in raw.rglob("*.tif") if p.name.count(".") >= 3})
+    return ", ".join(ts) if ts else "(ninguna bajada todavía)"
+
+
 TEXTO = """
 ## Fuentes y acceso
 
 - **MOD13Q1 v061** (Terra, índices de vegetación 16 días, 250 m) y **MOD11A2 v061** (Terra, LST 8 días,
   1 km), COGs públicos de Microsoft Planetary Computer (colecciones `modis-13Q1-061` y
-  `modis-11A2-061`), firmados con el token SAS anónimo. Teselas h10v04, h10v05, h11v04, h11v05.
+  `modis-11A2-061`), firmados con el token SAS anónimo. Teselas {teselas}.
 - `src/vegetacion/download.py` lee solo la ventana de cada tesela que cubre los condados y la guarda
   tal cual en `data/raw/vegetacion/<producto>/<anio>/<item>.tif` (una fila por archivo en `manifest.csv`).
 - `src/vegetacion/process.py` rasteriza los condados en la grilla sinusoidal de cada tesela, filtra
@@ -153,7 +160,7 @@ def main() -> None:
             falt = 100 * s.isna().mean()
             lineas.append(f"| {arch} | {c} | {desc} | {u} | {f} | {idc} | {desde} | {hasta} | {falt:.1f} |")
     CARD.parent.mkdir(parents=True, exist_ok=True)
-    CARD.write_text("\n".join(lineas) + "\n" + TEXTO, encoding="utf-8")
+    CARD.write_text("\n".join(lineas) + "\n" + TEXTO.replace("{teselas}", teselas_bajadas()), encoding="utf-8")
 
 
 if __name__ == "__main__":
