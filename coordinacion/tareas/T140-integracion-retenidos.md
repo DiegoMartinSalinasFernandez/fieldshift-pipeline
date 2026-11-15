@@ -1,9 +1,9 @@
 ---
 id: T140
 titulo: 'Rama de integración con todos los PR retenidos (117 a 126 y los que sigan): conflictos y pruebas'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
@@ -49,3 +49,4 @@ El PR en borrador abierto con la tabla y las pruebas en verde (o la lista exacta
 - 2026-11-15 10:24 · pro-2: soltada: quedó a medias, PR #137 actualizado. INCOMPLETA: falta sumar el PR 134 (T141, para_decidir #21) a la rama real `integracion/retenidos` y agregar su fila a la tabla del PR en borrador 135. La unión está probada y sale limpia. El trabajador no puede cambiar de rama, hacer push ni usar `gh` (`gh` además está bloqueado por permisos), así q
 - 2026-11-15 10:25 · pro-2: tomada
 - 2026-11-15 10:26 · pro-2: soltada: quedó a medias, PR #137 actualizado. INCOMPLETA: falta sumar el PR 134 (T141, para_decidir #21) a la rama real `integracion/retenidos` y agregar su fila a la tabla del PR en borrador 135. El merge sigue saliendo limpio (`git merge-tree` da el árbol `2a4377d2b5`). En esta sesión se pudo crear un worktree, pero `git merge`, `gh` y el pus
+- 2026-11-15 10:26 · pro-2: tomada
