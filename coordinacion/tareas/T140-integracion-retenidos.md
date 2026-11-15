@@ -1,14 +1,14 @@
 ---
 id: T140
 titulo: 'Rama de integración con todos los PR retenidos (117 a 126 y los que sigan): conflictos y pruebas'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:59
-actualizada: 2026-11-15T09:59
+actualizada: 2026-11-15 10:11
 ---
 
 ## Qué hacer
@@ -37,3 +37,4 @@ conflictos.
 El PR en borrador abierto con la tabla y las pruebas en verde (o la lista exacta de lo que falla).
 
 ## Notas
+- 2026-11-15 10:11 · pro-2: tomada
