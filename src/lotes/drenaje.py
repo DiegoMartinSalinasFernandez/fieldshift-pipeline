@@ -53,6 +53,8 @@ CAPAS = {
 MARGEN_GRADOS = 0.0015  # ~5 celdas alrededor del recuadro del lote
 COLUMNAS = {"prob": "tile_prob_seetiledrain", "clase": "tile_seetiledrain"}
 
+MAX_SALIDA = 64 << 20  # bytes inflados por llamada a zlib
+
 Rangos = Callable[[int, int], Iterator[bytes]]  # (inicio, fin inclusive) -> trozos de bytes
 
 
@@ -139,9 +141,12 @@ def flujo_miembro(leer: Rangos, met: int, comp: int, off: int) -> Iterator[bytes
         raise ValueError(f"método de compresión {met} no soportado")
     d = zlib.decompressobj(-15)
     for c in trozos:
-        b = d.decompress(c)
-        if b:
-            yield b
+        # SEETileDrain se comprime ~270:1: se acota cada salida para no inflar GB de una vez en memoria
+        while c:
+            b = d.decompress(c, MAX_SALIDA)
+            c = d.unconsumed_tail
+            if b:
+                yield b
     b = d.flush()
     if b:
         yield b
@@ -159,7 +164,7 @@ def tiras_tiff(cab: bytes) -> tuple[np.ndarray, np.ndarray]:
     n = struct.unpack("<Q" if big else "<H", cab[ifd:ifd + (8 if big else 2)])[0]
     p = ifd + (8 if big else 2)
     tam = {3: 2, 4: 4, 16: 8}
-    fmt = {3: "H", 4: "L", 16: "Q"}
+    fmt = {3: "<u2", 4: "<u4", 16: "<u8"}
     tags = {}
     for _ in range(n):
         if big:
@@ -173,7 +178,7 @@ def tiras_tiff(cab: bytes) -> tuple[np.ndarray, np.ndarray]:
             datos = val[:nb] if nb <= ancho else cab[struct.unpack("<Q" if big else "<L", val)[0]:][:nb]
             if len(datos) < nb:
                 raise ValueError("la cabecera del TIFF no entra en los bytes leídos")
-            tags[t] = np.frombuffer(datos, dtype=f"<{fmt[typ]}" if typ != 16 else "<u8").astype(np.int64)
+            tags[t] = np.frombuffer(datos, dtype=fmt[typ]).astype(np.int64)
         p = p_sig
     if int(tags.get(259, [1])[0]) != 1:
         raise ValueError("el TIFF tiene compresión interna: este recorte en flujo no sirve")
