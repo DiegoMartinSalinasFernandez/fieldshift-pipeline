@@ -1,7 +1,7 @@
 ---
 id: T137
 titulo: Sorgo granífero como clase de rotación en Kansas (código listo, espera OK)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-2
 estados:
@@ -9,7 +9,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T09:51
-actualizada: 2026-11-15 09:52
+actualizada: 2026-11-15 09:59
 ---
 
 ## Qué hacer
@@ -31,3 +31,4 @@ El código, las pruebas sin red y la documentación en un PR con CI en verde, re
 
 ## Notas
 - 2026-11-15 09:52 · pro-2: tomada
+- 2026-11-15 09:59 · pro-2: terminada por el trabajador: PR #127, falta la revisión de max-1
