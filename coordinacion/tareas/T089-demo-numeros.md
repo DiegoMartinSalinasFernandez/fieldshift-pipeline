@@ -1,14 +1,14 @@
 ---
 id: T089
 titulo: Poner números y figuras reales en las láminas y la página del proyecto
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T06:33
-actualizada: 2026-11-15T06:33
+actualizada: 2026-11-15 06:46
 ---
 
 ## Qué hacer
@@ -26,3 +26,4 @@ Los zips de los releases son públicos: bajalos con `curl -L` desde `https://git
 Las láminas y la página corregidas en un PR, con la lista de números cambiados y su fuente.
 
 ## Notas
+- 2026-11-15 06:46 · pro-2: tomada
