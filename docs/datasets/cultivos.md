@@ -357,3 +357,63 @@ Tres columnas nuevas en `practicas_censo.csv`, después de `pct_riego` (las exis
 - `pct_riego` (sobre todo el cropland) subestima el peso del riego en maíz y soja: en KS la mediana es 3-4 %,
   pero la del maíz regado es 15-31 %. En OH, MN, IA, IL e IN se esperan muchas celdas vacías (poco riego).
 - Pendiente: `loop/spec/entregables.yaml` no tiene todavía los rangos de las tres columnas (no se toca sin OK).
+## Tabla de referencia: precisión del CDL (`data/reference/cdl_precision.csv`)
+
+Agregada en T133 (para_decidir #13). No es un CSV procesado ni entra en `tabla_anual.csv`: es una tabla de
+referencia para ML, en `data/reference/` y en el zip de base de cada release (`<release>_base.zip`, solo las
+filas de los estados del release; la suma `scripts/entregar.py` si el archivo existe).
+
+**Qué es.** La precisión del Cropland Data Layer publicada por NASS para cada estado, año y clase: de los
+píxeles de validación de la FSA, cuántos acierta el CDL. Una fila por `fips_estado, anio, clase_cdl`.
+
+**De dónde sale.** `python -X utf8 src/cultivos/precision_cdl.py` junta los CSV que ya armaron los extractores
+de research (`docs/research/cdl_precision*_extraer.py`, T024, T064, T068 y T078) a partir de las fuentes
+oficiales: los metadatos FGDC de cada estado y año en HTML (2008–2023, tabla "STATEWIDE AGRICULTURAL ACCURACY
+REPORT") y `CDL_<año>_accuracy_assessments.zip` (2024–2025, hoja "Summary Table" del xlsx de cada estado).
+Con `--rehacer <dir>` vuelve a correr los extractores antes (baja de NASS a `<dir>`, fuera del repo). El script
+solo renombra columnas, agrega `fips_estado` y `metodo_validacion`, y corta si hay claves repetidas o
+porcentajes fuera de 0–100. Detalle y lectura de los valores: `docs/research/cdl_precision.md`,
+`cdl_precision_mo_wi_sd.md`, `cdl_precision_mi_nd.md` y `cdl_precision_ky.md`.
+
+**Cobertura.** 13 estados (los 7 del proyecto más MO, WI, SD, MI, ND y KY), 2008–2025, 1.962 filas. Clases:
+maíz (1), soja (5), trigo de invierno (24), avena (28), alfalfa (36) y otro heno (37) en los 13; además doble
+trigo/soja (26), barbecho (61), pastura/pasto (62) y pastizal/pastura (176) en MO, WI, SD, MI, ND y KY;
+girasol (6), trigo de primavera (23) y canola (31) en MI y ND; tabaco (11) en KY. En OH, NE, MN y KS, maíz y
+soja tienen precisión del productor de 85,8 a 99,1 % y del usuario de 87,2 a 98,8 % en todos los años.
+
+| Columna | Descripción | Unidad | Nombre en la fuente / en research |
+|---|---|---|---|
+| `fips_estado` | Código FIPS del estado, 2 dígitos | — | (se agrega desde `estado`) |
+| `anio` | Año del CDL | — | `anio` |
+| `clase_cdl` | Código de la clase del CDL (ver `data/reference/clases_cdl.csv`) | — | "Attribute Code" / `codigo_cdl` |
+| `estado` | Estado, 2 letras | — | `estado` |
+| `nombre` | Nombre corto de la clase que usó research | — | `cultivo` |
+| `exactitud_productor_pct` | Precisión del productor = 100 − error de omisión: de los píxeles que son esa clase en el terreno, % que el CDL acierta | % | "Producer's Accuracy" / `precision_productor_pct` |
+| `exactitud_usuario_pct` | Precisión del usuario = 100 − error de comisión: de los píxeles que el CDL marca con esa clase, % que lo son | % | "User's Accuracy" / `precision_usuario_pct` |
+| `px_correctos_validacion` | Píxeles de validación bien clasificados (da una idea del tamaño de la muestra) | píxeles | "*Correct Pixels" / `px_correctos` |
+| `exactitud_global_cultivos_fsa_pct` | Precisión global de las clases de cultivo de la FSA en ese estado y año (igual en todas las clases) | % | "OVERALL ACCURACY" o "FSA Crops" / `global_cultivos_fsa_pct` |
+| `kappa_global_cultivos_fsa` | Kappa de esa precisión global | — | "Kappa" / `kappa_global_fsa` |
+| `metodo_validacion` | `buffer_30m` (2008–2016), `sin_buffer` (2017–2023) o `muestreo_2024` (2024–2025) | — | (de `cdl_precision.md`, sección 2) |
+| `fuente` | `metadatos_fgdc_html` o `accuracy_assessments_xlsx` | — | `fuente` |
+
+**Faltantes.** Celda vacía cuando la clase no tiene fila en la tabla de NASS de ese estado y año (por ejemplo
+pastizal/pastura antes de 2023), o cuando NASS publica "n/a" en la precisión del usuario (clase que el CDL no
+asignó nunca). En toda la tabla: 11,9 % vacía la precisión del productor, 12,5 % la del usuario y 11,1 % los
+píxeles correctos; casi todo en las clases menores de los 6 estados de research que no son del proyecto. Nunca
+se rellena con 0.
+
+**Cómo la usaría ML.**
+- Ponderar o filtrar las transiciones de `rotacion_anual.csv` (`pct_maiz_tras_soja`, etc.) por la confiabilidad
+  del par de años: una transición entre dos CDL arrastra el error de los dos, así que un peso posible es el
+  producto de las precisiones de la clase en `anio − 1` y en `anio` (decisión de ML, no de este repo).
+- Saber qué clases no sirven para rotaciones en cada estado (por ejemplo trigo de invierno en IA y MN, avena y
+  otro heno en casi todos lados, otro heno en 2024–2025 con precisión del usuario muy baja).
+- Como covariable o para estratificar la validación por año, sabiendo que `metodo_validacion` marca cortes:
+  **no comparar la precisión entre cortes** (la caída de 2016 a 2017 es un cambio de método, no un CDL peor).
+
+**Supuestos.**
+- Los códigos FIPS de los 6 estados fuera del proyecto (MO 29, WI 55, SD 46, MI 26, ND 38, KY 21) están fijos
+  en `src/cultivos/precision_cdl.py`, porque `config/config.yaml` solo trae los 7 del proyecto.
+- Se supone, como research, que la tabla del HTML de 2016 es la versión con buffer (ver `cdl_precision.md`).
+- La tabla mezcla CDL de 30 m (hasta 2023) y la evaluación de 2024–2025 publicada con el CDL de 10 m; research
+  no separó si la de 2024–2025 corresponde a la versión de 10 m o a la de 30 m.
