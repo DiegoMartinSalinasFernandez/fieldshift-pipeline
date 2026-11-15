@@ -1,14 +1,14 @@
 ---
 id: T094
 titulo: 'Figura de la demo: mapa de condados del Corn Belt con el estado de cada release'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-3
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T06:55
-actualizada: 2026-11-15 07:08
+actualizada: 2026-11-15 07:11
 ---
 
 ## Qué hacer
@@ -25,3 +25,4 @@ El script y el PNG en un PR.
 
 ## Notas
 - 2026-11-15 07:08 · pro-3: tomada
+- 2026-11-15 07:11 · pro-3: terminada por el trabajador: PR #92, falta la revisión de max-1
