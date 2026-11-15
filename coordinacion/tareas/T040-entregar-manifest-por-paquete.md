@@ -1,9 +1,9 @@
 ---
 id: T040
 titulo: 'scripts/entregar.py: manifest solo del paquete y rechazo de claves'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-2
 estados: []
 depende_de: []
 rama: null
@@ -44,3 +44,4 @@ El cambio y las pruebas en un PR; `pytest tests/` pasa.
 - 2026-11-15 03:27 · pro-2: soltada: quedó a medias, PR #33 actualizado. INCOMPLETA: el agente no dejó resultado.
 - 2026-11-15 03:27 · pro-2: tomada
 - 2026-11-15 03:28 · pro-2: soltada: quedó a medias, PR #33 actualizado. INCOMPLETA: el agente no dejó resultado.
+- 2026-11-15 03:28 · pro-2: tomada
