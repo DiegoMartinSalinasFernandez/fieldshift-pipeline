@@ -11,8 +11,8 @@ estados:
 - KS
 depende_de: []
 rama: null
-creada: 2026-11-15 07:16
-actualizada: 2026-11-15 07:16
+creada: 2026-11-15 04:17
+actualizada: 2026-11-15 04:17
 ---
 
 ## Qué hacer
