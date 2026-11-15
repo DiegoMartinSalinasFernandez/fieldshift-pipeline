@@ -1,7 +1,7 @@
 ---
 id: T099
 titulo: Volver a correr coverage.py tras el zip de vegetación corregido
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados:
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T06:55
-actualizada: 2026-11-15 07:00
+actualizada: 2026-11-15 07:03
 ---
 
 ## Qué hacer
@@ -29,3 +29,4 @@ La página actualizada en un PR.
 
 ## Notas
 - 2026-11-15 07:00 · pro-1: tomada
+- 2026-11-15 07:03 · pro-1: terminada por el trabajador: PR #90, falta la revisión de max-1
