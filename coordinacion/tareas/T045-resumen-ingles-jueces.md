@@ -1,9 +1,9 @@
 ---
 id: T045
 titulo: Resumen en inglés de los datos para la entrega de Space Apps
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados: []
 depende_de: []
 rama: null
@@ -29,3 +29,4 @@ El documento en un PR.
 - 2026-11-15 04:11 · pro-1: tomada
 - 2026-11-15 04:11 · pro-1: corte por el límite de uso de Claude; 0 commits guardados en tarea/T045-auto. El trabajador sigue cuando se renueve.
 - 2026-11-15 04:26 · pro-1: soltada al arrancar: quedó tomada de una corrida anterior de esta máquina
+- 2026-11-15 04:26 · pro-1: tomada
