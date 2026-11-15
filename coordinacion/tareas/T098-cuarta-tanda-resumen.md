@@ -1,9 +1,9 @@
 ---
 id: T098
 titulo: Resumen para decidir la cuarta tanda (MI, ND, KY)
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-3
 estados:
 - MI
 - ND
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T06:55
-actualizada: 2026-11-15T06:55
+actualizada: 2026-11-15 07:22
 ---
 
 ## Qué hacer
@@ -28,3 +28,4 @@ recomendado, con el porqué. Es para que el humano decida en 5 minutos: corto, s
 El resumen en un PR.
 
 ## Notas
+- 2026-11-15 07:22 · pro-3: tomada
