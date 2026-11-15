@@ -94,8 +94,9 @@ we run short research tasks before processing. The Kentucky set (T077–T080) is
   state university, NASS prices received and the USDA ERS region of each county.
 - **Soil survey** ([suelo_ky.md](../research/suelo_ky.md)): SSURGO is complete in Kentucky, but its survey
   areas do not match counties, so the code that maps survey areas to counties needs a change before processing.
-- **Size approval:** each of Michigan, North Dakota and Kentucky is above the 5 GB limit that needs a person's
-  approval ([cuarta_tanda.md](../research/cuarta_tanda.md)).
+- **Size approval:** Michigan (8–11 GB) is above the 5 GB limit that needs a person's approval, and North Dakota
+  and Kentucky (4–5 GB each) sit right at it, so each one is approved by a person
+  ([cuarta_tanda.md](../research/cuarta_tanda.md)).
 - **Irrigation:** in Nebraska and Kansas much corn and soybean is irrigated, and NASS yields mix irrigated and
   dryland fields. Keep this in mind before comparing those states with Iowa (`CLAUDE.md` §2).
 
