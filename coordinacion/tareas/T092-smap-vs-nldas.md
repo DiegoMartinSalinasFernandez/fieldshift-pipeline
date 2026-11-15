@@ -1,9 +1,9 @@
 ---
 id: T092
 titulo: 'Research: humedad del suelo de SMAP contra NLDAS-2 en OH, NE y MN (2015–2025)'
-estado: libre
+estado: tomada
 plan_minimo: pro
-maquina: null
+maquina: pro-1
 estados:
 - OH
 - NE
@@ -11,7 +11,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T06:44
-actualizada: 2026-11-15T06:44
+actualizada: 2026-11-15 06:44
 ---
 
 ## Qué hacer
@@ -31,3 +31,4 @@ Escribí `docs/research/smap_vs_nldas.md` (formato de la sección 8 del CLAUDE.m
 El research y el script en un PR.
 
 ## Notas
+- 2026-11-15 06:44 · pro-1: tomada
