@@ -113,7 +113,7 @@ def valor(t: dict[str, pd.DataFrame], archivo: str, col, fips: str, anio: int):
 
 
 def fmt(v, dec: int) -> str:
-    return "n/a" if v is None else f"{v:,.{dec}f}"
+    return "n/a" if v is None or pd.isna(v) else f"{v:,.{dec}f}"
 
 
 def tabla(t, cond, h) -> str:
@@ -132,8 +132,9 @@ def tabla(t, cond, h) -> str:
     if censo is not None:
         c = censo[censo["fips"] == fips].sort_values("anio_censo")
         if not c.empty:
-            extra.append("Irrigated share of cropland, Census of Agriculture (`pct_riego`): "
-                         + ", ".join(f"{int(r.anio_censo)}: {fmt(r.pct_riego, 1)} %" for r in c.itertuples()))
+            for col, en in (("pct_riego", "Irrigated"), ("pct_drenaje_tile", "Tile-drained")):
+                extra.append(f"{en} share of cropland, Census of Agriculture (`{col}`): "
+                             + ", ".join(f"{int(r.anio_censo)}: {fmt(getattr(r, col), 1)} %" for r in c.itertuples()))
     fe = t.get("fenologia_estado")
     if fe is not None:
         e = fe[(fe["fips_estado"] == fips[:2]) & fe["anio"].isin(anios)]
@@ -162,10 +163,10 @@ def main() -> None:
         return
     texto = HISTORIA.read_text(encoding="utf-8")
     for k, v in tablas.items():
-        patron = re.compile(rf"(<!-- tabla:{k} -->\n).*?(\n<!-- /tabla:{k} -->)", re.S)
+        patron = re.compile(rf"(<!-- tabla:{k} -->).*?(<!-- /tabla:{k} -->)", re.S)
         if not patron.search(texto):
             sys.exit(f"user_story.md no tiene los marcadores de la tabla {k}")
-        texto = patron.sub(lambda m: m.group(1) + v + m.group(2), texto)
+        texto = patron.sub(lambda m: m.group(1) + "\n" + v + "\n" + m.group(2), texto)
     texto = re.sub(r"(<!-- zips -->).*?(<!-- /zips -->)",
                    lambda m: m.group(1) + ", ".join(f"`{z}`" for z in origen) + m.group(2), texto, flags=re.S)
     HISTORIA.write_text(texto, encoding="utf-8")
