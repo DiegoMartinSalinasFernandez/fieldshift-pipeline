@@ -113,3 +113,4 @@
 - 10:32 T145: tomada por el trabajador
 - 10:38 T145: terminada, PR #143
 - 10:54 T148: tomada por el trabajador
+- 10:56 T148: terminada, PR #145
