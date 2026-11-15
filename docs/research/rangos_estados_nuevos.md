@@ -75,8 +75,8 @@ Mínimos y máximos del Censo (bu/ac, todas las prácticas, ≥ 500 ac):
 
 **Por qué bajar el mínimo de maíz a 5 y no a 15.** El Censo cuenta todas las explotaciones y promedia riego y
 secano: en Osage (KS) 2012 ya da 21,7. La encuesta por condado puede dar menos (otra muestra), y el maíz de secano
-de KS y NE en 2012 (59 bu/ac de promedio estatal en NE, según `eventos_extremos.md`) tiene condados mucho más
-bajos que el promedio. No encontré la cifra de condado de secano de KS 2012 en una fuente que haya podido abrir:
+de KS y NE en 2012 (59 bu/ac de promedio estatal en NE, según `eventos_extremos.md`) seguramente tiene condados más
+bajos que ese promedio (supuesto, no verificado). No encontré la cifra de condado de secano de KS 2012 en una fuente que haya podido abrir:
 el número exacto sale de Quick Stats con `prodn_practice_desc=NON-IRRIGATED` (ver "Cómo verificar"). Un check
 físico debería rechazar errores (unidades, relleno, coma decimal), no años malos: 5 bu/ac sigue atrapando un `0`
 mal convertido. Si el humano prefiere 10, cubre todo lo visto en el Censo; el riesgo es el secano de 2012.
