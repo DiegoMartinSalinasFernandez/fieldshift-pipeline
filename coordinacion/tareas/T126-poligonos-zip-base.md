@@ -1,14 +1,14 @@
 ---
 id: T126
 titulo: Sumar `condados.gpkg` al zip de base de los releases (scripts/entregar.py)
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-1
 estados: []
 depende_de: []
 rama: null
 creada: 2026-11-15T09:11
-actualizada: 2026-11-15 09:22
+actualizada: 2026-11-15 09:27
 ---
 
 ## Qué hacer
@@ -36,3 +36,4 @@ El cambio y la prueba en un PR, con CI en verde.
 
 ## Notas
 - 2026-11-15 09:22 · pro-1: tomada
+- 2026-11-15 09:27 · pro-1: terminada por el trabajador: PR #116, falta la revisión de max-1
