@@ -147,6 +147,10 @@ rotations that add a small grain or alfalfa. For each strategy it reports:
 - Works at two scales: the county for the regional picture, the field for management zones.
 - Open and reproducible: public data, public code and a data card for every package that lists sources,
   coverage, missing data, assumptions and known problems.
+- Scales to new states without new code: a state is added to the configuration and the same scripts are run.
+  Ohio, Nebraska and Minnesota took 21 GB of raw downloads in about 3 hours and became 91.0 MB of published
+  zips `[src: coordinacion/tareas/T001, docs/demo/coverage.md]`. Steps, sizes and times:
+  [`docs/demo/add_a_state.md`](add_a_state.md) (Impact and Validity criteria).
 
 ### Goals
 
