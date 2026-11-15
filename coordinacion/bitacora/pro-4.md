@@ -18,3 +18,4 @@
 - 04:17 T047: terminada, PR #41
 - 04:17 T052: tomada por el trabajador
 - 04:28 T055: tomada por el trabajador
+- 04:30 T055: terminada, PR #48
