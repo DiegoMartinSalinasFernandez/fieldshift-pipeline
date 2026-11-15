@@ -86,3 +86,4 @@
 - 07:10 T096: tomada por el trabajador
 - 09:12 T127: tomada por el trabajador
 - 09:43 T127: terminada, PR #121
+- 09:44 T132: tomada por el trabajador
