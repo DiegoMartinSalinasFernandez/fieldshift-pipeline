@@ -46,3 +46,4 @@
 - 09:57 T135: terminada, PR #126
 - 09:57 T138: tomada por el trabajador
 - 10:01 T138: terminada, PR #129
+- 10:01 T139: tomada por el trabajador
