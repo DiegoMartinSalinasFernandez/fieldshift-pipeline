@@ -1,7 +1,7 @@
 ---
 id: T120
 titulo: 'suelo_terreno: repartir por condado las áreas de levantamiento que no son un condado (necesario para KY)'
-estado: tomada
+estado: hecha
 plan_minimo: pro
 maquina: pro-4
 estados:
@@ -9,7 +9,7 @@ estados:
 depende_de: []
 rama: null
 creada: 2026-11-15T08:45
-actualizada: 2026-11-15 09:01
+actualizada: 2026-11-15 09:06
 ---
 
 ## Qué hacer
@@ -32,3 +32,4 @@ El cambio y las pruebas en un PR, con CI en verde.
 
 ## Notas
 - 2026-11-15 09:01 · pro-4: tomada
+- 2026-11-15 09:06 · pro-4: terminada por el trabajador: PR #114, falta la revisión de max-1
