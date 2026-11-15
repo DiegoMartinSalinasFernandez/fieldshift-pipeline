@@ -1,9 +1,9 @@
 ---
 id: T003
 titulo: Procesar OH, NE y MN y publicar sus zips
-estado: libre
+estado: tomada
 plan_minimo: max
-maquina: null
+maquina: max-1
 estados:
 - OH
 - NE
@@ -13,7 +13,7 @@ depende_de:
 - T002
 rama: null
 creada: 2026-11-14 23:59
-actualizada: 2026-11-15 02:58
+actualizada: 2026-11-15 03:03
 auto: false
 ---
 
@@ -32,3 +32,4 @@ con la cobertura real de cada estado.
 - 2026-11-15 01:15 · max-1: no la toma el trabajador automático: necesita los crudos que están en max-1
 - 2026-11-15 01:25 · max-1: Kansas pasa a T013 (max-2, de punta a punta); esta queda para OH, NE y MN en max-1
 - 2026-11-15 02:58 · max-1: CDL de OH/NE/MN incompleto (bug de T023, PR 17): en ResearchAgent-6estados hay 59 teselas en 2008 y 2021-2024 en lugar de 107, y 41 en 2025. Antes de procesar, volver a correr la descarga del CDL con el código de main (después de que terminen las otras descargas, para no escribir el manifest a la vez).
+- 2026-11-15 03:03 · max-1: tomada
