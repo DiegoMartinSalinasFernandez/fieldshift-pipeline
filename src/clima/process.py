@@ -4,6 +4,8 @@ Se corre desde la raíz: python src/clima/process.py (sin argumentos, no baja na
 Lee data/raw/clima/power/power_diario_<fips>.csv (1981 en adelante: la base para SPI,
 anomalías y tendencias) y escribe solo el período de config.yaml.
 
+Ventanas por estado y año (floración del maíz, llenado de la soja): src/clima/ventanas.py.
+
 IMERG (prec_imerg_mm): data/raw/clima/imerg_power/imerg_<lat>_<lon>.csv (IMERG_PRECTOT de POWER,
 una celda de 0,1° por archivo); la media del condado es el promedio de sus celdas (src/clima/celdas.py).
 """
@@ -22,6 +24,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 from src.common.config import cargar_config  # noqa: E402
 from src.clima.celdas import celdas_imerg, nombre_celda  # noqa: E402
+from src.clima.ventanas import COLS_NUEVAS, cargar_ventanas, columnas_ventanas  # noqa: E402
 
 RAW = REPO / "data" / "raw" / "clima" / "power"
 RAW_IM = REPO / "data" / "raw" / "clima" / "imerg_power"
@@ -304,6 +307,8 @@ def main():
 
     m = mensual(d, cfg)
     a = anual(d, m)
+    # T128: ventanas de floración del maíz y llenado de la soja por estado y año (src/clima/ventanas.py)
+    a = a.merge(columnas_ventanas(d, cargar_ventanas()), on=["fips", "anio"], how="left")
 
     OUT.mkdir(parents=True, exist_ok=True)
     dd = d[d["fecha"].dt.year.between(y0, y1)].copy()
@@ -324,7 +329,7 @@ def main():
     escribir(aa, ["fips", "anio", "doy_ultima_helada", "doy_primera_helada", "periodo_libre_heladas_dias",
                   "prec_temporada_mm", "gdd_temporada", "prec_invierno_previo_mm", "prec_jul_mm", "tmax_jul_c",
                   "dias_tmax_gt30_jul", "prec_ago_mm", "deficit_temporada_mm", "tend_prec_mm_decada",
-                  "tend_tmed_c_decada"], OUT / "clima_anual.csv", 3)
+                  "tend_tmed_c_decada", *COLS_NUEVAS], OUT / "clima_anual.csv", 3)
 
 
 if __name__ == "__main__":
