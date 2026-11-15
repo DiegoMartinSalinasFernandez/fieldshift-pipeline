@@ -12,6 +12,7 @@ Correr:  python -X utf8 -m pytest -q tests/test_vegetacion_lpdaac.py
 from __future__ import annotations
 
 import importlib.util
+import os
 import sys
 import tempfile
 import unittest
@@ -124,7 +125,8 @@ class SinEarthdata(unittest.TestCase):
                     mock.patch.object(dl, "rellenar_lpdaac", rellenar), \
                     mock.patch.object(dl.lpdaac, "credenciales", return_value=None), \
                     mock.patch.object(dl.requests, "get", return_value=token), \
-                    mock.patch.object(sys, "argv", ["download.py", "mod11a2", "2025", "2025"]):
+                    mock.patch.object(sys, "argv", ["download.py", "mod11a2", "2025", "2025"]), \
+                    mock.patch.dict(os.environ, {"FIELDSHIFT_RELLENO_LPDAAC": "1"}):
                 dl.main()  # no levanta SystemExit
                 log = (tmp / "interim" / "download.log").read_text(encoding="utf-8")
             self.assertIn("sin login de Earthdata", log)

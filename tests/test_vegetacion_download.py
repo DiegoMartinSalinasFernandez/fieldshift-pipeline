@@ -10,6 +10,7 @@ Correr:  python -X utf8 -m unittest tests/test_vegetacion_download.py   (o con p
 from __future__ import annotations
 
 import importlib.util
+import os
 import sys
 import tempfile
 import unittest
@@ -136,3 +137,21 @@ class DescargaVegetacion(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RellenoLpdaacApagado(DescargaVegetacion):
+    """El relleno de LP DAAC pasa los 5 GB: sin FIELDSHIFT_RELLENO_LPDAAC=1 no se pide sesión ni se baja nada."""
+
+    def test_sin_variable_no_rellena(self):
+        sesion = mock.Mock(side_effect=AssertionError("no debería pedir sesión de Earthdata"))
+        rellenar = mock.Mock(side_effect=AssertionError("no debería rellenar"))
+        with mock.patch.dict(os.environ, {}, clear=False),                 mock.patch.object(dl.lpdaac, "sesion_earthdata", sesion),                 mock.patch.object(dl, "rellenar_lpdaac", rellenar):
+            os.environ.pop("FIELDSHIFT_RELLENO_LPDAAC", None)
+            dl.main()
+        sesion.assert_not_called()
+        rellenar.assert_not_called()
+
+    def test_con_variable_pide_sesion(self):
+        with mock.patch.dict(os.environ, {"FIELDSHIFT_RELLENO_LPDAAC": "1"}):
+            dl.main()  # sesion_earthdata está parcheada a None en setUp: avisa y sigue solo con PC
+        dl.lpdaac.sesion_earthdata.assert_called_once()

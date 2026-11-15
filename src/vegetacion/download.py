@@ -10,8 +10,9 @@ ventana que cubre los condados y se guarda tal cual como GeoTIFF en data/raw/veg
   overview promedia los píxeles válidos (los sin dato, 0, quedan como nodata).
 
 Relleno (T119): los compuestos que están en CMR de LP DAAC y no en PC se bajan de LP DAAC con el login de
-Earthdata de ~/.netrc (src/vegetacion/lpdaac.py) y quedan como <granulo>.lpdaac.tif. Sin ~/.netrc se avisa y
-se sigue solo con PC.
+Earthdata de ~/.netrc (src/vegetacion/lpdaac.py) y quedan como <granulo>.lpdaac.tif. Solo corre con
+FIELDSHIFT_RELLENO_LPDAAC=1: son ~8-14 GB de transferencia para los 10 estados, más de los 5 GB que necesitan
+el OK del humano (CLAUDE.md, regla 6; tarea T100). Sin esa variable, o sin ~/.netrc, se sigue solo con PC.
 
 Reanudable: si el GeoTIFF ya existe en raw no se vuelve a bajar. Se escribe en interim (.part)
 y se mueve a raw al terminar. Uso: python src/vegetacion/download.py [mod13q1|mod11a2] [anio_desde anio_hasta]
@@ -250,8 +251,12 @@ def main() -> None:
     grupos = grupos_bbox()
     log("grupos de estados: " + "; ".join(f"{'+'.join(e)} {[round(v, 2) for v in b]}" for e, b in grupos))
     errores = 0
-    sesion = lpdaac.sesion_earthdata()
-    if sesion is None:
+    sesion = None
+    if os.environ.get("FIELDSHIFT_RELLENO_LPDAAC") != "1":
+        log("relleno desde LP DAAC apagado (FIELDSHIFT_RELLENO_LPDAAC=1 para prenderlo; necesita el OK de T100)")
+    else:
+        sesion = lpdaac.sesion_earthdata()
+    if os.environ.get("FIELDSHIFT_RELLENO_LPDAAC") == "1" and sesion is None:
         msg = ("AVISO: sin login de Earthdata (urs.earthdata.nasa.gov en ~/.netrc): no se rellenan desde LP DAAC "
                "los compuestos que faltan en Planetary Computer (T119). Se sigue solo con PC.")
         print(msg, file=sys.stderr)
